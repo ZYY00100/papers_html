@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Agent View - 让多个 AI 同时帮你打工</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.4);
+      --accent-2: #22d3ee;
+      --accent-2-glow: rgba(34, 211, 238, 0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+
+    /* Animated Canvas Background */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 24px;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 32px;
+      opacity: 0;
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      max-width: 900px;
+      opacity: 0;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin-bottom: 48px;
+      opacity: 0;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      opacity: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #4f46e5 100%);
+      color: white;
+      box-shadow: 0 4px 24px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--accent-glow);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      opacity: 0;
+    }
+
+    .scroll-hint .arrow {
+      width: 20px;
+      height: 20px;
+      border-right: 2px solid var(--text-secondary);
+      border-bottom: 2px solid var(--text-secondary);
+      transform: rotate(45deg);
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: rotate(45deg) translateY(0); }
+      50% { transform: rotate(45deg) translateY(8px); }
+    }
+
+    /* Section Styles */
+    section {
+      padding: 120px 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      opacity: 0;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      opacity: 0;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 680px;
+      margin-bottom: 48px;
+      opacity: 0;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.4s ease;
+      opacity: 0;
+    }
+
+    .card:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(99, 102, 241, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Feature List */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      opacity: 0;
+      padding: 24px;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .feature-num {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .feature-content h4 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .feature-content p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Terminal Block */
+    .terminal {
+      background: #1a1a24;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin: 40px 0;
+      opacity: 0;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.red { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green { background: #28c840; }
+
+    .terminal-title {
+      margin-left: 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .terminal-body .prompt {
+      color: var(--accent);
+    }
+
+    .terminal-body .command {
+      color: var(--accent-2);
+    }
+
+    .terminal-body .output {
+      color: var(--text-secondary);
+    }
+
+    .terminal-body .comment {
+      color: #6b7280;
+    }
+
+    /* States Grid */
+    .states-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 16px;
+      margin-top: 40px;
+      opacity: 0;
+    }
+
+    .state-item {
+      text-align: center;
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .state-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .state-badge.working { background: rgba(34, 211, 238, 0.2); color: var(--accent-2); }
+    .state-badge.input { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+    .state-badge.idle { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+    .state-badge.done { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .state-badge.failed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .state-badge.stopped { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+
+    .state-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Closing Section */
+    .closing {
+      text-align: center;
+      padding: 160px 24px;
+      position: relative;
+    }
+
+    .closing::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .closing h2 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .closing p {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 540px;
+      margin: 0 auto 40px;
+      position: relative;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      section { padding: 80px 20px; }
+      .hero h1 { letter-spacing: -0.02em; }
+      .cards-grid { grid-template-columns: 1fr; }
+      .states-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="content">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Claude Code 新功能
+      </div>
+      <h1>让多个 <span class="highlight">AI</span> 同时帮你打工</h1>
+      <p class="hero-desc">Agent View 上线——一个界面管理所有后台任务，从"问 AI 一个问题"到"调配一群 AI"</p>
+      <div class="hero-cta">
+        <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" class="btn btn-primary">
+          查看官方文档
+        </a>
+        <a href="#features" class="btn btn-secondary">
+          了解功能详情
+        </a>
+      </div>
+      <div class="scroll-hint">
+        <span>向下滚动</span>
+        <div class="arrow"></div>
+      </div>
+    </section>
+
+    <!-- Concept Section -->
+    <section id="concept">
+      <div class="section-label">核心概念</div>
+      <h2 class="section-title">多 agent 协作：不是 AI 变强了，而是多了几个帮手</h2>
+      <p class="section-desc">你以前用 AI，可能是一个问题抛出去，AI 回复了，你再问下一个。它再强，也是一次只能干一件事。多 agent 协作的意思是：你同时派出去好几个 AI，各自从不同的方向帮你干活。</p>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>三个 AI 同步在线</h3>
+          <p>一个修 bug、一个写文档、一个看 PR，三个任务同时推进，互不干扰。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">👥</div>
+          <h3>你是老板，不是员工</h3>
+          <p>分配任务、看进展、在关键节点把关。AI 负责执行，你负责决策。</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🚀</div>
+          <h3>效率翻倍</h3>
+          <p>以前排队做的事情，现在可以并行处理，大幅缩短等待时间。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- What is Agent View -->
+    <section id="what">
+      <div class="section-label">功能介绍</div>
+      <h2 class="section-title">Agent View 是什么</h2>
+      <p class="section-desc">Claude Code 给了一个专门的界面，叫 Agent View。运行一条命令，你就能同时管所有后台任务。</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <span class="terminal-dot red"></span>
+          <span class="terminal-dot yellow"></span>
+          <span class="terminal-dot green"></span>
+          <span class="terminal-title">terminal</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="comment"># 打开 Agent View</span></div>
+          <div><span class="prompt">$</span> <span class="command">claude agents</span></div>
+          <div style="margin-top: 16px;"><span class="output">Agent View 已启动 · 按 Esc 返回</span></div>
+        </div>
+      </div>
+
+      <div class="section-desc" style="margin-bottom: 24px;">一张表看清所有任务状态：</div>
+
+      <div class="states-grid">
+        <div class="state-item">
+          <span class="state-badge working">Working</span>
+          <div class="state-label">正在干活</div>
+        </div>
+        <div class="state-item">
+          <span class="state-badge input">Needs Input</span>
+          <div class="state-label">等你回复</div>
+        </div>
+        <div class="state-item">
+          <span class="state-badge idle">Idle</span>
+          <div class="state-label">闲置中</div>
+        </div>
+        <div class="state-item">
+          <span class="state-badge done">Completed</span>
+          <div class="state-label">已完成</div>
+        </div>
+        <div class="state-item">
+          <span class="state-badge failed">Failed</span>
+          <div class="state-label">出错了</div>
+        </div>
+        <div class="state-item">
+          <span class="state-badge stopped">Stopped</span>
+          <div class="state-label">已停止</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How to Use -->
+    <section id="features">
+      <div class="section-label">操作指南</div>
+      <h2 class="section-title">怎么用</h2>
+      <p class="section-desc">上手很简单，记住这几个核心操作就够了。</p>
+
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-num">1</div>
+          <div class="feature-content">
+            <h4>分发任务</h4>
+            <p>在底部输入你想让 AI 干的事，回车，它就启动一个新的独立 session 开始跑。可以同时输入多个任务。</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-num">2</div>
+          <div class="feature-content">
+            <h4>查看进展</h4>
+            <p>选中那一行，按空格，弹出 peek 面板，显示它最近在做什么、输出了什么。不用离开当前界面。</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-num">3</div>
+          <div class="feature-content">
+            <h4>直接回复</h4>
+            <p>在 peek 面板里直接打字回复，回车发送。整个过程不用离开 Agent View。</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-num">4</div>
+          <div class="feature-content">
+            <h4>深入操作</h4>
+            <p>选中那行，按回车或右箭头，钻进那个 session，像正常使用 Claude Code 一样去操作。按左箭头回到 Agent View。</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-num">5</div>
+          <div class="feature-content">
+            <h4>整理界面</h4>
+            <p>Ctrl+T 钉任务到顶部、Ctrl+S 切换分组方式、Ctrl+R 给任务改名——让界面始终保持清晰。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing -->
+    <section class="closing">
+      <h2>一个人也能同时推进好多事情</h2>
+      <p>Agent View 代表了一种工作思路的变化：从"单兵作战"到"调配一群 AI"。技术调研、代码审查、文档撰写、内容创作——都可以用这种方式来加速。</p>
+      <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" class="btn btn-primary">
+        现在就试试
+      </a>
+    </section>
+
+    <footer>
+      内容基于 Claude Code 官方文档 · 由 AI辅助写作
+    </footer>
+  </div>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Animated Background
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let mouseX = 0, mouseY = 0;
+    let scrollProgress = 0;
+    const mouseTarget = { x: 0, y: 0 };
+    const mouseCurrent = { x: 0, y: 0 };
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    window.addEventListener('mousemove', (e) => {
+      mouseTarget.x = e.clientX;
+      mouseTarget.y = e.clientY;
+    });
+
+    window.addEventListener('scroll', () => {
+      scrollProgress = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+    });
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.3;
+        this.speedY = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.5 + 0.1;
+      }
+      update() {
+        // Move with slight drift + mouse influence (scaled to 0.02 for subtle effect)
+        this.x += this.speedX + (mouseTarget.x - canvas.width / 2) * 0.0005;
+        this.y += this.speedY + (mouseTarget.y - canvas.height / 2) * 0.0005 + scrollProgress * 0.5;
+
+        // Reset if out of bounds
+        if (this.x < -50 || this.x > canvas.width + 50 || this.y < -50 || this.y > canvas.height + 50) {
+          this.reset();
+          // Reset from edges
+          if (Math.random() > 0.5) {
+            this.x = Math.random() > 0.5 ? -10 : canvas.width + 10;
+            this.y = Math.random() * canvas.height;
+          } else {
+            this.y = Math.random() > 0.5 ? -10 : canvas.height + 10;
+            this.x = Math.random() * canvas.width;
+          }
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity})`;
+        ctx.fill();
+      }
+    }
+
+    const particles = Array.from({ length: 80 }, () => new Particle());
+
+    function drawMesh() {
+      const time = Date.now() * 0.0003;
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.08)';
+      ctx.lineWidth = 0.5;
+
+      // Smooth mouse follow
+      mouseCurrent.x += (mouseTarget.x - mouseCurrent.x) * 0.08;
+      mouseCurrent.y += (mouseTarget.y - mouseCurrent.y) * 0.08;
+
+      const gridSize = 70;
+      const influenceRadius = 200;
+      const maxOffset = 25;
+
+      for (let x = -gridSize; x < canvas.width + gridSize; x += gridSize) {
+        for (let y = -gridSize; y < canvas.height + gridSize; y += gridSize) {
+          // Calculate radial displacement from mouse
+          const dx = x - mouseCurrent.x;
+          const dy = y - mouseCurrent.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          let offsetX = 0;
+          let offsetY = 0;
+
+          if (dist < influenceRadius) {
+            const factor = (1 - dist / influenceRadius) * maxOffset;
+            offsetX = dx / dist * factor;
+            offsetY = dy / dist * factor;
+          }
+
+          // Scroll-based vertical offset (parallax)
+          const scrollOffset = scrollProgress * 50;
+
+          const cx = x + offsetX;
+          const cy = y + offsetY + scrollOffset;
+
+          // Draw lines to right neighbor
+          const rightX = x + gridSize;
+          const rightDx = rightX - mouseCurrent.x;
+          const rightDy = cy - mouseCurrent.y;
+          const rightDist = Math.sqrt(rightDx * rightDx + rightDy * rightDy);
+          let rightOffsetX = 0;
+          let rightOffsetY = 0;
+          if (rightDist < influenceRadius) {
+            const factor = (1 - rightDist / influenceRadius) * maxOffset;
+            rightOffsetX = rightDx / rightDist * factor;
+            rightOffsetY = rightDy / rightDist * factor;
+          }
+
+          if (x + gridSize < canvas.width + gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(rightX + rightOffsetX, cy + rightOffsetY);
+            ctx.stroke();
+          }
+
+          // Draw lines to bottom neighbor
+          const bottomY = y + gridSize;
+          const bottomDx = cx - mouseCurrent.x;
+          const bottomDy = bottomY + scrollOffset - mouseCurrent.y;
+          const bottomDist = Math.sqrt(bottomDx * bottomDx + bottomDy * bottomDy);
+          let bottomOffsetX = 0;
+          let bottomOffsetY = 0;
+          if (bottomDist < influenceRadius) {
+            const factor = (1 - bottomDist / influenceRadius) * maxOffset;
+            bottomOffsetX = bottomDx / bottomDist * factor;
+            bottomOffsetY = bottomDy / bottomDist * factor;
+          }
+
+          if (y + gridSize < canvas.height + gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + bottomOffsetX, bottomY + scrollOffset + bottomOffsetY);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      drawMesh();
+      particles.forEach(p => { p.update(); p.draw(); });
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Scroll Animations
+    gsap.to('.hero-badge', { opacity: 1, y: 0, duration: 0.8, delay: 0.3 });
+    gsap.to('.hero h1', { opacity: 1, y: 0, duration: 0.8, delay: 0.5 });
+    gsap.to('.hero-desc', { opacity: 1, y: 0, duration: 0.8, delay: 0.7 });
+    gsap.to('.hero-cta', { opacity: 1, y: 0, duration: 0.8, delay: 0.9 });
+    gsap.to('.scroll-hint', { opacity: 1, duration: 0.8, delay: 1.2 });
+
+    // Sections
+    gsap.utils.toArray('section').forEach((section, i) => {
+      if (i === 0) return;
+      gsap.to(section.querySelector('.section-label'), {
+        opacity: 1,
+        scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play none none none' }
+      });
+      gsap.to(section.querySelector('.section-title'), {
+        opacity: 1,
+        y: 0,
+        scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play none none none' }
+      });
+      gsap.to(section.querySelector('.section-desc'), {
+        opacity: 1,
+        y: 0,
+        scrollTrigger: { trigger: section, start: 'top 75%', toggleActions: 'play none none none' }
+      });
+    });
+
+    // Cards
+    gsap.utils.toArray('.card').forEach((card, i) => {
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        delay: i * 0.1,
+        scrollTrigger: { trigger: card, start: 'top 80%', toggleActions: 'play none none none' }
+      });
+    });
+
+    // Terminal
+    gsap.to('.terminal', {
+      opacity: 1,
+      scrollTrigger: { trigger: '.terminal', start: 'top 80%', toggleActions: 'play none none none' }
+    });
+
+    // States grid
+    gsap.to('.states-grid', {
+      opacity: 1,
+      scrollTrigger: { trigger: '.states-grid', start: 'top 80%', toggleActions: 'play none none none' }
+    });
+
+    // Feature items
+    gsap.utils.toArray('.feature-item').forEach((item, i) => {
+      gsap.to(item, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        delay: i * 0.08,
+        scrollTrigger: { trigger: item, start: 'top 85%', toggleActions: 'play none none none' }
+      });
+    });
+
+    // Hero parallax
+    gsap.to('.hero h1', {
+      y: -80,
+      scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1
+      }
+    });
+
+    gsap.to('.hero-desc', {
+      y: -60,
+      scrollTrigger: {
+        trigger: '.hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1
+      }
+    });
+  </script>
+</body>
+</html>
