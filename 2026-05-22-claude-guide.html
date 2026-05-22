@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>为什么你用了两年 Claude，还是只用了 10%</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #f0f0f2;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-mint: #34c759;
+      --border-subtle: #d2d2d7;
+      --code-bg: #f0f0f2;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Light grid texture */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse 100% 60% at 50% 0%, rgba(255,255,255,0.6) 0%, transparent 70%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 79px,
+          rgba(0,0,0,0.025) 79px,
+          rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 79px,
+          rgba(0,0,0,0.025) 79px,
+          rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Subtle noise */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ========== NAV ========== */
+    .nav-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      color: var(--accent-gold-dim);
+      font-size: 20px;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-card);
+    }
+    .nav-toggle:hover {
+      box-shadow: var(--shadow-hover);
+      border-color: var(--accent-gold);
+    }
+
+    .side-nav {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-end;
+    }
+    .side-nav a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      transition: color 0.2s;
+      padding: 4px 0;
+    }
+    .side-nav a:hover, .side-nav a.active { color: var(--accent-gold); }
+    .side-nav a::after { content: ''; display: block; width: 1px; height: 20px; background: var(--border-subtle); margin: 6px auto 0; }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(245,245,247,0.98);
+      z-index: 90;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .mobile-nav a:hover { color: var(--accent-gold); }
+    .mobile-nav .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    /* ========== HERO ========== */
+    .hero {
+      padding: 120px 0 80px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-bottom: 32px;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      line-height: 1.15;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent-gold);
+    }
+    .hero-sub {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      letter-spacing: 0.15em;
+      margin-bottom: 48px;
+    }
+    .hero-divider {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--accent-gold-dim), transparent);
+      margin: 0 auto 48px;
+    }
+    .hero-lead {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 2;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ========== PART HEADER ========== */
+    .part-header {
+      text-align: center;
+      padding: 80px 0 40px;
+    }
+    .part-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 16px;
+    }
+    .part-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+    }
+
+    /* ========== CARDS ========== */
+    .card-group {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 36px 40px;
+      position: relative;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s;
+    }
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+      border-color: rgba(201,169,98,0.35);
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 24px; bottom: 24px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--accent-gold-dim), transparent);
+    }
+
+    .card-h3 {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .card-h3 .num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: var(--accent-gold);
+      min-width: 28px;
+    }
+    .card-h3 .title-text {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+
+    .card p {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 16px;
+    }
+    .card p:last-child { margin-bottom: 0; }
+    .card strong { color: var(--text-primary); font-weight: 500; }
+
+    .card .note {
+      font-size: 13px;
+      color: var(--text-muted);
+      border-left: 2px solid var(--accent-gold-dim);
+      padding-left: 14px;
+      margin-top: 20px;
+      line-height: 1.7;
+    }
+
+    /* ========== PROMPT BLOCKS ========== */
+    .prompt-block {
+      position: relative;
+      background: var(--code-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    .prompt-block::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent-gold), var(--accent-gold-dim), transparent);
+    }
+    .prompt-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      padding: 12px 20px 0;
+    }
+    .prompt-label-inline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 8px;
+    }
+    .prompt-content {
+      padding: 12px 20px 16px;
+    }
+    .prompt-content pre {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: rgba(201,169,98,0.08);
+      border: 1px solid rgba(201,169,98,0.2);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: rgba(201,169,98,0.15);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+    }
+    .copy-btn.copied {
+      color: var(--accent-mint);
+      border-color: var(--accent-mint);
+      background: rgba(52,199,89,0.08);
+    }
+
+    /* Mobile prompt card */
+    .prompt-mobile-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px;
+      margin: 16px 0;
+      box-shadow: var(--shadow-card);
+    }
+    .prompt-mobile-card .prompt-label {
+      padding: 0 0 10px;
+    }
+    .prompt-mobile-card pre {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0 0 14px;
+    }
+    .mobile-copy-btn {
+      width: 100%;
+      background: rgba(201,169,98,0.08);
+      border: 1px solid rgba(201,169,98,0.2);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mobile-copy-btn.copied {
+      color: var(--accent-mint);
+      border-color: var(--accent-mint);
+    }
+
+    /* ========== CTA ========== */
+    .cta-section {
+      text-align: center;
+      padding: 100px 0 80px;
+      position: relative;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--accent-gold));
+    }
+    .cta-quote {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 36px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text-primary);
+      line-height: 1.4;
+      max-width: 640px;
+      margin: 0 auto 20px;
+    }
+    .cta-text {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    footer .credit {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+    footer .credit a {
+      color: var(--accent-gold-dim);
+      text-decoration: none;
+    }
+
+    /* ========== SCROLLBAR ========== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--accent-gold-dim); border-radius: 2px; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .side-nav { display: none; }
+      .nav-toggle { display: block; }
+      .hero { padding: 80px 0 60px; }
+      .card { padding: 24px 20px; }
+      .card::before { display: none; }
+      .card-h3 { flex-direction: column; gap: 6px; }
+      .prompt-block { display: none; }
+      .prompt-mobile-card { display: block; }
+    }
+    @media (min-width: 769px) {
+      .prompt-mobile-card { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="nav-toggle" id="navToggle" aria-label="打开导航">☰</button>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <button class="close-btn" id="navClose" aria-label="关闭导航">×</button>
+    <a href="#p1" onclick="closeMobileNav()">第一部分</a>
+    <a href="#p2" onclick="closeMobileNav()">第二部分</a>
+    <a href="#p3" onclick="closeMobileNav()">第三部分</a>
+    <a href="#p4" onclick="closeMobileNav()">第四部分</a>
+    <a href="#p5" onclick="closeMobileNav()">第五部分</a>
+  </nav>
+
+  <aside class="side-nav">
+    <a href="#hero" class="active">引</a>
+    <a href="#p1">01</a>
+    <a href="#p2">02</a>
+    <a href="#p3">03</a>
+    <a href="#p4">04</a>
+    <a href="#p5">05</a>
+    <a href="#cta">结</a>
+  </aside>
+
+  <div class="container">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <p class="hero-eyebrow">Claude 使用完全指南</p>
+      <h1 class="hero-title">为什么你用了两年<br><em>Claude</em>，还是只用了<em> 10%</em></h1>
+      <p class="hero-sub">18 个技巧，释放它 100% 的潜力</p>
+      <div class="hero-divider"></div>
+      <p class="hero-lead">Claude 出来两年了。大多数人每天用它，但实际用到的功能连 10% 都不到。<br>不是因为它复杂。是因为没人告诉过你那另外 90% 长什么样。</p>
+    </section>
+
+    <!-- PART 1 -->
+    <section id="p1">
+      <div class="part-header">
+        <p class="part-num">PART 01</p>
+        <h2 class="part-title">从打开它的第一秒就做对</h2>
+      </div>
+
+      <div class="card-group">
+        <div class="card" id="tip1">
+          <div class="card-h3">
+            <span class="num">01</span>
+            <span class="title-text">建一个 Project，别每次都从零开始</span>
+          </div>
+          <p>每次新开一个 Chat，Claude 都是空的。它不认识你，不了解你的工作，不知道你的目标，也不清楚你喜欢怎么沟通。</p>
+          <p>于是你花前几条消息重新解释自己——或者干脆不解释，然后 Claude 给你的东西泛泛的，怎么都不太对。</p>
+          <p><strong>Projects 解决这个问题。</strong>一个 Project 是一个持久的工作空间，Claude 会记住其中每一次对话的上下文。建一次，之后每次进来它都已经认识你了。</p>
+          <p class="note">去 Claude，侧边栏点 Projects，建一个新的。起个名字，比如"工作"或者"日常"。之后所有对话都放在这个 Project 里。</p>
+        </div>
+
+        <div class="card" id="tip2">
+          <div class="card-h3">
+            <span class="num">02</span>
+            <span class="title-text">告诉 Claude 你是谁</span>
+          </div>
+          <p>大多数人在这一步之前就开始问了，然后奇怪为什么 Claude 给的答案总觉得哪里不对。</p>
+          <p>把你的背景一次性存进 Project 里，Claude 会在每次对话开始前自动读取。格式不重要，诚实填完每一项最重要。</p>
+
+          <p class="prompt-label-inline">复制以下模板，填好后存入 Project：</p>
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>我的名字是 [你的名字]。
+
+我从事 [你的职业/角色]。日常工作主要包括 [2-3 件你实际在做的事]。
+
+目前我最关注的目标是 [1-3 个你正在努力的具体目标]。
+
+我主要用 Claude 来做 [主要使用场景——写作、研究、分析、学习、编程等]。
+
+我的背景和知识水平：[哪些领域熟悉，哪些正在学，哪些完全陌生]。
+
+我喜欢的信息接收方式：[例如：直接简洁 / 详细带例子 / 一步一步来 / 不要列表 / 段落短一点]。
+
+我不想要的：[例如：不要加免责声明、不要用企业腔、不要重复我说的话、不要开头说"好问题"]。
+
+我关注的话题和领域：[你的兴趣、行业、细分方向]。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>我的名字是 [你的名字]。我从事 [你的职业/角色]。日常工作主要包括 [2-3 件你实际在做的事]。目前我最关注的目标是 [1-3 个你正在努力的具体目标]。我主要用 Claude 来做 [主要使用场景——写作、研究、分析、学习、编程等]。我的背景和知识水平：[哪些领域熟悉，哪些正在学，哪些完全陌生]。我喜欢的信息接收方式：[例如：直接简洁 / 详细带例子 / 一步一步来 / 不要列表 / 段落短一点]。我不想要的：[例如：不要加免责声明、不要用企业腔、不要重复我说的话、不要开头说"好问题"]。我关注的话题和领域：[你的兴趣、行业、细分方向]。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip3">
+          <div class="card-h3">
+            <span class="num">03</span>
+            <span class="title-text">把这些变成 Custom Instructions</span>
+          </div>
+          <p>把你的背景存进去是第一步。<strong>Custom Instructions 更进一步</strong>，不只告诉 Claude 你是谁，还告诉它和你打交道时默认应该怎么做。</p>
+          <p>把上面那段填好后，再发给 Claude 这段话：</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>根据你了解的关于我的一切，为这个 Claude Project 写一套自定义指令。
+
+指令需要做到：
+- 描述我是谁、做什么工作
+- 设定我默认的沟通风格和格式
+- 告诉 Claude 和我工作时绝对不要做什么
+- 定义我希望在每个回复中看到的语气
+- 包含我希望在任何对话中默认启用的行为
+
+用第二人称写，就像 Claude 在读帮助我时需要遵守的规则一样。要具体，不要泛泛的建议。控制在 400 字以内。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>根据你了解的关于我的一切，为这个 Claude Project 写一套自定义指令。指令需要做到：描述我是谁、做什么工作；设定我默认的沟通风格和格式；告诉 Claude 和我工作时绝对不要做什么；定义我希望在每个回复中看到的语气；包含我希望在任何对话中默认启用的行为。用第二人称写。要具体，不要泛泛的建议。控制在 400 字以内。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+
+          <p class="note">把输出结果复制粘贴到 Project Instructions 里。这会成为这个 Project 下所有对话的永久运行模式。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 2 -->
+    <section id="p2">
+      <div class="part-header">
+        <p class="part-num">PART 02</p>
+        <h2 class="part-title">先改变对 Claude 的认知</h2>
+      </div>
+
+      <div class="card-group">
+        <div class="card" id="tip4">
+          <div class="card-h3">
+            <span class="num">04</span>
+            <span class="title-text">Claude 不是搜索引擎</span>
+          </div>
+          <p>大多数人用 Claude 的方式和用 Google 一样：打一个问题，等答案。<strong>这是最低价值的用法。</strong></p>
+          <p>Claude 不是检索工具。它是一个思考伙伴。它不只是调取信息，而是推理、综合、质疑、在上下文基础上构建。把它当搜索引擎用，实用价值损失 80%。</p>
+          <p>不要再问 Claude 某样东西是什么。开始让它帮你思考某件事。</p>
+          <p>不要问："什么是 prompt caching？"</p>
+          <p>试着问："我在做一个工作流，每轮对话要调 Claude 20 次。帮我理清 prompt caching 的原理，以及它在我这种情况下是否真的能降低成本。"</p>
+          <p class="note">第二个提问方式给 Claude 一个需要和你一起解决的问题。第一个只是让它背一段定义。</p>
+        </div>
+
+        <div class="card" id="tip5">
+          <div class="card-h3">
+            <span class="num">05</span>
+            <span class="title-text">让 Claude 先问你问题</span>
+          </div>
+          <p><strong>这是最强的方法之一，但几乎没人用。</strong>在 Claude 开始做任何复杂任务之前，告诉它先向你收集信息。</p>
+          <p>Claude 在开始前先提问，最终输出质量会明显更好，因为它是建立在正确的地基上的。否则 Claude 只能靠猜，然后你花时间纠正那些本来可以一步到位的内容。</p>
+          <p class="prompt-label-inline">任何重要任务之前用这段：</p>
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>在开始之前，先问我 5 个最重要的问题，帮助你把这件事做好。等我回答之后，再开始。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>在开始之前，先问我 5 个最重要的问题，帮助你把这件事做好。等我回答之后，再开始。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+
+          <p class="prompt-label-inline" style="margin-top:18px">或者针对具体任务：</p>
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>我需要你帮我给潜在客户写一封开发信。在你写任何内容之前，先问我需要知道什么，才能让这封信真正好，而不是泛泛的。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>我需要你帮我给潜在客户写一封开发信。在你写任何内容之前，先问我需要知道什么，才能让这封信真正好，而不是泛泛的。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 3 -->
+    <section id="p3">
+      <div class="part-header">
+        <p class="part-num">PART 03</p>
+        <h2 class="part-title">用得比大多数人都深</h2>
+      </div>
+
+      <div class="card-group">
+        <div class="card" id="tip6">
+          <div class="card-h3">
+            <span class="num">06</span>
+            <span class="title-text">风格克隆</span>
+          </div>
+          <p>当 Claude 在没有示例的情况下替你写作，它会用它自己的风格写。输出语法正确，但语气完全不对——听起来就像 AI 写的东西。</p>
+          <p>给 Claude 三到五篇你自己的文章。让它分析你的规律，而不只是描述你的风格。之后它写出来的东西<strong>就像你写的</strong>，而不是像一个 polished 的企业助手。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>以下是我写的 3 篇示例：
+
+[粘贴示例 1]
+[粘贴示例 2]
+[粘贴示例 3]
+
+详细分析我的写作风格。注意：句子的长度、节奏、词汇选择、如何开头和结尾段落、我在避免什么、我的语气是正式还是随意、以及任何让我的写作与众不同的地方。
+
+之后当我要求你为我写任何东西时，严格匹配这个风格。不要用你自己的默认模式。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>以下是我写的 3 篇示例：[粘贴示例 1][粘贴示例 2][粘贴示例 3] 详细分析我的写作风格。注意：句子的长度、节奏、词汇选择、如何开头和结尾段落、我在避免什么、我的语气是正式还是随意、以及任何让我的写作与众不同的地方。之后当我要求你为我写任何东西时，严格匹配这个风格。不要用你自己的默认模式。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip7">
+          <div class="card-h3">
+            <span class="num">07</span>
+            <span class="title-text">Claude 作为你的对抗性思考伙伴</span>
+          </div>
+          <p>大多数人用 Claude 帮忙出主意。Claude 在你说的基础上叠加、增加、扩展。你得到的是认同和补充。</p>
+          <p>这有时候有用，但不是压力测试一个想法的方式。</p>
+          <p><strong>在任何计划、决定、或者文章定稿之前，让 Claude 来攻击它。不是点评，是攻击。</strong>区别很重要。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>这是我的计划：[描述你的计划]
+
+你的任务是摧毁它。找出我每一个可能错误的假设。找出这件事可能失败的所有方式。尽可能强硬地为相反观点辩护。不要客气。不要加限定条件。只管攻击。
+
+之后，为我的立场做最强的论证。建构一个你能构建的最有力的理由来说明为什么我是对的。
+
+然后告诉我你真实的想法。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>这是我的计划：[描述你的计划] 你的任务是摧毁它。找出我每一个可能错误的假设。找出这件事可能失败的所有方式。尽可能强硬地为相反观点辩护。不要客气。不要加限定条件。只管攻击。之后，为我的立场做最强的论证。建构一个你能构建的最有力的理由来说明为什么我是对的。然后告诉我你真实的想法。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip8">
+          <div class="card-h3">
+            <span class="num">08</span>
+            <span class="title-text">扩展思考模式</span>
+          </div>
+          <p>大多数 Claude 用户从来没打开过这个功能。<strong>Extended Thinking</strong> 是让 Claude 在给出答案之前，一步一步地推理问题，而不是直接出结果。</p>
+          <p>简单任务不需要用它。复杂决策、分析、或者你希望 Claude 真正思考而不是模式匹配的问题，打开它。</p>
+          <p class="note">在 Claude 里，发送消息前点击脑子图标。或者在 prompt 里加这段：</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>仔细思考这个问题再回复。一步一步推演，展示你的推理过程，标出你不确定的地方，然后给我你的结论。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>仔细思考这个问题再回复。一步一步推演，展示你的推理过程，标出你不确定的地方，然后给我你的结论。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+
+          <p class="note">在难题上，输出质量的差异是明显的。</p>
+        </div>
+
+        <div class="card" id="tip9">
+          <div class="card-h3">
+            <span class="num">09</span>
+            <span class="title-text">让 Claude 给 Claude 写 Prompt</span>
+          </div>
+          <p><strong>这是最被低估的用法。</strong>如果你不知道该怎么给某个任务写 prompt，直接问 Claude 帮你写。</p>
+          <p>Claude 知道什么样的指令能产生更好的结果。让它把这个能力用在你身上。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>我需要 Claude 帮我 [描述你的实际任务]。
+
+为我写一个这个任务最好的 prompt。包含角色、上下文、格式指令和任何能提升输出质量的约束条件。
+
+然后立刻用这个 prompt 帮我完成任务。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>我需要 Claude 帮我 [描述你的实际任务]。为我写一个这个任务最好的 prompt。包含角色、上下文、格式指令和任何能提升输出质量的约束条件。然后立刻用这个 prompt 帮我完成任务。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 4 -->
+    <section id="p4">
+      <div class="part-header">
+        <p class="part-num">PART 04</p>
+        <h2 class="part-title">少花 Token，多拿价值</h2>
+      </div>
+
+      <div class="card-group">
+        <div class="card" id="tip10">
+          <div class="card-h3">
+            <span class="num">10</span>
+            <span class="title-text">精确指定输出长度</span>
+          </div>
+          <p>Claude 默认会写它觉得合适长度的内容。通常比你需要的更多——意味着更多 token、更长阅读时间、更多噪音。</p>
+          <p>在它开始之前，告诉它你想要多长。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>答案最多 3 句话。</pre>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>给我 5 个要点。不需要解释，只要要点。</pre>
+            </div>
+          </div>
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>写这篇文章，字数控制在 150 字以内。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt · 示例</p>
+            <pre>答案最多 3 句话。给我 5 个要点。不需要解释，只要要点。写这篇文章，字数控制在 150 字以内。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+
+          <p class="note">这一句话 instruction，大多数任务可以减少 40% 到 60% 的 token 消耗，而且你需要的价值一点没少。</p>
+        </div>
+
+        <div class="card" id="tip11">
+          <div class="card-h3">
+            <span class="num">11</span>
+            <span class="title-text">去掉废话开篇</span>
+          </div>
+          <p>Claude 默认每次回答开头都会加一段你没要的东西。"好问题，让我来帮你分析一下"、把你刚说的话复述一遍、加一段免责声明、结尾再来个总结重复刚说的内容。<strong>这些你都没要求，它每次都加，消耗 token，浪费你时间。</strong></p>
+          <p class="prompt-label-inline">把这段加进你的 Custom Instructions：</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>永远不要用开场白、肯定语或复述我的问题作为回复开头。直接给答案。除非我明确要求，否则不要在结尾加总结。除非话题确实需要，否则不要加免责声明。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>永远不要用开场白、肯定语或复述我的问题作为回复开头。直接给答案。除非我明确要求，否则不要在结尾加总结。除非话题确实需要，否则不要加免责声明。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip12">
+          <div class="card-h3">
+            <span class="num">12</span>
+            <span class="title-text">不要每次对话都重新解释自己</span>
+          </div>
+          <p>如果你在每个新 Chat 里都在粘贴同样的背景信息，你每轮对话都在浪费 token，而且还在培养一个随着 Claude 使用量增加成本越来越高的习惯。</p>
+          <p><strong>这就是 Projects 和 Custom Instructions 存在的意义。</strong>背景信息存一次，Claude 每次对话开始自动读取。再也不用粘贴了。</p>
+          <p class="note">还没开始用 Projects？先把这件事做了，比这篇文章里任何其他技巧都重要。</p>
+        </div>
+
+        <div class="card" id="tip13">
+          <div class="card-h3">
+            <span class="num">13</span>
+            <span class="title-text">换话题就开新 Chat</span>
+          </div>
+          <p>Claude 会携带当前对话中所有说过的上下文。当你在一个很长的 Chat 里换话题，Claude 仍然加载着之前所有的上下文。这意味着每次回复 token 消耗更多、处理更慢，上下文污染让你的新话题受到之前内容的影响。</p>
+          <p><strong>当切换到不相关的话题，在 Project 内开一个全新的 Chat。</strong>Project 记忆保留，不相关的包袱丢掉。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART 5 -->
+    <section id="p5">
+      <div class="part-header">
+        <p class="part-num">PART 05</p>
+        <h2 class="part-title">直接拿去用的 Prompt 模板</h2>
+      </div>
+
+      <div class="card-group">
+        <div class="card" id="tip14">
+          <div class="card-h3">
+            <span class="num">14</span>
+            <span class="title-text">用费曼法理解任何东西</span>
+          </div>
+          <p>Claude 默认给出的解释技术上都正确但实践中用处不大。它们使用了和要理解的东西一样的词汇，意味着你带走了一个定义但没有真正的理解。</p>
+          <p><strong>费曼法通过简单性强迫真正的理解。</strong>如果 Claude 不能用日常类比简单解释清楚一个东西，说明这个解释还不够清楚。这个 prompt 适用于任何东西——投资学、量子物理、某个 API 是怎么工作的。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>用类比和日常例子解释 [主题]。不要用术语。假设我在这个领域没有任何背景知识。
+
+每个类比之后，通过问我一个问题来确认我是否真正理解了。根据我的回答，加深或调整解释。
+
+一直继续，直到我能用自己的话解释它而不使用任何技术术语。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>用类比和日常例子解释 [主题]。不要用术语。假设我在这个领域没有任何背景知识。每个类比之后，通过问我一个问题来确认我是否真正理解了。根据我的回答，加深或调整解释。一直继续，直到我能用自己的话解释它而不使用任何技术术语。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip15">
+          <div class="card-h3">
+            <span class="num">15</span>
+            <span class="title-text">按你真实旅行风格做的旅行规划</span>
+          </div>
+          <p>大多数旅行规划从目的地开始，给你一个去任何旅行博客都能找到的通用行程。Claude 可以做一件不同的事：按你具体的旅行风格、节奏、预算、真正在乎的东西来规划，而不是什么热门打卡清单。</p>
+          <p>关键是给它真实的信息，不只是日期和地点。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>我计划去 [目的地]。会在那里待 [天数]。预算大约是 [金额] 每天，包含住宿。
+
+这是我的旅行风格：[描述你的风格——你喜欢睡到自然醒还是行程紧凑、热门景点还是本地人去的地方、博物馆还是美食、活跃还是休闲、一个人还是结伴，等等]。
+
+我想避免的：[人群、网红打卡地、天价餐厅、长途交通等]。
+
+按这个风格为我制定每日行程。对每一天，包含住宿地点、做什么、吃什么、以及需要知道的任何后勤信息。标注任何需要提前预订的项目。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>我计划去 [目的地]。会在那里待 [天数]。预算大约是 [金额] 每天，包含住宿。这是我的旅行风格：[描述你的风格]。我想避免的：[人群、网红打卡地、天价餐厅、长途交通等]。按这个风格为我制定每日行程。对每一天，包含住宿地点、做什么、吃什么、以及需要知道的任何后勤信息。标注任何需要提前预订的项目。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip16">
+          <div class="card-h3">
+            <span class="num">16</span>
+            <span class="title-text">月度开支分析，得出真实结论</span>
+          </div>
+          <p>大多数人在看银行账单时，只是模模糊糊地感觉花了太多，但没有真正搞清楚到底发生了什么。Claude 可以把原始数字变成一张清晰的图：钱花在了哪里，你应该怎么做。</p>
+          <p class="note">粘贴真实数据效果最好，而不是估算。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>我会粘贴上个月的支出。帮我分析并告诉我：
+
+1. 我在哪些类别上花费最多
+2. 和我说的目标相比，我的支出哪里不正常
+3. 什么可以砍掉但不影响生活质量
+4. 我可能在哪些重要地方花得不够
+5. 一个最有财务影响力的具体改变
+
+这是我的支出：[粘贴银行账单或支出列表]
+
+我现在的财务目标：[描述你想做什么——存更多钱、还债、投资等]</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>我会粘贴上个月的支出。帮我分析：我在哪些类别上花费最多，和目标的差距，哪里可以砍掉不影响生活，哪里可能花得不够，一个最有影响力的改变。[粘贴支出数据] 我现在的财务目标：[描述目标]</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip17">
+          <div class="card-h3">
+            <span class="num">17</span>
+            <span class="title-text">你的个人思考伙伴</span>
+          </div>
+          <p>大多数人的生活中没有一个愿意倾听、不带评判、问对问题、帮你把困惑想清楚、同时不会把自己的议程强加给你的人。Claude 可以填补这个角色，但前提是你给它正确的指令。</p>
+          <p><strong>这不是治疗。这是结构化的自我反思，加上一个能帮助你更清晰思考的外部视角。</strong></p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>我想和你聊一聊我正在纠结的一件事。你的任务不是立刻给我建议。
+
+首先，问我问题，全面了解情况。实际发生了什么，我对此有什么感觉，我试过什么，我希望什么结果。
+
+等你全面了解之后，反馈你听到的内容——不只是事实，还有表面之下似乎隐藏的东西。
+
+然后，也只有到那时，再给我你的观点。诚实，而不是让我舒服。告诉我你真实的想法，包括我可能不想听的内容。
+
+我心里在想的是：[描述你想思考的事情]</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>我想和你聊一聊我正在纠结的一件事。你的任务不是立刻给我建议。首先，问我问题，全面了解情况。实际发生了什么，我对此有什么感觉，我试过什么，我希望什么结果。等你全面了解之后，反馈你听到的内容——不只是事实，还有表面之下似乎隐藏的东西。然后，也只有到那时，再给我你的观点。诚实，而不是让我舒服。我心里在想的是：[描述你想思考的事情]</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+
+        <div class="card" id="tip18">
+          <div class="card-h3">
+            <span class="num">18</span>
+            <span class="title-text">在投入之前压力测试任何商业想法</span>
+          </div>
+          <p>大多数商业想法死掉，是因为人在测试之前就已经爱上了它们。他们花好几个月做出一个没人要的东西，因为从来没有诚实地问过这个想法是不是真的好。</p>
+          <p><strong>Claude 可以充当一个无情的第一道过滤器。</strong>不是为了否定想法，而是在花时间和金钱之前找到真正的问题。</p>
+
+          <div class="prompt-block">
+            <span class="prompt-label">Prompt</span>
+            <button class="copy-btn" onclick="copyPrompt(this)">复制</button>
+            <div class="prompt-content">
+              <pre>我有一个商业想法，想在投入大量时间之前压力测试一下。
+
+想法是这样的：[详细描述——是什么，给谁用，怎么赚钱，为什么你认为它可行]
+
+你的任务是找出它所有的问题。具体来说：
+
+1. 我做了哪些可能错误的假设
+2. 谁已经在做这个，我为什么可能输给他们
+3. 目标客户为什么可能实际上不会为此付钱
+4. 这件事要成功必须为什么条件成立，可能性有多大
+5. 这个想法最大的一个问题是什么
+
+要具体。"市场可能还没准备好"这种泛泛的风险没用。给我每个问题的真实版本。
+
+之后，告诉我这个想法需要长什么样才能真正可行。</pre>
+            </div>
+          </div>
+          <div class="prompt-mobile-card" style="display:none">
+            <p class="prompt-label">Prompt</p>
+            <pre>我有一个商业想法，想在投入大量时间之前压力测试一下。想法：[详细描述——是什么，给谁用，怎么赚钱，为什么你认为它可行] 你的任务：1. 我做了哪些可能错误的假设；2. 谁已经在做这个，我为什么可能输给他们；3. 目标客户为什么可能实际上不会为此付钱；4. 这件事要成功必须为什么条件成立，可能性有多大；5. 这个想法最大的一个问题是什么。要具体。给我每个问题的真实版本。</pre>
+            <button class="mobile-copy-btn" onclick="copyPromptMobile(this)">复制 Prompt</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section" id="cta">
+      <p class="cta-quote">设置好一次。<br>永久改变你工作的方式。</p>
+      <p class="cta-text">Claude 不比你聪明 · 它有的是无限耐心、广泛知识、和一个你没想过的角度</p>
+    </section>
+
+    <footer>
+      <p>Claude 使用完全指南 · 18 Steps to Unlock 100% of Its Potential</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Desktop copy
+    function copyPrompt(btn) {
+      const pre = btn.parentElement.querySelector('pre');
+      const text = pre.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '已复制 ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '复制';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Mobile copy
+    function copyPromptMobile(btn) {
+      const pre = btn.parentElement.querySelector('pre');
+      const text = pre.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '已复制 ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '复制 Prompt';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    // Mobile nav
+    document.getElementById('navToggle').addEventListener('click', () => {
+      document.getElementById('mobileNav').classList.add('open');
+    });
+    document.getElementById('navClose').addEventListener('click', () => {
+      document.getElementById('mobileNav').classList.remove('open');
+    });
+    function closeMobileNav() {
+      document.getElementById('mobileNav').classList.remove('open');
+    }
+
+    // Active side nav highlight
+    const sections = document.querySelectorAll('section[id], .cta-section[id]');
+    const navLinks = document.querySelectorAll('.side-nav a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const top = section.offsetTop - 200;
+        if (window.scrollY >= top) current = section.getAttribute('id');
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+      });
+    });
+
+    // Card entrance animations
+    const cardObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          const delay = entry.target.dataset.delay || 0;
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, delay);
+          cardObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.card').forEach((card, i) => {
+      card.dataset.delay = (i % 5) * 80;
+      cardObserver.observe(card);
+    });
+  </script>
+</body>
+</html>
