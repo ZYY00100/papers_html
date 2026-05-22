@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三个平台搞定 AI 学习资源 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-page: #f5f5f7;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --border-subtle: #d2d2d7;
+
+      /* GitHub */
+      --gh-dark: #24292f;
+      --gh-bg: #f6f8fa;
+      --gh-accent: #57606a;
+
+      /* Hugging Face */
+      --hf-dark: #FF9D00;
+      --hf-bg: #fff7e6;
+      --hf-accent: #b36d00;
+
+      /* arXiv */
+      --ar-dark: #2255CC;
+      --ar-bg: #eef2ff;
+      --ar-accent: #1a3a99;
+
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 80px 24px 40px;
+      text-align: center;
+    }
+    .hero-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 4.5vw, 46px);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+    .hero-sub {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+    }
+    .hero-divider {
+      width: 1px;
+      height: 36px;
+      background: linear-gradient(to bottom, transparent, var(--text-muted), transparent);
+      margin: 32px auto;
+    }
+
+    /* ===== TABS ===== */
+    .tabs-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--bg-page);
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .tabs {
+      display: flex;
+      max-width: 680px;
+      margin: 0 auto;
+      gap: 0;
+    }
+    .tab {
+      flex: 1;
+      padding: 16px 8px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-align: center;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.25s ease;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab svg { width: 20px; height: 20px; opacity: 0.5; transition: opacity 0.25s; }
+    .tab.active svg { opacity: 1; }
+    .tab:hover { color: var(--text-secondary); }
+
+    .tab[data-platform="github"] { }
+    .tab[data-platform="github"].active {
+      color: var(--gh-dark);
+      border-bottom-color: var(--gh-dark);
+    }
+    .tab[data-platform="github"] svg { fill: var(--gh-dark); }
+
+    .tab[data-platform="huggingface"] { }
+    .tab[data-platform="huggingface"].active {
+      color: var(--hf-dark);
+      border-bottom-color: var(--hf-dark);
+    }
+    .tab[data-platform="huggingface"] svg { fill: var(--hf-dark); }
+
+    .tab[data-platform="arxiv"] { }
+    .tab[data-platform="arxiv"].active {
+      color: var(--ar-dark);
+      border-bottom-color: var(--ar-dark);
+    }
+    .tab[data-platform="arxiv"] svg { fill: var(--ar-dark); }
+
+    /* ===== CONTENT AREAS ===== */
+    .platform-content {
+      display: none;
+      animation: fadeSlideIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .platform-content.active { display: block; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* GitHub */
+    .platform-github {
+      background: var(--gh-bg);
+      padding: 60px 24px 80px;
+    }
+
+    /* Hugging Face */
+    .platform-huggingface {
+      background: var(--hf-bg);
+      padding: 60px 24px 80px;
+    }
+
+    /* arXiv */
+    .platform-arxiv {
+      background: var(--ar-bg);
+      padding: 60px 24px 80px;
+    }
+
+    .platform-inner {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ===== EDITORIAL TYPOGRAPHY ===== */
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .platform-github .section-label { color: var(--gh-accent); }
+    .platform-huggingface .section-label { color: var(--hf-accent); }
+    .platform-arxiv .section-label { color: var(--ar-accent); }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.3;
+    }
+
+    .section-h1 {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      line-height: 1.3;
+      margin-bottom: 32px;
+    }
+    .platform-github .section-h1 { color: var(--gh-dark); }
+    .platform-huggingface .section-h1 { color: var(--hf-accent); }
+    .platform-arxiv .section-h1 { color: var(--ar-accent); }
+
+    .section-h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.5vw, 22px);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--text-primary);
+      margin-top: 48px;
+      margin-bottom: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .lead-text {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 2.0;
+      margin-bottom: 28px;
+    }
+
+    .body-text {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 2.0;
+      margin-bottom: 20px;
+    }
+
+    .body-text strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Quote / callout */
+    .callout {
+      position: relative;
+      padding: 20px 24px;
+      margin: 32px 0;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      border-left: 2px solid currentColor;
+    }
+    .platform-github .callout { border-left-color: var(--gh-dark); }
+    .platform-huggingface .callout { border-left-color: var(--hf-dark); }
+    .platform-arxiv .callout { border-left-color: var(--ar-dark); }
+    .callout::before {
+      content: attr(data-label);
+      display: block;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: inherit;
+      opacity: 0.6;
+      margin-bottom: 8px;
+    }
+    .platform-github .callout { color: var(--gh-accent); }
+    .platform-huggingface .callout { color: var(--hf-accent); }
+    .platform-arxiv .callout { color: var(--ar-accent); }
+
+    /* Big stat number */
+    .big-stat {
+      display: flex;
+      flex-direction: column;
+      margin: 36px 0;
+      gap: 4px;
+    }
+    .big-stat .number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(40px, 7vw, 64px);
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .platform-huggingface .big-stat .number { color: var(--hf-dark); }
+    .big-stat .label {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* List styled as editorial items */
+    .item-list {
+      list-style: none;
+      margin: 24px 0 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .item-list li {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      padding-left: 20px;
+      position: relative;
+    }
+    .item-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .platform-github .item-list li::before { background: var(--gh-dark); }
+    .platform-huggingface .item-list li::before { background: var(--hf-dark); }
+    .platform-arxiv .item-list li::before { background: var(--ar-dark); }
+    .item-list li strong { color: var(--text-primary); font-weight: 500; }
+
+    /* Concept grid */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 28px 0 36px;
+    }
+    .concept-item {
+      padding: 18px 16px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: var(--bg-page);
+    }
+    .concept-item .term {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .platform-github .concept-item .term { color: var(--gh-dark); }
+    .platform-huggingface .concept-item .term { color: var(--hf-accent); }
+    .platform-arxiv .concept-item .term { color: var(--ar-accent); }
+    .concept-item .def {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Note box */
+    .note-box {
+      background: var(--bg-page);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin: 28px 0;
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .note-box strong { color: var(--text-primary); }
+
+    /* Summary row */
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 40px 0 0;
+      padding-top: 40px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .summary-item {
+      text-align: center;
+    }
+    .summary-item .name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .summary-item .desc {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 48px 24px 64px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    footer .credit {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .summary-row { grid-template-columns: 1fr; gap: 24px; }
+      .concept-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <h1 class="hero-title">三个平台搞定 AI 学习资源</h1>
+    <p class="hero-sub">GitHub · Hugging Face · arXiv</p>
+    <div class="hero-divider"></div>
+  </header>
+
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <div class="tab active" data-platform="github" onclick="switchTab('github')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.552 3.3-1.23 3.3-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        <span>GitHub</span>
+      </div>
+      <div class="tab" data-platform="huggingface" onclick="switchTab('huggingface')">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M37.1 20.2c0-4.5-1.4-8.4-3.6-11.2C31.1 5.1 27.3 3.2 22.7 3.2c-3.5 0-6.6 1.2-8.9 3.2C11.4 4.4 8.3 3.2 4.9 3.2 2.3 3.2.2 4.3 0 6.5v4.3h7.8c.2 0 .4.1.4.3v2.1c0 .4-.3.7-.7.7H4.6c-.3 0-.5.2-.5.5v13.6c0 .3.2.5.5.5h2.9c.3 0 .5-.2.5-.5v-6.3h4.3v6.3c0 .3.2.5.5.5h3c.3 0 .5-.2.5-.5V16.7c0-.1.1-.3.3-.3H37V10c0-.9 0-1.7-.1-2.5-.4-2.8-2.7-5-5.9-5" fill="#FF9D00"/></svg>
+        <span>Hugging Face</span>
+      </div>
+      <div class="tab" data-platform="arxiv" onclick="switchTab('arxiv')">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="4" fill="#2255CC"/><path d="M6 7h12M6 12h12M6 17h8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>arXiv</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GITHUB -->
+  <div class="platform-content active" id="github">
+    <div class="platform-github">
+      <div class="platform-inner">
+
+        <p class="section-label">Part 01</p>
+        <h1 class="section-h1">GitHub —— 全球最大的免费宝库</h1>
+
+        <p class="lead-text">很多人第一次听到 GitHub，脑子里浮现的是"程序员专属"、"代码黑屏"、"全是英文"。其实都不是。GitHub 的本质，是一个全球最大的免费资源图书馆。</p>
+
+        <div class="callout" data-label="一句话理解">
+          在 GitHub 上找资源，就像在图书馆里找书。只不过这图书馆没有围墙，全世界的开发者都在这里免费分享自己的成果。
+        </div>
+
+        <h2 class="section-h2">普通人能在上面干什么？</h2>
+        <ul class="item-list">
+          <li><strong>找现成的免费工具。</strong>AI 换脸、PDF 翻译、视频去马赛克，这些在 GitHub 上不仅有，而且安全、无广告、免费。</li>
+          <li><strong>找学习资料。</strong>各种编程书、面试指南、学习路线图，仓库里藏着你想象不到的资源。</li>
+          <li><strong>提升办公效率。</strong>自动化脚本、PPT 模板生成器、批量处理工具，这些都能让你从重复劳动中解脱出来。</li>
+        </ul>
+
+        <h2 class="section-h2">核心概念</h2>
+        <p class="body-text">当你看 GitHub 页面不会再懵了。以下六个概念，帮你快速理解它的运作方式：</p>
+
+        <div class="concept-grid">
+          <div class="concept-item">
+            <div class="term">仓库 / Repository</div>
+            <div class="def">项目存放的地方，一个在线文件夹</div>
+          </div>
+          <div class="concept-item">
+            <div class="term">Star</div>
+            <div class="def">点赞/收藏，Star 越多项目越受欢迎</div>
+          </div>
+          <div class="concept-item">
+            <div class="term">Fork</div>
+            <div class="def">复制一份副本到自己的账号下</div>
+          </div>
+          <div class="concept-item">
+            <div class="term">分支 / Branch</div>
+            <div class="def">平行时空，改坏了也不影响原版</div>
+          </div>
+          <div class="concept-item">
+            <div class="term">PR / Pull Request</div>
+            <div class="def">给社区投稿，申请合并你的改动</div>
+          </div>
+          <div class="concept-item">
+            <div class="term">Issue</div>
+            <div class="def">提问题、报 bug、看看别人踩过的坑</div>
+          </div>
+        </div>
+
+        <h2 class="section-h2">看页面关注哪些区域</h2>
+        <ul class="item-list">
+          <li><strong>README 文件</strong>——项目的说明书，告诉你工具是干什么的、怎么安装使用。作者写得越多越仔细，往往项目质量也越高。</li>
+          <li><strong>Releases 区域</strong>——下载打包好的安装包。Windows 找 .exe，Mac 找 .dmg 或 .zip，下载安装就能用。</li>
+          <li><strong>Issue 页面</strong>——遇到问题先来这里搜，大部分情况下前人都遇到过，通常有解决方案。</li>
+          <li><strong>搜索框</strong>——不止搜关键词，支持过滤规则，比如输入 <code>stars:&gt;1000</code> 筛选高质量项目，加上 <code>pushed:&gt;2024-01-01</code> 确保项目还在维护。</li>
+        </ul>
+
+        <div class="note-box">
+          <strong>小建议：</strong>下载了觉得好用的工具，记得随手点一个 Star，这是对创作者最直接的支持。
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- HUGGING FACE -->
+  <div class="platform-content" id="huggingface">
+    <div class="platform-huggingface">
+      <div class="platform-inner">
+
+        <p class="section-label">Part 02</p>
+        <h1 class="section-h1">Hugging Face —— AI 界的开源大本营</h1>
+
+        <p class="lead-text">如果把 AI 模型想象成一道菜，那 Hugging Face 就是全球最大的菜市场、加最全的厨具店、再加一个厨艺交流社区，三合一的超级平台。</p>
+
+        <div class="big-stat">
+          <span class="number">1300 万 +</span>
+          <span class="label">注册用户</span>
+        </div>
+        <div class="big-stat">
+          <span class="number">200 万 +</span>
+          <span class="label">AI 模型</span>
+        </div>
+        <div class="big-stat">
+          <span class="number">50 万 +</span>
+          <span class="label">数据集</span>
+        </div>
+
+        <h2 class="section-h2">核心工具</h2>
+        <ul class="item-list">
+          <li><strong>Transformers 库</strong>——AI 瑞士军刀，把复杂的模型调用简化成几行代码。Pipeline 功能简单到什么程度？只要会写一行 Python，就能调用顶级 AI 模型做翻译、写文章、分析情感。</li>
+          <li><strong>Diffusers 库</strong>——专门用于图片和音视频生成。</li>
+          <li><strong>Datasets 库</strong>——提供海量现成的训练数据。</li>
+        </ul>
+
+        <div class="callout" data-label="省钱技巧">
+          担心 AI 模型太大、电脑跑不动？PEFT 可以用极小的代价训练出专属模型，量化技术可以把大模型压缩到普通显卡能运行的程度。
+        </div>
+
+        <div class="note-box">
+          无论你是开发者，还是单纯对 AI 感兴趣，Hugging Face 都是一个值得深入探索的地方。语言模型、图像生成模型、科学研究模型，这里基本都能找到，而且大部分资源开源免费。
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ARXIV -->
+  <div class="platform-content" id="arxiv">
+    <div class="platform-arxiv">
+      <div class="platform-inner">
+
+        <p class="section-label">Part 03</p>
+        <h1 class="section-h1">arXiv —— 科研论文的免费高速通道</h1>
+
+        <p class="lead-text">arXiv 念 Archive，是全球最大的论文预印本库，涵盖物理、数学、计算机等众多领域。所谓预印本，就是论文在正式投稿期刊之前，先在这里免费发布出来，让全世界的人都能看到。</p>
+
+        <div class="callout" data-label="核心特点">
+          一个字：快。期刊审稿可能要等上一年，但在 arXiv，当天下午提交，顺利的话晚上就能上线。
+        </div>
+
+        <h2 class="section-h2">为什么科研工作者离不开它</h2>
+        <ul class="item-list">
+          <li><strong>抢占先机</strong>——科研竞争激烈，同样的发现，先发布的人说了算。arXiv 让速度不再受制于期刊审稿周期。</li>
+          <li><strong>唯一 ID</strong>——每篇论文都有一个唯一的 ID，比如 <code>2403.12345</code>，无论在世界哪个角落都能找到，引用格式统一。</li>
+          <li><strong>海量覆盖</strong>——物理、数学、计算机、经济学、生物学……几乎所有理工科领域的前沿论文都能找到。</li>
+        </ul>
+
+        <h2 class="section-h2">新手要注意的两件事</h2>
+        <ul class="item-list">
+          <li><strong>背书制度</strong>——发文可能需要找到一个已经在 arXiv 发过文的人为你背书，证明你不是来乱发内容的。</li>
+          <li><strong>LaTeX 格式</strong>——提交时尽量使用 LaTeX 格式，文件名不要带空格，否则可能出现排版错误。</li>
+        </ul>
+
+        <h2 class="section-h2">提升效率的技巧</h2>
+        <div class="callout" data-label="效率技巧">
+          订阅 RSS 或邮件通知，每天早上你研究领域最新的论文就会自动推送到你面前，不用每次手动去搜。
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-row">
+          <div class="summary-item">
+            <div class="name">GitHub</div>
+            <div class="desc">资源宝库 · 找工具找资料</div>
+          </div>
+          <div class="summary-item">
+            <div class="name">Hugging Face</div>
+            <div class="desc">AI 工具大本营 · 模型与数据集</div>
+          </div>
+          <div class="summary-item">
+            <div class="name">arXiv</div>
+            <div class="desc">科研论文高速通道</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>三个平台搞定 AI 学习资源</p>
+    <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+  </footer>
+
+  <script>
+    function switchTab(platform) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.platform-content').forEach(p => p.classList.remove('active'));
+
+      document.querySelector(`.tab[data-platform="${platform}"]`).classList.add('active');
+      const content = document.getElementById(platform);
+      content.classList.add('active');
+
+      // Re-trigger animation
+      content.style.animation = 'none';
+      content.offsetHeight; // reflow
+      content.style.animation = 'fadeSlideIn 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+    }
+  </script>
+</body>
+</html>
