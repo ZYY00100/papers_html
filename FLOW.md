@@ -2,25 +2,27 @@
 
 ## 仓库结构
 
-| 目录 | 作用 |
+| 文件 | 作用 |
 |------|------|
-| `/papers/` | 源文件区（md 草稿、docx 生成脚本） |
-| `/papers/papers_html/` | **部署区** — 独立 git 仓库，推送到 GitHub Pages |
+| `*.html` | 部署的网页 |
+| `index.html` | 文章列表首页 |
+| `*.md` | md 源稿（备份/草稿） |
+| `create-docx.js` | docx 生成脚本 |
+| `FLOW.md` | 本流程文档 |
 
 ```
-papers/
-├── 2026-05-22-claude使用指南-完整版.md   # md 源稿
-├── agent-view-intro.md                     # md 源稿
-├── create-docx.js                          # docx 生成脚本
-└── papers_html/                            # 部署目录（独立 git 仓库）
-    ├── index.html                          # 文章列表首页
-    ├── 2026-05-22-claude-guide.html        # 已部署的 HTML
-    ├── 2026-05-22-ai-platforms-guide.html
-    ├── agent-view-intro.html
-    └── ...
+papers_html/                    ← 唯一 git 仓库
+├── index.html                  ← 文章列表首页
+├── 2026-05-22-claude-guide.html
+├── 2026-05-22-ai-platforms-guide.html
+├── agent-view-intro.html
+├── agent-view-intro.md         ← md 源稿
+├── 2026-05-22-claude使用指南-完整版.md
+├── create-docx.js
+└── FLOW.md
 ```
 
-**部署原理**：`papers_html/` 是独立 git 仓库，remote 为 `https://github.com/ZYY00100/papers_html.git`，推送到 main 分支后 GitHub Pages 自动部署。
+**部署原理**：推送到 `https://github.com/ZYY00100/papers_html.git` 的 main 分支后，GitHub Pages 自动部署。
 
 ---
 
