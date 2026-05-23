@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>9个Claude Cowork提示模板，让我在47分钟的实时监督下完成8小时的工作量</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #f7f7f9;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --border-subtle: #d2d2d7;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ARTICLE HEADER */
+    .article-header {
+      padding: 80px 0 60px;
+      text-align: center;
+    }
+    .article-title {
+      font-family: 'Cormorant', 'Noto Serif SC', serif;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.4;
+      margin-bottom: 24px;
+      letter-spacing: 0.02em;
+    }
+    .article-meta {
+      font-family: 'Cormorant', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .article-meta span {
+      margin: 0 8px;
+      color: var(--border-subtle);
+    }
+    .header-divider {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, transparent, var(--accent-gold-dim), transparent);
+      margin: 40px auto;
+    }
+
+    /* ARTICLE BODY */
+    .article-body {
+      max-width: 720px;
+      margin: 0 auto 60px;
+      padding: 60px 0;
+    }
+
+    .lead {
+      font-size: 18px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .lead strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    h2 {
+      font-family: 'Cormorant', 'Noto Serif SC', serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin: 56px 0 24px;
+      letter-spacing: 0.02em;
+    }
+
+    h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin: 40px 0 16px;
+    }
+
+    p {
+      margin-bottom: 20px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+    }
+
+    .stat-highlight {
+      display: inline-block;
+      font-family: 'Cormorant', serif;
+      font-size: 48px;
+      font-weight: 300;
+      color: var(--accent-gold);
+      letter-spacing: 0.02em;
+      margin: 0 4px;
+    }
+
+    .article-image {
+      width: 100%;
+      border-radius: 12px;
+      margin: 32px 0;
+      box-shadow: var(--shadow-card);
+    }
+
+    blockquote {
+      border-left: 3px solid var(--accent-gold);
+      padding: 16px 24px;
+      margin: 32px 0;
+      background: var(--bg-code);
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    /* SECTION DIVIDER */
+    .section-intro {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+      border-radius: 16px;
+      padding: 32px 36px;
+      margin: 40px 0;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .section-intro p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    /* PROMPT CARD */
+    .prompt-card {
+      background: var(--bg-code);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin: 32px 0;
+      overflow: hidden;
+    }
+
+    .prompt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .prompt-header:hover {
+      background: rgba(0,0,0,0.02);
+    }
+
+    .prompt-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .prompt-title .template-num {
+      font-family: 'Cormorant', serif;
+      font-size: 12px;
+      color: var(--accent-gold);
+      letter-spacing: 0.1em;
+    }
+
+    .prompt-toggle {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: transform 0.3s;
+    }
+
+    .prompt-card.open .prompt-toggle {
+      transform: rotate(180deg);
+    }
+
+    .prompt-body {
+      display: none;
+      padding: 0 24px 24px;
+    }
+
+    .prompt-card.open .prompt-body {
+      display: block;
+    }
+
+    .prompt-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .stat {
+      font-family: 'Cormorant', serif;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .stat strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .stat-arrow {
+      color: var(--accent-gold);
+    }
+
+    .prompt-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .prompt-tab {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--bg-card);
+    }
+
+    .prompt-tab.active {
+      background: var(--text-primary);
+      color: var(--bg-card);
+      border-color: var(--text-primary);
+    }
+
+    .prompt-content {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .prompt-content.active {
+      display: block;
+    }
+
+    .prompt-content pre {
+      font-family: 'Inter', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--text-primary);
+      color: var(--bg-card);
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      text-transform: uppercase;
+    }
+
+    .copy-btn:hover {
+      opacity: 0.8;
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-gold);
+    }
+
+    .prompt-note {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(201,169,98,0.08);
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-gold);
+    }
+
+    /* TEMPLATE LIST */
+    .template-list {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0;
+    }
+
+    .template-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 14px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .template-list li:last-child {
+      border-bottom: none;
+    }
+
+    .template-list .num {
+      font-family: 'Cormorant', serif;
+      font-size: 12px;
+      color: var(--accent-gold);
+      min-width: 24px;
+    }
+
+    /* CONCLUSION */
+    .conclusion-box {
+      background: linear-gradient(135deg, var(--text-primary) 0%, #2d2d2f 100%);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 48px 0 0;
+      color: var(--bg-card);
+    }
+
+    .conclusion-box h2 {
+      color: var(--bg-card);
+      margin-top: 0;
+    }
+
+    .conclusion-box p {
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+    }
+
+    .conclusion-box .stat-highlight {
+      color: var(--accent-gold);
+    }
+
+    .three-principles {
+      margin-top: 32px;
+    }
+
+    .principle {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+
+    .principle h4 {
+      font-family: 'Cormorant', serif;
+      font-size: 14px;
+      color: var(--accent-gold);
+      margin-bottom: 8px;
+      letter-spacing: 0.1em;
+    }
+
+    .principle p {
+      font-size: 14px;
+      color: #1d1d1f;
+      margin: 0;
+      line-height: 1.8;
+    }
+
+    .principle p + p {
+      margin-top: 10px;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    footer p {
+      font-family: 'Cormorant', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    footer .credit {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .article-body { padding: 40px 24px; }
+      .article-title { font-size: 26px; }
+      .stat-highlight { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="article-header">
+      <h1 class="article-title">9个Claude Cowork提示模板，让我在47分钟的实时监督下完成8小时的工作量</h1>
+      <p class="article-meta">@Mnilax <span>·</span> 2026/05/20</p>
+      <div class="header-divider"></div>
+    </header>
+
+    <article class="article-body">
+      <p class="lead">
+        <strong>47分钟</strong>——这是我双手放在键盘上、完成原本需要一整天工作的中位数时间。
+        实际任务时间依然是8小时。只是它们发生在后台，由9个Cowork提示模板代劳，只在需要我决策时才会响起提示音。
+      </p>
+
+      <img src="https://pbs.twimg.com/media/HIsMDnKW8AAe2Za?format=jpg&name=large" alt="Claude Cowork" class="article-image">
+
+      <p>每个模板8到40行不等，针对我每天或每周必做的一项具体任务。每个都经过30天并行运行对比，有实测的前后时间数据。</p>
+
+      <p>9个模板合计，每周节省：<strong class="stat-highlight">34小时</strong>。</p>
+
+      <p>这不是预测，而是4月（没用这些模板）和5月（用了）的实际工时记录差值。</p>
+
+      <p>以下是全部9个模板原文。可以直接复制使用，也可以根据方括号内的输入项修改以适配自己的工作流。模板有效的三个特性在最后部分说明。</p>
+
+      <p>关键不在于Cowork有多聪明，而在于提示写得够不够精准。</p>
+
+      <img src="https://pbs.twimg.com/media/HIsMYqYXIAAipWk?format=png&name=large" alt="9个模板概览" class="article-image">
+
+      <div class="section-intro">
+        <p>从4月9日Cowork正式发布起，我开始使用它。到5月时，已安装全部11个官方插件、连接12个实际需要的接口，自己写了9个斜杠命令。接口和插件的作用比人们以为的要小。斜杠命令的作用比人们以为的要大。</p>
+        <br>
+        <p>Cowork里的斜杠命令，本质上是一个带结构化输入的保存提示。输入 <strong>/morning-brief</strong>，Cowork弹出一个小型表单，填写字段，然后走开，提示完成剩余工作。</p>
+        <br>
+        <p>大多数公开的Cowork内容都在讨论该装哪个插件。这是关注错了层次。插件是厨房，斜杠命令是菜谱。你可以买下市面上所有厨房，没有菜谱依然做不出饭。</p>
+        <br>
+        <p>这9个是我从大约三十个模板里筛选出来的，淘汰了二十一个。留下来的9个有三个共同特性，最后会说明。被淘汰的二十一个有两个失败模式，也会说明。</p>
+        <br>
+        <p>每个环节的数字：左侧是手动版本的中位数时间，右侧是Cowork版本的中位数时间。数据来自5月的30天并行对比。</p>
+      </div>
+
+      <h2>一 · 每日智能简报：47分钟 → 4分钟</h2>
+
+      <p>每天早上7:30自动运行。抓取隔夜Gmail、Slack私信、日历当日安排、Polymarket持仓以及我追踪的3个新闻源。输出一页，包含三个部分：10点前需要处理的、可以等的、噪音。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 01</span>
+            每日智能简报 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>47分钟</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>4分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/morning-brief
+
+ROLE: my chief of staff. you read everything overnight and prepare a one-page briefing.
+
+PULL:
+- gmail: last 12 hours, inbox + sent (to see what i committed to)
+- slack: DMs + @-mentions, last 12 hours, channels = [list]
+- calendar: today + tomorrow morning, with attendee context
+- polymarket: open positions, current P&L vs entry
+- news: [3 RSS sources], last 12 hours, only items mentioning [keywords]
+
+OUTPUT (markdown, one page max):
+## Needs response before 10am
+[bullets: sender + 1-line summary + suggested action]
+
+## Can wait
+[bullets, max 5]
+
+## Noise — flagged so i know you saw it
+[1 line per item, no detail]
+
+TERMINATION: stop when all five sources are processed and the page is under 400 words. Do not summarize the summary.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/morning-brief
+
+角色：我的首席幕僚。阅读隔夜所有信息，准备一页简报。
+
+抓取：
+- gmail：最近12小时，收件箱 + 已发送（看我对谁做过承诺）
+- slack：私信 + @提及，最近12小时，频道 = [列表]
+- 日历：今天 + 明天上午，含参会者背景
+- polymarket：持仓，当前盈亏 vs 入场价
+- 新闻：[3个RSS源]，最近12小时，只保留涉及 [关键词] 的条目
+
+输出（markdown，最多一页）：
+## 10点前需要回复
+[要点：发送者 + 一句话摘要 + 建议行动]
+
+## 可以等待
+[要点，最多5条]
+
+## 噪音 — 已标出，以便我知道你看到了
+[每条1行，无详情]
+
+终止条件：5个数据源全部处理完毕且页面在400词以内时停止。不要写摘要的摘要。</pre>
+          </div>
+          <div class="prompt-note">TERMINATION行在这里起了实质性作用。没有它，同样的提示会扩展成1400词的文档，充满了"高管洞察"和"关键要点"模块。加上它，输出就是一页可打印的版本。"不要写摘要的摘要"这一条在不损失质量的前提下将输出长度削减了60%。</div>
+        </div>
+      </div>
+
+      <h2>二 · 竞品全景扫描：3小时 → 18分钟</h2>
+
+      <p>按需运行。抓取产品页、定价页、近期博客、X动态、招聘帖以及最多8个竞品的近期融资信息。与我自己的定位文档交叉对比，标记过去60天内向我定位靠拢的竞品、近期新招人员或融资轮次。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 02</span>
+            竞品全景扫描 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>3小时</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>18分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/competitor-scan
+
+INPUTS:
+- competitors: [comma-separated list, up to 8]
+- my_positioning_doc: [Drive path]
+- focus: [pricing | product | hiring | go-to-market | full]
+
+WORKFLOW:
+1. For each competitor, fetch: homepage, pricing page, last 5 blog posts, last 30 days of X posts from main handle, open job listings.
+2. Compare positioning against my_positioning_doc.
+3. Flag any competitor that has moved closer to my positioning in the last 60 days.
+4. Flag any new hire or funding round (last 90 days).
+
+OUTPUT (markdown):
+## TL;DR (3 lines max)
+## Per competitor
+- pricing delta vs me
+- positioning delta vs me (last 60 days)
+- hiring signal
+- funding signal
+- one paragraph: what they would do that i would not see coming
+
+TERMINATION: stop when each competitor section has all 5 fields filled. Do not write an industry overview. Do not predict the future.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/competitor-scan
+
+输入：
+- competitors：[逗号分隔列表，最多8个]
+- my_positioning_doc：[Drive路径]
+- focus：[pricing | product | hiring | go-to-market | full]
+
+工作流：
+1. 对每个竞品，抓取：首页、定价页、近5篇博客、近30天X主账号动态、开放职位列表
+2. 与my_positioning_doc对比定位
+3. 标记过去60天内向我定位靠拢的竞品
+4. 标记近90天内的新人员工或融资轮次
+
+输出（markdown）：
+## 一句话总结（最多3行）
+## 各竞品
+- 与我的定价差异
+- 与我的定位差异（过去60天）
+- 招聘信号
+- 融资信号
+- 一段话：他们会做什么是我看不到的
+
+终止条件：每个竞品板块5个字段全部填满时停止。不要写行业概览。不要预测未来。</pre>
+          </div>
+          <div class="prompt-note">"不要预测未来"这一条每次运行节省了40分钟。Cowork的默认行为是在每份报告底部添加"战略展望"部分。而战略展望永远是把同样三个观察换个说法翻来覆去。删掉它，什么都不会损失。</div>
+        </div>
+      </div>
+
+      <h2>三 · 邮件分拣与草稿回复：90分钟 → 11分钟</h2>
+
+      <p>每天运行三次：9点、下午1点、5点。按等待者顺序和等待时长排列邮件，为每封需要回复的起草回复，放在Gmail里加标签标注，以便我一次性审核并发送。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 03</span>
+            邮件分拣与草稿回复 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>90分钟</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>11分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/triage
+
+INPUTS:
+- since: [last_run | morning | 24h]
+
+WORKFLOW:
+1. Pull all gmail messages since [since], excluding promotions and updates.
+2. For each thread: needs_reply | informational | already_handled.
+3. For needs_reply, draft a response using:
+   - my last 5 sent emails to the same person (matches voice)
+   - if no prior thread, default to 3-sentence acknowledgment + question
+4. Save drafts in gmail with label "claude_draft", do not send.
+5. Group informational by sender, summarize in 1 line each.
+
+OUTPUT:
+## Needs my eyes (drafts ready)
+[list: sender + subject + 1-line on what the draft says]
+
+## Informational (read-only)
+[grouped by sender]
+
+## Already handled / loops
+[1 line each]
+
+TERMINATION: stop when all unread threads are categorized. Do not generate replies for threads you've already drafted.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/triage
+
+输入：
+- since：[上次运行 | 早上 | 24小时]
+
+工作流：
+1. 抓取[since]之后的所有gmail邮件，排除促销和更新类
+2. 对每个邮件串分类：需要回复 | 信息类 | 已有处理
+3. 对需要回复的，使用以下方式起草：
+   - 我发给此人的最近5封邮件（匹配我的语气）
+   - 如无历史邮件，默认写3句确认 + 一个问题
+4. 将草稿保存在gmail，标签"claude_draft"，不发送
+5. 按发送者汇总信息类邮件，每条1行摘要
+
+输出：
+## 需要我过目（草稿已备好）
+[列表：发送者 + 主题 + 草稿内容1句话说明]
+
+## 信息类（仅阅读）
+[按发送者分组]
+
+## 已处理 / 闭环
+[每条1行]
+
+终止条件：所有未读邮件串全部归类后停止。不要为你已经起草过的邮件串生成新的回复。</pre>
+          </div>
+          <div class="prompt-note">"最近5封已发送邮件"语气匹配是草稿能直接发和需要重写的分水岭。没有它，Cowork写出来的是商学院英文；有了它，草稿听起来像我本人，以至于我有时分不清哪些是我改过的。我试过3封和10封，3封在罕见主题上会失去我的语气，10封会过度拟合到旧模式。5封是当前的最佳折中。</div>
+        </div>
+      </div>
+
+      <h2>四 · 会议准备档案：30分钟 → 3分钟</h2>
+
+      <p>在任何外部会议前2小时运行。抓取与参会人的所有历史接触记录、最近5封邮件、共享文档、他们最近的公开动态更新，以及我应该提出的3个悬而未决的问题。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 04</span>
+            会议准备档案 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>30分钟</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>3分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/meeting-prep
+
+INPUTS:
+- meeting: [calendar event ID, or "next external meeting"]
+
+WORKFLOW:
+1. Identify external attendees (anyone outside my org).
+2. For each: last 10 emails (any direction), shared docs, last linkedin update, last 30 days of X posts.
+3. Find the last conversation we had and what was unresolved.
+4. Generate 3 open questions based on what was unresolved.
+
+OUTPUT (one page):
+## Who's in the room
+[per attendee: 2-line context]
+## Last touchpoint
+[when, what we agreed, what's unfinished]
+## 3 open questions
+## What's changed since
+[only things that affect the meeting]
+
+TERMINATION: stop at one page. If you can't fit something on one page, drop it.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/meeting-prep
+
+输入：
+- meeting：[日历事件ID，或"下一次外部会议"]
+
+工作流：
+1. 识别外部参会者（组织外任何人）
+2. 对每人：最近10封邮件（任意方向）、共享文档、最后一条LinkedIn更新、近30天X动态
+3. 找到我们上一次对话以及悬而未决的事项
+4. 基于悬而未决事项生成3个待讨论问题
+
+输出（一页）：
+## 与会人员
+[每人：2句话背景]
+## 上次接触
+[时间、我们约定的内容、未完成事项]
+## 3个待讨论问题
+## 此后变化
+[只列出影响会议的事项]
+
+终止条件：满一页为止。如果有内容放不下一页，删掉它。</pre>
+          </div>
+          <div class="prompt-note">"删掉它。"Cowork想把所有东西都放进去。4页的会议准备是一份礼貌的干扰。一页版才会被读。</div>
+        </div>
+      </div>
+
+      <h2>五 · 周度状态报告：2小时 → 7分钟</h2>
+
+      <p>每周五下午4点运行。抓取Linear已关闭的问题、本周新建或重要编辑的Notion文档、Slack频道摘要以及日历，重建我实际完成的工作，生成团队和客户期待的状态文档。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 05</span>
+            周度状态报告 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>2小时</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>7分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/weekly-status
+
+INPUTS:
+- week: [current | last]
+- audience: [internal | client | board]
+
+WORKFLOW:
+1. Pull all closed Linear issues this week, with PR titles and reviewers.
+2. Pull Notion docs created or significantly edited this week.
+3. Read Slack #status, #shipping, #design channels for the week.
+4. Calendar: count external meetings, internal meetings, deep work blocks.
+
+OUTPUT (markdown, audience-specific length):
+- internal: 1 page
+- client: 1.5 pages, soften failures, surface risks
+- board: 2 pages, with metrics-vs-targets table
+
+Sections:
+## Shipped
+## In flight
+## Blocked / risks
+## Metrics (board version only)
+## Next week's focus
+
+TERMINATION: stop at length for chosen audience. Do not invent metrics not present in source data.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/weekly-status
+
+输入：
+- week：[本周 | 上周]
+- audience：[内部 | 客户 | 董事会]
+
+工作流：
+1. 抓取本周所有已关闭的Linear问题，含PR标题和审核者
+2. 抓取本周新建或重大编辑的Notion文档
+3. 读取Slack #status、#shipping、#design频道本周内容
+4. 日历：统计外部会议、内部会议、深度工作时段
+
+输出（markdown，按受众调整长度）：
+- 内部：1页
+- 客户：1.5页，弱化失败，呈现风险
+- 董事会：2页，含指标对比表
+
+板块：
+## 已交付
+## 进行中
+## 受阻 / 风险
+## 指标（仅董事会版）
+## 下周重点
+
+终止条件：达到选定受众对应的长度后停止。不要编造数据源中不存在的指标。</pre>
+          </div>
+          <div class="prompt-note">"不要编造指标"是整篇文章里最重要的一条规则。当Cowork认为读者期望某个数字时，它会捏造一个。我曾三次发现它在生成没有数据来源的"团队速度"估算。现在它只写"未追踪"然后跳过。</div>
+        </div>
+      </div>
+
+      <h2>六 · 文档审查与问答：90分钟 → 9分钟</h2>
+
+      <p>对任何超过10页的已上传PDF或文档运行。通读全文，基于重要内容生成结构化问答，标出不一致之处，揭示与之前写过的内容相矛盾的地方。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 06</span>
+            文档审查与问答 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>90分钟</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>9分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/doc-review
+
+INPUTS:
+- document: [file path or url]
+- my_context: [Drive path with related notes, optional]
+- depth: [skim | review | deep]
+
+WORKFLOW:
+1. Read the document in full.
+2. Identify: thesis, key claims, supporting evidence, gaps in evidence.
+3. If my_context provided: flag contradictions or alignments with my prior writing.
+4. Generate Q&A: 5 questions a thoughtful reader would ask, with the answer from the document (or "not addressed").
+
+OUTPUT:
+## Thesis (1 line)
+## Key claims (3-5 bullets, each with evidence quality)
+## Inconsistencies / gaps
+## Contradictions or alignments with my prior work (if context provided)
+## Q&A (5 questions)
+## Verdict: read in full | skim | skip
+
+TERMINATION: stop at this structure. Do not summarize the document linearly section by section.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/doc-review
+
+输入：
+- document：[文件路径或URL]
+- my_context：[相关笔记的Drive路径，可选]
+- depth：[略读 | 审查 | 深度]
+
+工作流：
+1. 通读全文
+2. 识别：论点、关键主张、支持证据、证据缺口
+3. 如提供my_context：标记与之前写过的内容的矛盾或一致之处
+4. 生成问答：5个深思熟虑的读者会问的问题，答案来自文档（或"未涉及"）
+
+输出：
+## 论点（1行）
+## 关键主张（3-5个要点，每个注明证据质量）
+## 不一致 / 缺口
+## 与之前写过的内容的矛盾或一致（如提供了context）
+## 问答（5个问题）
+## 判断：全文阅读 | 略读 | 跳过
+
+终止条件：到此结构即停止。不要逐节线性总结文档。</pre>
+          </div>
+          <div class="prompt-note">最后一条终止规则是关键。Cowork对任何文档审查的默认输出都是逐节walkthrough，长度达到原文的30%。没用。结构化问答格式用同样的输入，生成我30秒就能用的东西。</div>
+        </div>
+      </div>
+
+      <h2>七 · Polymarket持仓审计：45分钟 → 3分钟</h2>
+
+      <p>每天运行三次。读取我的开放Polymarket持仓、当前市场价格以及最近12小时涉及任何活跃市场的新闻。标记需要我注意的持仓。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 07</span>
+            Polymarket持仓审计 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>45分钟</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>3分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/poly-audit
+
+INPUTS:
+- wallet: [my polymarket wallet address]
+- alert_threshold: [10% | 20% | 30%]
+
+WORKFLOW:
+1. Pull all open positions, entry price, current price, P&L.
+2. For each: search news (last 12 hours) for related events.
+3. Cross-reference with [my watchlist doc].
+4. Flag any position where:
+   - P&L is more than [threshold] from entry
+   - News mentions the underlying event
+   - Volume on the market increased >50% in the last 6 hours
+
+OUTPUT:
+## Needs my eyes
+[per flagged position: market + reason + suggested action]
+## Holding pattern
+[1 line each]
+## Closed since last audit
+[1 line each, with realized P&L]
+
+TERMINATION: stop after all positions are checked. Do not recommend new positions. Do not predict market direction. Audit only.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/poly-audit
+
+输入：
+- wallet：[我的polymarket钱包地址]
+- alert_threshold：[10% | 20% | 30%]
+
+工作流：
+1. 拉取所有开放持仓、入场价、当前价格、盈亏
+2. 对每个：搜索最近12小时的相关新闻
+3. 与[我的观察列表文档]交叉核对
+4. 标记满足以下任一条件的持仓：
+   - 盈亏超过入场的[阈值]
+   - 新闻提及相关事件
+   - 市场成交量过去6小时增长超过50%
+
+输出：
+## 需要我关注
+[每个被标记的持仓：市场 + 原因 + 建议行动]
+## 持有中
+[每条1行]
+## 上次审计后已平仓
+[每条1行，含已实现盈亏]
+
+终止条件：所有持仓检查完毕后停止。不要推荐新仓位。不要预测市场方向。只做审计。</pre>
+          </div>
+          <div class="prompt-note">写"不要推荐新仓位"是结构性的——这个模板是审计，不是仓位生成器。如果你让它做，Cowork绝对会试着建议新的交易。把交易建议混入审计会让两者都变差。把它们放在不同的斜杠命令里。</div>
+        </div>
+      </div>
+
+      <h2>八 · 深度研究：4小时 → 28分钟</h2>
+
+      <p>对任何需要完整引用来源的研究简报运行。使用子agent并行工作，每个子agent负责一个来源类别，完成后由协调者综合。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 08</span>
+            深度研究 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>4小时</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>28分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/research-deep
+
+INPUTS:
+- topic: [free text]
+- depth: [survey | brief | full]
+- timebox: [30min | 60min | 120min]
+
+WORKFLOW (uses sub-agents):
+Spawn 5 parallel sub-agents:
+- AGENT_A: academic sources (Google Scholar, arXiv, key journals)
+- AGENT_B: news + trade press (last 12 months)
+- AGENT_C: X discourse (top voices on topic, last 90 days)
+- AGENT_D: primary documents (gov filings, company docs, public datasets)
+- AGENT_E: contrarian view — the 3 strongest critics, what they argue
+
+Each sub-agent returns: 5 sources + 3-line summary of what they found.
+
+COORDINATOR then synthesizes:
+## TL;DR (3 lines, written as if to a smart skeptic)
+## Mainstream consensus
+## Contrarian case
+## Open questions where evidence is genuinely thin
+## My recommendation given the evidence
+
+TERMINATION: stop at timebox. One pass per sub-agent. If AGENT_A returns 5 sources at minute 4 of a 60-minute timebox, do not spawn a second pass.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/research-deep
+
+输入：
+- topic：[自由文本]
+- depth：[survey | brief | full]
+- timebox：[30分钟 | 60分钟 | 120分钟]
+
+工作流（使用子agent）：
+并行生成5个子agent：
+- AGENT_A：学术来源（Google Scholar、arXiv、核心期刊）
+- AGENT_B：新闻 + 行业媒体（过去12个月）
+- AGENT_C：X讨论（话题核心声音，过去90天）
+- AGENT_D：一手文档（政府文件、公司文档、公开数据集）
+- AGENT_E：反对观点 — 3个最强烈的批评者及其论点
+
+每个子agent返回：5个来源 + 3行发现摘要
+
+协调者随后综合：
+## 一句话总结（3行，写给聪明的怀疑者）
+## 主流共识
+## 反对观点
+## 证据真正薄弱的地方
+## 基于证据的我的建议
+
+终止条件：达到timebox后停止。每个子agent只运行一轮。如果AGENT_A在60分钟timebox的第4分钟返回了5个来源，不要再启动第二轮。</pre>
+          </div>
+          <div class="prompt-note">子agent是整个系统里节省最多的。4小时到28分钟不是调优的结果，而是5个worker同时做5件事。终止条件让每个worker不会在自己的类别里过度抓取。</div>
+        </div>
+      </div>
+
+      <h2>九 · 内容复用：90分钟 → 12分钟</h2>
+
+      <p>拿一篇完成的 长文，生成平台适配版本：X帖子、LinkedIn帖子、博客摘要、内部Slack分享、 Outreach邮件。</p>
+
+      <div class="prompt-card" onclick="togglePrompt(this)">
+        <div class="prompt-header">
+          <div class="prompt-title">
+            <span class="template-num">TEMPLATE 09</span>
+            内容复用 · 英文原版
+          </div>
+          <div class="prompt-toggle">▼</div>
+        </div>
+        <div class="prompt-body">
+          <div class="prompt-stats">
+            <span class="stat"><strong>90分钟</strong></span>
+            <span class="stat-arrow">→</span>
+            <span class="stat"><strong>12分钟</strong></span>
+          </div>
+          <div class="prompt-tabs">
+            <button class="prompt-tab active" onclick="event.stopPropagation(); showPromptLang(this, 'en')">English</button>
+            <button class="prompt-tab" onclick="event.stopPropagation(); showPromptLang(this, 'cn')">中文</button>
+          </div>
+          <div class="prompt-content active" data-lang="en">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/repurpose
+
+INPUTS:
+- source: [file path or url of long-form piece]
+- channels: [x | linkedin | newsletter | slack | email | all]
+- tone: [my default | formal | casual]
+
+WORKFLOW:
+For each channel selected:
+1. Identify the single strongest claim in the source.
+2. Adapt to channel-specific constraints:
+   - x: thread, 6-10 posts, each <280 chars, hook in post 1
+   - linkedin: 1 post, 300 words, professional voice
+   - newsletter: 2-paragraph excerpt + 1-line CTA back to full piece
+   - slack: 4-line summary + link, written for #share channel
+   - email: 60-word blurb + subject line + CTA
+
+CONSTRAINTS:
+- never use the same opening line across channels
+- never quote more than 15 consecutive words from the source
+- match my voice from [my last 10 posts on the channel, if available]
+
+OUTPUT: one block per channel, ready to copy-paste.
+
+TERMINATION: stop after all selected channels are filled. Do not generate additional "bonus" versions.</pre>
+          </div>
+          <div class="prompt-content" data-lang="cn">
+            <button class="copy-btn" onclick="event.stopPropagation(); copyPrompt(this)">复制</button>
+            <pre>/repurpose
+
+输入：
+- source：[长文的文件路径或URL]
+- channels：[x | linkedin | newsletter | slack | email | all]
+- tone：[我的默认 | 正式 | 随意]
+
+工作流：
+对每个选定的频道：
+1. 识别源文里最有力的一个主张
+2. 按频道约束适配：
+   - x：推文串，6-10条，每条<280字，第一条要有钩子
+   - linkedin：1条帖子，300字，专业语气
+   - newsletter：2段摘要 + 1行CTA引导回全文
+   - slack：4行摘要 + 链接，为#share频道写
+   - email：60字摘要 + 主题行 + CTA
+
+约束：
+- 跨频道不要用相同的开场白
+- 不要连续引用源文超过15个词
+- 匹配我在[该频道最近10篇帖子中的语气，如果有]
+
+输出：每个频道一个区块，可直接复制粘贴。
+
+终止条件：所有选定频道填充完毕后停止。不要生成额外的"额外"版本。</pre>
+          </div>
+          <div class="prompt-note">"跨频道不要用相同的开场白"是被淘汰的二十一条里最常被违反的规则。没有它，5个适配版本全都会以某种版本的"三周前我注意到……"开头。结果读起来像是在你的账号上运行了一个内容工厂。有了它，每个频道都有它应得的独特钩子。</div>
+        </div>
+      </div>
+
+      <img src="https://pbs.twimg.com/media/HIsPu8sWQAAatk0?format=jpg&name=large" alt="9个模板汇总" class="article-image">
+
+      <h2>留下来的9个模板的共同特性</h2>
+
+      <p>我试过的三十个模板表面看起来差不多。留下来的9个有三个共同特性。被淘汰的二十一个至少违反了一条。</p>
+
+      <div class="three-principles">
+        <div class="principle">
+          <h4>特性一：明确的终止条件</h4>
+          <p>每个留下来的模板都以 TERMINATION: 结尾。这条线命名了一个 Cowork 可以通过查看输出来检查的条件：页数、字段数、结构完整性。不是"要全面"或"要完整"，而是一个可检查的条件。</p>
+          <p>没有这个，每个提示都扩展到填满整个 Cowork session。加上它，中位 session 时长从 2 小时 20 分钟降到了 14 分钟。</p>
+        </div>
+        <div class="principle">
+          <h4>特性二：结构化输出形状，而非自由形式综合</h4>
+          <p>每个留下来的模板都将输出指定为带特定内容的命名 section。模型写入这个形状，而不是自己发明形状。</p>
+          <p>被淘汰的模板的输出类似"总结并综合"——是模型用任何它觉得令人印象深刻的内容填充的未定义容器。</p>
+        </div>
+        <div class="principle">
+          <h4>特性三：第一行定义角色</h4>
+          <p>每个留下来的模板都命名一个角色：首席幕僚、仅审计、协调者、复用者。角色限制了模型认为它应该产生的内容。</p>
+          <p>被淘汰的模板没有角色线，输出试图同时成为一切。</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:40px">被淘汰的二十一的两个失败模式</h3>
+
+      <div class="principle">
+        <h4>没有干净的停止</h4>
+        <p>没有 TERMINATION，模型在时间段内不断迭代。输出越来越长，越来越差，而不是越来越好。这占 21 个淘汰中的 14 个。</p>
+      </div>
+
+      <div class="principle">
+        <h4>任务蔓延</h4>
+        <p>没有角色定义，"邮件分拣"提示还会试图预测回复率并推荐新联系人。"审计"提示还会试图推荐新仓位。模型想在每个方向都提供帮助——角色切断了它。这占另外 7 个淘汰。</p>
+      </div>
+
+      <img src="https://pbs.twimg.com/media/HIsQvJ3W8AANd1a?format=jpg&name=large" alt="34小时如何计算" class="article-image">
+
+      <h2>34小时是怎么算出来的</h2>
+
+      <p>附上周节省的计算，如果你想用自己的用法核对。</p>
+
+      <p>每个模板的节省，乘以运行频率：</p>
+
+      <img src="https://pbs.twimg.com/media/HIsQyZQWgAAx90_?format=jpg&name=large" alt="每个模板节省" class="article-image">
+
+      <p>原始周差值是72小时。我报告的实际数字是34小时，因为：</p>
+
+      <ul class="template-list">
+        <li><span class="num">01</span>有些模板有重叠（分拣和会议准备都从Gmail拉取；我不把那个输入成本算两次）</li>
+        <li><span class="num">02</span>我减去每周花在看Cowork输出和调整提示的时间，9个模板合计约35小时</li>
+        <li><span class="num">03</span>我不计入我本来就在做其他事情的时间（子agent研究在我开会时在后台运行，这不是空闲时间，但也不算位移）</li>
+      </ul>
+
+      <p>减去所有这些：每周拉回34小时。原始72是这个系统的理论上限。34是我日志里看到的、实际用于其他工作或不在工作的自由小时。</p>
+
+      <h2>怎么使用这些模板</h2>
+
+      <p>通过插件创建流程将每个模板添加到Cowork作为斜杠命令。如果你从未做过斜杠命令，设置大约需要十分钟。</p>
+
+      <p>方括号内的输入需要在模板生效前指向你的实际数据源。结构假设连接器已经授权：Gmail、Slack、Google Drive、Linear、Notion、Polymarket。如果某个连接器未授权，Cowork会在那一步大声失败，而不是悄悄跳过它。这是你们想要的行为。</p>
+
+      <p>每个模板先跑一周再调整。原始模板是保守的。一周日志后你会看到一到两个地方输出在做一些你不想要的事情，通常是一个你每次都跳过的section，或者一个总是空着的指标。把那些从提示里删掉。不要添加更多。</p>
+
+      <p>34小时/周是调整后的数字。我第一周大约节省了18小时。第三周是34小时。调整比原始提示重要。</p>
+
+    </article>
+
+    <footer>
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </footer>
+  </div>
+
+  <script>
+    function togglePrompt(card) {
+      card.classList.toggle('open');
+    }
+
+    function showPromptLang(btn, lang) {
+      const card = btn.closest('.prompt-card');
+      card.querySelectorAll('.prompt-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      card.querySelectorAll('.prompt-content').forEach(c => c.classList.remove('active'));
+      card.querySelector(`.prompt-content[data-lang="${lang}"]`).classList.add('active');
+    }
+
+    function copyPrompt(btn) {
+      const content = btn.nextElementSibling.textContent;
+      navigator.clipboard.writeText(content).then(() => {
+        btn.textContent = '已复制';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '复制';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
