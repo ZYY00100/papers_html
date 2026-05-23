@@ -6,7 +6,7 @@
   <title>文章列表 · 朱有以</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -66,13 +66,29 @@
       text-align: center;
     }
     .hero-title-zh {
-      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-family: 'Cormorant', 'Rajdhani', 'Noto Serif SC', serif;
       font-size: clamp(38px, 7vw, 68px);
-      font-weight: 400;
-      letter-spacing: 0.08em;
+      font-weight: 300;
+      letter-spacing: 0.15em;
       color: var(--text-primary);
       line-height: 1.2;
       margin-bottom: 6px;
+    }
+    .ai-glow {
+      font-size: 1.5em;
+      color: #C8161D;
+      text-shadow:
+        0 0 10px rgba(200, 22, 29, 0.6),
+        0 0 20px rgba(200, 22, 29, 0.4),
+        0 0 40px rgba(200, 22, 29, 0.2);
+    }
+    .ai-glow {
+      font-size: 1.5em;
+      color: #C8161D;
+      text-shadow:
+        0 0 10px rgba(200, 22, 29, 0.6),
+        0 0 20px rgba(200, 22, 29, 0.4),
+        0 0 40px rgba(200, 22, 29, 0.2);
     }
     .hero-title-en {
       font-family: 'Cormorant Garamond', serif;
@@ -204,7 +220,7 @@
 
   <div class="container">
     <header class="hero">
-      <h1 class="hero-title-zh">为AI发电</h1>
+      <h1 class="hero-title-zh">为<span class="ai-glow">AI</span>发电</h1>
       <p class="hero-title-en">FROM ZERO TO HERO</p>
       <p class="hero-credit">朱有以 <span>·</span> AI 自媒体创作者 <span>·</span> 抖音号 92864142698</p>
       <div class="hero-divider"></div>
