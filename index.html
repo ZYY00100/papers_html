@@ -62,7 +62,7 @@
 
     /* HERO */
     .hero {
-      padding: 100px 0 60px;
+      padding: 80px 0 48px;
       text-align: center;
     }
     .hero-title-zh {
@@ -214,6 +214,110 @@
     @media (max-width: 768px) {
       .article-card { padding: 24px 20px; }
     }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 56px;
+      height: 56px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .floating-nav-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.25);
+    }
+    .floating-nav-toggle svg { width: 24px; height: 24px; }
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 100px;
+      right: 32px;
+      width: 340px;
+      max-height: 70vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+      overflow: hidden;
+    }
+    .floating-nav-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .nav-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-panel-content {
+      padding: 12px 0;
+      overflow-y: auto;
+      max-height: calc(70vh - 52px);
+    }
+    .nav-article {
+      display: block;
+      padding: 12px 20px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-article:hover {
+      background: var(--bg-secondary);
+    }
+    .nav-article-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--accent-gold-dim);
+      margin-bottom: 4px;
+    }
+    .nav-article-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .nav-article-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 90px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -223,10 +327,20 @@
       <h1 class="hero-title-zh">为<span class="ai-glow">AI</span>发电</h1>
       <p class="hero-title-en">FROM ZERO TO HERO</p>
       <p class="hero-credit">朱有以 <span>·</span> AI 自媒体创作者 <span>·</span> 抖音号 92864142698</p>
-      <div class="hero-divider"></div>
     </header>
 
     <div class="article-list">
+      <a href="2026-05-25-ai-20-concepts.html" class="article-card">
+        <p class="article-date">2026/05/25</p>
+        <h2 class="article-title">AI学习路线图：20个核心概念的全景指南</h2>
+        <p class="article-desc">人人都在用AI，几乎没人真正理解它如何运作。这篇手册用20个概念讲清楚AI的工作原理，从神经网络到扩散模型。</p>
+        <div class="article-tags">
+          <span class="tag">AI 入门</span>
+          <span class="tag">概念科普</span>
+          <span class="tag">AI 学习</span>
+        </div>
+      </a>
+
       <a href="2026-05-23-claude-cowork-templates.html" class="article-card">
         <p class="article-date">2026/05/23</p>
         <h2 class="article-title">9个Claude Cowork提示模板，让我在47分钟的实时监督下完成8小时的工作量</h2>
@@ -266,6 +380,60 @@
       <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
     </footer>
   </div>
+
+  <!-- Floating Navigation -->
+  <button class="floating-nav-toggle" id="floatingNavToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="floatingNavPanel">
+    <div class="nav-panel-header">文章列表</div>
+    <div class="nav-panel-content">
+      <a href="2026-05-25-ai-20-concepts.html" class="nav-article">
+        <div class="nav-article-date">2026/05/25</div>
+        <div class="nav-article-title">AI学习路线图：20个核心概念的全景指南</div>
+        <div class="nav-article-desc">人人都在用AI，几乎没人真正理解它如何运作。这篇手册用20个概念讲清楚AI的工作原理。</div>
+      </a>
+      <a href="2026-05-23-claude-cowork-templates.html" class="nav-article">
+        <div class="nav-article-date">2026/05/23</div>
+        <div class="nav-article-title">9个Claude Cowork提示模板</div>
+        <div class="nav-article-desc">47分钟完成8小时工作量的秘密。9个Cowork提示模板完整公开，每周节省34小时。</div>
+      </a>
+      <a href="2026-05-22-claude-guide.html" class="nav-article">
+        <div class="nav-article-date">2026/05/22</div>
+        <div class="nav-article-title">为什么你用了两年 Claude，还是只用了 10%</div>
+        <div class="nav-article-desc">18 个技巧，释放它 100% 的潜力。从 Project 初始化到对抗性思考伙伴。</div>
+      </a>
+      <a href="2026-05-22-ai-platforms-guide.html" class="nav-article">
+        <div class="nav-article-date">2026/05/22</div>
+        <div class="nav-article-title">三个平台搞定 AI 学习资源</div>
+        <div class="nav-article-desc">GitHub、Hugging Face、arXiv。三个平台各自解决什么问题？一篇讲透。</div>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    const floatingToggle = document.getElementById('floatingNavToggle');
+    const floatingPanel = document.getElementById('floatingNavPanel');
+
+    floatingToggle.addEventListener('click', () => {
+      floatingPanel.classList.toggle('open');
+    });
+
+    floatingPanel.querySelectorAll('.nav-article').forEach(link => {
+      link.addEventListener('click', () => {
+        floatingPanel.classList.remove('open');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!floatingToggle.contains(e.target) && !floatingPanel.contains(e.target)) {
+        floatingPanel.classList.remove('open');
+      }
+    });
+  </script>
 
   <script>
     const observer = new IntersectionObserver((entries) => {

@@ -64,6 +64,140 @@
       z-index: 0;
     }
 
+    /* ========== SITE HEADER ========== */
+    .site-header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .ai-glow {
+      color: #C8161D;
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* ========== FLOATING NAV ========== */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 56px;
+      height: 56px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .floating-nav-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.25);
+    }
+    .floating-nav-toggle svg { width: 24px; height: 24px; }
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 100px;
+      right: 32px;
+      width: 300px;
+      max-height: 65vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+      overflow: hidden;
+    }
+    .floating-nav-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .nav-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-panel-content {
+      padding: 12px 0;
+      overflow-y: auto;
+      max-height: calc(65vh - 52px);
+    }
+    .nav-section { margin-bottom: 4px; }
+    .nav-section-label {
+      padding: 6px 20px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+    .nav-item {
+      display: block;
+      padding: 6px 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-item:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    .nav-item .num {
+      color: var(--text-muted);
+      margin-right: 8px;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 90px;
+      }
+    }
+
     /* Subtle noise */
     body::after {
       content: '';
@@ -164,7 +298,7 @@
 
     /* ========== HERO ========== */
     .hero {
-      padding: 120px 0 80px;
+      padding: 80px 0 60px;
       text-align: center;
     }
     .hero-eyebrow {
@@ -214,7 +348,7 @@
     /* ========== PART HEADER ========== */
     .part-header {
       text-align: center;
-      padding: 80px 0 40px;
+      padding: 56px 0 32px;
     }
     .part-num {
       font-family: 'Cormorant Garamond', serif;
@@ -243,7 +377,7 @@
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
       border-radius: 16px;
-      padding: 36px 40px;
+      padding: 28px 32px;
       position: relative;
       box-shadow: var(--shadow-card);
       transition: box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -265,13 +399,7 @@
       transform: translateY(-2px);
       border-color: rgba(201,169,98,0.35);
     }
-    .card::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 24px; bottom: 24px;
-      width: 1px;
-      background: linear-gradient(to bottom, transparent, var(--accent-gold-dim), transparent);
-    }
+    .card::before { display: none; }
 
     .card-h3 {
       display: flex;
@@ -428,7 +556,7 @@
     /* ========== CTA ========== */
     .cta-section {
       text-align: center;
-      padding: 100px 0 80px;
+      padding: 72px 0 60px;
       position: relative;
     }
     .cta-section::before {
@@ -490,7 +618,7 @@
       .nav-toggle { display: block; }
       .hero { padding: 80px 0 60px; }
       .card { padding: 24px 20px; }
-      .card::before { display: none; }
+      .card-h3 { display: none; }
       .card-h3 { flex-direction: column; gap: 6px; }
       .prompt-block { display: none; }
       .prompt-mobile-card { display: block; }
@@ -501,6 +629,13 @@
   </style>
 </head>
 <body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
 
   <button class="nav-toggle" id="navToggle" aria-label="打开导航">☰</button>
 
@@ -530,7 +665,6 @@
       <p class="hero-eyebrow">Claude 使用完全指南</p>
       <h1 class="hero-title">为什么你用了两年<br><em>Claude</em>，还是只用了<em> 10%</em></h1>
       <p class="hero-sub">18 个技巧，释放它 100% 的潜力</p>
-      <div class="hero-divider"></div>
       <p class="hero-lead">Claude 出来两年了。大多数人每天用它，但实际用到的功能连 10% 都不到。<br>不是因为它复杂。是因为没人告诉过你那另外 90% 长什么样。</p>
     </section>
 
@@ -1067,6 +1201,73 @@
     </footer>
 
   </div>
+
+  <!-- Floating Navigation -->
+  <button class="floating-nav-toggle" id="floatingNavToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="floatingNavPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <div class="nav-section">
+        <p class="nav-section-label">PART 1 · 从第一秒就做对</p>
+        <a href="#p1" class="nav-item"><span class="num">01</span>建 Project</a>
+        <a href="#tip2" class="nav-item"><span class="num">02</span>告诉你是谁</a>
+        <a href="#tip3" class="nav-item"><span class="num">03</span>Custom Instructions</a>
+      </div>
+      <div class="nav-section">
+        <p class="nav-section-label">PART 2 · 改变认知</p>
+        <a href="#tip4" class="nav-item"><span class="num">04</span>不是搜索引擎</a>
+        <a href="#tip5" class="nav-item"><span class="num">05</span>先问问题</a>
+      </div>
+      <div class="nav-section">
+        <p class="nav-section-label">PART 3 · 用得更深</p>
+        <a href="#tip6" class="nav-item"><span class="num">06</span>风格克隆</a>
+        <a href="#tip7" class="nav-item"><span class="num">07</span>对抗性思考伙伴</a>
+        <a href="#tip8" class="nav-item"><span class="num">08</span>扩展思考模式</a>
+        <a href="#tip9" class="nav-item"><span class="num">09</span>让 Claude 写 Prompt</a>
+      </div>
+      <div class="nav-section">
+        <p class="nav-section-label">PART 4 · 少花 Token</p>
+        <a href="#tip10" class="nav-item"><span class="num">10</span>精确指定长度</a>
+        <a href="#tip11" class="nav-item"><span class="num">11</span>去掉废话开篇</a>
+        <a href="#tip12" class="nav-item"><span class="num">12</span>不要重复解释</a>
+        <a href="#tip13" class="nav-item"><span class="num">13</span>换话题开新 Chat</a>
+      </div>
+      <div class="nav-section">
+        <p class="nav-section-label">PART 5 · Prompt 模板</p>
+        <a href="#tip14" class="nav-item"><span class="num">14</span>费曼法</a>
+        <a href="#tip15" class="nav-item"><span class="num">15</span>旅行规划</a>
+        <a href="#tip16" class="nav-item"><span class="num">16</span>月度开支分析</a>
+        <a href="#tip17" class="nav-item"><span class="num">17</span>思考伙伴</a>
+        <a href="#tip18" class="nav-item"><span class="num">18</span>压力测试商业想法</a>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    const floatingToggle = document.getElementById('floatingNavToggle');
+    const floatingPanel = document.getElementById('floatingNavPanel');
+
+    floatingToggle.addEventListener('click', () => {
+      floatingPanel.classList.toggle('open');
+    });
+
+    floatingPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        floatingPanel.classList.remove('open');
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!floatingToggle.contains(e.target) && !floatingPanel.contains(e.target)) {
+        floatingPanel.classList.remove('open');
+      }
+    });
+  </script>
 
   <script>
     // Desktop copy

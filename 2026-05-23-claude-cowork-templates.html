@@ -63,7 +63,7 @@
 
     /* ARTICLE HEADER */
     .article-header {
-      padding: 80px 0 60px;
+      padding: 60px 0 40px;
       text-align: center;
     }
     .article-title {
@@ -96,8 +96,8 @@
     /* ARTICLE BODY */
     .article-body {
       max-width: 720px;
-      margin: 0 auto 60px;
-      padding: 60px 0;
+      margin: 0 auto 40px;
+      padding: 40px 0;
     }
 
     .lead {
@@ -186,7 +186,7 @@
       background: var(--bg-code);
       border: 1px solid var(--border-subtle);
       border-radius: 16px;
-      margin: 32px 0;
+      margin: 24px 0;
       overflow: hidden;
     }
 
@@ -380,8 +380,8 @@
     .conclusion-box {
       background: linear-gradient(135deg, var(--text-primary) 0%, #2d2d2f 100%);
       border-radius: 16px;
-      padding: 40px;
-      margin: 48px 0 0;
+      padding: 32px;
+      margin: 36px 0 0;
       color: var(--bg-card);
     }
 
@@ -432,7 +432,7 @@
     /* FOOTER */
     footer {
       text-align: center;
-      padding: 40px 0 60px;
+      padding: 32px 0 48px;
       border-top: 1px solid var(--border-subtle);
     }
     footer p {
@@ -454,15 +454,150 @@
       .article-title { font-size: 26px; }
       .stat-highlight { font-size: 36px; }
     }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-primary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .ai-glow {
+      color: #C8161D;
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 56px;
+      height: 56px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .floating-nav-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.25);
+    }
+    .floating-nav-toggle svg { width: 24px; height: 24px; }
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 100px;
+      right: 32px;
+      width: 300px;
+      max-height: 65vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+      overflow: hidden;
+    }
+    .floating-nav-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .nav-panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-panel-content {
+      padding: 12px 0;
+      overflow-y: auto;
+      max-height: calc(65vh - 52px);
+    }
+    .nav-section { margin-bottom: 4px; }
+    .nav-section-label {
+      padding: 6px 20px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+    .nav-item {
+      display: block;
+      padding: 6px 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-item:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    .nav-item .num { color: var(--text-muted); margin-right: 8px; }
+
+    @media (max-width: 768px) {
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 90px;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
 
   <div class="container">
     <header class="article-header">
       <h1 class="article-title">9个Claude Cowork提示模板，让我在47分钟的实时监督下完成8小时的工作量</h1>
       <p class="article-meta">@Mnilax <span>·</span> 2026/05/20</p>
-      <div class="header-divider"></div>
     </header>
 
     <article class="article-body">
@@ -1282,6 +1417,47 @@ TERMINATION: stop after all selected channels are filled. Do not generate additi
       <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
     </footer>
   </div>
+
+  <!-- Floating Navigation -->
+  <button class="floating-nav-toggle" id="floatingNavToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="floatingNavPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <div class="nav-section">
+        <p class="nav-section-label">模板 · 每日任务</p>
+        <a href="#" class="nav-item" onclick="document.querySelector('h2').scrollIntoView({behavior:'smooth'}); return false;"><span class="num">01</span>每日智能简报</a>
+      </div>
+      <div class="nav-section">
+        <p class="nav-section-label">模板 · 定期任务</p>
+        <a href="#" class="nav-item" onclick="document.querySelector('h2:nth-of-type(2)').scrollIntoView({behavior:'smooth'}); return false;"><span class="num">02</span>竞品全景扫描</a>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    const floatingToggle = document.getElementById('floatingNavToggle');
+    const floatingPanel = document.getElementById('floatingNavPanel');
+    if (floatingToggle && floatingPanel) {
+      floatingToggle.addEventListener('click', () => {
+        floatingPanel.classList.toggle('open');
+      });
+      floatingPanel.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => {
+          floatingPanel.classList.remove('open');
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!floatingToggle.contains(e.target) && !floatingPanel.contains(e.target)) {
+          floatingPanel.classList.remove('open');
+        }
+      });
+    }
+  </script>
 
   <script>
     function togglePrompt(card) {

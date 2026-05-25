@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI学习路线图：20个核心概念的全景指南 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --border-subtle: #d2d2d7;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .ai-glow {
+      color: #C8161D;
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 60px 0 40px;
+      text-align: center;
+    }
+    .article-category {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 20px;
+    }
+    .article-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+    .article-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(14px, 2vw, 18px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      font-style: italic;
+      margin-bottom: 32px;
+    }
+    .article-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* CONCEPT SECTION */
+    .concept-section {
+      padding: 20px 0 60px;
+    }
+    .part-header {
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .part-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 8px;
+    }
+    .part-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(20px, 3.5vw, 26px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .part-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* CONCEPT CARD */
+    .concept-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-card);
+      scroll-margin-top: 100px;
+    }
+    .concept-number {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--accent-gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .concept-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+    .concept-image {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+    .concept-lead {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .concept-points {
+      list-style: none;
+    }
+    .concept-points li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .concept-points li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent-gold-dim);
+    }
+    .concept-note {
+      margin-top: 20px;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* RECAP */
+    .recap-section {
+      padding: 48px 0 40px;
+      margin-top: 32px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .recap-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .recap-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .recap-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .recap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+    .recap-group {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .recap-group-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 16px;
+    }
+    .recap-list {
+      list-style: none;
+    }
+    .recap-list li {
+      font-size: 13px;
+      color: var(--text-secondary);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .recap-list li:last-child {
+      border-bottom: none;
+    }
+    .recap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-right: 8px;
+    }
+    .recap-closing {
+      text-align: center;
+      padding: 32px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+    }
+    .recap-closing p {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 2;
+    }
+    .recap-closing p:first-child {
+      font-size: 18px;
+      color: var(--text-primary);
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      width: 56px;
+      height: 56px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .floating-nav-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 28px rgba(0,0,0,0.25);
+    }
+    .floating-nav-toggle svg {
+      width: 24px;
+      height: 24px;
+    }
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 100px;
+      right: 32px;
+      width: 320px;
+      max-height: 70vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+      overflow: hidden;
+    }
+    .floating-nav-panel.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+    .nav-panel-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-panel-content {
+      padding: 16px 0;
+      overflow-y: auto;
+      max-height: calc(70vh - 60px);
+    }
+    .nav-part-group {
+      margin-bottom: 8px;
+    }
+    .nav-part-label {
+      padding: 8px 24px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+    .nav-item {
+      display: block;
+      padding: 8px 24px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-item:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    .nav-item span {
+      color: var(--text-muted);
+      margin-right: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 60px 0 80px;
+      border-top: 1px solid var(--border-subtle);
+      margin-top: 40px;
+    }
+    footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    footer .credit {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .concept-card { padding: 24px 20px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+        bottom: 90px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <article>
+      <header class="article-hero">
+        <p class="article-category">AI 入门必修课</p>
+        <h1 class="article-title">AI学习路线图：20个核心概念的全景指南</h1>
+        <p class="article-subtitle">No PhD required. No jargon. Just simple explanations and visuals.</p>
+        <p class="article-meta">2026年你必须理解的20个人工智能概念</p>
+      </header>
+
+      <div class="concept-section">
+
+        <!-- PART 1 -->
+        <header class="part-header" id="part1">
+          <p class="part-label">PART 1</p>
+          <h2 class="part-title">人工智能的实际运作方式</h2>
+          <p class="part-subtitle">一切构建的基础</p>
+        </header>
+
+        <!-- 1. Neural Networks -->
+        <section class="concept-card" id="concept-1">
+          <p class="concept-number">01</p>
+          <h3 class="concept-title">Neural Networks · 神经网络</h3>
+          <img src="https://pbs.twimg.com/media/HI58qtEbUAAyrSy?format=jpg&name=large" alt="神经网络示意" class="concept-image">
+          <p class="concept-lead">The brain of every AI model. 每个AI模型的大脑。</p>
+          <ul class="concept-points">
+            <li>神经网络是一条由多层组成的管道</li>
+            <li>数据进入输入层 → 通过隐藏层 → 作为预测结果输出</li>
+            <li>每个连接都有一个"权重"——控制一个神经元对下一个神经元影响程度的小分数</li>
+            <li>训练 = 调整数十亿个权重，直到输出准确</li>
+          </ul>
+          <div class="concept-note">
+            GPT-4 拥有约 1.8 万亿个参数。Claude 3 Opus 拥有数千亿。所有这些都源自同一个基本概念：分层神经元，连接可调。
+          </div>
+        </section>
+
+        <!-- 2. Tokenization -->
+        <section class="concept-card" id="concept-2">
+          <p class="concept-number">02</p>
+          <h3 class="concept-title">Tokenization · 分词化</h3>
+          <img src="https://pbs.twimg.com/media/HI59HOVbkAA2OOE?format=jpg&name=large" alt="分词化示意" class="concept-image">
+          <p class="concept-lead">在AI读取你的文本之前，它会把它拆分成称为标记的部分。</p>
+          <ul class="concept-points">
+            <li>不总是完整的词汇："playing" → "play" + "ing"</li>
+            <li>"ChatGPT" → "Chat" + "G" + "PT"</li>
+            <li>语言很混乱：新词、拼写错误、混合语言，固定词汇量将极其庞大</li>
+            <li>即使模型从未见过某个单词，也能通过将其拆成熟悉的部分来理解</li>
+          </ul>
+          <div class="concept-note">
+            粗略规则：1 token ≈ 0.75 个单词。1000 tokens ≈ 750 个单词。
+          </div>
+        </section>
+
+        <!-- 3. Embeddings -->
+        <section class="concept-card" id="concept-3">
+          <p class="concept-number">03</p>
+          <h3 class="concept-title">Embeddings · 嵌入</h3>
+          <img src="https://pbs.twimg.com/media/HI59_uXa0AAxbxR?format=jpg&name=large" alt="嵌入示意" class="concept-image">
+          <p class="concept-lead">每个 token 变成一个数字——一个代表含义的向量。就像词语的 Google Maps。</p>
+          <ul class="concept-points">
+            <li>"Doctor" 和 "Nurse" 在向量空间中位置接近</li>
+            <li>"Doctor" 和 "Pizza" 在向量空间中位置遥远</li>
+            <li>"King" - "Man" + "Woman" ≈ "Queen"</li>
+            <li>模型不按你理解的方式理解词语——它理解的是距离和方向</li>
+          </ul>
+          <div class="concept-note">
+            这就是语义搜索、推荐系统、RAG 系统背后的核心技术。所有"理解意图"的东西底层都用嵌入。
+          </div>
+        </section>
+
+        <!-- 4. Attention -->
+        <section class="concept-card" id="concept-4">
+          <p class="concept-number">04</p>
+          <h3 class="concept-title">Attention · 注意力机制</h3>
+          <img src="https://pbs.twimg.com/media/HI5-MFQaIAAhdVj?format=jpg&name=large" alt="注意力机制示意" class="concept-image">
+          <p class="concept-lead">"Apple" 在不同语境中含义不同——注意力让模型知道该关注什么。</p>
+          <ul class="concept-points">
+            <li>"I ate an Apple" → 水果</li>
+            <li>"I bought Apple stock" → 公司</li>
+            <li>嵌入本身无法解决这个问题，但注意力可以</li>
+            <li>注意力让每个词查看句子中的所有其他词，决定什么重要</li>
+          </ul>
+          <div class="concept-note">
+            在注意力机制之前，模型从左到右阅读，速度慢且受限。之后，模型同时看到整个句子。这个单独的想法开启了现代 AI。
+          </div>
+        </section>
+
+        <!-- 5. Transformers -->
+        <section class="concept-card" id="concept-5">
+          <p class="concept-number">05</p>
+          <h3 class="concept-title">Transformers · 变换器</h3>
+          <img src="https://pbs.twimg.com/media/HI5-gFjbIAA8m31?format=jpg&name=large" alt="Transformers架构" class="concept-image">
+          <p class="concept-lead">驱动几乎所有 AI 模型的架构。2017年在论文《Attention Is All You Need》中引入。</p>
+          <ul class="concept-points">
+            <li>突破：不用逐字阅读，而是用注意力并行处理所有内容</li>
+            <li>工作流程：文本 → 分词 → 嵌入 → 堆叠注意力层 → 输出</li>
+            <li>每层逐步精炼理解：早期层看语法和基本结构，中期层看词语关系，深层做复杂推理</li>
+            <li>GPT、Claude、Gemini、Llama、Mistral——都是变换器</li>
+          </ul>
+          <div class="concept-note">
+            如果你理解这一个架构，你就理解了现代 AI。
+          </div>
+        </section>
+
+        <!-- PART 2 -->
+        <header class="part-header" id="part2">
+          <p class="part-label">PART 2</p>
+          <h2 class="part-title">LLM 如何工作</h2>
+          <p class="part-subtitle">当你与 AI 对话时，实际发生了什么</p>
+        </header>
+
+        <!-- 6. LLMs -->
+        <section class="concept-card" id="concept-6">
+          <p class="concept-number">06</p>
+          <h3 class="concept-title">LLMs · 大语言模型</h3>
+          <img src="https://pbs.twimg.com/media/HI5_RfabEAAk_-s?format=jpg&name=large" alt="LLM示意" class="concept-image">
+          <p class="concept-lead">LLM 是一个在大量文本上训练过的变换器。书籍、网站、代码、维基百科、Reddit，数万亿个 token。</p>
+          <ul class="concept-points">
+            <li>训练任务听起来简单到不可思议：预测下一个 token</li>
+            <li>但当你在数万亿个例子上重复这个操作，令人惊叹的事情发生了</li>
+            <li>模型学会了语法，然后是推理，然后是写代码、翻译语言、解数学题</li>
+            <li>没有人告诉它要做这些——它从大规模 next-token 预测中涌现出来</li>
+          </ul>
+          <div class="concept-note">
+            "Large" = 数千亿个参数。训练成本 = 数百万美元。ChatGPT、Claude、Gemini 都是 LLM。
+          </div>
+        </section>
+
+        <!-- 7. Context Window -->
+        <section class="concept-card" id="concept-7">
+          <p class="concept-number">07</p>
+          <h3 class="concept-title">Context Window · 上下文窗口</h3>
+          <img src="https://pbs.twimg.com/media/HI5_WSCbgAAkyZK?format=jpg&name=large" alt="上下文窗口示意" class="concept-image">
+          <p class="concept-lead">每个 AI 模型都有记忆极限，叫做上下文窗口——模型一次能"看到"的最大 token 数。</p>
+          <ul class="concept-points">
+            <li>早期 GPT：约 4,000 tokens。GPT-4：128,000 tokens。Claude 3.5：200,000 tokens。Gemini 1.5 Pro：1,000,000 tokens</li>
+            <li>更大的窗口 = 更多的上下文 = 更好的答案</li>
+            <li>但有个问题：模型不会均匀读取所有内容，它们聚焦在开头和结尾</li>
+            <li>中间部分？经常被忽略——这叫做"中间迷失"问题</li>
+          </ul>
+          <div class="concept-note">
+            大上下文窗口 ≠ 完美的记忆。理解这个解释了为什么 AI 有时"忘记"你明明提到过的东西。
+          </div>
+        </section>
+
+        <!-- 8. Temperature -->
+        <section class="concept-card" id="concept-8">
+          <p class="concept-number">08</p>
+          <h3 class="concept-title">Temperature · 温度</h3>
+          <img src="https://pbs.twimg.com/media/HI5__bjbEAAiFI4?format=jpg&name=large" alt="Temperature示意" class="concept-image">
+          <p class="concept-lead">AI 生成文本时有一个叫做温度的旋钮，控制创意的程度。</p>
+          <ul class="concept-points">
+            <li>Temperature = 0：总是选择最安全、最可预测的词</li>
+            <li>Temperature = 1：更有创意地选择，更多样化</li>
+            <li>Temperature = 2+：变得狂野，有时不连贯</li>
+          </ul>
+          <div class="concept-note">
+            低温度 → 适用于代码、事实、摘要。高温度 → 适用于头脑风暴、创意写作、变体生成。理解这个解释了为什么 AI 有时看起来"无聊"，有时又让你惊喜。
+          </div>
+        </section>
+
+        <!-- 9. Hallucination -->
+        <section class="concept-card" id="concept-9">
+          <p class="concept-number">09</p>
+          <h3 class="concept-title">Hallucination · 幻觉</h3>
+          <img src="https://pbs.twimg.com/media/HI6ADWQaIAAw9Lq?format=jpg&name=large" alt="幻觉示意" class="concept-image">
+          <p class="concept-lead">AI 自信地撒谎。不是故意的——它真的无法避免。</p>
+          <ul class="concept-points">
+            <li>LLM 不搜索真理——它预测最可能出现的下一个 token</li>
+            <li>如果一个虚假陈述基于训练模式看起来"应该接下来出现"，它就会生成它</li>
+            <li>没有验证，没有查找，纯模式匹配</li>
+            <li>所以它会：引用一个不存在的论文，发明一个从未创建过的 API 函数，以完全自信的态度陈述一个虚假的历史"事实"</li>
+          </ul>
+          <div class="concept-note">
+            修复方法：永远不要在未验证的情况下相信 AI 输出的事实。使用 RAG（概念 16）让它基于真实数据回答。
+          </div>
+        </section>
+
+        <!-- 10. Prompt Engineering -->
+        <section class="concept-card" id="concept-10">
+          <p class="concept-number">10</p>
+          <h3 class="concept-title">Prompt Engineering · 提示工程</h3>
+          <img src="https://pbs.twimg.com/media/HI6Ao2basAAz7NR?format=jpg&name=large" alt="提示工程示意" class="concept-image">
+          <p class="concept-lead">你提问的方式决定一切。同样的模型，同样的问题，框架不同结果截然不同。</p>
+          <ul class="concept-points">
+            <li>糟糕的提示："解释 API" → 得到模糊、表面化的答案</li>
+            <li>好的提示："解释 REST API 如何处理身份验证，给出一个带代码的真实例子，假设我是初级开发者" → 得到具体、结构化、直接有用的答案</li>
+            <li>真正有效的技巧：给背景、分配角色、展示例子、明确输出格式、把复杂请求分解成步骤</li>
+          </ul>
+          <div class="concept-note">
+            提示工程不是 hack。它是你与模型沟通的主要方式。
+          </div>
+        </section>
+
+        <!-- PART 3 -->
+        <header class="part-header" id="part3">
+          <p class="part-label">PART 3</p>
+          <h2 class="part-title">AI 模型如何改进</h2>
+          <p class="part-subtitle">从原始模型到可用产品</p>
+        </header>
+
+        <!-- 11. Transfer Learning -->
+        <section class="concept-card" id="concept-11">
+          <p class="concept-number">11</p>
+          <h3 class="concept-title">Transfer Learning · 迁移学习</h3>
+          <img src="https://pbs.twimg.com/media/HI6AsOtbUAADs6f?format=jpg&name=large" alt="迁移学习示意" class="concept-image">
+          <p class="concept-lead">从头训练是昂贵的。迁移学习解决了这个问题。</p>
+          <ul class="concept-points">
+            <li>你用一个已经在大型通用任务上训练过的模型，然后为特定任务适配它</li>
+            <li>你不是从零开始——而是在其基础上构建</li>
+            <li>就像：你已经知道如何骑自行车 → 学习摩托车会快得多，因为你已经转移了已有的知识</li>
+            <li>这就是今天几乎所有 AI 产品的运作方式</li>
+          </ul>
+          <div class="concept-note">
+            OpenAI 训练大型基础模型 → 公司为其特定用例微调 → 节省数百万美元的计算成本和数月的训练时间。没有公司再从零开始训练了。
+          </div>
+        </section>
+
+        <!-- 12. Fine-Tuning -->
+        <section class="concept-card" id="concept-12">
+          <p class="concept-number">12</p>
+          <h3 class="concept-title">Fine-Tuning · 微调</h3>
+          <img src="https://pbs.twimg.com/media/HI6BN8BasAAKI92?format=jpg&name=large" alt="微调示意" class="concept-image">
+          <p class="concept-lead">迁移学习告诉你概念，微调告诉你如何做。</p>
+          <ul class="concept-points">
+            <li>你拿一个预训练模型，在一个更小、更专注的数据集上继续训练</li>
+            <li>模型已经会说"语言"了，现在你在教它你的特定领域</li>
+            <li>例子：医学模型在临床笔记上微调，法律模型在合同上微调，编码模型在 GitHub 上微调</li>
+            <li>结果：一个为你的用例完美响应的模型</li>
+          </ul>
+          <div class="concept-note">
+            成本：你需要更新数十亿个参数，需要多 GPU 和强大基础设施。这就是 LoRA（下一个概念）如此重要的原因。
+          </div>
+        </section>
+
+        <!-- 13. RLHF -->
+        <section class="concept-card" id="concept-13">
+          <p class="concept-number">13</p>
+          <h3 class="concept-title">RLHF · 人类反馈强化学习</h3>
+          <img src="https://pbs.twimg.com/media/HI6BRuabsAAoRPd?format=jpg&name=large" alt="RLHF示意" class="concept-image">
+          <p class="concept-lead">微调让模型专业化。RLHF 让它们感觉有用且安全。</p>
+          <ul class="concept-points">
+            <li>没有 RLHF：模型只是预测文本，流畅但不对齐</li>
+            <li>有了 RLHF：模型学习人类实际喜欢什么</li>
+            <li>工作原理：展示提示 → 模型生成多个响应 → 人类对响应排序 → 模型学习偏好什么</li>
+            <li>重复数千次，模型建立"好答案"的感觉：清晰、有帮助、诚实、安全</li>
+          </ul>
+          <div class="concept-note">
+            这就是 ChatGPT 和 Claude 感觉像助手而不是随机文本生成器的原因。没有 RLHF，它们仍然会很出色，但用处小得多，不那么值得信任，也更难控制。
+          </div>
+        </section>
+
+        <!-- 14. LoRA -->
+        <section class="concept-card" id="concept-14">
+          <p class="concept-number">14</p>
+          <h3 class="concept-title">LoRA · 低秩适应</h3>
+          <img src="https://pbs.twimg.com/media/HI6ByXNagAIyuhC?format=jpg&name=large" alt="LoRA示意" class="concept-image">
+          <p class="concept-lead">微调很强大但昂贵。LoRA 解决了这个问题。</p>
+          <ul class="concept-points">
+            <li>不改变整个模型，而是：保持原始模型冻结，在顶部添加微小的可训练层</li>
+            <li>这些层只是完整模型大小的一小部分</li>
+            <li>洞察：大多数微调改变很小，你不需要重写整个模型，只需要小的针对性调整</li>
+            <li>结果：在单张消费级 GPU 上微调成为可能，存储一个基础模型 + 交换不同的 LoRA 适配器变得实用</li>
+          </ul>
+          <div class="concept-note">
+            LoRA 是开源 AI 爆发的原因。突然任何人都可以在笔记本电脑上微调强大的模型。
+          </div>
+        </section>
+
+        <!-- 15. Quantization -->
+        <section class="concept-card" id="concept-15">
+          <p class="concept-number">15</p>
+          <h3 class="concept-title">Quantization · 量化</h3>
+          <img src="https://pbs.twimg.com/media/HI6B1rebkAEEKST?format=jpg&name=large" alt="量化示意" class="concept-image">
+          <p class="concept-lead">模型越来越大，运行它们需要大量内存和计算。量化让它们更小更便宜。</p>
+          <ul class="concept-points">
+            <li>方法：降低每个权重的精度</li>
+            <li>以全精度存储的权重使用 32 位，量化到 4 位 → 小 8 倍</li>
+            <li>疯狂的是：质量下降通常很小</li>
+            <li>这就是为什么你现在可以：在 MacBook 上运行 LLaMA，在消费级 GPU 上本地运行 Mistral，在手机上运行强大模型</li>
+          </ul>
+          <div class="concept-note">
+            没有量化，大型模型将保持在数据中心。有了量化，它们可以在你的机器上运行。
+          </div>
+        </section>
+
+        <!-- PART 4 -->
+        <header class="part-header" id="part4">
+          <p class="part-label">PART 4</p>
+          <h2 class="part-title">真实 AI 系统如何构建</h2>
+          <p class="part-subtitle">你实际使用的产品背后的逻辑</p>
+        </header>
+
+        <!-- 16. RAG -->
+        <section class="concept-card" id="concept-16">
+          <p class="concept-number">16</p>
+          <h3 class="concept-title">RAG · 检索增强生成</h3>
+          <img src="https://pbs.twimg.com/media/HI6CZ48awAA-XOY?format=jpg&name=large" alt="RAG示意" class="concept-image">
+          <p class="concept-lead">LLM 产生幻觉是因为它们从记忆回答。RAG 通过让它们先查找来修复这个问题。</p>
+          <ul class="concept-points">
+            <li>用户提问</li>
+            <li>系统在知识库中搜索相关文档</li>
+            <li>将这些文档作为上下文传递给模型</li>
+            <li>模型使用真实信息回答——不是猜测</li>
+          </ul>
+          <div class="concept-note">
+            闭卷考试（无 RAG）：从记忆回答，经常错误。开卷考试（RAG）：检查来源，准确得多。每个严肃的 AI 产品都使用 RAG：客户支持机器人、法律工具、医学助手、内部知识库。
+          </div>
+        </section>
+
+        <!-- 17. Vector Databases -->
+        <section class="concept-card" id="concept-17">
+          <p class="concept-number">17</p>
+          <h3 class="concept-title">Vector Databases · 向量数据库</h3>
+          <img src="https://pbs.twimg.com/media/HI6CiY6b0AA4V5Q?format=jpg&name=large" alt="向量数据库示意" class="concept-image">
+          <p class="concept-lead">RAG 需要快速找到正确的文档。但如何通过含义而不仅仅是关键词搜索数百万份文档？</p>
+          <ul class="concept-points">
+            <li>每个文档转换为嵌入（数字向量）</li>
+            <li>这些向量存储在数据库中</li>
+            <li>当用户提问时，问题也变成向量</li>
+            <li>数据库找到与问题向量最接近的向量，返回语义最相似的文档</li>
+          </ul>
+          <div class="concept-note">
+            "heart disease treatment" 能找到关于 "cardiac care protocols" 的文档，即使词语不完全匹配。工具：Pinecone、Qdrant、Weaviate、pgvector。向量数据库是 AI 系统"理解"而不仅仅是"匹配字符串"的原因。
+          </div>
+        </section>
+
+        <!-- 18. AI Agents -->
+        <section class="concept-card" id="concept-18">
+          <p class="concept-number">18</p>
+          <h3 class="concept-title">AI Agents · AI 代理</h3>
+          <img src="https://pbs.twimg.com/media/HI6D0wRasAA2LCc?format=jpg&name=large" alt="AI代理示意" class="concept-image">
+          <p class="concept-lead">LLM 回应消息。AI 代理实际做事。</p>
+          <ul class="concept-points">
+            <li>区别：LLM = 你问，它答，结束。Agent = 你给目标，它计划、行动、检查结果、调整、重复</li>
+            <li>代理循环：思考 → 行动 → 观察 → 重复</li>
+            <li>例子：编码代理修复 bug → 阅读问题 → 探索代码库 → 识别问题 → 写修复 → 运行测试 → 看看哪里失败 → 调整修复 → 重复直到完成</li>
+            <li>模型是大脑，工具是手</li>
+          </ul>
+          <div class="concept-note">
+            代理可以使用什么工具？Web 搜索、代码执行、文件系统、API、邮件/日历、数据库。代理是将 AI 从聊天机器人变成同事的原因。
+          </div>
+        </section>
+
+        <!-- 19. Chain of Thought -->
+        <section class="concept-card" id="concept-19">
+          <p class="concept-number">19</p>
+          <h3 class="concept-title">Chain of Thought · 思维链</h3>
+          <img src="https://pbs.twimg.com/media/HI6DwTbaYAAToyy?format=jpg&name=large" alt="思维链示意" class="concept-image">
+          <p class="concept-lead">有时 AI 答错不是因为它笨，而是因为它太快得出答案。</p>
+          <ul class="concept-points">
+            <li>不直接问最终答案："解决：如果火车以 60 mph 行驶 2.5 小时，多远？"</li>
+            <li>让它逐步思考："逐步解决：速度 = 60 mph，时间 = 2.5 小时，距离 = 速度 × 时间 = ？"</li>
+            <li>模型逐步推理：第 1 步：确定公式 → 第 2 步：代入数字 → 第 3 步：计算</li>
+            <li>对于数学、逻辑、多步骤问题可靠得多</li>
+          </ul>
+          <div class="concept-note">
+            洞察：给模型思考的空间，而不仅仅是反应。这就是为什么"逐步思考"或"仔细推理"的提示实际上有效。
+          </div>
+        </section>
+
+        <!-- 20. Diffusion Models -->
+        <section class="concept-card" id="concept-20">
+          <p class="concept-number">20</p>
+          <h3 class="concept-title">Diffusion Models · 扩散模型</h3>
+          <img src="https://pbs.twimg.com/media/HI6D5wDa8AAgUoW?format=jpg&name=large" alt="扩散模型示意" class="concept-image">
+          <p class="concept-lead">到目前为止都是关于文本的。扩散模型解释 AI 如何生成图像。这个过程是反直觉的。</p>
+          <ul class="concept-points">
+            <li>模型不学习画画——它学习销毁图像</li>
+            <li>训练：从真实图像开始，逐步添加噪声直到纯静态，训练模型反转这个过程——逐步去除噪声</li>
+            <li>生成：从纯噪声开始，模型逐步去除噪声，根据你的文本提示引导，图像从随机中浮现</li>
+            <li>这个名字来自物理学——粒子随机扩散通过介质，就像墨水在水中扩散</li>
+          </ul>
+          <div class="concept-note">
+            不再只是图像：视频（Sora、Runway）、音频、3D 内容、药物分子。扩散模型是 AI 生成任何视觉内容的方式。
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RECAP -->
+      <section class="recap-section" id="recap">
+        <div class="recap-header">
+          <h2 class="recap-title">20 个概念，一图速览</h2>
+          <p class="recap-subtitle">That's all 20. Let me recap.</p>
+        </div>
+
+        <div class="recap-grid">
+          <div class="recap-group">
+            <h3 class="recap-group-title">How AI Works · AI 如何运作</h3>
+            <ul class="recap-list">
+              <li><span class="recap-num">01</span> Neural Networks · 神经网络</li>
+              <li><span class="recap-num">02</span> Tokenization · 分词化</li>
+              <li><span class="recap-num">03</span> Embeddings · 嵌入</li>
+              <li><span class="recap-num">04</span> Attention · 注意力机制</li>
+              <li><span class="recap-num">05</span> Transformers · 变换器</li>
+            </ul>
+          </div>
+
+          <div class="recap-group">
+            <h3 class="recap-group-title">How LLMs Work · LLM 如何工作</h3>
+            <ul class="recap-list">
+              <li><span class="recap-num">06</span> LLMs · 大语言模型</li>
+              <li><span class="recap-num">07</span> Context Window · 上下文窗口</li>
+              <li><span class="recap-num">08</span> Temperature · 温度</li>
+              <li><span class="recap-num">09</span> Hallucination · 幻觉</li>
+              <li><span class="recap-num">10</span> Prompt Engineering · 提示工程</li>
+            </ul>
+          </div>
+
+          <div class="recap-group">
+            <h3 class="recap-group-title">How Models Improve · 模型如何改进</h3>
+            <ul class="recap-list">
+              <li><span class="recap-num">11</span> Transfer Learning · 迁移学习</li>
+              <li><span class="recap-num">12</span> Fine-Tuning · 微调</li>
+              <li><span class="recap-num">13</span> RLHF · 人类反馈强化学习</li>
+              <li><span class="recap-num">14</span> LoRA · 低秩适应</li>
+              <li><span class="recap-num">15</span> Quantization · 量化</li>
+            </ul>
+          </div>
+
+          <div class="recap-group">
+            <h3 class="recap-group-title">How Real Systems Are Built · 真实系统如何构建</h3>
+            <ul class="recap-list">
+              <li><span class="recap-num">16</span> RAG · 检索增强生成</li>
+              <li><span class="recap-num">17</span> Vector Databases · 向量数据库</li>
+              <li><span class="recap-num">18</span> AI Agents · AI 代理</li>
+              <li><span class="recap-num">19</span> Chain of Thought · 思维链</li>
+              <li><span class="recap-num">20</span> Diffusion Models · 扩散模型</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="recap-closing">
+          <p>你现在理解了 AI 实际如何运作。</p>
+          <p>大多数每天使用 AI 的人都不理解。</p>
+          <p>这个差距就是你的优势。</p>
+        </div>
+      </section>
+
+    </article>
+
+    <footer>
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </footer>
+  </div>
+
+  <!-- Floating Navigation -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <div class="nav-part-group">
+        <p class="nav-part-label">Part 1 · 如何运作</p>
+        <a href="#concept-1" class="nav-item"><span>01</span>Neural Networks · 神经网络</a>
+        <a href="#concept-2" class="nav-item"><span>02</span>Tokenization · 分词化</a>
+        <a href="#concept-3" class="nav-item"><span>03</span>Embeddings · 嵌入</a>
+        <a href="#concept-4" class="nav-item"><span>04</span>Attention · 注意力机制</a>
+        <a href="#concept-5" class="nav-item"><span>05</span>Transformers · 变换器</a>
+      </div>
+      <div class="nav-part-group">
+        <p class="nav-part-label">Part 2 · LLM 工作原理</p>
+        <a href="#concept-6" class="nav-item"><span>06</span>LLMs · 大语言模型</a>
+        <a href="#concept-7" class="nav-item"><span>07</span>Context Window · 上下文窗口</a>
+        <a href="#concept-8" class="nav-item"><span>08</span>Temperature · 温度</a>
+        <a href="#concept-9" class="nav-item"><span>09</span>Hallucination · 幻觉</a>
+        <a href="#concept-10" class="nav-item"><span>10</span>Prompt Engineering · 提示工程</a>
+      </div>
+      <div class="nav-part-group">
+        <p class="nav-part-label">Part 3 · 模型改进</p>
+        <a href="#concept-11" class="nav-item"><span>11</span>Transfer Learning · 迁移学习</a>
+        <a href="#concept-12" class="nav-item"><span>12</span>Fine-Tuning · 微调</a>
+        <a href="#concept-13" class="nav-item"><span>13</span>RLHF · 人类反馈强化学习</a>
+        <a href="#concept-14" class="nav-item"><span>14</span>LoRA · 低秩适应</a>
+        <a href="#concept-15" class="nav-item"><span>15</span>Quantization · 量化</a>
+      </div>
+      <div class="nav-part-group">
+        <p class="nav-part-label">Part 4 · 真实系统</p>
+        <a href="#concept-16" class="nav-item"><span>16</span>RAG · 检索增强生成</a>
+        <a href="#concept-17" class="nav-item"><span>17</span>Vector Databases · 向量数据库</a>
+        <a href="#concept-18" class="nav-item"><span>18</span>AI Agents · AI 代理</a>
+        <a href="#concept-19" class="nav-item"><span>19</span>Chain of Thought · 思维链</a>
+        <a href="#concept-20" class="nav-item"><span>20</span>Diffusion Models · 扩散模型</a>
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const panel = document.getElementById('navPanel');
+
+    toggle.addEventListener('click', () => {
+      panel.classList.toggle('open');
+    });
+
+    // Close panel when clicking a link
+    panel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        panel.classList.remove('open');
+      });
+    });
+
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!toggle.contains(e.target) && !panel.contains(e.target)) {
+        panel.classList.remove('open');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+
+</body>
+</html>
