@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8个高级 Prompt，让 AI 发挥真正实力 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --border-subtle: #d2d2d7;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .ai-glow {
+      color: #C8161D;
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .article-hero {
+      padding: 80px 0 48px;
+      text-align: center;
+    }
+    .article-category {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 20px;
+    }
+    .article-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+    .article-subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    /* Intro Section */
+    .article-intro {
+      padding: 48px 0 56px;
+      margin-bottom: 56px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(20px, 3vw, 26px);
+      line-height: 1.8;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .intro-lead strong {
+      color: #C8161D;
+      font-weight: 600;
+    }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      text-align: left;
+      max-width: 560px;
+      margin: 0 auto 28px;
+    }
+    .intro-divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-gold-dim), var(--accent-gold));
+      margin: 0 auto 28px;
+      border-radius: 2px;
+    }
+    .intro-cta {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      text-align: left;
+    }
+
+    /* Prompt Section */
+    .prompt-section {
+      margin-bottom: 56px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .prompt-section:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .prompt-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .prompt-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+    .prompt-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .prompt-text {
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+    }
+
+    .prompt-note {
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-style: italic;
+      padding: 14px 20px;
+      background: #f8f8fa;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent-gold);
+      margin-top: 16px;
+      margin-bottom: 20px;
+    }
+
+    .prompt-section-label {
+      font-size: 14px;
+      color: var(--accent-gold-dim);
+      font-weight: 500;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    .prompt-list {
+      list-style: none;
+    }
+    .prompt-list li {
+      font-size: 15px;
+      color: var(--text-secondary);
+      padding: 6px 0;
+      padding-left: 24px;
+      position: relative;
+    }
+    .prompt-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--accent-gold-dim);
+    }
+
+    .prompt-footer {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    /* Footer */
+    .article-footer {
+      text-align: center;
+      padding: 48px 0 80px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Floating Nav */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 280px;
+      max-height: 400px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content {
+      overflow-y: auto;
+      max-height: 340px;
+    }
+    .nav-item {
+      display: block;
+      padding: 12px 18px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      color: var(--accent-gold-dim);
+      margin-right: 8px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="article-hero">
+      <div class="article-category">Prompt Engineering</div>
+      <h1 class="article-title">8个高级 Prompt，让 AI 发挥真正实力</h1>
+      <p class="article-subtitle">别把 AI 当实习生 — 把它当成能独立解决问题的 senior engineer</p>
+    </section>
+
+    <section class="article-intro">
+      <p class="intro-lead">别再跟Claude说，"做这个"。</p>
+      <p class="intro-lead">别再跟Claude说，"写代码"了。</p>
+      <p class="intro-lead">别再跟Claude说，"修正这个错误"了。</p>
+      <p class="intro-lead">你实际上是在把资深 AI 当成初级实习生来对待。</p>
+      <div class="intro-divider"></div>
+      <p class="intro-cta">这里有8个你可以直接复制粘贴的提示</p>
+    </section>
+
+      <!-- Prompt 1 -->
+      <section class="prompt-section" id="p1">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 01</span>
+          <h2 class="prompt-title">新建项目</h2>
+        </div>
+        <p class="prompt-text">可以把它想象成一位高级全栈工程师开发一个完整、准备好生产的应用。首先，设计系统架构，然后开发最小但可扩展的版本。</p>
+        <p class="prompt-section-label">结果应包括：</p>
+        <ul class="prompt-list">
+          <li>架构</li>
+          <li>文件结构</li>
+          <li>数据库模式</li>
+          <li>API端点</li>
+          <li>UI架构</li>
+          <li>完整代码</li>
+        </ul>
+        <p class="prompt-note">设计成真正的初创MVP，并使其具备可扩展性。</p>
+      </section>
+
+      <!-- Prompt 2 -->
+      <section class="prompt-section" id="p2">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 02</span>
+          <h2 class="prompt-title">代码库理解与重构</h2>
+        </div>
+        <p class="prompt-text">想象成一个刚加入庞大且陌生代码库的高级工程师。首先，要理解架构和数据流。然后识别：</p>
+        <ul class="prompt-list">
+          <li>结构性问题</li>
+          <li>代码重复</li>
+          <li>性能瓶颈</li>
+          <li>可维护性风险</li>
+        </ul>
+        <p class="prompt-section-label">结果：</p>
+        <ul class="prompt-list">
+          <li>架构总结</li>
+          <li>问题区域</li>
+          <li>重构策略</li>
+          <li>改进代码</li>
+        </ul>
+        <p class="prompt-footer">功能保持不变——质量得到提升。</p>
+      </section>
+
+      <!-- Prompt 3 -->
+      <section class="prompt-section" id="p3">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 03</span>
+          <h2 class="prompt-title">高级调试工程师</h2>
+        </div>
+        <p class="prompt-text">可以想象成高级调试工程师在生产环境中调查漏洞。</p>
+        <ul class="prompt-list">
+          <li>仔细分析代码</li>
+          <li>一步步思考</li>
+          <li>找出根本原因</li>
+          <li>提出有力的解决方案</li>
+        </ul>
+        <p class="prompt-section-label">结果：</p>
+        <ul class="prompt-list">
+          <li>代码功能</li>
+          <li>问题所在</li>
+          <li>为何失败</li>
+          <li>边缘案例</li>
+          <li>修复可用于生产的代码</li>
+        </ul>
+      </section>
+
+      <!-- Prompt 4 -->
+      <section class="prompt-section" id="p4">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 04</span>
+          <h2 class="prompt-title">系统设计 + 实施</h2>
+        </div>
+        <p class="prompt-text">像高级系统架构师那样思考。为产品设计一个可扩展的系统，然后开发最小量产版本。</p>
+        <p class="prompt-section-label">包括：</p>
+        <ul class="prompt-list">
+          <li>架构</li>
+          <li>组件结构</li>
+          <li>数据流</li>
+          <li>API设计</li>
+          <li>数据库模式</li>
+          <li>缓存策略</li>
+          <li>实现代码</li>
+        </ul>
+      </section>
+
+      <!-- Prompt 5 -->
+      <section class="prompt-section" id="p5">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 05</span>
+          <h2 class="prompt-title">性能优化技巧</h2>
+        </div>
+        <p class="prompt-text">想象成性能工程师优化代码。</p>
+        <p class="prompt-section-label">目标：</p>
+        <ul class="prompt-list">
+          <li>速度</li>
+          <li>内存使用</li>
+          <li>可扩展性</li>
+        </ul>
+        <p class="prompt-section-label">查找：</p>
+        <ul class="prompt-list">
+          <li>瓶颈</li>
+          <li>低效逻辑</li>
+          <li>不必要的渲染</li>
+        </ul>
+        <p class="prompt-section-label">结果：</p>
+        <ul class="prompt-list">
+          <li>性能问题</li>
+          <li>优化策略</li>
+          <li>改进代码</li>
+        </ul>
+      </section>
+
+      <!-- Prompt 6 -->
+      <section class="prompt-section" id="p6">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 06</span>
+          <h2 class="prompt-title">干净的架构重建</h2>
+        </div>
+        <p class="prompt-text">可以想象成高级工程师将代码转换为干净的架构。</p>
+        <ul class="prompt-list">
+          <li>关注点分离</li>
+          <li>增加模块化</li>
+          <li>减少耦合</li>
+        </ul>
+        <p class="prompt-text">行为保持不变——结构得到改善。</p>
+        <p class="prompt-section-label">结果：</p>
+        <ul class="prompt-list">
+          <li>新的文件夹结构</li>
+          <li>架构描述</li>
+          <li>重构代码</li>
+        </ul>
+      </section>
+
+      <!-- Prompt 7 -->
+      <section class="prompt-section" id="p7">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 07</span>
+          <h2 class="prompt-title">Claude 多智能体工作流程</h2>
+        </div>
+        <p class="prompt-text">你们是4位协作代理：</p>
+        <ul class="prompt-list">
+          <li>架构师</li>
+          <li>工程师</li>
+          <li>评审</li>
+          <li>优化师</li>
+        </ul>
+        <p class="prompt-section-label">角色：</p>
+        <ul class="prompt-list">
+          <li>架构师→设计系统</li>
+          <li>工程师→开发</li>
+          <li>评审→质量控制</li>
+          <li>优化师→性能改进</li>
+        </ul>
+        <p class="prompt-section-label">成果：</p>
+        <ul class="prompt-list">
+          <li>架构</li>
+          <li>实施</li>
+          <li>反馈审核</li>
+          <li>最终优化版本</li>
+        </ul>
+      </section>
+
+      <!-- Prompt 8 -->
+      <section class="prompt-section" id="p8">
+        <div class="prompt-header">
+          <span class="prompt-num">Prompt 08</span>
+          <h2 class="prompt-title">生产级UI组件构建</h2>
+        </div>
+        <p class="prompt-text">像高级前端工程师那样构建：</p>
+        <ul class="prompt-list">
+          <li>可重复使用的UI组件</li>
+          <li>可访问性</li>
+          <li>生产环境就绪</li>
+        </ul>
+        <p class="prompt-section-label">考虑：</p>
+        <ul class="prompt-list">
+          <li>加载状态</li>
+          <li>边缘案例</li>
+          <li>响应式设计</li>
+          <li>可访问性</li>
+        </ul>
+        <p class="prompt-section-label">结果：</p>
+        <ul class="prompt-list">
+          <li>组件架构</li>
+          <li>Props设计</li>
+          <li>实现</li>
+          <li>使用示例</li>
+        </ul>
+      </section>
+
+    </section>
+
+    <footer class="article-footer">
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </footer>
+  </main>
+
+  <button class="floating-nav-toggle" id="navToggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a href="#p1" class="nav-item"><span class="nav-item-num">01</span>从零开始完成申请</a>
+      <a href="#p2" class="nav-item"><span class="nav-item-num">02</span>代码库理解与重构</a>
+      <a href="#p3" class="nav-item"><span class="nav-item-num">03</span>高级调试工程师</a>
+      <a href="#p4" class="nav-item"><span class="nav-item-num">04</span>系统设计 + 实施</a>
+      <a href="#p5" class="nav-item"><span class="nav-item-num">05</span>性能优化技巧</a>
+      <a href="#p6" class="nav-item"><span class="nav-item-num">06</span>干净的架构重建</a>
+      <a href="#p7" class="nav-item"><span class="nav-item-num">07</span>Claude 多智能体工作流程</a>
+      <a href="#p8" class="nav-item"><span class="nav-item-num">08</span>生产级UI组件构建</a>
+    </div>
+  </nav>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+
+    navToggle.addEventListener('click', () => navPanel.classList.toggle('active'));
+
+    document.addEventListener('click', (e) => {
+      if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+
+    navPanel.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => navPanel.classList.remove('active'));
+    });
+  </script>
+
+</body>
+</html>
