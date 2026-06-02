@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>硅谷新岗位 FDE 是什么？Andrew Ng 一条推讲透 AI Engineer 才是大机会 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --border-subtle: #d2d2d7;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 100;
+    }
+    .site-header .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .site-name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .site-name .ai-glow {
+      color: #C8161D;
+      text-shadow: 0 0 10px rgba(200, 22, 29, 0.6), 0 0 20px rgba(200, 22, 29, 0.4), 0 0 40px rgba(200, 22, 29, 0.2);
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text-primary); }
+
+    /* MAIN */
+    .main-content {
+      position: relative;
+      z-index: 1;
+      padding-top: 56px;
+    }
+
+    /* ARTICLE HEADER */
+    .article-header {
+      padding: 64px 24px 48px;
+      text-align: center;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .article-header .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .article-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(201, 169, 98, 0.1);
+      border: 1px solid rgba(201, 169, 98, 0.25);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent-gold-dim);
+      margin-bottom: 24px;
+    }
+    .article-badge .dot {
+      width: 5px; height: 5px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+    }
+    .article-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(26px, 5vw, 40px);
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+    .article-title .highlight {
+      color: #C8161D;
+    }
+    .article-meta {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .article-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* BODY */
+    .article-body {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* SECTIONS */
+    .article-section {
+      margin-bottom: 56px;
+    }
+    .article-section:last-child { margin-bottom: 0; }
+
+    h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    p { font-size: 15px; color: var(--text-secondary); margin-bottom: 16px; }
+    .lead { font-size: 17px; color: var(--text-primary); line-height: 1.8; margin-bottom: 24px; }
+    .source-quote {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      margin: 16px 0 24px;
+      font-style: italic;
+    }
+    .source-quote cite {
+      display: block;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* PROBLEM GRID */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .problem-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .problem-card h4 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .problem-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 0; }
+
+    /* FLOW */
+    .flow-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin: 24px 0;
+      overflow: hidden;
+    }
+    .flow-step {
+      display: flex;
+      gap: 16px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .flow-step:last-child { border-bottom: none; }
+    .flow-num {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .flow-content h4 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .flow-content p { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+    .tools { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tool-tag {
+      padding: 3px 10px;
+      background: rgba(201, 169, 98, 0.1);
+      border: 1px solid rgba(201, 169, 98, 0.2);
+      border-radius: 100px;
+      font-size: 11px;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FEATURE */
+    .feature-list { display: flex; flex-direction: column; gap: 16px; margin: 24px 0; }
+    .feature-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+    }
+    .feature-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .feature-content h4 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .feature-content p { font-size: 13px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.7; }
+
+    /* COMPARE TABLE */
+    .compare-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; }
+    .compare-table th, .compare-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .compare-table th {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+    }
+    .compare-table td { color: var(--text-secondary); vertical-align: top; }
+    .compare-table td:first-child {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* CTA */
+    .cta-section {
+      text-align: center;
+      padding: 64px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin: 40px 0;
+    }
+    .cta-section h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      border: none;
+      padding: 0;
+    }
+    .cta-section p { font-size: 14px; color: var(--text-secondary); max-width: 400px; margin: 0 auto 24px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 24px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+    /* LINKS LIST */
+    .links-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .links-section h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 16px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .link-item {
+      display: block;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .link-item:last-child { border-bottom: none; }
+    .link-item:hover { opacity: 0.7; }
+    .link-item-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .link-item-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 40px 24px 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    footer .credit { font-size: 10px; color: var(--text-muted); }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 32px; right: 32px;
+      width: 56px; height: 56px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .floating-nav-toggle:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(0,0,0,0.25); }
+    .floating-nav-toggle svg { width: 24px; height: 24px; }
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 100px; right: 32px;
+      width: 300px;
+      max-height: 60vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+      overflow: hidden;
+    }
+    .floating-nav-panel.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .nav-panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-panel-content { padding: 10px 0; overflow-y: auto; max-height: calc(60vh - 42px); }
+    .nav-item {
+      display: block;
+      padding: 10px 18px;
+      text-decoration: none;
+      transition: background 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .nav-item:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold); }
+    .nav-item-title { font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 400; color: var(--text-primary); margin-bottom: 2px; }
+    .nav-item-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+    @media (max-width: 768px) {
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 12px; left: 12px; width: auto; bottom: 90px; }
+      .problem-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <!-- Article Header -->
+    <div class="article-header">
+      <div class="container">
+        <div class="article-badge"><span class="dot"></span>行业观察 · 解读</div>
+        <h1 class="article-title">硅谷新岗位 <span class="highlight">FDE</span> 是什么？Andrew Ng 一条推讲透 AI Engineer 才是大机会</h1>
+        <div class="article-meta">
+          <span>by @朱有以</span>
+          <span>AI / 职业趋势</span>
+          <span>2026-06-02</span>
+        </div>
+        <p class="article-desc">OpenAI 和 Anthropic 都在抢一种叫 FDE 的新岗位。Andrew Ng 说他自己的组织也在招，但招的数量远远不如另一种岗位：AI Engineer。</p>
+      </div>
+    </div>
+
+    <!-- Article Body -->
+    <div class="article-body">
+
+      <section class="article-section" id="intro">
+        <h2>一条推文，凭什么值得花一篇文讲</h2>
+        <p class="lead">2026 年 5 月 29 日，Andrew Ng 在他的 The Batch 周报上发了署名信，标题叫 <em>Forward Deployed Engineers and the Future of AI Engineering</em>。同一条内容也发到了 X 上，被算法推到不少人的首页。</p>
+        <p>Ng 把这个岗位拆得很清楚：硅谷正在疯抢一种叫 FDE 的新工程师，但 AI Engineer 才是真正的大盘。读完之后我对这件事的理解是——FDE 是 AI 商业化的"特战队"，而 AI Engineer 是 AI 落地到每一家公司的"主力军"。两个都重要，但数量级不在一个层面。</p>
+        <p>这篇文章先把 FDE 这个岗位讲透，再把 Ng 的核心观点提炼出来，最后给你一份工具推荐和行动指南：如果你想往 AI Engineer 这个方向走，现在该学什么、用什么、怎么开始。</p>
+      </section>
+
+      <section class="article-section" id="what">
+        <h2>FDE 是什么</h2>
+        <p class="lead">FDE = Forward Deployed Engineer，前置部署工程师。一个被厂商派到客户公司内部、深度参与业务的工程师角色。</p>
+        <p>和普通售前工程师（pre-sales）或现场顾问不同，FDE 不是来"卖"的，是来"干"的——直接坐在客户团队里，用客户的工具、跑客户的数据、调客户的系统，把厂商的 AI 产品真的跑通到能用的程度。</p>
+        <div class="source-quote">
+          "an engineer who is embedded within a client organization to help customize solutions, such as building and tuning agentic workflows that suit the client's particular needs."
+          <cite>—— Andrew Ng, The Batch, 2026.05.29</cite>
+        </div>
+        <p>重点是"agentic workflows"这四个字。FDE 不只是把现成 LLM 装上，而是要构建和调优一套完整的智能体工作流，让 AI 真的在客户的业务流程里跑起来。这意味着 FDE 既要懂技术，也要懂客户的业务。</p>
+      </section>
+
+      <section class="article-section" id="origin">
+        <h2>这个岗从哪来：Palantir 20 年前的发明</h2>
+        <p>FDE 不是 AI 时代的新发明。它的祖宗是 20 年前的 Palantir——那家做政府大数据分析的公司。</p>
+        <p>当年 Palantir 拿下 CIA、IRS 这些政府客户之后，发现一个现实问题：这些客户的核心系统是物理隔离（air-gapped）的，云上的工程师根本连不进去。怎么办？只能派工程师带着笔记本去客户现场，长期驻场开发。这就是 FDE 最早的形态。</p>
+        <p>这个角色之所以"活"下来，是因为它解决了一个真实痛点：客户买了软件不等于能用上。从软件交付到真正能跑出业务结果之间，隔着一道巨大的鸿沟。FDE 就是专门填这道鸿沟的。</p>
+        <p>现在 AI 时代这道鸿沟更大了——LLM 拿到手是一回事，把它调成能解决你公司具体问题的 agentic workflow 是另一回事。所以 FDE 这个角色又火了。</p>
+      </section>
+
+      <section class="article-section" id="who">
+        <h2>现在谁在大规模招：OpenAI 和 Anthropic</h2>
+        <p>Ng 在原文里点了两家公司的名：</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon">⬡</div>
+            <div class="feature-content">
+              <h4>OpenAI · Deployment Company</h4>
+              <p>2026 年 5 月新组建的部门，专门派工程师到企业客户内部做部署和调优。把 OpenAI 的模型和工具真正装到客户的生产环境里。</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">▲</div>
+            <div class="feature-content">
+              <h4>Anthropic · 企业 AI 服务公司</h4>
+              <p>联合 Blackstone、Hellman & Friedman、Goldman Sachs 成立的合资公司，专门为大型企业提供 AI 落地服务，FDE 是核心角色之一。</p>
+            </div>
+          </div>
+        </div>
+        <p>两家头部 AI 公司几乎同时把 FDE 提到战略级——这不是巧合，是市场信号：AI 公司终于承认，光卖 API 和模型不够，必须派人到客户现场才能真正把生意做大。</p>
+      </section>
+
+      <section class="article-section" id="day">
+        <h2>FDE 每天到底在做什么</h2>
+        <p>Ng 列出了 FDE 的核心能力组合，比一般工程师多了一项：商业沟通。</p>
+        <div class="flow-container">
+          <div class="flow-step">
+            <div class="flow-num">1</div>
+            <div class="flow-content">
+              <h4>听懂客户的真实需求</h4>
+              <p>客户说的"我想要一个 AI 助手"通常不是真的需求。要追问场景、追问流程、追问痛点，把模糊需求翻译成可执行的技术方案。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">2</div>
+            <div class="flow-content">
+              <h4>排优先级 · 做策略</h4>
+              <p>客户的需求永远做不完。FDE 要帮客户决定先做什么后做什么，哪些是 80 分够用、哪些必须 95 分。这本质上是 PM 的活。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">3</div>
+            <div class="flow-content">
+              <h4>把复杂技术讲清楚</h4>
+              <p>客户的高管不懂 RAG、不懂 evals、不懂 token 成本。FDE 要能用非技术语言解释为什么这个方案好、那个方案不行。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">4</div>
+            <div class="flow-content">
+              <h4>必要时 push back</h4>
+              <p>客户会提不切实际的需求，比如"能不能让它 100% 准确"。FDE 要能专业地、尊重地拒绝，而不是照单全收。</p>
+              <div class="tools">
+                <span class="tool-tag">沟通能力</span>
+                <span class="tool-tag">商业判断</span>
+                <span class="tool-tag">技术深度</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>简单总结：FDE = 高级工程师 + 半个 PM + 半个咨询顾问。能干这个活的人，综合素质要求其实比纯架构师还高。</p>
+      </section>
+
+      <section class="article-section" id="view">
+        <h2>Ng 的核心观点：AI Engineer 才是真正的大盘</h2>
+        <p>FDE 在火，但 Ng 说他自己虽然也招 FDE，招得"远远不如"另一种岗位多——AI Engineer。</p>
+        <div class="source-quote">
+          "I believe there will be far more AI Engineer jobs than FDEs."
+          <cite>—— Andrew Ng</cite>
+        </div>
+        <p>他给了三个理由，每一个都很扎实：</p>
+
+        <h3>理由一：一家公司能接受的 FDE 数量有限</h3>
+        <p>FDE 是嵌入到客户公司的外来者，再怎么融合，3-5 个也就到顶了。但客户公司自己会需要几十个、上百个 AI Engineer 来做内部项目。这个数量级差异是结构性的，不是趋势性的。</p>
+
+        <h3>理由二：vendor 中立性是个真问题</h3>
+        <p>FDE 本质上是厂商派来的——他是 OpenAI 的人，去你公司部署 OpenAI 的方案；他是 Anthropic 的人，去你公司部署 Anthropic 的方案。这就带来一个隐患：你公司的流程会被深度绑死在某一家厂商的技术栈上。</p>
+        <p>现在这个时点，Ng 用了一个词叫 "optionality"（可选性）——明年谁家模型最强，今年没人知道。把自己的流程绑死在 OpenAI，半年后 Anthropic 出了更合适的模型，想换？整个 agentic workflow 推倒重来。</p>
+        <p>所以很多客户开始警惕：FDE 可以用，但要警惕你把整个公司的 AI 未来赌在一家厂商身上。</p>
+
+        <h3>理由三：AI Engineer 角色会再分化</h3>
+        <p>Ng 提了一个很值得记住的类比：现在的 AI Engineer 就像 2000 年前后的"Software Engineer"——一个泛称，什么都干。等这个角色成熟了，它会像当年的 Software Engineer 一样，分化成前端、后端、移动端、数据工程、DevOps 等等。</p>
+        <p>他列了一些可能的新岗位名字：</p>
+        <ul style="margin: 16px 0 24px 24px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+          <li><strong>AI FDE</strong> — 专做 agentic workflow 落地的工程师</li>
+          <li><strong>LLMOps Engineer</strong> — 负责 LLM 服务的部署、监控、成本控制</li>
+          <li><strong>Evals Engineer</strong> — 专门做模型/Agent 评估体系的人</li>
+          <li><strong>AI Data Engineer</strong> — 处理 RAG、微调所需的数据管道</li>
+          <li><strong>Harness Engineer</strong> — 构建和调优 agent 的"驾驶舱"（tool use、prompt routing、guardrails）</li>
+        </ul>
+        <p>这些岗位现在名字都没统一，但方向已经清晰了——AI 工程师不是一个终点，是一个起点。</p>
+      </section>
+
+      <section class="article-section" id="optionality">
+        <h2>optionality 这个隐藏陷阱</h2>
+        <p>Ng 这条推文里最值得多看两遍的概念是 optionality，可选性。</p>
+        <p>他的原话翻译成大白话：<em>"在现在这个很难预测一年后哪家的 AI 服务最强的时点，让自己保留'未来选最适合的那家'的能力，是非常值钱的。"</em></p>
+        <p>反过来，让 FDE 把你公司的流程深度绑死——这件事本质上是在用未来的灵活性换眼前的便利。这笔账怎么算都不划算。</p>
+        <p>这个观点对我们普通人的启发是：选 AI 工具时，不要让自己被锁死。能用 MCP 协议（Model Context Protocol）就用 MCP，能用标准化 API 就用标准化 API，不要一上来就把所有业务逻辑写进某个厂商独有的 SDK 里。</p>
+      </section>
+
+      <section class="article-section" id="who-fit">
+        <h2>谁适合去 FDE 岗</h2>
+        <p>FDE 不是新人的第一站。如果你正在考虑要不要投这个岗，Ng 的描述其实给出了画像：</p>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>FDE 画像</th>
+              <th>典型来源</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>技术深度</td>
+              <td>能独立搭 agentic workflow，懂 LLM、evals、tool use</td>
+              <td>3-5 年后端 / ML 工程师</td>
+            </tr>
+            <tr>
+              <td>沟通能力</td>
+              <td>能跟 CXO 开会、能给非技术高管讲清楚方案</td>
+              <td>做过 on-call demo、写过技术博客</td>
+            </tr>
+            <tr>
+              <td>商业感觉</td>
+              <td>能判断哪些需求该做、哪些是 nice-to-have</td>
+              <td>做过 PM 活、独立 owner 过项目</td>
+            </tr>
+            <tr>
+              <td>心理承受</td>
+              <td>愿意长期驻场、能在客户和厂商之间做翻译</td>
+              <td>咨询公司出身、独立咨询师</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>反过来，如果你更愿意自己埋头写代码、不喜欢跟人解释，FDE 可能会让你痛苦。Ng 自己组织招的 AI Engineer 数量比 FDE 多得多，正是因为大部分工程师的画像更适合后者。</p>
+      </section>
+
+      <section class="article-section" id="tools">
+        <h2>工具推荐：AI Engineer 路径该掌握什么</h2>
+        <p class="lead">从 Ng 原文里提炼，加上 2026 年现状，给一份入门工具清单。优先选 vendor 中立、迁移成本低的那一类。</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon">⌘</div>
+            <div class="feature-content">
+              <h4>Coding Agents</h4>
+              <p>Ng 在原文里点了四个名字：Claude Code、Codex、Antigravity CLI、OpenCode。这四家是当前 coding agent 的第一梯队，能力接近、风格不同。挑一个用熟，再去试另一个。</p>
+              <div class="tools" style="margin-top: 8px;">
+                <span class="tool-tag">Claude Code</span>
+                <span class="tool-tag">Codex</span>
+                <span class="tool-tag">Antigravity CLI</span>
+                <span class="tool-tag">OpenCode</span>
+              </div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">◉</div>
+            <div class="feature-content">
+              <h4>LLM Prompting</h4>
+              <p>prompt 工程师这顶帽子早就被嘲讽了，但 prompt 能力本身是硬功夫。系统提示怎么写、few-shot 怎么给、cot 怎么触发，这些是所有 agentic workflow 的地基。</p>
+              <div class="tools" style="margin-top: 8px;">
+                <span class="tool-tag">Claude API</span>
+                <span class="tool-tag">OpenAI API</span>
+                <span class="tool-tag">Anthropic Console</span>
+              </div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">◇</div>
+            <div class="feature-content">
+              <h4>Agentic Frameworks</h4>
+              <p>能帮你快速搭起 multi-agent 系统、tool use、memory 管理的框架。挑一个学透，不要每个都摸一遍。</p>
+              <div class="tools" style="margin-top: 8px;">
+                <span class="tool-tag">LangGraph</span>
+                <span class="tool-tag">CrewAI</span>
+                <span class="tool-tag">Autogen</span>
+                <span class="tool-tag">MCP Servers</span>
+              </div>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✓</div>
+            <div class="feature-content">
+              <h4>Evals</h4>
+              <p>Ng 在原文里特别提了这个词。Evals 是评估 agent 表现的系统化方法——没有 evals 的 agent 跟没有单元测试的代码一样脆弱。</p>
+              <div class="tools" style="margin-top: 8px;">
+                <span class="tool-tag">Braintrust</span>
+                <span class="tool-tag">Langfuse</span>
+                <span class="tool-tag">Promptfoo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>原则：优先选 vendor 中立的工具。MCP 协议、标准化 API、开源框架——这些东西能让你随时换底层模型而不用推倒重来。这正是 Ng 强调的 optionality。</p>
+      </section>
+
+      <section class="article-section" id="action">
+        <h2>行动指南：三步走，从今天开始</h2>
+        <p class="lead">不想被时代推着走，就主动跳进去。下面这条路径是给有一定工程基础、想往 AI Engineer 方向走的人。</p>
+        <div class="flow-container">
+          <div class="flow-step">
+            <div class="flow-num">1</div>
+            <div class="flow-content">
+              <h4>第 1 步 · 第一周：把一个 coding agent 用到熟</h4>
+              <p>在 Claude Code、Codex、Antigravity CLI 里选一个，每天用它干活。不是"试试看"，是"必须用它"。一周后你会有真实体感。</p>
+              <div class="tools">
+                <span class="tool-tag">Claude Code</span>
+                <span class="tool-tag">Codex</span>
+                <span class="tool-tag">Antigravity CLI</span>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">2</div>
+            <div class="flow-content">
+              <h4>第 2 步 · 第 2-3 周：搭一个真实的 agentic workflow</h4>
+              <p>找一个你工作里的小任务，用 LangGraph 或 CrewAI 搭一个能跑通的 agent。比如：自动从 RSS 抓内容、自动分类、自动发到 Notion。跑通就是胜利。</p>
+              <div class="tools">
+                <span class="tool-tag">LangGraph</span>
+                <span class="tool-tag">Tavily</span>
+                <span class="tool-tag">Notion API</span>
+              </div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">3</div>
+            <div class="flow-content">
+              <h4>第 3 步 · 第 4 周起：补 evals 和数据基础</h4>
+              <p>同一个 agent，加上 evals 框架。每次改 prompt、改模型，跑一遍 evals 看分数变化。这个习惯会让你在真实工作里少踩 80% 的坑。</p>
+              <div class="tools">
+                <span class="tool-tag">Braintrust</span>
+                <span class="tool-tag">Promptfoo</span>
+                <span class="tool-tag">Langfuse</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p>一个月后，你会有一个能展示的项目、一套习惯的 evals 流程、对一个 coding agent 的深度体感——这是面试 AI Engineer 岗最硬的三件套。</p>
+      </section>
+
+      <section class="article-section" id="takeaway">
+        <h2>最后说两句</h2>
+        <p>FDE 这个岗会继续火，但它本质是 AI 商业化初期的"特战队形态"——靠精英小队去啃硬骨头。当 AI 真正渗透到每一家公司之后，扛把子的是大量分布式的 AI Engineer。</p>
+        <p>Ng 的判断是：<em>"Skilled AI Engineers are in very high demand."</em>（熟练的 AI Engineer 需求极大。）这句话的潜台词是：现在这个赛道不卷，谁先进去谁占位。</p>
+        <p>你不需要等岗位定义清晰了才动。先把一个 agentic workflow 跑起来，再谈分化。</p>
+      </section>
+
+      <div class="links-section">
+        <h3>参考资料</h3>
+        <a href="https://openai.com/index/openai-launches-the-deployment-company/" target="_blank" class="link-item">
+          <div class="link-item-title">OpenAI Launches the Deployment Company</div>
+          <div class="link-item-url">https://openai.com/index/openai-launches-the-deployment-company/</div>
+        </a>
+        <a href="https://www.blackstone.com/news/press/anthropic-partners-with-blackstone-hellman-friedman-and-goldman-sachs-to-launch-enterprise-ai-services-firm/" target="_blank" class="link-item">
+          <div class="link-item-title">Anthropic Partners with Blackstone, Hellman & Friedman, and Goldman Sachs to Launch Enterprise AI Services Firm</div>
+          <div class="link-item-url">https://www.blackstone.com/news/press/anthropic-partners-with-blackstone-hellman-friedman-and-goldman-sachs-to-launch-enterprise-ai-services-firm/</div>
+        </a>
+        <a href="https://www.deeplearning.ai/the-batch/ai-native-software-development-needs-generalists" target="_blank" class="link-item">
+          <div class="link-item-title">AI-Native Software Development Needs Generalists — The Batch</div>
+          <div class="link-item-url">https://www.deeplearning.ai/the-batch/ai-native-software-development-needs-generalists</div>
+        </a>
+      </div>
+
+      <div class="cta-section">
+        <h2>转发给你身边那个想转 AI 的人</h2>
+        <p>AI Engineer 不是下一个前端、也不是下一个算法岗。它是一个全新的、比 Software Engineer 起点更高的入口。</p>
+        <a href="https://charonhub.deeplearning.ai/forward-deployed-engineers-and-the-future-of-ai-engineering/" target="_blank" class="btn">读 Ng 原文 →</a>
+      </div>
+
+    </div>
+
+    <footer>
+      <p>内容整理自 Andrew Ng The Batch 2026.05.29 署名信</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </footer>
+  </div>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a href="#intro" class="nav-item"><div class="nav-item-title">引子</div><div class="nav-item-desc">一条推文，凭什么值得花一篇文讲</div></a>
+      <a href="#what" class="nav-item"><div class="nav-item-title">FDE 是什么</div><div class="nav-item-desc">定义、英文全称</div></a>
+      <a href="#origin" class="nav-item"><div class="nav-item-title">岗位起源</div><div class="nav-item-desc">Palantir 20 年前的发明</div></a>
+      <a href="#who" class="nav-item"><div class="nav-item-title">谁在招人</div><div class="nav-item-desc">OpenAI · Anthropic</div></a>
+      <a href="#day" class="nav-item"><div class="nav-item-title">日常工作</div><div class="nav-item-desc">FDE 每天到底在做什么</div></a>
+      <a href="#view" class="nav-item"><div class="nav-item-title">核心观点</div><div class="nav-item-desc">AI Engineer 才是真正的大盘</div></a>
+      <a href="#optionality" class="nav-item"><div class="nav-item-title">optionality</div><div class="nav-item-desc">这个隐藏陷阱必须知道</div></a>
+      <a href="#who-fit" class="nav-item"><div class="nav-item-title">谁适合去</div><div class="nav-item-desc">FDE 画像 vs 典型来源</div></a>
+      <a href="#tools" class="nav-item"><div class="nav-item-title">工具推荐</div><div class="nav-item-desc">AI Engineer 路径该掌握什么</div></a>
+      <a href="#action" class="nav-item"><div class="nav-item-title">行动指南</div><div class="nav-item-desc">三步走，从今天开始</div></a>
+      <a href="#takeaway" class="nav-item"><div class="nav-item-title">结语</div><div class="nav-item-desc">Ng 的判断和我的建议</div></a>
+    </div>
+  </nav>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const panel = document.getElementById('navPanel');
+    toggle.addEventListener('click', () => panel.classList.toggle('open'));
+    panel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => panel.classList.remove('open'));
+    });
+    document.addEventListener('click', (e) => {
+      if (!toggle.contains(e.target) && !panel.contains(e.target)) panel.classList.remove('open');
+    });
+  </script>
+
+</body>
+</html>
