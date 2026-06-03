@@ -176,6 +176,99 @@ papers_html/                    ← 唯一 git 仓库
 - 卡片内边距：28-32px
 - 卡片间距：24-28px
 
+### 文章标题区
+
+**整体布局**
+- 整块 header 居中对齐（`text-align: center`）
+- 容器 `max-width: 680px`，`margin: 0 auto` 居中
+- padding：`64px 24px 48px`
+- 元素顺序：`badge → 主标题 → 副标题（可选）→ meta → desc`
+
+**主标题 h1（`.article-title`）**
+- 字体：英文用 `Cormorant Garamond` 衬线；中文用 `Noto Serif SC`
+- 字号：`clamp(30px, 4.5vw, 44px)`
+- 字重：`500`
+- `letter-spacing: 0.01em`，`line-height: 1.25`
+- 颜色：`var(--text-primary)`
+- 强制单行：`white-space: nowrap`（标题文字必须一行显示完整，文字过长就改短）
+- 可选 `.highlight` 类（`color: #C8161D`）标记核心术语
+- 移动端 (`<768px`)：允许换行，字号降至 `26px`
+
+**副标题（`.article-subtitle`，可选）**
+- 字体：`Noto Serif SC`
+- 字号：`clamp(18px, 2.6vw, 22px)`
+- 字重：`300`
+- 颜色：`var(--text-secondary)`
+- `letter-spacing: 0.04em`
+- 居中对齐（继承父元素）
+- **必须比正文字体（`15px`）大**，作为标题的副位
+- 适合场景：原文标题是英文/外文，需要中文副标题点出"主题是什么"
+
+**Meta 行（`.article-meta`）**
+- flex 布局，`justify-content: center`，`gap: 20px`
+- 字号：`13px`，颜色 `var(--text-muted)`
+- 内容：作者 / 来源账号 / 日期
+
+**文章描述（`.article-desc`）**
+- `max-width: 560px`，`margin: 0 auto` 居中
+- 字号：`16px`，颜色 `var(--text-secondary)`
+- `line-height: 1.8`
+
+CSS 模板（直接复制到文章 `<style>` 里）：
+
+```css
+.article-header {
+  padding: 64px 24px 48px;
+  text-align: center;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.article-header .container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.article-badge { /* ... */ }
+.article-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: clamp(30px, 4.5vw, 44px);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  white-space: nowrap;
+}
+.article-title .highlight { color: #C8161D; }
+.article-subtitle {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(18px, 2.6vw, 22px);
+  font-weight: 300;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  margin: 4px 0 28px;
+}
+.article-meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.article-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .article-title { white-space: normal; font-size: 26px; }
+}
+```
+
 ### 卡片 hover 动效（站内统一）
 
 **所有"卡片类"UI 元素**（`.article-card`、`.feature-item`、`.problem-card`、`.flow-step`、`.prompt-card`、`.link-item` 以及将来新出现的任何卡片样式）**必须**加 hover 微变大动效，保持站内一致。

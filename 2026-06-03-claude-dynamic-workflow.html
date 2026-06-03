@@ -611,7 +611,7 @@
     <div class="article-body">
 
       <section class="article-section" id="intro">
-        <h2>一条推文，凭什么值得花一篇文讲</h2>
+        <h2>前言</h2>
         <p class="lead">2026 年 6 月初，Anthropic 的 Claude Code 团队成员 Thariq（@trq212）连发推文 + 长文，宣布 Claude Code 上线 Dynamic Workflows（动态工作流）。一句话概括：Claude 现在能现场给自己写一个"临时指挥官"，调度几十上百个 subagent 同时干活。</p>
         <p>听起来又是一句 AI 厂商的 PR 黑话。但 Thariq 这次诚实地把三个问题摆到了台面上——这是 Anthropic 自己承认的、Claude Code 默认 harness 长期存在的三个失败模式：</p>
         <div class="problem-grid">
@@ -879,15 +879,15 @@
         <p>对普通用户的启发是：<strong>把任务描述清楚的能力，会比写代码更值钱</strong>。Thariq 博客里那 8 个 prompt，每个都长不过 30 个英文单词，但每个都把"要做什么、不做到什么程度算完、有什么约束"讲得明明白白。这才是 dynamic workflow 时代的新基本功。</p>
       </section>
 
-      <div class="cta-section">
+      <div class="article-section" id="cta">
         <h2>现在就试一下</h2>
         <p>打开 Claude Code，敲下这一行：</p>
         <p><span class="cta-code">/deep-research 把最近半年 Claude Code 的 release notes 整理成一篇中文趋势报告</span></p>
         <p>等 2-3 分钟，看背后几十个 agent 怎么分工、怎么交叉验证、怎么投票。这就是 dynamic workflow 的体感。</p>
       </div>
 
-      <div class="links-section">
-        <h3>参考资料</h3>
+      <div class="article-section" id="refs">
+        <h2>参考资料</h2>
         <a href="https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code" target="_blank" class="link-item">
           <div class="link-item-title">A harness for every task: dynamic workflows in Claude Code — Anthropic Blog</div>
           <div class="link-item-url">https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code</div>
@@ -928,7 +928,9 @@
   <nav class="floating-nav-panel" id="navPanel">
     <div class="nav-panel-header">目录导航</div>
     <div class="nav-panel-content">
-      <a href="#intro" class="nav-item"><div class="nav-item-title">引子</div><div class="nav-item-desc">为什么这条推文值得一篇文</div></a>
+      <a href="#intro" class="nav-item"><div class="nav-item-title">前言</div><div class="nav-item-desc">为什么这条推文值得一篇文</div></a>
+      <a href="#cta" class="nav-item"><div class="nav-item-title">立即试</div><div class="nav-item-desc">/deep-research 体感</div></a>
+      <a href="#refs" class="nav-item"><div class="nav-item-title">参考</div><div class="nav-item-desc">原文 + 文档链接</div></a>
       <a href="#what" class="nav-item"><div class="nav-item-title">是什么</div><div class="nav-item-desc">Dynamic Workflow 定义</div></a>
       <a href="#compare" class="nav-item"><div class="nav-item-title">对比表</div><div class="nav-item-desc">workflows vs subagents vs skills vs teams</div></a>
       <a href="#prompts" class="nav-item"><div class="nav-item-title">8 个 prompt</div><div class="nav-item-desc">Thariq 的抄作业清单（核心）</div></a>
