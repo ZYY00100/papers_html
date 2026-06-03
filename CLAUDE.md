@@ -175,3 +175,50 @@ papers_html/                    ← 唯一 git 仓库
 - Hero 区域 padding：60-80px（不要超过 80px）
 - 卡片内边距：28-32px
 - 卡片间距：24-28px
+
+### 卡片 hover 动效（站内统一）
+
+**所有"卡片类"UI 元素**（`.article-card`、`.feature-item`、`.problem-card`、`.flow-step`、`.prompt-card`、`.link-item` 以及将来新出现的任何卡片样式）**必须**加 hover 微变大动效，保持站内一致。
+
+效果标准：
+- 缩放范围 `scale(1.006)` ~ `scale(1.012)`（"稍微变大"，不要夸张）
+- 同时加阴影 `box-shadow: var(--shadow-hover)` + 边框变金 `border-color: rgba(201, 169, 98, 0.35~0.4)`
+- `.flow-step`（带分隔线）hover 时加 `background-color: var(--bg-secondary)` 保持视觉一致
+- `.link-item`（外链卡片）scale 用最小值 `1.006`，配合 `opacity: 0.85`，不要太重
+- 动画曲线统一 `cubic-bezier(0.25, 0.46, 0.45, 0.94)`，时长 `0.3s`
+
+CSS 模板（直接复制到文章 `<style>` 里）：
+
+```css
+/* 卡片 hover 统一动效 */
+.feature-item, .problem-card, .flow-step, .prompt-card {
+  transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.3s ease,
+              background-color 0.3s ease;
+}
+.feature-item:hover, .problem-card:hover, .flow-step:hover, .prompt-card:hover {
+  transform: scale(1.012);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(201, 169, 98, 0.4);
+}
+.flow-step:hover { background-color: var(--bg-secondary); }
+
+.link-item {
+  transition: opacity 0.2s, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.link-item:hover {
+  opacity: 0.85;
+  transform: scale(1.006);
+}
+```
+
+`index.html` 的 `.article-card` 保留原有 `translateY(-2px)`，叠加 scale：
+
+```css
+.article-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px) scale(1.012);
+  border-color: rgba(201, 169, 98, 0.35);
+}
+```

@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code 的动态工作流：让 Claude 现场给自己造工具的 8 种姿势 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --border-subtle: #d2d2d7;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 100;
+    }
+    .site-header .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .site-name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .site-name .ai-glow {
+      color: #C8161D;
+      text-shadow: 0 0 10px rgba(200, 22, 29, 0.6), 0 0 20px rgba(200, 22, 29, 0.4), 0 0 40px rgba(200, 22, 29, 0.2);
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text-primary); }
+
+    /* MAIN */
+    .main-content {
+      position: relative;
+      z-index: 1;
+      padding-top: 56px;
+    }
+
+    /* ARTICLE HEADER */
+    .article-header {
+      padding: 64px 24px 48px;
+      text-align: center;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .article-header .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .article-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(201, 169, 98, 0.1);
+      border: 1px solid rgba(201, 169, 98, 0.25);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent-gold-dim);
+      margin-bottom: 24px;
+    }
+    .article-badge .dot {
+      width: 5px; height: 5px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+    }
+    .article-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(26px, 5vw, 40px);
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+    .article-title .highlight {
+      color: #C8161D;
+    }
+    .article-meta {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .article-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* BODY */
+    .article-body {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* SECTIONS */
+    .article-section {
+      margin-bottom: 56px;
+    }
+    .article-section:last-child { margin-bottom: 0; }
+
+    h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    p { font-size: 15px; color: var(--text-secondary); margin-bottom: 16px; }
+    .lead { font-size: 17px; color: var(--text-primary); line-height: 1.8; margin-bottom: 24px; }
+    .source-quote {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      margin: 16px 0 24px;
+      font-style: italic;
+    }
+    .source-quote cite {
+      display: block;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* PROBLEM GRID */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .problem-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .problem-card h4 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .problem-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 0; }
+
+    /* FEATURE */
+    .feature-list { display: flex; flex-direction: column; gap: 16px; margin: 24px 0; }
+    .feature-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+    }
+    .feature-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .feature-content h4 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .feature-content p { font-size: 13px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.7; }
+
+    /* COMPARE TABLE */
+    .compare-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; }
+    .compare-table th, .compare-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .compare-table th {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+    }
+    .compare-table td { color: var(--text-secondary); vertical-align: top; }
+    .compare-table td:first-child {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* CARD HOVER GROW */
+    .feature-item, .problem-card, .flow-step, .prompt-card {
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .feature-item:hover, .problem-card:hover, .flow-step:hover, .prompt-card:hover {
+      transform: scale(1.012);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .flow-step:hover { background-color: var(--bg-secondary); }
+    .link-item {
+      transition: opacity 0.2s, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .link-item:hover {
+      opacity: 0.85;
+      transform: scale(1.006);
+    }
+
+    /* ARTICLE FIGURE */
+    .article-figure {
+      margin: 32px 0;
+      text-align: center;
+    }
+    .article-figure img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .article-figure figcaption {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* PROMPT CARDS */
+    .prompt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin: 20px 0;
+    }
+    .prompt-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+      color: #fff;
+      border-radius: 8px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .prompt-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .prompt-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      padding: 14px 18px;
+      margin: 12px 0 16px;
+      white-space: pre-wrap;
+    }
+    .prompt-annotation {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .prompt-annotation strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .prompt-tag {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: var(--accent-gold-dim);
+      background: rgba(201, 169, 98, 0.1);
+      border: 1px solid rgba(201, 169, 98, 0.2);
+      border-radius: 100px;
+    }
+
+    /* FLOW */
+    .flow-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin: 24px 0;
+      overflow: hidden;
+    }
+    .flow-step {
+      display: flex;
+      gap: 16px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .flow-step:last-child { border-bottom: none; }
+    .flow-num {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-dim));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .flow-content h4 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .flow-content p { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+
+    /* CTA */
+    .cta-section {
+      text-align: center;
+      padding: 64px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      margin: 40px 0;
+    }
+    .cta-section h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      border: none;
+      padding: 0;
+    }
+    .cta-section p { font-size: 14px; color: var(--text-secondary); max-width: 400px; margin: 0 auto 24px; }
+    .cta-code {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: var(--text-primary);
+      margin: 0 6px 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 24px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+    /* LINKS */
+    .links-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 40px 0;
+    }
+    .links-section h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 16px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .link-item {
+      display: block;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .link-item:last-child { border-bottom: none; }
+    .link-item:hover { opacity: 0.7; }
+    .link-item-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .link-item-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 40px 24px 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    footer .credit { font-size: 10px; color: var(--text-muted); }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 32px; right: 32px;
+      width: 56px; height: 56px;
+      background: var(--text-primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .floating-nav-toggle:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(0,0,0,0.25); }
+    .floating-nav-toggle svg { width: 24px; height: 24px; }
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 100px; right: 32px;
+      width: 300px;
+      max-height: 60vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 0.3s, transform 0.3s, visibility 0.3s;
+      overflow: hidden;
+    }
+    .floating-nav-panel.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .nav-panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .nav-panel-content { padding: 10px 0; overflow-y: auto; max-height: calc(60vh - 42px); }
+    .nav-item {
+      display: block;
+      padding: 10px 18px;
+      text-decoration: none;
+      transition: background 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .nav-item:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold); }
+    .nav-item-title { font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 400; color: var(--text-primary); margin-bottom: 2px; }
+    .nav-item-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+    @media (max-width: 768px) {
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 12px; left: 12px; width: auto; bottom: 90px; }
+      .problem-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <div class="main-content">
+    <div class="article-header">
+      <div class="container">
+        <div class="article-badge"><span class="dot"></span>Claude Code · 新功能解读</div>
+        <h1 class="article-title">Claude Code 的<span class="highlight">动态工作流</span>：让 Claude 现场给自己造工具的 8 种姿势</h1>
+        <div class="article-meta">
+          <span>by @朱有以</span>
+          <span>Thariq @ Anthropic</span>
+          <span>2026-06-03</span>
+        </div>
+        <p class="article-desc">Thariq 这周把 Anthropic 的新底牌 Dynamic Workflows 摆到了台面上，配套 8 个 prompt 让你直接抄作业。这篇文不写"概念科普"，只讲它解决什么、怎么用、什么时候用。</p>
+      </div>
+    </div>
+
+    <div class="article-body">
+
+      <section class="article-section" id="intro">
+        <h2>一条推文，凭什么值得花一篇文讲</h2>
+        <p class="lead">2026 年 6 月初，Anthropic 的 Claude Code 团队成员 Thariq（@trq212）连发推文 + 长文，宣布 Claude Code 上线 Dynamic Workflows（动态工作流）。一句话概括：Claude 现在能现场给自己写一个"临时指挥官"，调度几十上百个 subagent 同时干活。</p>
+        <p>听起来又是一句 AI 厂商的 PR 黑话。但 Thariq 这次诚实地把三个问题摆到了台面上——这是 Anthropic 自己承认的、Claude Code 默认 harness 长期存在的三个失败模式：</p>
+        <div class="problem-grid">
+          <div class="problem-card">
+            <h4>Agentic Laziness</h4>
+            <p>Claude 干完 50 件事里的 35 件就"宣布"完成。任务没真做完，但 Claude 觉得差不多了。</p>
+          </div>
+          <div class="problem-card">
+            <h4>Self-Preferential Bias</h4>
+            <p>让 Claude 评估自己写的东西，它永远觉得"还行"。让外部来评判才有意义。</p>
+          </div>
+          <div class="problem-card">
+            <h4>Goal Drift</h4>
+            <p>对话越长，目标越模糊。中间经历几次压缩（compaction），原任务的核心约束会被丢掉。</p>
+          </div>
+        </div>
+        <p>这三个问题不是 Claude 独有的，所有用 LLM 跑长任务的人都会遇到。Dynamic Workflows 就是 Anthropic 拿出的解法。</p>
+      </section>
+
+      <section class="article-section" id="what">
+        <h2>Dynamic Workflow 是什么</h2>
+        <p class="lead">一句话定义：让 Claude 写一个 JavaScript 脚本，调度一批 subagent 在后台跑大型任务，session 保持响应，可中断可恢复。</p>
+        <p>官方的技术描述很平实：</p>
+        <div class="source-quote">
+          A dynamic workflow is a JavaScript script that orchestrates subagents at scale. Claude writes the script for the task you describe, and a runtime executes it in the background while your session stays responsive.
+          <cite>—— code.claude.com/docs/en/workflows</cite>
+        </div>
+        <figure class="article-figure">
+          <img src="images/dynamic-workflow-architecture.png" alt="Dynamic workflow architecture: JavaScript file with subagent orchestration">
+          <figcaption>原图来自 Thariq 博客 · dynamic workflow 的运行机制：Claude 写的 JS 脚本通过特殊函数 spawn 出一批 subagent</figcaption>
+        </figure>
+        <p>拆开看有几个关键点：</p>
+        <ul style="margin: 16px 0 24px 24px; color: var(--text-secondary); font-size: 14px; line-height: 2;">
+          <li><strong>脚本由 Claude 写</strong>：你不用写 JS，只用自然语言描述任务，Claude 现场生成一个 .js 脚本。</li>
+          <li><strong>脚本里调"特殊函数"</strong>：这些函数是 Claude Code runtime 提供的，用来 spawn 和协调 subagent。</li>
+          <li><strong>脚本还能用标准 JS</strong>：JSON、Math、Array 这些都有，可以处理数据、做循环、做条件分支。</li>
+          <li><strong>可决定模型和 worktree</strong>：某个 subagent 用 Haiku 还是 Sonnet、某个 subagent 是不是要在独立 worktree 里跑，都由脚本说了算。</li>
+          <li><strong>可中断可恢复</strong>：终端关了、电脑休眠了，回来 resume 同一个 session，workflow 从断点继续跑。</li>
+        </ul>
+        <p>Thariq 用了两个词来形容这件事：<em>"Claude is now intelligent enough to write a custom harness tailor-made for your use case."</em>——Claude 已经聪明到能给自己量身定制一个临时 harness 了。</p>
+        <figure class="article-figure">
+          <img src="images/dynamic-vs-static.png" alt="Dynamic vs static workflows comparison">
+          <figcaption>原图来自 Thariq 博客 · Dynamic workflow 的真正新意：把"为每个任务定制 harness"这件事本身自动化</figcaption>
+        </figure>
+        <p>这句话很关键。Anthropic 以前卖的是"通用 harness + Claude"，现在他们承认：每个任务的最优 harness 都不一样，与其自己维护几十个，不如让 Claude 自己造。</p>
+      </section>
+
+      <section class="article-section" id="compare">
+        <h2>一张表说清楚：什么时候用哪个</h2>
+        <p>Claude Code 现在有四种"派活"方式：subagents、skills、agent teams、workflows。官方文档给了一张对比表，我直接翻译 + 点评：</p>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>Subagents</th>
+              <th>Skills</th>
+              <th>Agent Teams</th>
+              <th>Workflows</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>是什么</td>
+              <td>Claude 现场 spawn 的打工仔</td>
+              <td>Claude 遵循的一组指令</td>
+              <td>一个 lead agent 监督一组 peer</td>
+              <td>runtime 执行的脚本</td>
+            </tr>
+            <tr>
+              <td>谁决定下一步</td>
+              <td>Claude，按 turn 决定</td>
+              <td>Claude，按 prompt 决定</td>
+              <td>lead agent，按 turn 决定</td>
+              <td>脚本</td>
+            </tr>
+            <tr>
+              <td>中间结果存在哪</td>
+              <td>主 context window</td>
+              <td>主 context window</td>
+              <td>共享 task list</td>
+              <td>脚本变量</td>
+            </tr>
+            <tr>
+              <td>可复用什么</td>
+              <td>worker 的定义</td>
+              <td>指令本身</td>
+              <td>team 的定义</td>
+              <td>orchestration 本身</td>
+            </tr>
+            <tr>
+              <td>规模</td>
+              <td>每轮几个 delegate 任务</td>
+              <td>同 subagent</td>
+              <td>几个长跑 peer</td>
+              <td>一次几十到几百个 agent</td>
+            </tr>
+            <tr>
+              <td>中断行为</td>
+              <td>重启该 turn</td>
+              <td>重启该 turn</td>
+              <td>队友继续跑</td>
+              <td>同 session 可恢复</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>实战里怎么选？记住一句话：<strong>任务越"结构化"、越"可分支"、越"可中断"，越该用 workflow</strong>。</p>
+        <p>比如要扫 500 个文件做迁移——这个任务天然就是 for 循环 + 每个文件一个 subagent，workflow 写起来比让 Claude 现场调度稳得多。</p>
+      </section>
+
+      <section class="article-section" id="prompts">
+        <h2>Thariq 的 8 个神级 prompt（重点）</h2>
+        <p class="lead">这是整篇文最值钱的部分。Thariq 在博客里贴了 8 个他自己写的 prompt，每个都示范了"用 workflow 解决一类问题"的范式。我直接搬运过来，每条配上中文场景注释 + 行动建议。</p>
+        <figure class="article-figure">
+          <img src="images/workflow-patterns.png" alt="6 common patterns Claude uses when building dynamic workflows">
+          <figcaption>原图来自 Thariq 博客 · dynamic workflow 常用的 6 种编排模式（classify-and-act / fan-out-and-synthesize / adversarial verification / generate-and-filter / tournament / loop until done）</figcaption>
+        </figure>
+        <p>这 8 个 prompt 背后其实是这 6 种模式的组合。把图记在脑子里，下次写自己的 workflow 就有谱了。</p>
+
+        <div class="prompt-card">
+          <div class="prompt-num">1</div>
+          <div class="prompt-title">用 workflow 复现一个偶发 bug</div>
+          <div class="prompt-text">This test fails maybe 1 in 50 runs. Set up a workflow to reproduce it. Form competing theories about the race, and don't stop until one theory survives the evidence.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>偶发 bug 最怕"我重现不出来"。这个 prompt 让 workflow 起一批 subagent，每个跑一种竞争条件的假设。哪个 theory 经得起证据检验，bug 就是哪种。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>线上有偶发崩溃、偶发超时、偶发数据错乱？把"maybe 1 in N"替换成你的频率，"the race"替换成你怀疑的竞争条件。</p>
+          <span class="prompt-tag">调试 · 并行假设</span>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-num">2</div>
+          <div class="prompt-title">挖历史 session，提炼出 CLAUDE.md 规则</div>
+          <div class="prompt-text">Using a workflow, go through my last 50 sessions and mine them for corrections I keep making and turn the recurring ones into CLAUDE.md rules.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>你可能反复纠正 Claude 同样的事——"别用这个库"、"别这么命名"、"别忘了 lint"。这些纠正应该沉淀到 CLAUDE.md，但靠人手动提炼很费劲。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>跑 50 个 session，让 workflow 派多个 subagent 并行扫，最后给你一份"高频纠正 → 建议规则"清单。</p>
+          <span class="prompt-tag">知识沉淀 · 流程优化</span>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-num">3</div>
+          <div class="prompt-title">翻 Slack 找"大家都在骂但没人提单"的根因</div>
+          <div class="prompt-text">Use a workflow to dig through #incidents in Slack for the past six months and find recurring root causes where nobody has filed a ticket.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>团队里最有价值的洞察往往在聊天记录里、但没进工单系统。这条 prompt 让 workflow 把半年的事故讨论扒一遍，找"反复出现但没人正式提"的根因。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>替换 #incidents 为你的频道，时间窗换你的（"past quarter"），再加"and export to a Notion page"。</p>
+          <span class="prompt-tag">运营 · 复盘</span>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-num">4</div>
+          <div class="prompt-title">让三个对手拆你的商业计划</div>
+          <div class="prompt-text">Take my business plan and run a workflow where different agents tear it apart from an investor's, a customer's, and a competitor's perspective.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>Claude 单视角评估自己写的东西，self-bias 会让它客气。三个独立 agent 分别从投资人、客户、对手方角度拆，最后交叉印证哪几个洞是真洞。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>BP、PRD、招股书、对外 pitch——任何"需要被严苛审"的文件都可以这么干。换个数字：3 个 agent 不够就用 5 个。</p>
+          <span class="prompt-tag">对抗评审 · 决策辅助</span>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-num">5</div>
+          <div class="prompt-title">80 份简历，先排后核再面试你</div>
+          <div class="prompt-text">Here's a folder of 80 resumes, use a workflow to rank them for the backend role and double-check the top ten. Interview me using the AskUserQuestion tool for a rubric.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>筛简历的标准不写出来，AI 就只能瞎排。这条 prompt 让 workflow 反过来问你（用 AskUserQuestion）把 rubric 定下来，再用 rubric 排，最后再 cross-check 前十。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>招人、选供应商、挑开源库、挑 SaaS 工具——任何"标准要先说清楚再批量筛"的场景。</p>
+          <span class="prompt-tag">招聘 · 批量筛选</span>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-num">6</div>
+          <div class="prompt-title">让 AI 自己头脑风暴+打比赛选出 Top 3</div>
+          <div class="prompt-text">I need a name for this CLI tool. Use a workflow to brainstorm a bunch of options and run a tournament to pick the top 3.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>命名、品牌 slogan、tagline——这种"大量生成 + 互相对比 + 选出 Top K"的任务最适合 workflow。一个 subagent 负责生 N 个名字，另一个负责两两对比打分，跑出前 3。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>起名、起标题、起功能名、起 prompt 变体——任何需要"群体智慧"的创作。</p>
+          <span class="prompt-tag">创意 · 锦标赛</span>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-num">7</div>
+          <div class="prompt-title">跨文件重命名，workflow 自己处理一致性</div>
+          <div class="prompt-text">Use a workflow to rename our User model to Account everywhere.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>改 model 名听起来是 sed 的活，但实际涉及 ORM、路由、测试、文档、migration 等等。让 workflow 派 subagent 一个个领域改，最后用另一个 agent 反向验证"还有没有 User 残留"。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>大规模重构、品牌词统一、字段重命名、API path 改版。</p>
+          <span class="prompt-tag">代码重构 · 大规模</span>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-num">8</div>
+          <div class="prompt-title">博客草稿 vs 代码库，逐条技术断言核验</div>
+          <div class="prompt-text">Go through my blog post draft and verify every technical claim against the codebase using a workflow, I don't want to ship anything wrong.</div>
+          <p class="prompt-annotation"><strong>它解决什么：</strong>技术写作最容易踩"我以为的 API 行为 vs 实际行为"。workflow 派 subagent 抓每一句技术断言，去 codebase 里找证据，标绿/标黄/标红。</p>
+          <p class="prompt-annotation"><strong>你的场景：</strong>技术博客、文档、产品白皮书、对外演讲稿——任何"我得为内容的准确性负责"的文字。</p>
+          <span class="prompt-tag">内容质检 · 事实核查</span>
+        </div>
+
+        <p>读完这 8 个，你会发现它们有一个共同点：<strong>都不是"让 Claude 写代码"，而是"让 Claude 调度一支 AI 队伍"</strong>。这是 dynamic workflow 的真正用法——把它当成一个临时搭建的、由 Claude 当 CEO 的咨询公司。</p>
+      </section>
+
+      <section class="article-section" id="how">
+        <h2>怎么用起来：两种姿势</h2>
+        <p>Thariq 在文章里给了两种实操入口，新手从第一个开始：</p>
+        <div class="flow-container">
+          <div class="flow-step">
+            <div class="flow-num">1</div>
+            <div class="flow-content">
+              <h4>姿势一：跑内置的 /deep-research</h4>
+              <p>Claude Code 自带一个 workflow：<code>/deep-research &lt;你的问题&gt;</code>。它会让多个 subagent 从不同角度搜网、交叉验证、对每条 claim 投票，最后给你一份带引用、过滤掉"没经得起交叉验证"的报告。</p>
+              <p style="margin-top: 8px; font-size: 12px; color: var(--text-muted);">最低门槛体验 dynamic workflow 的方式。它是 Anthropic 官方拿它本身跑出来的实例。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">2</div>
+            <div class="flow-content">
+              <h4>姿势二：让 Claude 给你写一个 workflow</h4>
+              <p>用自然语言描述你的任务，结尾加一句"use a workflow"或"set up a workflow"。Claude 会现场生成 JS 脚本 → 在后台跑 → 你随时用 <code>/workflows</code> 看板上的进度。</p>
+              <p style="margin-top: 8px; font-size: 12px; color: var(--text-muted);">看板里能看到每个 phase 的 agent 数、token 消耗、已用时间。p 暂停，x 停止，r 恢复。</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num">3</div>
+            <div class="flow-content">
+              <h4>姿势三：把跑通的工作流存成自己的命令</h4>
+              <p>当你对一个 workflow 满意了，可以保存为本地 command，下次用 <code>/&lt;你的名字&gt;</code> 直接调。它会出现在 <code>/</code> 自动补全里，跟 <code>/deep-research</code> 并列。</p>
+              <p style="margin-top: 8px; font-size: 12px; color: var(--text-muted);">这就是 workflow 区别于其他三件套的关键：orchestration 本身是可复用的资产。</p>
+            </div>
+          </div>
+        </div>
+        <figure class="article-figure">
+          <img src="images/saving-workflows.png" alt="Saving dynamic workflows to ~/.claude/workflows">
+          <figcaption>原图来自 Thariq 博客 · 把跑通的 workflow 保存到 <code>~/.claude/workflows</code> 目录，下次就能直接当命令用</figcaption>
+        </figure>
+        <figure class="article-figure">
+          <img src="images/sharing-workflows.png" alt="Sharing dynamic workflows via a skill">
+          <figcaption>原图来自 Thariq 博客 · 更进一步：通过 skill 把 workflow 分享给团队/社区，作为模板而非死脚本</figcaption>
+        </figure>
+      </section>
+
+      <section class="article-section" id="caveat">
+        <h2>注意事项：什么时候不该用</h2>
+        <p>Dynamic Workflows 不是"用上就赢"。Thariq 自己也强调了三个边界：</p>
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon">!</div>
+            <div class="feature-content">
+              <h4>Token 消耗大</h4>
+              <p>跑几十上百个 subagent，token 烧得很快。Anthropic 自己说"best practices are still developing"——别拿 workflow 跑小事。</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">!</div>
+            <div class="feature-content">
+              <h4>只适合复杂高价值任务</h4>
+              <p>Thariq 的原话：<em>"dynamic workflows are best suited for complex, high value tasks."</em> 改一个 typo、写一个 hello world——别用 workflow，regular session 就够。</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">!</div>
+            <div class="feature-content">
+              <h4>Dynamic 不是"银弹"</h4>
+              <p>如果你之前用 Claude Agent SDK 或 <code>claude -p</code> 写过 static workflow，能用就行，不用为 dynamic 重写。Dynamic 的价值在"任务结构每次不一样"。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-section" id="takeaway">
+        <h2>最后说两句</h2>
+        <p>Dynamic Workflows 的真正意义不是技术更新，而是<strong>Anthropic 公开承认了一件事</strong>：通用 harness 不可能解决所有问题，未来属于"让 AI 现场造工具"。</p>
+        <p>这个方向一旦走通，整个 agent 开发的范式会变——以前是"为某个任务精心调一个 harness"，以后是"把任务描述清楚，让 AI 现场搭班子"。这跟当年从"手写汇编"到"高级语言"的迁移有点像。</p>
+        <p>对普通用户的启发是：<strong>把任务描述清楚的能力，会比写代码更值钱</strong>。Thariq 博客里那 8 个 prompt，每个都长不过 30 个英文单词，但每个都把"要做什么、不做到什么程度算完、有什么约束"讲得明明白白。这才是 dynamic workflow 时代的新基本功。</p>
+      </section>
+
+      <div class="cta-section">
+        <h2>现在就试一下</h2>
+        <p>打开 Claude Code，敲下这一行：</p>
+        <p><span class="cta-code">/deep-research 把最近半年 Claude Code 的 release notes 整理成一篇中文趋势报告</span></p>
+        <p>等 2-3 分钟，看背后几十个 agent 怎么分工、怎么交叉验证、怎么投票。这就是 dynamic workflow 的体感。</p>
+      </div>
+
+      <div class="links-section">
+        <h3>参考资料</h3>
+        <a href="https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code" target="_blank" class="link-item">
+          <div class="link-item-title">A harness for every task: dynamic workflows in Claude Code — Anthropic Blog</div>
+          <div class="link-item-url">https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code</div>
+        </a>
+        <a href="https://code.claude.com/docs/en/workflows" target="_blank" class="link-item">
+          <div class="link-item-title">Workflows — Claude Code Docs</div>
+          <div class="link-item-url">https://code.claude.com/docs/en/workflows</div>
+        </a>
+        <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" class="link-item">
+          <div class="link-item-title">Subagents — Claude Code Docs</div>
+          <div class="link-item-url">https://code.claude.com/docs/en/sub-agents</div>
+        </a>
+        <a href="https://code.claude.com/docs/en/agent-teams" target="_blank" class="link-item">
+          <div class="link-item-title">Agent Teams — Claude Code Docs</div>
+          <div class="link-item-url">https://code.claude.com/docs/en/agent-teams</div>
+        </a>
+        <a href="https://code.claude.com/docs/en/glossary#agentic-harness" target="_blank" class="link-item">
+          <div class="link-item-title">Agentic Harness — Glossary</div>
+          <div class="link-item-url">https://code.claude.com/docs/en/glossary#agentic-harness</div>
+        </a>
+        <a href="https://x.com/trq212/status/2061907337154367865" target="_blank" class="link-item">
+          <div class="link-item-title">Thariq (@trq212) 原始推文 — X</div>
+          <div class="link-item-url">https://x.com/trq212/status/2061907337154367865</div>
+        </a>
+      </div>
+
+    </div>
+
+    <footer>
+      <p>内容整理自 Thariq（Anthropic Claude Code 团队）2026.06 推文与官方博客</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </footer>
+  </div>
+
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a href="#intro" class="nav-item"><div class="nav-item-title">引子</div><div class="nav-item-desc">为什么这条推文值得一篇文</div></a>
+      <a href="#what" class="nav-item"><div class="nav-item-title">是什么</div><div class="nav-item-desc">Dynamic Workflow 定义</div></a>
+      <a href="#compare" class="nav-item"><div class="nav-item-title">对比表</div><div class="nav-item-desc">workflows vs subagents vs skills vs teams</div></a>
+      <a href="#prompts" class="nav-item"><div class="nav-item-title">8 个 prompt</div><div class="nav-item-desc">Thariq 的抄作业清单（核心）</div></a>
+      <a href="#how" class="nav-item"><div class="nav-item-title">怎么用</div><div class="nav-item-desc">三种实操姿势</div></a>
+      <a href="#caveat" class="nav-item"><div class="nav-item-title">注意</div><div class="nav-item-desc">什么时候不该用</div></a>
+      <a href="#takeaway" class="nav-item"><div class="nav-item-title">结语</div><div class="nav-item-desc">范式转移和新基本功</div></a>
+    </div>
+  </nav>
+
+  <script>
+    const toggle = document.getElementById('navToggle');
+    const panel = document.getElementById('navPanel');
+    toggle.addEventListener('click', () => panel.classList.toggle('open'));
+    panel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => panel.classList.remove('open'));
+    });
+    document.addEventListener('click', (e) => {
+      if (!toggle.contains(e.target) && !panel.contains(e.target)) panel.classList.remove('open');
+    });
+  </script>
+
+</body>
+</html>
