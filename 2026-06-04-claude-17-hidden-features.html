@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude 还能做这些：17 个被大多数人忽略的隐藏功能 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-gold: #c9a962;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.9;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: #C8161D;
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* ============ SITE HEADER ============ */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 100;
+    }
+    .site-header .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .site-name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--text-primary); }
+
+    .main-content {
+      position: relative;
+      z-index: 1;
+      padding-top: 56px;
+    }
+
+    /* ============ ARTICLE HEADER ============ */
+    .article-header {
+      padding: 64px 24px 48px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .article-header .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .article-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(201, 169, 98, 0.1);
+      border: 1px solid rgba(201, 169, 98, 0.25);
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent-gold-dim);
+      margin-bottom: 24px;
+    }
+    .article-badge .dot {
+      width: 5px; height: 5px;
+      background: var(--accent-gold);
+      border-radius: 50%;
+    }
+    .article-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(30px, 4.5vw, 44px);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      line-height: 1.25;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .article-title .highlight { color: #C8161D; }
+    .article-meta {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .article-meta a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--text-muted);
+    }
+    .article-meta a:hover { color: var(--accent-gold-dim); border-color: var(--accent-gold-dim); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* ============ ARTICLE BODY ============ */
+    .article-body {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .article-section { margin-bottom: 56px; }
+    .article-section:last-child { margin-bottom: 0; }
+
+    h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    h3 .num {
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--accent-gold-dim);
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    p { font-size: 15px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.9; }
+    p.lead { font-size: 17px; color: var(--text-primary); line-height: 1.8; margin-bottom: 24px; }
+    p strong { color: var(--text-primary); font-weight: 500; }
+    p em { font-style: italic; }
+
+    .source-quote {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 12px 0 12px 16px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 16px 0 24px;
+      font-style: italic;
+    }
+    .source-quote cite {
+      display: block;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+    .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .source-quote a { color: var(--accent-red); text-decoration: none; font-style: normal; }
+    .source-quote a:hover { text-decoration: underline; }
+
+    /* ============ PULL QUOTE ============ */
+    .pull-quote {
+      padding: 48px 0;
+      text-align: center;
+      margin: 40px 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(20px, 3vw, 24px);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--text-primary);
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-style: normal;
+      font-weight: 500;
+      margin: 0 8px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 14px;
+    }
+
+    /* ============ FEATURE ============ */
+    .feature {
+      padding: 36px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .feature:last-child { border-bottom: none; }
+    .feature-body p { font-size: 15px; }
+
+    /* ============ PROMPT CARD ============ */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin: 24px 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      border: 1px solid transparent;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .prompt-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+    }
+    .prompt-card-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-red);
+    }
+    .prompt-card-tag .tag-sep { color: #4a4a4e; margin: 0 2px; }
+    .prompt-card-tag .tag-name { color: var(--accent-gold); letter-spacing: 0.15em; }
+    .prompt-card-tools {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .lang-pill-group {
+      display: inline-flex;
+      border: 1px solid #2a2a2e;
+      border-radius: 100px;
+      padding: 3px;
+    }
+    .lang-pill {
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: #8a8a8e;
+      background: transparent;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 100px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    .lang-pill:hover { color: #e8e8ea; }
+    .lang-pill.active {
+      background: #2a2a2e;
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-text {
+      display: none;
+      padding: 24px 28px;
+      color: #e8e8ea;
+      font-family: 'Inter', 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13.5px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+    }
+    .prompt-text.active { display: block; }
+
+    /* ============ REFERENCES ============ */
+    .references h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .references-intro {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .ref-group {
+      margin-bottom: 28px;
+    }
+    .ref-group-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 12px;
+    }
+    .ref-list {
+      display: flex;
+      flex-direction: column;
+    }
+    .ref-item {
+      display: block;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-decoration: none;
+      transition: padding-left 0.2s ease;
+    }
+    .ref-item:hover {
+      padding-left: 6px;
+    }
+    .ref-item:last-child { border-bottom: none; }
+    .ref-item-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .ref-item:hover .ref-item-title { color: var(--accent-red); }
+    .ref-item-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 4px;
+    }
+    .ref-item-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    /* ============ CLOSING ============ */
+    .closing {
+      padding: 56px 0 32px;
+      text-align: center;
+    }
+    .closing-quote {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(20px, 3vw, 24px);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--text-primary);
+      max-width: 540px;
+      margin: 0 auto 24px;
+    }
+    .closing-quote strong {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-style: italic;
+    }
+    .closing-cta {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .closing-cta-2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-top: 32px;
+    }
+
+    /* ============ FOOTER ============ */
+    .article-footer {
+      text-align: center;
+      padding: 40px 24px 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .article-footer .source {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 18px;
+    }
+    .article-footer .source a {
+      color: var(--accent-gold-dim);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--accent-gold-dim);
+    }
+    .article-footer .source a:hover { color: var(--accent-red); border-color: var(--accent-red); }
+
+    /* ============ FLOATING NAV ============ */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 460px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: 400px; }
+    .nav-item {
+      display: block;
+      padding: 12px 18px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      color: var(--accent-gold-dim);
+      margin-right: 8px;
+    }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 720px) {
+      .article-header { padding: 48px 20px 36px; }
+      .article-title { font-size: 28px; }
+      .article-meta { flex-direction: column; gap: 6px; font-size: 12px; }
+      .article-section { margin-bottom: 40px; }
+      h2 { font-size: 20px; }
+      h3 { font-size: 16px; }
+      .pull-quote { padding: 40px 0; margin: 32px 0; }
+      .pull-quote-text { font-size: 18px; }
+      .feature { padding: 28px 0; }
+      .prompt-card-head { padding: 12px 14px; }
+      .prompt-text { padding: 18px 16px; font-size: 12.5px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 260px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <div class="main-content">
+
+    <!-- ============ HERO ============ -->
+    <section class="article-header">
+      <div class="container">
+        <div class="article-badge"><span class="dot"></span>Claude · 隐藏功能图鉴</div>
+        <h1 class="article-title">Claude 还能做<span class="highlight">这些</span></h1>
+        <div class="article-meta">
+          <span>by 朱有以</span>
+          <span>译自 <a href="https://x.com/AnatoliKopadze/status/2057813254617858078" target="_blank" rel="noopener">@AnatoliKopadze</a></span>
+          <span>2026/06/04</span>
+          <span>约 20 分钟</span>
+        </div>
+        <p class="article-desc">Claude 能做的不只是聊天。这篇图鉴译自一条 370 万阅读的 X 长文——17 个被大多数人忽略的隐藏功能，附 12 张可一键复制的 Prompt 卡片。卡内中/EN 切换，中文版给中文 Claude 用，英文版给英文 Claude 用。</p>
+      </div>
+    </section>
+
+    <!-- ============ BODY ============ -->
+    <div class="article-body">
+
+      <!-- INTRO -->
+      <section class="article-section" id="intro">
+        <p class="lead">大多数用 Claude 的人，只用到了 <strong>10%</strong>。剩下 90% 是大多数人不知道的隐藏功能、独立产品、角色设定——这篇文章一次性整理出来。</p>
+        <p>原文按三类组织：<strong>常规 Claude 里的隐藏特性</strong>、<strong>给 Claude 派一个角色</strong>、<strong>鲜为人知的产品级功能</strong>。每一个都配一张可直接复制到对话框的 Prompt 卡片。</p>
+        <p>挑一个今天就设起来。每个都用不了几分钟，但回报是每天都在的。</p>
+      </section>
+
+      <!-- ============ GROUP 1 ============ -->
+      <section class="article-section" id="group-1">
+        <h2>常规 Claude 里的隐藏特性</h2>
+        <p>不需要新工具、不需要付费计划——这 4 个功能就在你每天打开的那个 Claude 里，<strong>大多数人没碰过</strong>。</p>
+
+        <!-- 01 Projects -->
+        <article class="feature" id="feat-01">
+          <h3><span class="num">01</span>Projects — Claude 真的记得你</h3>
+          <div class="feature-body">
+            <p>每次开新对话，Claude 都从零开始——不知道你的名字、工作、偏好，什么都不知道。大多数人接受这个现实，每次都重新解释一遍。</p>
+            <p>Projects 解决这个问题：创建一个项目，上传你的文档，写好常驻指令——Claude 永久记住所有内容。下周再打开，它直接从上次停下的地方继续。</p>
+            <p>如果你从来没碰过 Projects，<strong>这是这篇图鉴里最该先做的一件事</strong>。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Projects</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">你现在是我的内容研究助手。我做的是一份给技术读者看的 AI 和加密货币 newsletter。
+
+默认我的读者已经知道基础概念——不要解释什么是 LLM、什么是区块链。
+
+当我给你一个话题或文章，你的任务是：
+1. 找出 3 个最反直觉、最出人意料的角度
+2. 找到读者可能错过的、和近期事件的联系
+3. 建议怎么把它讲成"故事"，而不是"摘要"
+
+语气：直接，不用官方话术，不写废话。
+格式：短段落。除非我要求，不用项目符号。
+永远不要以"很好的问题"或"当然"开头。</pre>
+            <pre class="prompt-text" data-lang="en">You are my content research assistant. I run a newsletter about AI and crypto for a technical audience.
+
+Always assume my readers know the basics. Don't explain what an LLM is or what a blockchain is.
+
+When I share a topic or article, your job is to:
+1. Identify the 3 most counterintuitive or surprising angles
+2. Find connections to recent events I might have missed
+3. Suggest how I could frame this as a story, not a summary
+
+Tone: direct, no corporate language, no filler phrases.
+Format: short paragraphs, no bullet points unless I ask.
+Never start a response with "Great question" or "Certainly".</pre>
+          </div>
+        </article>
+
+        <!-- 02 Artifacts -->
+        <article class="feature" id="feat-02">
+          <h3><span class="num">02</span>Artifacts — 在聊天里就能跑的应用</h3>
+          <div class="feature-body">
+            <p>很多人以为 Claude 只能产出文字，造不出能用的东西。这是错的。</p>
+            <p>Artifacts 是 Claude 在聊天里直接造一个能跑的东西——不是需要你复制走的代码块，是侧边栏里的<strong>活产品</strong>。计算器、习惯打卡器、游戏、带图表的 dashboard——打开就能用、点点就能用、不用离开对话。</p>
+            <p>SVG 图形、可交互图表、Mermaid 图全都支持。免费版就能用，大多数人没试过。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Artifacts</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">给我做一个习惯打卡器，要是一个能跑的 web app。
+
+我要打卡 5 个每日习惯。
+
+每天可以勾选完成。
+
+每个习惯显示一个 7 天连续打卡计数器。
+
+漏一天，连续记录就重置。
+
+设计：深色背景，简洁极简风。
+
+让复选框点起来有满足感——完成时加一个小动画。
+
+数据要在刷新页面后还保留。</pre>
+            <pre class="prompt-text" data-lang="en">Build me a habit tracker as a working web app.
+
+I want to track 5 daily habits.
+
+Each day I can check them off.
+
+Show a 7-day streak counter for each habit.
+
+If I miss a day, the streak resets.
+
+Design: dark background, clean minimal look.
+
+Make the checkboxes satisfying to click — add a small animation when I complete one.
+
+The data should persist if I refresh the page.</pre>
+          </div>
+        </article>
+
+        <!-- 03 Adaptive Thinking -->
+        <article class="feature" id="feat-03">
+          <h3><span class="num">03</span>Adaptive Thinking — 另一种级别的推理</h3>
+          <div class="feature-body">
+            <p>大多数 Claude 用户从来没开过这个。Extended Thinking 是一种让 Claude 在回答你之前<strong>逐步推理</strong>的模式——你能看到整个思考过程。</p>
+            <p>简单问题不需要它。复杂决策、战略分析、任何需要 Claude 真正"想"而不是"模式匹配"的场景，输出质量差异明显。</p>
+            <p>打开它，再用同样的问题问一次。对比答案。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Adaptive Thinking</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">我要在两个选项之间做决定，希望你回答前先认真想清楚。
+
+选项 A：[描述选项 A]
+选项 B：[描述选项 B]
+
+我的情况：[你的背景、约束条件、什么对你最重要]
+
+回答前先想清楚这几件事：
+- 每个选项的第二层和第三层后果是什么
+- 我可能在情绪上高估或低估了什么
+- 我可能漏掉了什么信息——这些信息一旦补上，会改变决定
+- 如果事情出岔子，哪个选项的下行保护更好
+
+然后给出你的真实推荐和理由。</pre>
+            <pre class="prompt-text" data-lang="en">I'm deciding between two options and I want you to think through this carefully before answering.
+
+Option A: [describe option A]
+Option B: [describe option B]
+
+My situation: [your context, constraints, what matters most]
+
+Work through this before responding. Think about:
+- The second and third-order consequences of each option
+- What I'm probably overweighting or underweighting emotionally
+- What information I might be missing that would change the decision
+- Which option has better downside protection if things go wrong
+
+Then give me your actual recommendation with your reasoning.</pre>
+          </div>
+        </article>
+
+        <!-- 04 Memory -->
+        <article class="feature" id="feat-04">
+          <h3><span class="num">04</span>Memory — Claude 知道你是谁</h3>
+          <div class="feature-body">
+            <p>打开 Memory 后，Claude 会随时间给你建一个画像——你的工作、你的项目、你的沟通风格、你目前在做的事。</p>
+            <p>开一个全新对话，它已经知道上下文。你再也不用自我介绍。</p>
+            <p>默认是<strong>关的</strong>。大多数人不知道有这功能。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Memory</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">把这些记下来——以后不用再问：
+
+我叫 [姓名]。我在 [公司或项目] 担任 [角色]。
+我目前主要在做 [你正在做的工作]。
+我的读者 / 客户是 [谁]。
+
+当我请你帮忙时，默认按这套背景理解，除非我另外说明。
+我偏好的沟通风格：[直接 / 详细 / 随意 / 正式]。
+我特别讨厌的回复习惯：[例如项目符号、长开场白、过度免责声明]。
+
+现在就把这些存进 Memory。</pre>
+            <pre class="prompt-text" data-lang="en">I want you to remember the following about me so you don't need to ask again:
+
+My name is [name]. I work as [role] at [company or project].
+My main focus right now is [what you're working on].
+My audience or customers are [who they are].
+
+When I ask for help, always assume this context unless I say otherwise.
+My preferred communication style: [direct / detailed / casual / formal].
+Things I find annoying in responses: [e.g. bullet points, long intros, excessive caveats].
+
+Save all of this to memory now.</pre>
+          </div>
+        </article>
+      </section>
+
+      <!-- PULL QUOTE 1 -->
+      <div class="pull-quote">
+        <p class="pull-quote-text">Claude 不必是 <span class="arrow">"一个 AI 助手"</span>。<br>给它一个角色，它会全情投入。</p>
+        <p class="pull-quote-caption">Give Claude a Role</p>
+      </div>
+
+      <!-- ============ GROUP 2 ============ -->
+      <section class="article-section" id="group-2">
+        <h2>给 Claude 派一个角色</h2>
+        <p>Claude 不必是"一个 AI 助手"。给它一个具体的角色，它会全情投入——<strong>它会怎么质问你、它在哪些点上不退让、它拒绝放过什么</strong>，都会变。复制下面任意一条 Prompt 到新对话开头即可。</p>
+
+        <!-- 05 Personal psychologist -->
+        <article class="feature" id="feat-05">
+          <h3><span class="num">05</span>个人心理咨询师</h3>
+          <div class="feature-body">
+            <p>大多数人把 Claude 当成"点头机器"。描述问题，Claude 说"听起来很不容易"，然后给五个项目符号建议。这不是好的心理咨询该有的样子。</p>
+            <p>这条 Prompt 把 Claude 变成接近 CBT 治疗师——<strong>用提问代替给答案，挑战你的思维而不是认可它</strong>。</p>
+            <p>适合反复纠结的决定、抓不住的焦虑、需要清晰外部视角的任何场景。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Psychologist</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">你是一位有 20 年经验的认知行为治疗师。我要跟你说一件我正在纠结的事。
+
+你的做法：
+- 不要立刻给建议。先提问，帮我看清自己的思维模式。
+- 留意认知扭曲——灾难化、非黑即白、读心术、算命式预言——发现就指出来。
+- 一次只问一个问题。别用问题把我淹没。
+- 当我通过你的提问自己得出结论——那就是目标。不要直接把答案给我。
+- 保持温暖但诚实。当我的思维明显扭曲时，不要附和。
+- 如果我明显在回避什么重要的事，直接点出来。
+
+不要做临床开场。直接问我"怎么了"。</pre>
+            <pre class="prompt-text" data-lang="en">You are a cognitive behavioral therapist with 20 years of experience. I'm going to share something I'm struggling with.
+
+Your approach:
+- Don't give advice immediately. Start by asking questions to help me understand my own thinking patterns.
+- Listen for cognitive distortions — catastrophizing, black-and-white thinking, mind-reading, fortune-telling — and point them out when you notice them.
+- Ask one question at a time. Don't overwhelm me.
+- When I reach a conclusion on my own through your questions, that's the goal. Don't hand me the answer.
+- Be warm but honest. Don't validate me if my thinking is clearly distorted.
+- If I seem to be avoiding something important, name it directly.
+
+Don't start with a clinical introduction. Just ask me what's going on.</pre>
+          </div>
+        </article>
+
+        <!-- 06 The hard mentor -->
+        <article class="feature" id="feat-06">
+          <h3><span class="num">06</span>硬核导师</h3>
+          <div class="feature-body">
+            <p>默认 Claude 是顺着你的——给你的想法添砖加瓦、支持你的推理、找正面。这几乎总是不对的。</p>
+            <p>这条 Prompt 把这个关掉。Claude <strong>不再肯定你，开始压力测试</strong>——找薄弱的假设、缺漏的考虑、你的计划会断在哪。</p>
+            <p>会让你不舒服。这正是它有效的原因。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Hard Mentor</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">你是一个极其严厉的导师。你创业过、失败过好几次。看过一百个人带着完全相同的自信犯一模一样的错。
+
+你的工作不是鼓励我——是保护我，在我自己花大钱买教训之前。
+
+规则：
+- 觉得我错就直接说错。说具体。
+- 指出我看不到的东西——尤其那些因为太想让自己的计划成功而回避掉的部分。
+- 问那些我自己没想到要问的难题。
+- 如果是坏主意，直接说它是坏主意。不要"另一方面"地平衡一下。
+- 每次回复以一句话结尾——这是我行动前最该想清楚的一件事。
+
+我要说一个想法了。别对它手软。</pre>
+            <pre class="prompt-text" data-lang="en">You are a brutally honest mentor. You've built and failed at multiple companies. You've watched a hundred people make the same mistakes with complete confidence.
+
+Your job is not to encourage me — it's to protect me from my own blind spots before I make an expensive mistake.
+
+Rules:
+- Disagree with me when you think I'm wrong. Be specific about why.
+- Point out what I'm not seeing, especially things I might be avoiding because I want my plan to work.
+- Ask hard questions I haven't thought to ask myself.
+- If something is a bad idea, say it's a bad idea. Don't balance it with "on the other hand..."
+- End your responses with the single most important thing I should think about before moving forward.
+
+I'm about to share an idea. Do not be kind about it.</pre>
+          </div>
+        </article>
+
+        <!-- 07 Personal trainer -->
+        <article class="feature" id="feat-07">
+          <h3><span class="num">07</span>私人教练</h3>
+          <div class="feature-body">
+            <p>通用健身建议到处都有——它不照顾你的日程、伤病、器械、真实目标。</p>
+            <p>把你的真实数字给 Claude，它会给你一份真的计划。不是模板，不是哪个健身网站都能找到的——一份<strong>基于你实际情况的程序</strong>。你每周反馈，它按反馈调整。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Personal Trainer</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">你是一位资深私人教练和运动营养师。给我制定一套完整的训练计划。
+
+我的情况：
+年龄：[年龄]
+当前体重 / 体成分：[详情]
+目标：[减脂 / 增肌 / 提升耐力 / 全面健康]
+可用器械：[健身房 / 家庭 / 只有哑铃 / 等等]
+每周能训练的天数：[数字]
+每次训练时间：[分钟]
+伤病或限制：[详情或"无"]
+当前体能水平：[初级 / 中级 / 高级]
+
+给我一个 12 周计划。每周给完整安排——动作、组数、次数、组间歇。解释你为什么这样安排——我想理解逻辑，不只是照做。开始训练后我每周汇报，你根据情况调整。</pre>
+            <pre class="prompt-text" data-lang="en">You are an expert personal trainer and sports nutritionist. I want you to build me a complete training program.
+
+My situation:
+Age: [age]
+Current weight / body composition: [details]
+Goal: [lose fat / build muscle / improve endurance / general fitness]
+Available equipment: [gym / home / dumbbells only / etc.]
+Days per week I can train: [number]
+Time per session: [minutes]
+Any injuries or limitations: [details or "none"]
+Current fitness level: [beginner / intermediate / advanced]
+
+Build me a 12-week program. Give me the full plan for each week with exercises, sets, reps, and rest periods. Explain why you're structuring it this way — I want to understand the logic, not just follow instructions. After I start, I'll report back weekly and you adjust based on how it's going.</pre>
+          </div>
+        </article>
+
+        <!-- 08 Practice a difficult conversation -->
+        <article class="feature" id="feat-08">
+          <h3><span class="num">08</span>演练一场难谈的对话</h3>
+          <div class="feature-body">
+            <p>大多数人带着没准备好的状态走进难谈的对话——他们知道自己要说什么，不知道对方<em>实际</em>会怎么回。</p>
+            <p>Claude 扮演对方，演得像。它按对方真实的样子回——你说服力不够时它就反驳——<strong>让你练出一个好结果</strong>。练几次之后，真正的对话就容易了。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Difficult Talk</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">我要准备一场难谈的对话。请你扮演对方让我练。
+
+对方：[描述这个人——老板、客户、联合创始人等]
+我要说什么：[我要问或要告诉对方的事]
+为什么难：[我担心什么 / 可能出什么事]
+这个人是什么样的：[性格、通常的反应方式、在意什么]
+
+全程保持角色。对方的反应要符合这个人的真实反应——不是按我希望他反应的方式。我说理不充分时，反驳。
+
+每次对话后，短暂退出角色，告诉刚才什么有效、什么无效——然后回到角色。最后给我一份完整复盘：我做得好的、要改的、最该带进真实对话的几条要点。
+
+现在进入角色。等我先开。</pre>
+            <pre class="prompt-text" data-lang="en">I need to prepare for a difficult conversation. I want you to roleplay as the other person so I can practice.
+
+The person: [describe who they are — boss, client, co-founder, etc.]
+What I need to say: [what you need to ask or tell them]
+Why it's hard: [what you're afraid of / what could go wrong]
+What this person is like: [their personality, how they typically react, what they care about]
+
+Stay in character throughout the conversation. Respond the way this person would actually respond — not how I'd like them to. If I say something weak or unconvincing, push back on it.
+
+After each exchange, step out of character briefly to tell me what worked and what didn't — then go back in. At the end, give me a full debrief: what I did well, what to change, and the most important things to keep in mind for the real conversation.
+
+Start in character. Wait for me to open.</pre>
+          </div>
+        </article>
+
+        <!-- 09 Devil's advocate -->
+        <article class="feature" id="feat-09">
+          <h3><span class="num">09</span>魔鬼代言人</h3>
+          <div class="feature-body">
+            <p>你已经做了决定。想过所有的反对意见。你确信。</p>
+            <p>这正是该让 Claude 攻击这个决定的时刻——不是客气地说"几个小顾虑"，是<strong>完整的反面意见、最现实的几种失败方式、因为你太想它成所以看不到的那些东西</strong>。</p>
+            <p>现在花五分钟。在你 commit 之前。不是之后。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Devil's Advocate</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">我已经做了决定。在我真正执行之前，请你给我做出最强有力的反面意见。
+
+决定：[准确描述你打算做什么]
+我的理由：[为什么我觉得这是个好主意]
+我已经想过的反对点：[你已经想过的反对]
+
+你的任务：
+- 做出最强有力的反对论证。
+- 不要平衡列出正面。我已经相信它——我需要反方。
+- 找出我可能错的假设。
+- 描述最现实的 3 种失败或反噬方式。
+- 告诉我我可能低估了什么。
+- 告诉我——我需要在什么前提下，这才会是个真的坏主意。
+
+要狠。如果是错，我得现在知道。</pre>
+            <pre class="prompt-text" data-lang="en">I've made a decision and I want you to build the strongest possible case against it before I commit.
+
+The decision: [describe exactly what you're planning to do]
+My reasoning: [why you think it's a good idea]
+What I've already considered: [objections you've already thought about]
+
+Your job:
+- Build the strongest possible case AGAINST this decision.
+- Don't balance it with positives. I already believe in it — I need the counterargument.
+- Find the assumptions I'm making that could be wrong.
+- Describe the 3 most realistic ways this fails or backfires.
+- Tell me what I'm probably underestimating.
+- Tell me what I would need to believe for this to be a genuinely bad idea.
+
+Be ruthless. If this is a mistake, I need to know now.</pre>
+          </div>
+        </article>
+      </section>
+
+      <!-- PULL QUOTE 2 -->
+      <div class="pull-quote">
+        <p class="pull-quote-text">不只是一个聊天框。<br>Claude 矩阵里还有 <span class="arrow">8 个</span> 独立产品。</p>
+        <p class="pull-quote-caption">The Anthropic Matrix</p>
+      </div>
+
+      <!-- ============ GROUP 3 ============ -->
+      <section class="article-section" id="group-3">
+        <h2>鲜为人知的产品级功能</h2>
+        <p>最后这 8 个是<strong>独立的产品或工具</strong>——Anthropic 矩阵里的其他成员。不只是网页版那个 Claude。</p>
+
+        <!-- 10 Claude in Chrome -->
+        <article class="feature" id="feat-10">
+          <h3><span class="num">10</span>Claude in Chrome — Claude 看见你看见的东西</h3>
+          <div class="feature-body">
+            <p>大多数人把 Claude 单独开一个标签页，然后手动复制粘贴。Claude in Chrome 是浏览器扩展，让 Claude <strong>完整看到你当前激活的标签页并能在上面操作</strong>——读页面、点链接、填表单、跳到新 URL。你用大白话描述任务，然后走开。</p>
+          </div>
+          <div class="source-quote">
+            <strong>How to enable</strong>
+            在 Chrome 商店搜索 <em>Claude for Chrome</em> → 安装 → 用你的 Claude 账号登录。点击扩展图标打开侧边栏，Claude 就能看到并操作任何打开的页面。
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Chrome Agent</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">我现在在这个招聘列表页上。
+
+遍历所有可见的岗位，提取：岗位名、公司名、薪资范围（如显示）、前 3 个要求。
+
+给我做一个对比表，按薪资从高到低排序。
+
+如果有多页，点到下一页继续，直到覆盖所有结果。</pre>
+            <pre class="prompt-text" data-lang="en">I'm on this job listings page.
+
+Go through every listing visible and extract: job title, company name, salary range if shown, and the top 3 requirements.
+
+Build me a comparison table sorted by salary, highest first.
+
+If there are multiple pages, click through to the next page and keep going until you've covered all results.</pre>
+          </div>
+        </article>
+
+        <!-- 11 Claude Cowork -->
+        <article class="feature" id="feat-11">
+          <h3><span class="num">11</span>Claude Cowork — Claude 住在你的桌面上</h3>
+          <div class="feature-body">
+            <p>网页版 Claude 看不到你的电脑、看不到你的文件，所有东西你都要手动粘贴。</p>
+            <p>Cowork 是一个桌面应用，给 Claude <strong>直接访问文件系统的能力</strong>——它读你的真实文件、编辑文档、创建新文件、整理文件夹——不用往聊天框里复制任何东西。</p>
+          </div>
+          <div class="source-quote">
+            <strong>How to enable</strong>
+            桌面端下载安装 Cowork，用你的 Claude 账号登录。打开后会自动连接本地文件系统。
+          </div>
+        </article>
+
+        <!-- 12 Scheduled Tasks -->
+        <article class="feature" id="feat-12">
+          <h3><span class="num">12</span>Scheduled Tasks — Claude 边睡边干活</h3>
+          <div class="feature-body">
+            <p>大多数人把 Claude 当成需要主动激活的东西——开个聊天、敲个请求、等输出、关掉标签页。</p>
+            <p>Scheduled Tasks 改写这个：你设置一次任务，Claude 在你选定的时间和频率<strong>自动执行</strong>——不需要你触发。每天早上、每周一、每小时，Claude 跑任务把结果存进你的文件夹。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Prompt · <span class="tag-sep">·</span> <span class="tag-name">Scheduled Task</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">每个工作日早上 7:30，做这些事：
+1. 搜集过去 24 小时最重要的 AI 和加密新闻
+2. 挑出最重要的 5 条——重点是反直觉、出人意料、对 builder 和投资人真有影响的
+3. 每条写：标题、两句摘要、为什么重要
+4. 存到我的 /briefs 文件夹，命名为 "brief-[date].md"
+
+语气直接、分析、不写废话。3 分钟能读完。</pre>
+            <pre class="prompt-text" data-lang="en">Every weekday morning at 7:30am, do the following:
+1. Search for the top AI and crypto news from the last 24 hours
+2. Pick the 5 most important stories — focus on things that are surprising, counterintuitive, or have real implications for builders and investors
+3. For each story write: headline, 2-sentence summary, why it matters
+4. Save the result as "brief-[date].md" in my /briefs folder
+
+Keep the tone direct and analytical. No fluff. Readable in 3 minutes.</pre>
+          </div>
+        </article>
+
+        <!-- 13 Skills in Cowork -->
+        <article class="feature" id="feat-13">
+          <h3><span class="num">13</span>Skills in Cowork — 像装插件一样装新能力</h3>
+          <div class="feature-body">
+            <p>Skills 是预制好的指令集，给 Claude 在 Cowork 里的特定能力。不用每次都解释你想要什么——<strong>装一次 skill，Claude 就知道怎么干</strong>。可能是做 PPT、处理 PDF、跑某个特定工作流。</p>
+            <p>像手机上的 App：基础手机没有它们也能用，但装对了 App，能做的事情多很多。</p>
+          </div>
+          <div class="source-quote">
+            <strong>How to enable</strong>
+            Cowork → <em>Customize</em> → <em>Skills</em> 看已装列表。要新增，左侧栏点 <em>Browse plugins</em> → 找插件 → 安装。插件里的 skill 自动出现在 Skills 标签，Claude 在任务需要时会自动调用。
+          </div>
+        </article>
+
+        <!-- 14 CLAUDE.md -->
+        <article class="feature" id="feat-14">
+          <h3><span class="num">14</span>CLAUDE.md — 每个会话自动读的规则</h3>
+          <div class="feature-body">
+            <p>在 Cowork 和 Claude Code 里，你可以在项目文件夹下放一个 CLAUDE.md 文件。Claude 在<strong>每个会话开始时自动读它</strong>——不用你提醒。</p>
+            <p>你的代码规范、写作风格、术语、品牌语调——写一次，Claude 在那个项目里的每个会话都遵守。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Template · <span class="tag-sep">·</span> <span class="tag-name">CLAUDE.md</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh"># 项目：AI Newsletter
+
+## 关于这个项目
+每周给 builder 和投资人看的 AI 和加密 newsletter，35,000 订阅。语气直接、分析、偶尔不敬。
+
+## 写作规则
+- 短段落，最多 3 句
+- 编辑内容里不用项目符号，只写正文
+- 不用长破折号。用连字符或换种说法
+- 数字比形容词有力。写"省 3 小时"而不是"省下可观时间"
+- 永远不用："深入"、"突破性"、"颠覆性"、"用（作动词）"、"善用"
+
+## 内容规则
+- 默认读者知道 LLM 是什么。不要解释基础。
+- 先讲最出人意料或最反直觉的点
+- 每篇都要有具体的"所以呢"——读者读完后该怎么想、该怎么做
+
+## 文件结构
+- 草稿进 /drafts
+- 发布文章进 /published，日期前缀：YYYY-MM-DD-title.md
+- 调研笔记进 /research</pre>
+            <pre class="prompt-text" data-lang="en"># Project: AI Newsletter
+
+## About this project
+Weekly newsletter about AI and crypto for builders and investors. 35,000 subscribers. Tone is direct, analytical, occasionally irreverent.
+
+## Writing rules
+- Short paragraphs. Max 3 sentences.
+- No bullet points in editorial content. Prose only.
+- No em dashes. Use hyphens or restructure the sentence.
+- Numbers beat adjectives. Write "saves 3 hours" not "saves significant time".
+- Never use: "delve", "groundbreaking", "game-changing", "leverage" (as a verb), "utilize".
+
+## Content rules
+- Assume the reader knows what an LLM is. Don't explain basics.
+- Lead with the most surprising or counterintuitive thing.
+- Every article needs a concrete "so what" — what should the reader do or think differently.
+
+## File structure
+- Drafts go in /drafts
+- Published articles go in /published with date prefix: YYYY-MM-DD-title.md
+- Research notes go in /research</pre>
+          </div>
+        </article>
+
+        <!-- 15 Claude Code -->
+        <article class="feature" id="feat-15">
+          <h3><span class="num">15</span>Claude Code — 终端里写、测、修代码的 AI</h3>
+          <div class="feature-body">
+            <p>有些人还不知道可以拿 Claude 写代码——不是片段，是完整生产级代码、完整功能、复杂重构。你用大白话描述需要什么，Claude 写出来。</p>
+            <p>Claude Code 更进一步——它<strong>直接在你的开发环境里工作</strong>，不是聊天窗口。它读你的真实代码库、写新代码、跑测试、读报错、循环修 bug 直到任务完成。</p>
+            <p>集成 VS Code 和 JetBrains。丢进 GitHub Actions，它能自动审或写 PR，你完全不用动。</p>
+          </div>
+          <div class="source-quote">
+            <strong>How to enable</strong>
+            终端装 Claude Code CLI，用 Claude 账号登录即可。VS Code / JetBrains 有官方插件。
+          </div>
+        </article>
+
+        <!-- 16 Claude Design -->
+        <article class="feature" id="feat-16">
+          <h3><span class="num">16</span>Claude Design — 视觉工作的 AI</h3>
+          <div class="feature-body">
+            <p>大多数人不知道这个产品。Claude Design 是 Anthropic Labs 的<strong>独立工具</strong>——做产品一页纸、pitch deck、原型、着陆页布局。描述你要什么，Claude 给你造出来，导出 PPTX、Canva、PDF 或 HTML。</p>
+            <p>对不是设计师的人，它把 3 小时的 Figma 替换成 10 分钟的对话。</p>
+          </div>
+          <div class="source-quote">
+            <strong>Direct link</strong>
+            访问 <a href="https://claude.ai/design" target="_blank" rel="noopener">claude.ai/design</a>——直达链接，无需额外步骤。
+          </div>
+        </article>
+
+        <!-- 17 Prompt Caching -->
+        <article class="feature" id="feat-17">
+          <h3><span class="num">17</span>Prompt Caching — 90% API 成本下降（开发者向）</h3>
+          <div class="feature-body">
+            <p>写给在 Claude API 上做开发的开发者。如果你的请求带一个大的重复上下文——长 system prompt、参考文档、代码库——你每个调用都在重复为这些 token 付费。</p>
+            <p>Prompt Caching 把这些内容存到服务端：下次调用复用缓存，不重新处理。最多 <strong>90% 的 token 成本下降</strong>，响应明显更快。如果你在做规模化产品而没用这个，你就是在白白扔钱。</p>
+            <p>在要缓存的内容块上加 <code style="background:var(--bg-secondary);padding:2px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:0.88em">"cache_control": {"type": "ephemeral"}</code>。缓存有效期 5 分钟，每次调用都重置计时器。适用于 system prompt、大型文档、工具定义。</p>
+          </div>
+          <div class="prompt-card">
+            <div class="prompt-card-head">
+              <span class="prompt-card-tag">Code · <span class="tag-sep">·</span> <span class="tag-name">cache_control</span></span>
+              <div class="prompt-card-tools">
+                <div class="lang-pill-group" role="group" aria-label="切换提示词语言">
+                  <button class="lang-pill active" data-lang="zh" type="button">中</button>
+                  <button class="lang-pill" data-lang="en" type="button">EN</button>
+                </div>
+                <button class="copy-btn" type="button">Copy</button>
+              </div>
+            </div>
+            <pre class="prompt-text active" data-lang="zh">{
+  "model": "claude-opus-4-6",
+  "system": [
+    {
+      "type": "text",
+      "text": "[你的长 system prompt 或参考文档]",
+      "cache_control": {"type": "ephemeral"}
+    }
+  ],
+  "messages": [
+    {
+      "role": "user",
+      "content": "[用户消息 - 每次调用都变]"
+    }
+  ]
+}
+
+// System prompt 在第一次调用后被缓存。
+// 5 分钟内后续每次调用都复用缓存。
+// 命中缓存 = 便宜 90% + 响应更快。</pre>
+            <pre class="prompt-text" data-lang="en">{
+  "model": "claude-opus-4-6",
+  "system": [
+    {
+      "type": "text",
+      "text": "[your large system prompt or reference document]",
+      "cache_control": {"type": "ephemeral"}
+    }
+  ],
+  "messages": [
+    {
+      "role": "user",
+      "content": "[user message — this changes each call]"
+    }
+  ]
+}
+
+// System prompt gets cached after the first call.
+// Every subsequent call within 5 minutes reuses the cache.
+// Cache hit = 90% cheaper + faster response.</pre>
+          </div>
+        </article>
+      </section>
+
+      <!-- ============ REFERENCES ============ -->
+      <section class="article-section references" id="references">
+        <h2>延伸阅读</h2>
+        <p class="references-intro">原文出处 + 相关官方入口 + 站内同主题文章。</p>
+
+        <div class="ref-group">
+          <div class="ref-group-title">原文与作者</div>
+          <div class="ref-list">
+            <a class="ref-item" href="https://x.com/AnatoliKopadze/status/2057813254617858078" target="_blank" rel="noopener">
+              <div class="ref-item-title">Claude Can Do All of This. Most People Have No Idea. — @AnatoliKopadze</div>
+              <div class="ref-item-desc">本文译自这条 370 万阅读的 X 长文，作者 Anatoli Kopadze 整理了 Claude 全部 17 项能力的完整指南。</div>
+              <div class="ref-item-url">x.com/AnatoliKopadze/status/2057813254617858078</div>
+            </a>
+            <a class="ref-item" href="https://x.com/AnatoliKopadze" target="_blank" rel="noopener">
+              <div class="ref-item-title">@AnatoliKopadze — 作者 X 主页</div>
+              <div class="ref-item-desc">关注原作者，看后续的 Claude 教程和提示词合集。</div>
+              <div class="ref-item-url">x.com/AnatoliKopadze</div>
+            </a>
+          </div>
+        </div>
+
+        <div class="ref-group">
+          <div class="ref-group-title">官方入口</div>
+          <div class="ref-list">
+            <a class="ref-item" href="https://claude.ai/projects" target="_blank" rel="noopener">
+              <div class="ref-item-title">Projects — Claude 的项目功能</div>
+              <div class="ref-item-desc">本文功能 01。在 claude.ai 侧边栏点 "Projects" 就能新建项目、上传文档、写项目指令。</div>
+              <div class="ref-item-url">claude.ai/projects</div>
+            </a>
+            <a class="ref-item" href="https://claude.ai/download" target="_blank" rel="noopener">
+              <div class="ref-item-title">Download Claude — Cowork / Claude Code / 桌面端</div>
+              <div class="ref-item-desc">本文功能 11 / 15。下载桌面端 Cowork（直接访问本地文件）和终端 Claude Code CLI。</div>
+              <div class="ref-item-url">claude.ai/download</div>
+            </a>
+            <a class="ref-item" href="https://chromewebstore.google.com/search/claude" target="_blank" rel="noopener">
+              <div class="ref-item-title">Claude for Chrome — 浏览器扩展</div>
+              <div class="ref-item-desc">本文功能 10。Chrome 商店搜索 Claude，安装后 Claude 能看到并操作你的当前标签页。</div>
+              <div class="ref-item-url">chromewebstore.google.com/search/claude</div>
+            </a>
+            <a class="ref-item" href="https://claude.ai/design" target="_blank" rel="noopener">
+              <div class="ref-item-title">Claude Design — 视觉工作的 AI</div>
+              <div class="ref-item-desc">本文功能 16。Anthropic Labs 独立工具，做产品一页纸、pitch deck、原型、HTML 布局。</div>
+              <div class="ref-item-url">claude.ai/design</div>
+            </a>
+            <a class="ref-item" href="https://docs.claude.com/en/docs/build-with-claude/prompt-caching" target="_blank" rel="noopener">
+              <div class="ref-item-title">Prompt Caching — Anthropic 官方文档</div>
+              <div class="ref-item-desc">本文功能 17。完整说明 cache_control 字段、缓存有效期、计费规则。</div>
+              <div class="ref-item-url">docs.claude.com/en/docs/build-with-claude/prompt-caching</div>
+            </a>
+          </div>
+        </div>
+
+        <div class="ref-group">
+          <div class="ref-group-title">站内相关文章</div>
+          <div class="ref-list">
+            <a class="ref-item" href="2026-06-02-learn-quiz-prompt.html">
+              <div class="ref-item-title">Learn Quiz Prompt：让 Claude 当你的导师，而不只是工具</div>
+              <div class="ref-item-desc">把 Claude 从"替你干活的 Agent"变成"教会你一切的 Teacher"，含 5 个真实使用场景和两张可复制 Prompt 卡片。</div>
+              <div class="ref-item-url">2026-06-02-learn-quiz-prompt.html</div>
+            </a>
+            <a class="ref-item" href="2026-05-26-8-prompts-senior-ai.html">
+              <div class="ref-item-title">8 个高级 Prompt，让 AI 发挥真正实力</div>
+              <div class="ref-item-desc">8 个让 AI 以 senior engineer 思维工作的提示词模板，可直接复制使用，覆盖代码评审、重构、调试场景。</div>
+              <div class="ref-item-url">2026-05-26-8-prompts-senior-ai.html</div>
+            </a>
+            <a class="ref-item" href="2026-05-23-claude-cowork-templates.html">
+              <div class="ref-item-title">9 个 Claude Cowork 提示模板，让我在 47 分钟内完成 8 小时的工作量</div>
+              <div class="ref-item-desc">Cowork 的 9 个高频模板完整公开，每周节省 34 小时，配套中英文 Prompt 直接抄作业。</div>
+              <div class="ref-item-url">2026-05-23-claude-cowork-templates.html</div>
+            </a>
+            <a class="ref-item" href="2026-06-03-agentic-engineering-hacks.html">
+              <div class="ref-item-title">Matt Van Horn 的 22 个 Agentic Engineering hack</div>
+              <div class="ref-item-desc">Lyft 联创 3 个月重写的"Every Claude Code Hack I Know"。22 个 hack 配 22 段原文 + 22 句中文注释，全是实战工作流。</div>
+              <div class="ref-item-url">2026-06-03-agentic-engineering-hacks.html</div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CLOSING ============ -->
+      <section class="closing">
+        <p class="closing-quote">"You now know more about Claude than most people who use it every day."</p>
+        <p class="closing-cta">从这份清单里挑一个，<strong>只挑一个</strong>，今天就把它设起来。<br>你不必一次性把全部都做了——<strong>知道有什么，已经是赢了一半</strong>。</p>
+        <p class="closing-cta-2">下次想用 Claude 时，回来翻一遍</p>
+      </section>
+
+    </div>
+  </div>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+      <p class="source">原文编译自 <a href="https://x.com/AnatoliKopadze/status/2057813254617858078" target="_blank" rel="noopener">@AnatoliKopadze on X</a> · 阅读 370 万 · 2026/05/22</p>
+    </div>
+  </footer>
+
+  <!-- ============ Floating Nav ============ -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">本文目录</div>
+    <div class="nav-panel-content">
+      <a href="#intro" class="nav-item"><span class="nav-item-num">00</span>前言</a>
+      <a href="#group-1" class="nav-item"><span class="nav-item-num">01</span>常规 Claude 里的隐藏特性</a>
+      <a href="#group-2" class="nav-item"><span class="nav-item-num">02</span>给 Claude 派一个角色</a>
+      <a href="#group-3" class="nav-item"><span class="nav-item-num">03</span>鲜为人知的产品级功能</a>
+      <a href="#references" class="nav-item"><span class="nav-item-num">04</span>延伸阅读</a>
+    </div>
+  </nav>
+
+  <script>
+    // ============================
+    // PROMPT CARD: LANG SWITCH + COPY
+    // ============================
+    function setCardLang(card, lang) {
+      card.querySelectorAll('.lang-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      card.querySelectorAll('.prompt-text').forEach(pre => {
+        pre.classList.toggle('active', pre.dataset.lang === lang);
+      });
+    }
+
+    document.querySelectorAll('.prompt-card').forEach(card => {
+      card.querySelectorAll('.lang-pill').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setCardLang(card, btn.dataset.lang);
+        });
+      });
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('.prompt-card');
+      const active = card ? card.querySelector('.prompt-text.active') : null;
+      const text = active ? active.textContent : '';
+      const fallback = () => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(fallback);
+      } else {
+        fallback();
+      }
+      const original = btn.textContent;
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove('copied');
+      }, 1800);
+    }
+
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        copyPrompt(btn);
+      });
+    });
+
+    // ============================
+    // FLOATING NAV
+    // ============================
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
