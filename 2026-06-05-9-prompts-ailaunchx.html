@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AilaunchX 的 9 个 Prompt：让 Claude 真正成为干活的 Agent · 朱有以</title>
+  <title>9个场景的实用prompt：让AI成为你的全能助手 · 朱有以</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -556,7 +556,7 @@
     .nav-panel-content { overflow-y: auto; max-height: 340px; }
     .nav-item {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 8px;
       padding: 10px 18px;
       font-size: 12.5px;
@@ -573,6 +573,29 @@
       font-size: 10px;
       color: var(--accent-gold-dim);
       flex-shrink: 0;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-size: 12.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* RESPONSIVE */
@@ -614,8 +637,8 @@
     <!-- HERO -->
     <section class="article-hero">
       <div class="article-category">AI PROMPT · EDITORIAL</div>
-      <h1 class="article-title">AilaunchX 的 9 个 Prompt</h1>
-      <p class="article-subtitle">让 Claude 真正成为干活的 Agent</p>
+      <h1 class="article-title">9个场景的实用prompt</h1>
+      <p class="article-subtitle">让AI成为你的全能助手</p>
       <div class="article-byline">
         <span class="byline-author">朱有以</span>
         <span>·</span>
@@ -879,15 +902,69 @@
   <nav class="floating-nav-panel" id="navPanel">
     <div class="nav-panel-header">本文 9 个 Prompt</div>
     <div class="nav-panel-content">
-      <a href="#prompt-01" class="nav-item"><span class="nav-item-num">01</span>Parallel Task Coordinator</a>
-      <a href="#prompt-02" class="nav-item"><span class="nav-item-num">02</span>Project Auditor</a>
-      <a href="#prompt-03" class="nav-item"><span class="nav-item-num">03</span>Project Context Brief</a>
-      <a href="#prompt-04" class="nav-item"><span class="nav-item-num">04</span>Deep Problem Solver</a>
-      <a href="#prompt-05" class="nav-item"><span class="nav-item-num">05</span>Blind Spot Checker</a>
-      <a href="#prompt-06" class="nav-item"><span class="nav-item-num">06</span>Long Project Brief</a>
-      <a href="#prompt-07" class="nav-item"><span class="nav-item-num">07</span>Cross-Project Integration Mapper</a>
-      <a href="#prompt-08" class="nav-item"><span class="nav-item-num">08</span>The Code Reviewer</a>
-      <a href="#prompt-09" class="nav-item"><span class="nav-item-num">09</span>The Meeting Summarizer</a>
+      <a href="#prompt-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Parallel Task Coordinator</span>
+          <span class="nav-item-cn">并行任务协调器</span>
+        </span>
+      </a>
+      <a href="#prompt-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Project Auditor</span>
+          <span class="nav-item-cn">项目体检器</span>
+        </span>
+      </a>
+      <a href="#prompt-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Project Context Brief</span>
+          <span class="nav-item-cn">项目上下文简报</span>
+        </span>
+      </a>
+      <a href="#prompt-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Deep Problem Solver</span>
+          <span class="nav-item-cn">深度解题器</span>
+        </span>
+      </a>
+      <a href="#prompt-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Blind Spot Checker</span>
+          <span class="nav-item-cn">盲点扫描器</span>
+        </span>
+      </a>
+      <a href="#prompt-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Long Project Brief</span>
+          <span class="nav-item-cn">长项目简报</span>
+        </span>
+      </a>
+      <a href="#prompt-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Cross-Project Integration Mapper</span>
+          <span class="nav-item-cn">跨项目集成映射器</span>
+        </span>
+      </a>
+      <a href="#prompt-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Code Reviewer</span>
+          <span class="nav-item-cn">代码审查器</span>
+        </span>
+      </a>
+      <a href="#prompt-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Meeting Summarizer</span>
+          <span class="nav-item-cn">会议摘要器</span>
+        </span>
+      </a>
     </div>
   </nav>
 
