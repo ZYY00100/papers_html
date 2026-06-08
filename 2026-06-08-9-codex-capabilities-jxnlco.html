@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>极致压榨 Codex：9 个能力维度释放 Codex 全部潜能 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline span { color: var(--border-subtle); }
+    .article-byline .byline-author {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: var(--accent-gold-dim);
+    }
+    .article-byline .byline-source {
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: 0.05em;
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'Rajdhani', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* IMAGE GRID (for side panel) */
+    .cap-image-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+    .cap-image {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-image:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-image img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .cap-image figcaption {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cap-image figcaption strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .cap-surface-list {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .cap-surface-list li {
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+      font-family: 'JetBrains Mono', 'Rajdhani', monospace;
+      letter-spacing: 0.02em;
+      transition: all 0.3s;
+    }
+    .cap-surface-list li:hover {
+      border-color: rgba(201, 169, 98, 0.4);
+      color: var(--text-primary);
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .cap-surface-list { grid-template-columns: 1fr 1fr; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">CODEX · OPENAI</div>
+      <h1 class="article-title">极致压榨 Codex</h1>
+      <p class="article-subtitle">9 个能力维度释放 Codex 全部潜能</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span>·</span>
+        <span class="byline-source">原文 jason (@jxnlco) · OpenAI Staff Engineer</span>
+        <span>·</span>
+        <span>2026/06/08</span>
+      </div>
+      <p class="article-desc">jason 那条 44.3 万阅读的 X 长文。Codex 正在从「写代码工具」演化成「干活的操作系统」——9 个被大多数人忽略的能力维度，把 Codex 真正用成 daily driver。</p>
+    </section>
+
+    <!-- COVER IMAGE -->
+    <section class="cover-frame">
+      <img src="images/2026-06-08-codex-cover.jpg" alt="Getting the most out of Codex cover">
+      <p class="cover-caption">jason · Getting the most out of Codex · 2026/05/20</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">多数人第一次用 Codex 跟其他 coding agent 一样：<strong>看仓库、改代码、跑测试、开 PR</strong>。</p>
+      <p class="intro-lead">但 Codex 的重心在变。它开始能跑 shell 命令、刷网页、调 API、导出文档、响应事件、触发自动化——它在变成一个<strong>「干活的操作系统」</strong>，而不只是 IDE 里的代码助手。</p>
+      <p class="intro-statement">jason 这篇长文拆解了 9 个被大多数人忽略的能力维度：durable threads、voice input、steering & queuing、tools、work from anywhere、automations、goals、side panel、shared memory。把这些用对了，Codex 才会从「会写代码的助手」变成「真能交付活」的协作者。</p>
+      <p class="intro-statement">英文是 jason 原文原版；中文是按中文阅读习惯整理的解读。两个一起看效果最好。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">野心很重要<span class="arrow">·</span>但没有 verification<span class="arrow">·</span>就只是 wish</div>
+      <div class="pull-quote-caption">Ambition matters, but without verification it's just a wish. — jason, on Goals</div>
+    </section>
+
+    <!-- 01 DURABLE THREADS -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">Durable threads</h2>
+          <div class="cap-title-cn">持久线程 — 跨会话保留工作上下文</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Durable threads</strong>（持久线程）是跨多轮会话保留工作上下文的 long-running Codex 线程。不是聊完就丢的短对话——是带历史、决策、偏好的<strong>持续工作区</strong>。</p>
+
+        <p>用 Pinned threads（固定线程）可以保存常用工作流。常见的几类：</p>
+        <ul class="cap-features">
+          <li><strong>Chief of Staff</strong> thread — 帮你管日程、Slack、Gmail 漏看的消息</li>
+          <li><strong>Release thread</strong> — 跟某个发版周期绑在一起，记录每次发版的决策和状态</li>
+          <li><strong>Documentation review</strong> thread — 长期挂在文档维护上</li>
+          <li><strong>External monitoring</strong> thread — 盯外部信号（PR 评论、竞品动态、用户反馈）</li>
+        </ul>
+
+        <div class="cap-body"><div class="source-quote"><strong>JASON 原话</strong>These are persistent workspaces, not short chats. Codex can revisit them over time, preserving prior decisions, preferences, and working context that would otherwise need to be rebuilt from scratch.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE</div>
+          <div class="cap-example-text">Pinned threads 还配了快捷键：<code>Cmd-1</code> 到 <code>Cmd-9</code> 直接跳到对应线程。Chief of Staff、release、docs review——一秒钟切到对应上下文，不用再翻历史。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 VOICE INPUT -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">Voice input</h2>
+          <div class="cap-title-cn">语音输入 — 在想法被压成「正式句子」之前先录下来</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Voice input</strong> 是 Codex 的内置能力。意义在于：语音能抓住<strong>还没被压缩成「正式表达」</strong>的原始想法。</p>
+
+        <p>特别适合这些场景：</p>
+        <ul class="cap-features">
+          <li><strong>模糊起点</strong>：用说的自然，但用打的别扭——比如「我好像记得 Ben 在 Slack 提过这事，具体我忘了，你帮我找一下」</li>
+          <li><strong>2-3 分钟的 thought dump</strong>：任务还没成型的脑暴，语音比打字快得多</li>
+          <li><strong>原始转录</strong>：一段未经整理的会议记录或口述规划笔记，比精炼过的 summary 信息密度更高——它保留了不确定、强调、没说完整的半截话</li>
+        </ul>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE</div>
+          <div class="cap-example-text">对能搜、能聚合、能反查的 agent 来说，一句「我好像记得 Ben 在 Slack 提过这事，你帮我找一下」<strong>就够了</strong>。打字你要写半段，语音 3 秒钟。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 STEERING & QUEUING -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">Steering & Queuing</h2>
+          <div class="cap-title-cn">飞行中纠偏 + 排队 — 让用户贴近任务展开过程</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>两个看似相似、实际完全不同的能力。</p>
+
+        <p><strong>Steering</strong>（飞行中纠偏）：在当前 step 没完成前，发新方向打断它。适合 agent 走错路、要拉回正轨时。例：做网站 review 时在侧栏里写批注：</p>
+        <ul class="cap-features">
+          <li>「这个做小一点」</li>
+          <li>「这两个元素之间的间距不对」</li>
+          <li>「这块文案错了」</li>
+        </ul>
+
+        <p><strong>Queuing</strong>（排队）：不打断当前任务，把下一个任务排到队列里。适合当前任务快收尾、想提前布置下一步时。例：「活干完之后把预览链接发到 Slack 给 reviewer」。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>JASON 原话</strong>Steering changes what Codex is doing now. Queuing changes what should happen next. Both keep the user close to the work while it's unfolding.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE</div>
+          <div class="cap-example-text">Steering 是「<strong>现在</strong>就改方向」，Queuing 是「<strong>接下来</strong>要做什么」。两者结合：agent 跑长任务时你能实时纠偏 + 提前排队，不用来回打断重新启动。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 TOOLS & REACH -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">Tools and reach</h2>
+          <div class="cap-title-cn">工具与外延 — 让 Codex 走出 repo 触达整个工作流</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>线程有了连续性，下一步是看它能<strong>操作什么</strong>。Codex 的触达范围按层级展开：</p>
+        <ul class="cap-features">
+          <li><strong><code>$browser</code></strong> — 侧栏内的 in-app browser，Codex 能在里面检查和标注网页</li>
+          <li><strong><code>@chrome</code></strong> — 走用户的 Chrome 登录态，处理需要 cookie/session 的工作</li>
+          <li><strong><code>@computer</code></strong> — 通过桌面 GUI 处理只在桌面上存在的任务</li>
+        </ul>
+
+        <p><strong>MCP servers 和 connectors</strong> 把同一思路延展到工作流其他环节。<strong>Slack</strong>、<strong>Gmail</strong>、<strong>Calendar</strong>——这些之所以重要，是因为很多关键任务<strong>首先以消息、收件箱、日程问题的形态出现</strong>，后来才变成代码。</p>
+
+        <p><strong>Skills</strong>（技能）让反复用的工作流可复用。工作流跑顺之后，<strong>打包成 skill</strong>，下次 Codex 直接调用，不用每次重学流程。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE</div>
+          <div class="cap-example-text">三条触达路径选哪条，<strong>看任务在哪里存在</strong>：网站 review 用 <code>$browser</code>；需要登录态的工作用 <code>@chrome</code>；只有桌面 GUI 能跑的任务用 <code>@computer</code>。Slack/Gmail/Calendar 等任务<strong>首先以消息出现</strong>，先用 connector 接住再写代码。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 WORK FROM ANYWHERE -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">Work from anywhere</h2>
+          <div class="cap-title-cn">随时随地 — Mac 起步，手机继续</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Codex mobile app</strong> 改变了「必须在桌前」这件事。</p>
+
+        <p>任务在 Mac 上起——文件、权限、本地环境都在那——然后<strong>在手机上随时插手</strong>。这改变了很多小事：离开桌子时 Codex 跑长任务、在外面答个问题、批准下一步、纠偏线程——然后回来时直接接上。<strong>本地环境不动</strong>，人不用非在电脑前。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE</div>
+          <div class="cap-example-text">长任务交给 Codex 跑，人离开 Mac 去吃个饭。手机上点一下看进度、答个澄清问题、批准下一步——回到 Mac 的时候任务已经做完了<strong>大半</strong>。跟养了一个会自己干活的工友一样。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 AUTOMATIONS -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 06</div>
+          <h2 class="cap-title-en">Automations</h2>
+          <div class="cap-title-cn">自动化 — 定时跑任务，让 Codex 主动找你</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Automations</strong> 让 Codex 按时间表跑工作。两种用法：</p>
+        <ul class="cap-features">
+          <li><strong>Scheduled automation</strong> — 定期从一个 workspace 重新开始的场景（日报、定期仓库检查）</li>
+          <li><strong>Thread automation</strong> — 周期回到<strong>同一个活动线程</strong>，保留运行中的上下文（heartbeat 模式）</li>
+        </ul>
+
+        <p>Pinned threads 还要等你回去。Thread automation 每隔几分钟/几小时检查一下、继续到满足条件为止、节奏随情况自动调。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>JASON 原话</strong>Pinned threads are useful, but they still wait for the user to return. A thread automation can check on something every few minutes or every few hours, continue until it meets a condition, and adjust the cadence over time.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE · CHIEF OF STAFF</div>
+          <div class="cap-example-text">一个 Chief of Staff 线程可以<strong>每 30 分钟跑一次</strong>：检查 Slack 和 Gmail 里未回复的消息、按重要性排好序、如果有人问我问题就深度调研并起草回复——但<strong>不发送</strong>。人回来时，昂贵的「收集上下文」环节已经做完了，决策权还在人手里。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 GOALS -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 07</div>
+          <h2 class="cap-title-en">Goals</h2>
+          <div class="cap-title-cn">目标 — 完成线 + 验证器，让 agent 一直推</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Goals</strong>（目标）是 Codex 的长跑任务，需要有一个<strong>真正能达成的完成线</strong>，agent 才能一直推。</p>
+
+        <p>弱目标长这样：<em>「把这个 Markdown 文件里的 plan 实现一下。」</em></p>
+
+        <p>强目标有<strong>可度量的成功标准</strong>。比如一个工程师把内部工具从 Python 迁到 Rust：建好新目录、定好 goal、把完成线写明白——<strong>新实现跑通 unit tests 才算完</strong>。</p>
+
+        <p>Goal = <strong>持续执行 + 验证器</strong>。人定义 outcome、停止条件、判断 Codex 是否在接近的信号。</p>
+
+        <p>好用的验证器包括：</p>
+        <ul class="cap-features">
+          <li><strong>test suite</strong>（测试套件）</li>
+          <li><strong>benchmark</strong>（基准）</li>
+          <li><strong>bug reproduction</strong>（能复现 bug 的脚本）</li>
+          <li><strong>validation matrix</strong>（验证矩阵）</li>
+          <li><strong>end-to-end workflow</strong>（端到端工作流必须持续跑通）</li>
+        </ul>
+
+        <div class="cap-body"><div class="source-quote"><strong>JASON 原话</strong>Ambition matters, but without verification it's just a wish.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE</div>
+          <div class="cap-example-text">没验证器的「野心」就是 wish。Goal 必须带<strong>可证伪的完成标准</strong>——单元测试通过、benchmark 达标、bug 能稳定复现又消失。否则 agent 不知道什么时候该停，更不知道什么时候算做完了。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 THE SIDE PANEL -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 08</div>
+          <h2 class="cap-title-en">The side panel</h2>
+          <div class="cap-title-cn">侧栏 — 在对话旁边 review 和标注产物</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Side panel</strong>（侧栏）让产物留在产出它的对话旁边。不用再 export 出来换 context、单独打开——直接在原地 review。</p>
+
+        <p>产物可能不只是代码：<strong>deck、PDF、网页、表格、对话里产出的任何 artifact</strong>。侧栏特别擅长 4 件事：</p>
+        <ul class="cap-features">
+          <li><strong>检查 artifact</strong></li>
+          <li><strong>标注要改的地方</strong></li>
+          <li><strong>操作网页面</strong></li>
+          <li><strong>review 改动</strong></li>
+        </ul>
+
+        <p>侧栏能直接看 Markdown、spreadsheet、data table、document、slide。检查、标注、修改——<strong>不断开工作循环</strong>。</p>
+
+        <div class="cap-image-grid">
+          <figure class="cap-image">
+            <img src="images/2026-06-08-codex-annotations.jpg" alt="Annotations in side panel">
+            <figcaption><strong>ANNOTATIONS</strong>deck 或 PDF 留在产出它的线程旁边，直接 review 和改。</figcaption>
+          </figure>
+          <figure class="cap-image">
+            <img src="images/2026-06-08-codex-sheets.jpg" alt="Sheets in Codex">
+            <figcaption><strong>SHEETS IN CODEX</strong>In-app browser 让 Codex 检查渲染好的页面、控制它、直接在被 review 的对象上响应批注。</figcaption>
+          </figure>
+        </div>
+
+        <p><strong>特别适合的产物类型</strong>：</p>
+        <ul class="cap-surface-list">
+          <li>index.html</li>
+          <li>Storybook</li>
+          <li>Remotion Studio</li>
+          <li>browser slides</li>
+          <li>data apps</li>
+        </ul>
+
+        <p>一个 <code>index.html</code> 就能成为<strong>持久可交互的 artifact</strong>，不需要 server。Thread automations 还能定期刷新静态 artifact——人回来时线程里有新东西等着。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-06-08-codex-surfaces.jpg" alt="Web as both output and control surface">
+          <figcaption><strong>WEB AS BOTH OUTPUT & CONTROL</strong>Codex 能在侧栏里建 artifact → 打开 → 检查 → 调试 → 在原地持续打磨同一个对象。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 09 SHARED MEMORY -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 09</div>
+          <h2 class="cap-title-en">Shared memory</h2>
+          <div class="cap-title-cn">共享记忆 — 把工作上下文存在对话外面</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>长跑线程想要更值钱，<strong>得把记忆分享到单一对话之外</strong>。</p>
+
+        <p><strong>Shared memory</strong>：把上下文存在单个线程之外，<strong>未来的工作可以从「明确、可 review」的东西继续</strong>。</p>
+
+        <p>一种持久模式：把长跑线程锚定到 <strong>Obsidian vault</strong>。实操就是<strong>一堆 plain files</strong>，方便 inspect、edit、move、长期保存。团队可以把那个文件夹放云存储、Git、Dropbox、Google Drive 或其他同步层——按工作流走。</p>
+
+        <p>vault 大概长这样：</p>
+        <div class="cap-example">
+          <div class="cap-example-label">VAULT STRUCTURE</div>
+          <div class="cap-example-text">vault/ ├── <strong>TODO.md</strong> ├── people/ ├── projects/ ├── agent/ └── notes/</div>
+        </div>
+
+        <p>顶层放 <strong>AGENTS.md</strong>，告诉 Codex 怎么更新这个 workspace——people、projects、decisions、open loops。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>JASON 原话</strong>Don't copy one exact vault structure. Teach the agent where durable context should live, what context to preserve, and when not to create churn.</div></div>
+
+        <p>一个实用的 AGENTS.md 可能会这么写：</p>
+        <ul class="cap-features">
+          <li>把 <code>~/vault</code> 当作持久工作记忆</li>
+          <li>优先 canonical notes，不要 note sprawl</li>
+          <li>TODOs、people、projects、daily summaries、scratch notes 各自走明确路径</li>
+          <li>保留 decisions、blockers、owners、dates、有用链接</li>
+          <li>没真东西变化时，不要 churn vault</li>
+        </ul>
+
+        <p><strong>代码放 repo。Vault 放滚动上下文</strong>——参与的人、改了什么、什么被 block、什么要 follow-up、什么会消失在两次会话之间。</p>
+
+        <p>重要上下文不能只活在 conversation transcript 里——<strong>写下来，下个线程能接上</strong>。</p>
+
+        <p>Codex 还有官方 <strong>Memories</strong>（设置 > 个性化 > 记忆）提供本地 recall 层——preferences、recurring workflows、known pitfalls。<strong>跟书面上下文互补，不替代</strong>。<strong>Chronicle</strong> 往同一方向推，帮 Codex 从最近屏幕上下文建记忆。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE EXAMPLE</div>
+          <div class="cap-example-text">Codex 自带的 <strong>Memories + Chronicle</strong> 是一层 recall（preferences / 屏幕上下文）。但<strong>真正能跨线程复用的「业务上下文」</strong>（这个项目谁负责、什么 block、什么要跟）还得写在 <code>AGENTS.md</code> 这种 plain file 里——透明、可改、不怕被覆盖。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">Codex still starts from code. <strong>但 work 比 repo 走得更远。</strong></p>
+      <p class="closing-caption">从代码出发，到执行、到产物 review——即使活已经离开 repo。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">9 个能力维度</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Durable threads</span>
+          <span class="nav-item-cn">持久线程</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Voice input</span>
+          <span class="nav-item-cn">语音输入</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Steering & Queuing</span>
+          <span class="nav-item-cn">纠偏 & 排队</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Tools and reach</span>
+          <span class="nav-item-cn">工具与外延</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Work from anywhere</span>
+          <span class="nav-item-cn">随时随地</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Automations</span>
+          <span class="nav-item-cn">自动化</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Goals</span>
+          <span class="nav-item-cn">目标</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The side panel</span>
+          <span class="nav-item-cn">侧栏</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Shared memory</span>
+          <span class="nav-item-cn">共享记忆</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
