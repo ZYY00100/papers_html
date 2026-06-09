@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agents · 从概念到实操：十分钟搭一个属于你的 agent · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* PROMPT CARD — 套 30-system-prompts 模板（暗色卡片 + head 头 + EN/中文 toggle + Copy） */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 6px;
+      border: 1px solid #1f1f23;
+      overflow: hidden;
+      margin: 28px 0 12px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.3);
+    }
+    .prompt-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #1f1f23;
+      background: #0a0a0c;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+      min-width: 32px;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .prompt-name-en {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #e8e8ea;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #8a8a8e;
+      letter-spacing: 0.04em;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* REFERENCES — 引用与原文出处 */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* IMAGE GRID (single image wrapper) */
+    .cap-image {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      margin: 28px 0;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-image:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-image img { display: block; width: 100%; height: auto; }
+    .cap-image figcaption {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cap-image figcaption strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* 层级图（spectrum 4 阶） */
+    .spectrum-stack {
+      list-style: none;
+      margin: 24px 0;
+      padding: 0;
+    }
+    .spectrum-row {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      margin-bottom: 8px;
+      border-radius: 4px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .spectrum-row:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-red);
+    }
+    .spectrum-level {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 64px;
+      padding-top: 2px;
+    }
+    .spectrum-text {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .spectrum-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-prompt pre { font-size: 11.5px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+      .spectrum-row { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">AGENT · BUILD YOUR OWN</div>
+      <h1 class="article-title">AI Agents</h1>
+      <p class="article-subtitle">从概念到实操：十分钟搭一个属于你的 agent</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Anatoli Kopadze (@AnatoliKopadze) · 101K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/09</span>
+      </div>
+      <p class="article-desc">Anatoli 那条 101K 浏览的 X 长文。Agents 不是一类东西，是一个 spectrum——本文把这道光谱讲清楚：什么算 agent、能建哪几类、怎么用 Claude Code 十分钟搭一个自己的 Telegram bot，再附 14 个 prompt 模板拿走就能用。</p>
+    </section>
+
+    <!-- COVER IMAGE -->
+    <section class="cover-frame">
+      <img src="images/2026-06-09-agent-cover.jpg" alt="AI Agents cover">
+      <p class="cover-caption">Anatoli Kopadze · AI Agents. What they are and how to Build Your Own Step by Step · 2026/06/08</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">现在人人都在说 AI agent。但你问大多数人 agent 到底是什么，得到的回答往往是模糊的——「能自主干活的 AI」。</p>
+      <p class="intro-lead">真实情况比这有用得多。<strong>Agents 不是一类东西，是一个 spectrum。</strong>本文把 agent 这道光谱讲清楚：什么算 agent、能建哪几类、怎么用 Claude Code 十分钟搭一个自己的 Telegram bot，再附 14 个 prompt 模板拿走就能用。</p>
+      <p class="intro-statement">本文按 7 个章节展开：先讲清楚 agent 和普通 chat 的本质区别（cap 01-02），再列 5 类你能马上建的 agent（cap 03），然后用 Claude Code + Telegram 真的搭一个出来（cap 04-05），最后给 5 个 skill + 4 招 memory（cap 06-07）。看完你能直接动手。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">An agent is not a category<span class="arrow">·</span>it is a spectrum</div>
+      <div class="pull-quote-caption">Anatoli Kopadze · on the difference between chat and agent</div>
+    </section>
+
+    <!-- 01 WHAT MAKES SOMETHING AN AGENT -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">What makes something an agent</h2>
+          <div class="cap-title-cn">什么算 agent —— 三件套和普通 chat 的本质区别</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>问 Claude「今天我应该发什么」——这不是 agent，这就是 chat。让 Claude「找出 AI 领域现在最热的三个话题，挑出最有传播潜力的那一个，按我的风格写一篇文案，存到文件里」——而且它自己就做完了，你没动一下——<strong>这才是 agent</strong>。</p>
+
+        <p>差异不在模型。<strong>差异在模型周围那层结构</strong>。一个 agent 拥有三件普通 chat 没有的东西：</p>
+        <ul class="cap-features">
+          <li><strong>Tools</strong> —— 能自己调的工具：搜索、文件系统、代码执行、外部 API</li>
+          <li><strong>Memory</strong> —— 跨任务持续的 memory，不是只在一次 session 内有效</li>
+          <li><strong>Loop</strong> —— 一直跑到任务完成的 loop，不是只生成一次回答就停</li>
+        </ul>
+
+        <p>这三件套加得越多，你介入得越少。这就是 agent 的核心思想。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>ANATOLI 原话</strong>Asking Claude "what should I post today?" is not an agent. That is a chat. Telling Claude to find trending topics, pick the best one, draft a post in my style, and save it to a file — and having it do all of that without you touching anything — that is an agent.</div></div>
+      </div>
+    </section>
+
+    <!-- 02 THE SPECTRUM -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">The spectrum: from chat to agent</h2>
+          <div class="cap-title-cn">光谱四阶 —— 从 chat 到完全自主</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>理解 agent 最快的方式是看 spectrum，从最弱的 chat 到最强的 fully autonomous agent，每上一层都加一点结构：</p>
+
+        <ul class="spectrum-stack">
+          <li class="spectrum-row">
+            <span class="spectrum-level">L1 · CHAT</span>
+            <span class="spectrum-text"><strong>基础 chat</strong>：你问，Claude 答，session 结束。没有 tool、没有持续目标、不能操作世界。</span>
+          </li>
+          <li class="spectrum-row">
+            <span class="spectrum-level">L2 · TOOLS</span>
+            <span class="spectrum-text"><strong>带 tool 的 Claude</strong>：当 Claude 回答前先搜了网页、读了附件、生成了图，它已经「轻度 agentic」了。是你没一步步告诉它要这么做——它自己决定需要的。</span>
+          </li>
+          <li class="spectrum-row">
+            <span class="spectrum-level">L3 · WORKFLOW</span>
+            <span class="spectrum-text"><strong>多步 workflow</strong>：你给一个目标，Claude 拆步骤、执行每一步、检查结果、交付成品。步骤之间你不用介入。</span>
+          </li>
+          <li class="spectrum-row">
+            <span class="spectrum-level">L4 · AUTONOMOUS</span>
+            <span class="spectrum-text"><strong>完全自主 agent</strong>：按 schedule 跑、监控输入、调外部服务、没人参与就完成复杂任务。你设一次目标，回来直接看输出。</span>
+          </li>
+        </ul>
+
+        <p>底层和顶层的差异不是不同模型。是<strong>模型周围的东西</strong>——它能调什么 tool、它能记住什么、它能不能一直跑到任务完成。</p>
+      </div>
+    </section>
+
+    <!-- 03 TYPES OF AGENTS -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">5 types of agents you can build today</h2>
+          <div class="cap-title-cn">5 类你能马上建的 agent —— 附 5 套系统 prompt 模板</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>为了让 agent 看起来不抽象，下面列 5 类典型场景。这些不是上限——<strong>你按自己的需要建就行</strong>。每类都附一段 system prompt，复制到 Claude Code 就能直接生成对应 agent。</p>
+
+        <p><strong>Research agent</strong>：在给定主题上收集信息、读多个来源、提取关键点、给结构化总结。你给问题，它给的答案等于你手动花几小时才能整理出来。</p>
+        <div class="prompt-card" data-card id="prompt-01">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">01</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Research Agent</span>
+              <span class="prompt-name-cn">研究型 Agent</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a research agent. Your job is to gather, analyze, and synthesize information on any topic I give you.
+
+When given a research task:
+1. Identify the 3-5 most important sub-questions to answer
+2. Search for information on each one
+3. Evaluate the quality and relevance of each source
+4. Extract only what directly answers the question
+5. Deliver a structured summary with: key findings, supporting evidence, and gaps you could not fill
+
+Format: Use headers, bullet points, and clear sections.
+If you are uncertain about something, say so explicitly.
+Do not add filler. Every sentence should contain information.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一名研究型 agent。任务是围绕我给的任何主题去收集、分析、综合信息。
+
+收到研究任务时：
+1. 拆出 3-5 个最关键的子问题
+2. 逐个搜索信息
+3. 评估每个来源的质量和相关性
+4. 只提取直接回答问题的内容
+5. 交付结构化总结：核心发现、支撑证据、未能填补的缺口
+
+格式：用标题、要点、清晰的章节。
+不确定的地方就明说，不要装懂。
+不加废话，每句话都要有信息量。</div>
+      </div>
+
+        <p><strong>Writing agent</strong>：按你定义的系统写内容。给它你的语气、格式、受众、话题，它自己处理草稿、改写、编辑，不用你盯着每一句。</p>
+        <div class="prompt-card" data-card id="prompt-02">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">02</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Writing Agent</span>
+              <span class="prompt-name-cn">写作型 Agent</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a writing agent. You write content in my voice and style.
+
+My style:
+- Conversational, direct, no corporate language
+- Short sentences and paragraphs
+- Specific numbers and examples over vague claims
+- Always end with something the reader should do or think about
+
+When given a writing task:
+1. Ask for the topic, audience, and desired length if not provided
+2. Write a first draft
+3. Review it against my style rules
+4. Deliver the final version ready to publish
+
+Never add unnecessary introductions. Start with the most important point.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一名写作型 agent。用我的语气和风格产出内容。
+
+我的风格：
+- 对话感、直接、不用企业腔
+- 短句短段
+- 用具体数字和例子，不用模糊断言
+- 结尾一定要给读者一个动作或思考
+
+收到写作任务时：
+1. 主题、读者、长度如果没给，先问
+2. 写第一稿
+3. 按我的风格规则复审
+4. 交付可直接发布的最终版
+
+不要写无意义的开场白。最重要的点放最前面。</div>
+      </div>
+
+        <p><strong>Code agent</strong>：写代码、跑代码、读报错、改错误、继续。你描述代码该做什么，agent 负责实现和 debug 的循环。</p>
+        <div class="prompt-card" data-card id="prompt-03">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">03</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Code Agent</span>
+              <span class="prompt-name-cn">编程型 Agent</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a code agent. Your job is to write, debug, and improve code.
+
+When given a coding task:
+1. Confirm your understanding of what the code should do
+2. Write the solution with clear comments
+3. Identify any edge cases or potential failures
+4. If there are errors, debug them systematically before asking for help
+
+Rules:
+- Write clean, readable code with meaningful variable names
+- Always include error handling
+- Explain what each major section does in plain language
+- If you are unsure about requirements, ask one clarifying question before proceeding</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一名编程型 agent。负责写、debug、改善代码。
+
+收到编程任务时：
+1. 先确认你理解代码应该做什么
+2. 写解决方案，注释要清楚
+3. 识别边界情况和潜在失败点
+4. 报错时系统化 debug 再问人
+
+规则：
+- 写干净、可读、变量名有意义的代码
+- 始终加错误处理
+- 用大白话解释每段在做什么
+- 需求不确定时，先问一个澄清问题再动手</div>
+      </div>
+
+        <p><strong>Business agent</strong>：处理重复业务任务——起草邮件、处理客户请求、筛选 lead、出报告。规则一定义，自动跑。</p>
+        <div class="prompt-card" data-card id="prompt-04">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">04</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Business Email Agent</span>
+              <span class="prompt-name-cn">商务邮件 Agent</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a business email agent. You write professional emails on my behalf.
+
+My communication style:
+- Direct and respectful
+- No unnecessary formalities
+- Gets to the point in the first sentence
+- Closes with a clear next step
+
+When given an email task:
+1. Identify the goal of the email (inform, request, follow up, confirm)
+2. Write a subject line that reflects the email's purpose
+3. Draft the email in 3-5 short paragraphs maximum
+4. End with one clear action item or next step
+
+Always write ready-to-send emails, not templates with blanks to fill in.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一名商务邮件 agent。代我写专业的邮件。
+
+我的沟通风格：
+- 直接、尊重
+- 不必要的客套一律不写
+- 第一句话就点到
+- 结尾给一个明确的下一步
+
+收到邮件任务时：
+1. 识别邮件目的（通知、请求、跟进、确认）
+2. 写一个反映邮件目的的标题
+3. 邮件正文 3-5 段短段
+4. 结尾给一个明确的动作项或下一步
+
+永远写可以直接发的邮件，不要带空格待填的模板。</div>
+      </div>
+
+        <p><strong>Personal agent</strong>：管日程、整理任务、准备 briefing、接手你每天手动做的规划工作。</p>
+        <div class="prompt-card" data-card id="prompt-05">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">05</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Personal Planning Agent</span>
+              <span class="prompt-name-cn">个人规划 Agent</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are my personal planning agent. You help me organize my work, prioritize tasks, and plan my week.
+
+When I share my tasks or goals:
+1. Identify what is urgent vs. important
+2. Suggest a realistic sequence based on dependencies
+3. Estimate time required for each task
+4. Flag anything that could be delegated or eliminated
+
+When I describe a project:
+- Break it into concrete next actions
+- Identify the single most important thing to do first
+- Create a simple checklist I can follow
+
+Keep everything practical. No motivational filler. Just the plan.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是我个人规划 agent。帮我整理工作、排优先级、规划一周。
+
+我分享任务或目标时：
+1. 区分紧急 vs 重要
+2. 按依赖关系给出合理顺序
+3. 估算每项任务所需时间
+4. 标出可以委托或砍掉的事
+
+我描述一个项目时：
+- 拆成具体的下一步行动
+- 识别出最该先做的一件事
+- 写一个能照着走的简单 checklist
+
+一切都保持实用。不写鸡汤，只出方案。</div>
+      </div>
+      </div>
+    </section>
+
+    <!-- 04 BUILD YOUR FIRST AGENT -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">Build your first agent</h2>
+          <div class="cap-title-cn">动手建第一个 —— Claude Code + Telegram bot</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>你会用 Claude Code 搭一个跑在远程 server 上的 Telegram bot，用 Claude 当大脑。Claude Code 负责写所有代码——你用普通英语描述想要什么就行。设好之后，所有跟 bot 的交流都直接走 Telegram。<strong>整个过程 10-20 分钟。你不需要会写代码</strong>。</p>
+
+        <p><strong>需要的 3 样东西</strong>：</p>
+        <ul class="cap-features">
+          <li><strong>Claude API key</strong> —— 从 <code>console.anthropic.com</code> 拿。开发者 key，按用量付费，不是固定月费。个人 bot 每天 50 条消息的话，每月 <strong>$1-5</strong>，看选哪个模型</li>
+          <li><strong>Telegram bot token</strong> —— 找 <code>@BotFather</code> 创建</li>
+          <li><strong>Linux VPS</strong> —— 个人 Telegram bot 不需要太强：1 CPU、1GB RAM、20GB 存储就够。DigitalOcean、Hetzner、Vultr 的基础款都行，每月 <strong>$4-6</strong>。server 拿到后跑 <code>npm i -g @anthropic-ai/claude-code</code> 装 Claude Code</li>
+        </ul>
+
+        <p><strong>第一步：给 agent 一个 personality</strong>。打开 VPS 终端，启 Claude Code，粘下面这段 prompt 让它帮你建好：</p>
+        <div class="prompt-card" data-card id="prompt-06">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">06</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Build the bot</span>
+              <span class="prompt-name-cn">搭建 bot 主体</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Build me a Telegram bot that uses the Claude API as its brain.
+
+Requirements:
+- Language: Python
+- Library for Telegram: python-telegram-bot
+- Claude model: claude-sonnet-4-6
+- The bot receives a message, sends it to Claude API, and returns Claude's response to Telegram
+- Maintain conversation history per user — each user has their own context within the session
+- Add a /start command that introduces the bot
+- Add a /clear command that resets conversation history for that user
+
+Create all necessary files: main bot file, requirements.txt, and a .env file template for API keys.
+Do not hardcode any API keys — read them from environment variables.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>用 Python 给我搭一个 Telegram bot，用 Claude API 当大脑。
+
+要求：
+- 语言：Python
+- Telegram 库：python-telegram-bot
+- Claude 模型：claude-sonnet-4-6
+- bot 收到消息后发给 Claude API，再把回复发回 Telegram
+- 每个用户维护自己的对话历史——同一 session 内不同用户上下文分开
+- 加 /start 命令，介绍 bot
+- 加 /clear 命令，重置该用户的对话历史
+
+创建所有需要的文件：主 bot 文件、requirements.txt、以及一个 .env 模板（放 API key）。
+不要在代码里硬编码任何 API key——从环境变量读。</div>
+      </div>
+
+        <p><strong>第二步：部署成后台服务</strong>。bot 跑起来了，但你还想要它随 server 启动自动跑、崩了自动重启。粘：</p>
+        <div class="prompt-card" data-card id="prompt-07">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">07</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Deploy as background service</span>
+              <span class="prompt-name-cn">部署成后台服务</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Create a systemd service file so this bot runs automatically on my Linux VPS and restarts if it crashes.
+
+The service should:
+- Start automatically when the server boots
+- Restart automatically if it crashes
+- Load environment variables from the .env file in the project folder
+- Save logs to a file I can check later
+
+Also write me the exact terminal commands to install the service, start it, check if it is running, and view the logs.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>写一个 systemd service 文件，让这个 bot 在我的 Linux VPS 上自动运行，崩了自动重启。
+
+要求：
+- server 开机自动启动
+- 崩了自动重启
+- 从项目目录的 .env 文件读环境变量
+- 日志写到文件，方便我之后查看
+
+另外把安装、启动、查看运行状态、查看日志的终端命令原原本本写给我。</div>
+      </div>
+
+        <p><strong>第三步：加持久 memory</strong>。bot 重启后会丢对话历史，加这一段：</p>
+        <div class="prompt-card" data-card id="prompt-08">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">08</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Persistent memory</span>
+              <span class="prompt-name-cn">持久化 memory</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">The bot loses conversation history when it restarts. Fix this.
+
+Save each user's conversation history to a JSON file on disk after every message. Load it back automatically when the bot starts.
+
+Add a maximum history length — keep only the last 20 messages per user so the context window never gets too long.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>bot 重启后会丢对话历史。修一下。
+
+每条消息之后把该用户的对话历史存到磁盘上的一个 JSON 文件。bot 启动时自动读回来。
+
+加一个历史长度上限——每个用户只保留最近 20 条消息，避免 context 窗口过长。</div>
+      </div>
+
+        <p>三步走完，bot 已经能用了。下一步是给它加 skill——见 cap 06。</p>
+      </div>
+    </section>
+
+    <!-- 05 MODEL & COST -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">Model and cost</h2>
+          <div class="cap-title-cn">模型选择 + 成本 —— 三个模型怎么挑</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>bot 的大脑用哪个 Claude 模型合适？下面是三个常见选项的对比图：</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-06-09-agent-models.jpg" alt="Claude model comparison">
+          <figcaption><strong>CLAUDE MODELS</strong>Haiku 4.5 / Sonnet 4.6 / Opus 4.8 — 能力越强，单价越高。</figcaption>
+        </figure>
+
+        <p>三个模型怎么挑：</p>
+        <ul class="cap-features">
+          <li><strong>Sonnet 4.6</strong> —— 大多数个人 bot 的<strong>首选</strong>。日常任务够强，价格对日常使用也友好</li>
+          <li><strong>Haiku 4.5</strong> —— 想<strong>极致压成本</strong>就用这个。能省一大截，但回答深度会下降</li>
+          <li><strong>Opus 4.8</strong> —— 只有<strong>复杂的分析型 agent</strong>（比如真要做研究、写长文）才值得上这个。回答质量最强，单价也最高</li>
+        </ul>
+
+        <p>个人 bot 每天 50 条消息的话，整月成本大概在 <strong>$1-5</strong> 这个区间——比一杯咖啡便宜，但 24 小时随时在。</p>
+      </div>
+    </section>
+
+    <!-- 06 SKILLS -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 06</div>
+          <h2 class="cap-title-en">5 skills to add to your bot</h2>
+          <div class="cap-title-cn">5 个最常用的 skill —— 让 bot 越来越能干</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Skills 是你后续给 bot 加的能力。每加一个 skill 就是在 Claude Code 里跑一段新 prompt，Claude Code 写代码、装好。下面 5 个是最实用的起步组合。</p>
+
+        <p><strong>Skill 1 · Web search</strong>。让 agent 能查实时信息，而不是只从 memory 答。</p>
+        <div class="prompt-card" data-card id="prompt-09">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">09</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Skill · Web search</span>
+              <span class="prompt-name-cn">技能 · 网络搜索</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Add web search capability to the bot using the Tavily API.
+
+When the user asks something that requires current information — news, prices, recent events — the bot automatically searches the web and includes the results in its response.
+
+The bot should decide on its own when to search and when to answer from memory. Add TAVILY_API_KEY to the .env file template.
+
+Use Claude's tool use feature to implement this cleanly.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>用 Tavily API 给 bot 加网络搜索能力。
+
+当用户问需要实时信息的问题（新闻、价格、最近事件）时，bot 自动搜网，把结果写进回答。
+
+bot 自己判断什么时候该搜、什么时候从 memory 答。在 .env 模板里加 TAVILY_API_KEY。
+
+用 Claude 的 tool use 功能干净地实现。</div>
+      </div>
+
+        <p><strong>Skill 2 · Save notes</strong>。让 agent 能存你说的任何东西——灵感、任务、研究结论——以后调出来。</p>
+        <div class="prompt-card" data-card id="prompt-10">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">10</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Skill · Save notes</span>
+              <span class="prompt-name-cn">技能 · 存笔记</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Add a note-saving feature to the bot.
+
+When the user says "save this", "remember this", or "note:", the bot saves the content to notes.txt with a timestamp.
+
+Add a /notes command that returns the last 10 saved notes.
+Add a /clearnotes command that deletes all saved notes.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>给 bot 加存笔记功能。
+
+当用户说「save this」「remember this」或「note:」时，bot 把内容带时间戳存到 notes.txt。
+
+加 /notes 命令，返回最近 10 条笔记。
+加 /clearnotes 命令，删掉所有笔记。</div>
+      </div>
+
+        <p><strong>Skill 3 · Restrict to your account</strong>。默认任何找到 bot 的人都能用、都能花你的 API 额度。这一招锁成只你一个人能用。</p>
+        <div class="prompt-card" data-card id="prompt-11">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">11</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Skill · Private bot</span>
+              <span class="prompt-name-cn">技能 · 锁定单人</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Add user restriction to the bot so only I can use it.
+
+Add my Telegram user ID to the .env file as ALLOWED_USER_ID.
+If anyone else messages the bot, it responds with "This bot is private." and ignores all further messages from that user.
+
+Also add how I can find my own Telegram user ID — either through the bot itself or another method.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>给 bot 加用户限制，只有我自己能用。
+
+把我的 Telegram user ID 加到 .env 文件里，叫 ALLOWED_USER_ID。
+别人发消息给 bot，bot 回复「This bot is private.」，并忽略该用户后续所有消息。
+
+另外告诉怎么找自己的 Telegram user ID——通过 bot 自己或者别的方式都行。</div>
+      </div>
+
+        <p><strong>Skill 4 · Track API costs</strong>。Claude API 按 token 收费。这一招给你装个计表，钱花哪了一目了然。</p>
+        <div class="prompt-card" data-card id="prompt-12">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">12</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Skill · Cost tracker</span>
+              <span class="prompt-name-cn">技能 · 成本追踪</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Add basic cost tracking to the bot.
+
+After each Claude API response, log the number of input tokens and output tokens used.
+Keep a running total in costs.json.
+
+Add a /costs command that shows: total tokens used today, total tokens used all time, and an estimated cost in USD based on claude-sonnet-4-6 pricing.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>给 bot 加基本成本追踪。
+
+每次 Claude API 响应后，记录 input token 数和 output token 数。
+累计总数存在 costs.json。
+
+加 /costs 命令，显示：今天总 token、历史总 token、按 claude-sonnet-4-6 定价估的美元花费。</div>
+      </div>
+
+        <p><strong>Skill 5 · Daily briefing</strong>。agent 每天早上主动发你一条消息，不用你问。</p>
+        <div class="prompt-card" data-card id="prompt-13">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">13</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Skill · Daily briefing</span>
+              <span class="prompt-name-cn">技能 · 每日简报</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Add a scheduled daily briefing to the bot.
+
+Every day at 8:00am, the bot sends me a message with:
+1. A motivational one-liner (short, not cheesy)
+2. A reminder to check my top priority for the day
+3. One random useful fact about productivity or AI
+
+Send it to my Telegram user ID from the .env file.
+Use the schedule or APScheduler library to implement this.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>给 bot 加每日定时简报。
+
+每天早上 8:00，bot 给我发一条消息，内容：
+1. 一句励志短句（短，不油腻）
+2. 提醒我今天最该看的一件事
+3. 一个关于效率或 AI 的随机有用小知识
+
+发到 .env 里写好的我的 Telegram user ID。
+用 schedule 或 APScheduler 实现。</div>
+      </div>
+
+        <p><strong>怎么改 agent 的 personality</strong>：打开主 bot 文件，找到顶部的 system prompt 变量，改完保存，跑 <code>sudo systemctl restart your-bot-name</code>。新 personality 立刻生效。</p>
+        <p><strong>怎么加新 skill</strong>：在项目文件夹里开 Claude Code，描述你想要的：<em>「Add X feature to the bot」</em>。Claude Code 读现有代码、干净地加进去、告诉你需不需要重启。</p>
+      </div>
+    </section>
+
+    <!-- 07 MEMORY PROBLEM -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 07</div>
+          <h2 class="cap-title-en">The memory problem every agent has</h2>
+          <div class="cap-title-cn">每个 agent 都撞的 memory 墙 —— 4 招拆解</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这是最常遇到的问题：agent 在 session 之间丢 context、跨长任务丢 context、消息太多之后丢 context——开始出错或者重复已经做过的活。</p>
+
+        <p>三种典型场景：</p>
+        <ul class="cap-features">
+          <li><strong>长任务最终超过 Claude context 上限</strong>，agent 开始丢对话最开头：原始目标、已做的决策、你给的限制</li>
+          <li><strong>关掉一个 session、开新的</strong>，agent 从零开始</li>
+          <li><strong>任务中途被打断</strong>，agent 不知道停在哪</li>
+        </ul>
+
+        <p>四种解法，对应四个 prompt 模板——存到你能随时调用的地方：</p>
+
+        <p><strong>解法 1 · Checkpoint（检查点）</strong>。每完成重要一步，让 agent 写个简短 checkpoint。下个 session 开头粘过去。</p>
+        <div class="prompt-card" data-card id="prompt-14">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">14</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Memory · Checkpoint</span>
+              <span class="prompt-name-cn">Memory · 检查点</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Before we continue, write a brief checkpoint:
+1. What have you completed so far?
+2. What are the key decisions or findings from this session?
+3. What still needs to be done?
+4. What context would you need to continue this task in a new session?
+
+Keep it under 200 words.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>在我们继续之前，先写一个简短的检查点：
+1. 目前完成了什么？
+2. 本次 session 的关键决策或发现？
+3. 还剩什么没做？
+4. 下个新 session 接手需要哪些 context？
+
+控制在 200 字以内。</div>
+      </div>
+
+        <p><strong>解法 2 · Memory file（持久化笔记）</strong>。把每一步的成果按固定格式写到文件里，下个 session 直接读。</p>
+        <div class="prompt-card" data-card id="prompt-15">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">15</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Memory · File note</span>
+              <span class="prompt-name-cn">Memory · 持久化笔记</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">After completing each major step, write a memory note in this format:
+
+STEP COMPLETED: [what was done]
+KEY DECISIONS: [choices made and why]
+CURRENT STATE: [where the task stands now]
+NEXT STEP: [what should happen next]
+
+This note will be used to resume the task in a new session without losing context.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>每完成一个重要步骤后，按以下格式写一条 memory note：
+
+STEP COMPLETED: [做了什么]
+KEY DECISIONS: [做了哪些选择，为什么]
+CURRENT STATE: [任务目前在哪里]
+NEXT STEP: [下一步该做什么]
+
+这条 note 用于在新 session 接续任务时不丢 context。</div>
+      </div>
+
+        <p><strong>解法 3 · Context recovery（断点续传）</strong>。开新 session 第一件事，把上次的 memory note 粘进来，让 agent 立刻接上。</p>
+        <div class="prompt-card" data-card id="prompt-16">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">16</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Memory · Context recovery</span>
+              <span class="prompt-name-cn">Memory · 断点续传</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">We are resuming a task from a previous session. Here is the context:
+
+[paste your memory note here]
+
+Based on this:
+1. Confirm your understanding of where we are
+2. Identify the next step
+3. Ask any questions needed to continue
+
+Do not repeat work that has already been completed.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>我们在接着上一个 session 的任务。下面是 context：
+
+[把上次的 memory note 粘在这里]
+
+基于这些：
+1. 确认你理解我们目前在哪
+2. 识别出下一步
+3. 问需要的问题再继续
+
+不要重做已经完成的工作。</div>
+      </div>
+
+        <p><strong>解法 4 · Rolling summary（滚动压缩）</strong>。对话太长时主动让 agent 压缩成 summary，从 summary 继续——线头不丢。</p>
+        <div class="prompt-card" data-card id="prompt-17">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">17</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Memory · Rolling summary</span>
+              <span class="prompt-name-cn">Memory · 滚动压缩</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">The conversation is getting long. Compress everything important into a summary:
+
+1. Original goal
+2. What has been done and what was found
+3. Key decisions made
+4. What still needs to happen
+
+After writing the summary, continue from there. Treat this summary as the new starting point.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>对话太长了。把所有重要信息压缩成一个 summary：
+
+1. 原始目标
+2. 做了什么、发现了什么
+3. 做了哪些关键决策
+4. 还剩什么没做
+
+写完 summary 后从这里继续。把这份 summary 当作新的起点。</div>
+      </div>
+
+        <p>把四个 prompt 存到你的笔记里。每次长任务前调出来用，<strong>memory 墙就破了</strong>。</p>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>AI Agents. What they are and how to Build Your Own Step by Step.</em><br>
+          作者：Anatoli Kopadze (@AnatoliKopadze) · 发布于 2026/06/08 · 101.3K 浏览<br>
+          原文链接：<a href="https://x.com/AnatoliKopadze/status/2063985608381362576" target="_blank" rel="noopener">https://x.com/AnatoliKopadze/status/2063985608381362576</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/AnatoliKopadze" target="_blank" rel="noopener">https://x.com/AnatoliKopadze</a>
+        </li>
+        <li>
+          <strong>AUTHOR · TELEGRAM CHANNEL</strong>
+          <a href="https://t.me/kopadzemp" target="_blank" rel="noopener">https://t.me/kopadzemp</a> — 每日 AI 内容
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文中所有 prompt 模板均保留英文原貌；中文版为意译，便于理解。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">这些 prompt 模板是 Anatoli 公开分享的，复制即用——但建议按你的具体场景调整。prompt 不是越通用越好用，而是越贴合你的处境越准。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">You now know what agents are, what they can do, <strong>and how to build one yourself.</strong></p>
+      <p class="closing-caption">读完了。下一步：打开 Claude Code，粘 Prompt 1，十分钟后你有一个自己的 agent。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">7 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">What makes an agent</span>
+          <span class="nav-item-cn">什么算 agent</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The spectrum</span>
+          <span class="nav-item-cn">光谱四阶</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">5 types of agents</span>
+          <span class="nav-item-cn">5 类 agent</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Build your first agent</span>
+          <span class="nav-item-cn">动手建第一个</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Model and cost</span>
+          <span class="nav-item-cn">模型与成本</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">5 skills to add</span>
+          <span class="nav-item-cn">5 个常用 skill</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The memory problem</span>
+          <span class="nav-item-cn">Memory 4 招</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // ===== Prompt Card: EN/CN toggle + Copy =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) {
+              body.removeAttribute('hidden');
+            } else {
+              body.setAttribute('hidden', '');
+            }
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector(`.prompt-card-body[data-lang="${activeLang}"]`);
+      const content = body.textContent;
+
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else {
+        fallbackCopy(content, showCopied);
+      }
+    }
+
+    function fallbackCopy(content, cb) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(textarea);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
