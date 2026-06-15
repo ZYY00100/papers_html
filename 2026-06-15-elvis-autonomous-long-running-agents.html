@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>让 agent 自己跑几小时不停 · Elvis Saravia autonomous long-running agent 全解 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 64px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(30px, 4.5vw, 42px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.3;
+      letter-spacing: 0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 760px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* ARCHITECTURE DIAGRAM */
+    .cap-diagram {
+      margin: 0 0 32px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--bg-card);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-diagram:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-diagram img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .cap-diagram-caption {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      text-align: center;
+      background: var(--bg-secondary);
+    }
+    .cap-diagram-caption strong { color: var(--accent-gold-dim); }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* 7-STEP FLOW（实操流程） */
+    .flow-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      padding: 18px 22px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .flow-step:hover {
+      transform: scale(1.012);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+      border-left-color: var(--accent-red);
+      background-color: var(--bg-secondary);
+    }
+    .flow-step-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      line-height: 1.3;
+      flex-shrink: 0;
+      min-width: 32px;
+    }
+    .flow-step-text {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      flex: 1;
+    }
+    .flow-step-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">AUTONOMOUS AGENT · ELVIS SARAVIA</div>
+      <h1 class="article-title">让 agent 自己跑几小时不停</h1>
+      <p class="article-subtitle">Elvis Saravia 的 autonomous long-running agent 全解</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Elvis Saravia (@omarsar0) · 172K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/15</span>
+      </div>
+      <p class="article-desc">Elvis 6/13 发了张 146K 浏览的架构图：Execution Phase ↔ Judgment Phase，4 大件 Goals / Evaluators / Loops / Artifacts。这篇配套长文（DAIR.AI Academy 直播基础上，跟 Codex + Claude Code 协作写成）一次性把控制系统的 9 个层面讲透。</p>
+
+      <div class="cap-diagram" style="margin: 40px auto 0; max-width: 760px;">
+        <img src="images/2026-06-15-omarsar0-cover.jpg" alt="Autonomous Long-Running Coding Agents - Execution Phase and Judgment Phase summary diagram">
+        <div class="cap-diagram-caption">Elvis 那张 146K 浏览的标题图：<strong>EXECUTION PHASE</strong>（Executor Agent ↔ Code 内部循环）<span style="color:var(--accent-gold-dim)">⇄</span> <strong>JUDGMENT PHASE</strong>（Evaluator Agent → Evidence → Verdict → Finish）</div>
+      </div>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">"Autonomous coding is moving from better prompting to better control systems. The important shift is that engineers are learning how to wrap agents in <strong>goals, evaluators, loops, and artifacts</strong> that let them keep working after the human stops typing."</p>
+      <p class="intro-statement">Elvis 这次做了一件不太一样的事：他没有只发推文，而是发了一篇 X 长文（article）配一张架构图。两个东西各讲一半——图是骨架，文是肉。本文按 9 个章节（cap 01-09）逐节展开：cap 01 放图 + 讲目标，cap 02-08 顺着他那 8 个 H2 section 讲 evaluator / verifier / loop / planning / artifact / session mining / 实操流程，cap 09 收在"什么仍然会坏"。</p>
+      <p class="intro-statement">Elvis 在文末明确说明本文基础：<em>"This piece is based on a DAIR.AI Academy session on autonomous long-running coding agents, where I walked through Claude Code's <code>/goal</code> mode, the newer <code>/loop</code> command, verifiers, artifacts, and orchestration patterns in practice. Written in collaboration with Codex and Claude Code."</em>——所以这篇不是单一一篇感想，是一场 1.5 小时直播 + 两次跟 coding agent 协作改稿的产物。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Autonomous coding is moving from better prompting<span class="arrow">→</span>better control systems.</div>
+      <div class="pull-quote-caption">Elvis Saravia (@omarsar0) · 172K Views · 2026/06/13</div>
+    </section>
+
+    <!-- 01 From Prompting to Goal Design -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">From Prompting to Goal Design</h2>
+          <div class="cap-title-cn">从"提示 agent"到"设计目标"</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap02.jpg" alt="Goal contract written by human flows into coding agent executor that produces project files and version control, with validation and reporting feedback loop">
+          <div class="cap-diagram-caption">cap 01 配图：人在外写 <strong>GOAL CONTRACT</strong>（Success Criteria / Constraints / Budget）→ Coding Agent Executor → Project Files + Version Control，<strong>Validation & Reporting</strong> 回灌</div>
+        </div>
+
+        <p>先说图：左半边是 <strong>Execution Phase</strong>，一个 Executor Agent 在改 Code、改完再改、直到它觉得够了；右半边是 <strong>Judgment Phase</strong>，一个独立的 Evaluator Agent 拿着 Evidence 给出 Verdict——<strong>Continue（继续）回到左半边重跑，Deployed / Complete（完成）就走人</strong>。两个 phase 之间的关键边界是 Verdict，而 Verdict 的可信度完全取决于 Evaluator 用什么标准判断。</p>
+
+        <p>这张图是骨架，它讲清了为什么"提示 agent"不够用：<strong>你给一段话，agent 给你一段回答，这是 chat 模式</strong>。Elvis 想说的是，在真正的工程项目里，这远远不够——你需要的是一个 agent 能跑几小时、跑几天，自己判断够没够、没够就继续跑、够了才交活儿。</p>
+
+        <p>这套东西的核心入口是 Claude Code 的 <code>/goal</code>。Elvis 把它的逻辑拆开讲：</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"The core idea behind features like Claude Code's <code>/goal</code> is simple. A coding agent remains the executor, but the human no longer interacts with it turn by turn. Instead, the human specifies the <strong>desired end state</strong>, the <strong>evidence required to prove success</strong>, the <strong>constraints that must not be violated</strong>, and, where possible, the <strong>number of turns and budget</strong>."</p>
+
+        <p>Elvis 用了一个很重的词：<strong>contract</strong>——目标不是一段更长的 prompt，是一份契约。</p>
+
+        <ul class="cap-features">
+          <li><strong>弱的 goal</strong>给模型留出早停、走捷径、用一段看似合理但其实在真实系统里跑不通的转录来"自证完成"的空间</li>
+          <li><strong>强的 goal</strong>给 agent 一个它能反复衡量的目标——能测、能比对、能证伪</li>
+        </ul>
+
+        <p>但工程判断仍然在这里：<strong>最好的 goal 编码了模型本来会去猜的领域知识</strong>。Elvis 给两个例子：</p>
+
+        <ul class="cap-features">
+          <li><strong>研究实验</strong>：目标 benchmark 分数 + 留出验证集 + 要求的 loss 曲线 + 必须跑赢初始 baseline 的硬规则</li>
+          <li><strong>UI 任务</strong>：截图参考 + 具体布局约束 + 浏览器自动化验证步骤</li>
+        </ul>
+
+        <p>这一段是后面 8 个章节的地基——<strong>/goal 把"你和 agent 之间的契约"显式化了</strong>。它让人类从"对话的人"变成"立契约的人"——你不再问"你能帮我写 X 吗"，你写"X 必须满足条件 A、B、C，且我接受用证据 D 来证明 A、B、C 同时成立"。从这一刻起，agent 才是真正在"自己跑"——因为契约里已经写清楚它什么时候能停下来。</p>
+      </div>
+    </section>
+
+    <!-- 02 The Evaluator Becomes a First-Class Component -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">The Evaluator Becomes a First-Class Component</h2>
+          <div class="cap-title-cn">Evaluator 升格为一等公民</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap01.jpg" alt="Autonomous Long-Running Coding Agents architecture - Execution Phase and Judgment Phase with Deployed/Complete outcome">
+          <div class="cap-diagram-caption">cap 02 配图：Elvis 那张 146K 浏览的完整架构图——<strong>EXECUTION PHASE</strong>（Executor Agent ↔ Code 内部循环）<span style="color:var(--accent-gold-dim)">⇄</span> <strong>JUDGMENT PHASE</strong>（Evaluator Agent → Evidence → Verdict → <strong>Deployed / Complete</strong>）</div>
+        </div>
+
+        <p>cap 01 给了"goal"，cap 02 立刻补一个<strong>对位</strong>的角色：<strong>evaluator</strong>。Elvis 写得很直白——"Long-running agents need a second role besides the goal. That evaluator can be another coding agent, an LLM-as-judge, a script, a test suite, a benchmark harness, or a mix of all of them."</p>
+
+        <p>这个 evaluator 不是装饰，<strong>它就是右半边 Judgment Phase 那个 Evaluator Agent</strong>。你用什么当 evaluator、它能给出多可靠的 Verdict，直接决定了 Execution Phase 那个循环跑多久、值不值得跑。</p>
+
+        <p>Elvis 给了一个<strong>匹配原则</strong>：</p>
+
+        <ul class="cap-features">
+          <li><strong>成功条件很硬的时候</strong>，用确定性检查最稳——type check、unit test、lint rule、integration test、benchmark 脚本。这些只要写得出、能跑，就是答案</li>
+          <li><strong>成功条件很软的时候</strong>，用 agent evaluator 才有用——比如生成的研究报告是否讲得通、实现是否真的忠实于论文、UI 是否匹配设计意图。脚本判不了这些，<strong>需要语言、判断力、视觉</strong></li>
+        </ul>
+
+        <p>Elvis 紧接着给了实操配方：<strong>用确定性检查打底层（the floor），用 agent evaluation 做高层 review</strong>。"This combination reduces hallucinated success while still allowing autonomy on tasks that do not fit cleanly into a test assertion."</p>
+
+        <p>这句话非常关键，因为它给"self-evaluating agent"判了死刑：<strong>让 executor 自己判断自己干没干完，模型会倾向答"yes"</strong>。Anthropic 之前在内部文档里也说过同样的事——"models reliably skew positive when they grade their own work"。Elvis 这里的解法就是把 evaluator 这个角色独立出来，跟 executor 解耦，<strong>不是同一个人</strong>，也不是同一个 prompt 上下文。</p>
+
+        <p>这也是架构图右半边为什么必须独立——它不是"在左边那个 agent 旁边加个按钮"，是<strong>两个独立角色</strong>，共用一个 Verdict 接口。</p>
+      </div>
+    </section>
+
+    <!-- 03 Verifiers Define the Boundary of Trust -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">Verifiers Define the Boundary of Trust</h2>
+          <div class="cap-title-cn">Verifier 决定信任的边界</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap03.jpg" alt="Trust boundary: work in progress flows through reliable verifiers (tests, type checks, benchmarks, screenshots) then cross trust boundary through held-out evals to become accepted work">
+          <div class="cap-diagram-caption">cap 03 配图：<strong>Work in Progress</strong> → <strong>Reliable Verifiers</strong>（Tests / Type Checks / Benchmarks / Screenshots）→ 跨过 <strong>Trust Boundary</strong> → <strong>Held-out Evals</strong> → <strong>Accepted Work</strong>，<strong>Evidence Gates</strong> 守在边界</div>
+        </div>
+
+        <p>cap 03 把 cap 02 的"evaluator"再深一层：<strong>evaluator 背后真正起作用的是 verifier——一个 agent 没法轻易糊弄的外部检查</strong>。</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"Autonomy only works when the system has a reliable verifier. A coding agent can generate a plan, implement a feature, and explain why it believes the work is complete, but that explanation should not be treated as evidence. Evidence comes from an external check that the agent cannot easily talk its way around."</p>
+
+        <p>Elvis 给了不同任务对应的 verifier 类型：</p>
+
+        <ul class="cap-features">
+          <li><strong>代码</strong>：test suite / type checker / benchmark / 浏览器跑 / 截图对比 / 可复现脚本</li>
+          <li><strong>研究</strong>：留出验证集 / 复现的表格 / loss 曲线 / 比 baseline 更好的 benchmark 分数</li>
+          <li><strong>设计</strong>：参考截图 + 视觉 review 步骤</li>
+        </ul>
+
+        <p>但这一段最有价值的是<strong>陷阱分析</strong>：</p>
+
+        <ul class="cap-features">
+          <li><strong>verifier 太模糊</strong>，模型会走最容易满足的解读——把任务解释成它能 pass 的样子</li>
+          <li><strong>verifier 太窄</strong>，模型会过拟合到 verifier 上——pass 了但意图偏了</li>
+        </ul>
+
+        <p>Elvis 给的解法是 <strong>layered verification</strong>：便宜的确定性检查抓基础失败，高层 review 抓判断性失败。两层都不能少。</p>
+
+        <p>最后他抛了一个诚实的判断：<strong>verifier 仍然是个开放问题</strong>。</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"A few of the frontier models can already achieve some level of verification, but based on my research, there is still an evident <strong>OOD problem</strong>, where if the verification task you assign to the agent falls outside the training distribution, models struggle significantly. Verifiers are still an open area of research, but I anticipate more companies will start to make huge investments in this area."</p>
+
+        <p>OOD 意思是 <strong>out-of-distribution</strong>——<strong>训练数据里没见过的验证任务，模型就明显不行</strong>。这给"agent 跑 24 小时自己验"画了一条现实线：今天最可靠的还是你写出来的确定性 check，agent verifier 还在追。Elvis 预测企业会开始重金投入微调 verifier——这条线他下一节还会再提到。</p>
+      </div>
+    </section>
+
+    <!-- 04 Loops Make Autonomy Durable -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">Loops Make Autonomy Durable</h2>
+          <div class="cap-title-cn">Loop 让自主性撑得久</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap04.jpg" alt="Durable autonomy loop over time: outer loop wake up, check progress, compare against goal, decision on goal met - yes leads to condition met and complete, no goes back to work agent">
+          <div class="cap-diagram-caption">cap 04 配图：<strong>Durable Autonomy Loop (Over Time)</strong> —— <strong>Outer Loop Wake Up</strong> → Check Progress → Compare Against Goal → <strong>Goal Met?</strong> → YES（Condition Met → Complete）或 NO（回到 Work Agent，<strong>Time Passes</strong>）</div>
+        </div>
+
+        <p>cap 04 把 cap 01 的 goal、cap 02 的 evaluator、cap 03 的 verifier 串起来：<strong>没有 loop，这三个角色只是"对话里的几段话"；有 loop，它们才是 control system</strong>。</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"A goal gives the agent direction, but a loop keeps the work alive. This distinction is important because models often stop before the real task is finished. They may hit a turn limit, lose confidence, exhaust context, or decide that a partial solution is enough."</p>
+
+        <p>这段讲的是模型本身的脆弱性：<strong>它会自己放弃</strong>。turn 限到了它放弃，信心没了它放弃，context 满了它放弃，看到一部分进展它就以为全干完了也放弃。Loop 是外层的"不让你放弃"机制：</p>
+
+        <ul class="cap-features">
+          <li><strong>wake up</strong> —— 重新叫醒 agent（可能换一个新 session）</li>
+          <li><strong>inspect progress</strong> —— 读 vault / progress 文件 / 测试结果，看现在到哪了</li>
+          <li><strong>run checks</strong> —— 跑 verifier，把证据收回来</li>
+          <li><strong>compare against goal</strong> —— 把当前状态和 cap 01 写的契约比对</li>
+          <li><strong>send back in with the next instruction</strong> —— 没达成就把差距和下一条指令一起塞回 context</li>
+        </ul>
+
+        <p>Elvis 紧接着给了一个非常清晰的<strong>复杂度谱系</strong>：</p>
+
+        <ul class="cap-features">
+          <li><strong>最简形式</strong>：Ralph loop——一个 coding agent + 一个确定性条件（"tests pass"），跑不动了就再开一个</li>
+          <li><strong>灵活形式</strong>：loop 里嵌一个 evaluator agent，让它判断"该不该继续"+"接下来该干什么"</li>
+        </ul>
+
+        <p>这一节是整篇里最重的一句：</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"Long-running autonomy works as <strong>repeated effort under supervision from a control layer</strong>, not as one continuous act of intelligence. The agent can still fail, but the loop gives the system a way to notice the failure and continue instead of silently declaring victory."</p>
+
+        <p>这跟 6/9 那篇 loop engineering 文章是同一件事的另一面——loop engineering 讲"loop 是什么、怎么设计"；这里讲"loop 装上 goal / evaluator / verifier 之后才真正变成 autonomous control system"。两篇放一起看就是：<strong>loop 是循环的写法，control system 是循环的目的</strong>。</p>
+      </div>
+    </section>
+
+    <!-- 05 Planning Is Where Expertise Enters -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">Planning Is Where Expertise Enters</h2>
+          <div class="cap-title-cn">规划环节才是你的专业进场的地方</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap05.jpg" alt="Architecture decision model choice: goal and requirements flow into planning model which sharpens and refines into evaluation plan, then into execution model which implements and generates results. Below: role planner (Model A or B) vs role executor (Model C or D)">
+          <div class="cap-diagram-caption">cap 05 配图：<strong>Goal & Requirements</strong> → <strong>Planning Model</strong>（Sharpen & Refine → Evaluation Plan）→ <strong>Execution Model</strong>（Implement & Generate → Result）。下面标注 <strong>Architecture Decision: Model Choice</strong> —— <strong>Role: Planner</strong>（Model A 或 B）vs <strong>Role: Executor</strong>（Model C 或 D）</div>
+        </div>
+
+        <p>前面 4 个 cap 把 goal / evaluator / verifier / loop 搭好了，但 Elvis 在 cap 05 拐了个弯：<strong>你让一个 frontier model 自己出 plan，不行</strong>。</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"One of the strongest themes from the session was that planning remains critical. You can ask a frontier model to generate a plan, but you still need to inspect it, challenge assumptions, and make the success criteria sharper before handing the task to an autonomous loop."</p>
+
+        <p>这条很反直觉——cap 01-04 一直在说"把控制权交给 loop"，cap 05 又说"但 plan 这一段你必须自己盯"。Elvis 给的理由是 plan 决定了 goal 的具体写法、verifier 的判据、loop 的退出条件——<strong>plan 烂，下面全烂</strong>。</p>
+
+        <p>再往下推一步，Elvis 给了一个会让很多人没想到的判断：<strong>模型选择是架构决策</strong>。</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"This leads to a useful division of labor. A stronger planning model can help define the goal, identify missing constraints, and structure the evaluation. A different execution model can then run the implementation once the plan is clear. In practice, this means engineers should stop thinking of 'the model' as a single choice. <strong>Model choice becomes an architecture decision.</strong>"</p>
+
+        <p>Elvis 在他 Jun 11 那条配套长推里给过一个具体配方（他不是这一节提的，但完全对应）：</p>
+
+        <ul class="cap-features">
+          <li><strong>Planning</strong>：Opus 4.8（强模型，专门做规划）</li>
+          <li><strong>Execution</strong>：GPT-5.5（执行层）</li>
+          <li><strong>Evaluator</strong>（也就是 cap 02-03 那个 evaluator）：Deepseek、Qwen、Kimi 这些更便宜的开源/中间层模型</li>
+        </ul>
+
+        <p>Elvis 在这一节总结：<strong>不同模型擅长不同角色</strong>——有的强在 plan，有的强在 exec，有的便宜到可以拿来当 evaluator，有的带 vision 适合做视觉 review。一个好的 orchestrator 让你能在这些角色之间换，<strong>不用等某个供应商给你"一个完美 coding agent 接口"</strong>。</p>
+
+        <p>这一节回答的是：loop engineering 之后还差什么？<strong>差一套明确的角色分工</strong>。你不能把整个 autonomous system 押在一个模型上。</p>
+      </div>
+    </section>
+
+    <!-- 06 Visual Artifacts Become Control Surfaces -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 06</div>
+          <h2 class="cap-title-en">Visual Artifacts Become Control Surfaces</h2>
+          <div class="cap-title-cn">可视化 artifact 变成控制台</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap06.jpg" alt="Live artifact composed from logs, vault, screenshots, and metrics, with feedback loop back to the data sources">
+          <div class="cap-diagram-caption">cap 06 配图：<strong>Logs + Vault + Screenshots + Metrics</strong> 四个数据源 → <strong>Live Artifact</strong>，<strong>Feedback Loop</strong> 回到四个源</div>
+        </div>
+
+        <p>cap 06 是图之后最容易被忽视的一节，但 Elvis 写得很细——因为这是工程落地时<strong>真正卡人</strong>的地方。</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"Terminal transcripts do not scale when many agents are running. Once you have several sessions working in parallel, raw text becomes a poor interface for understanding progress."</p>
+
+        <p>翻译成大白话：<strong>terminal 里的文本一旦 agent 多到几条并行，原始转录就废了</strong>。你盯不过来的。</p>
+
+        <p>Elvis 给的解法是<strong>把 artifact 升级成 control surface</strong>。一个 dashboard 上面同时有 loss 曲线、benchmark 分数、任务状态、截图、成本估算、最近的决策记录——<strong>这是用来决定什么时候介入的界面，不是事后生成的报告</strong>。</p>
+
+        <p>关键的工程决定是<strong>存储跟呈现分离</strong>：</p>
+
+        <ul class="cap-features">
+          <li><strong>存储</strong>：markdown / vault 存持久证据、日志、笔记、plan、结果</li>
+          <li><strong>呈现</strong>：HTML artifact 把这个状态渲染成可视、可交互的东西</li>
+          <li><strong>分工</strong>：agent 搜 markdown，人看 HTML artifact</li>
+        </ul>
+
+        <p>Elvis 在他的另一条推（关于 HTML artifacts）里说过这件事的动机："Artifacts help provide an important verification layer, which in turn enables important decision-making. I like HTML artifacts because I can <strong>monitor the artifact in real time and intervene when needed</strong>."——<strong>artifact 不是给 agent 看的，是给你看的</strong>。</p>
+
+        <p>这一节最实用的部分是<strong>视觉 cue 在 UI 工作里特别有效</strong>：</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"For UI and product work, visual cues are especially powerful. A screenshot reference can communicate design intent more precisely than prose, and a vision-capable evaluator can compare the implementation against that reference. This reduces the common failure mode where the agent technically implements the requested component but misses spacing, hierarchy, alignment, or product feel."</p>
+
+        <p>这是 cap 02 那个"evaluator 适合干模糊判断"的延伸——<strong>对 UI 工作，evaluator 的眼睛比 prompt 的话术更管用</strong>。agent 文字上理解了你的"按钮要更突出"，视觉上完全没 get；给它一张参考截图 + 一个能看图的 evaluator，这两个 agent 互相对一遍就过了。</p>
+      </div>
+    </section>
+
+    <!-- 07 Session Mining Turns Usage Into Memory -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 07</div>
+          <h2 class="cap-title-en">Session Mining Turns Usage Into Memory</h2>
+          <div class="cap-title-cn">挖历史 session，让 agent 越来越聪明</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap07.jpg" alt="Past sessions data mining finds repeated failures, then routes to project instructions for development, future guardrails, and memory for improving local harness before deployment">
+          <div class="cap-diagram-caption">cap 07 配图：<strong>Past Sessions</strong> → <strong>Data Mining</strong> → <strong>Repeated Failures</strong>，三分流：<strong>Project Instructions → Development</strong>、<strong>Future Guardrails</strong>、<strong>Memory → Local Harness</strong>，最终到 <strong>Deployment</strong></div>
+        </div>
+
+        <p>cap 07 是全篇最短但最有"训练意识"的一节：<strong>过去跑的 session 是一堆 workflow 数据</strong>。</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"If an agent repeatedly fails in the same way, forgets to run the same check, uses the wrong path, or retries the same broken command, that pattern should not stay buried in logs."</p>
+
+        <p>Elvis 给的解法叫 <strong>session mining</strong>——让 agent 扫过去 30 天的 session 记录，找反复出现的失败模式、缺失的检查、走错的路径、重试的同一条坏命令。<strong>这些不应该埋在日志里</strong>，应该被提出来变成项目规则。</p>
+
+        <p>Elvis 把这件事的目的说得很清楚：</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"The goal is to make the local environment smarter without training a model from scratch. A small rule in an agent instruction file can prevent repeated failures across future sessions, especially when the rule is specific to the project."</p>
+
+        <p>翻译过来：<strong>不重训模型也能让环境更聪明</strong>。一条小规则加在 AGENTS.md / CLAUDE.md 里，能挡住一类反复出现的失败——而且规则越贴合项目本身，挡得越准。</p>
+
+        <p>这一节呼应了 cap 03 那个"OOD 问题"的伏笔：<strong>verifier 还没完全成熟，那就在 verifier 之外加一层"项目级别的失败模式黑名单"</strong>，让 agent 在开始之前就避开那些它肯定会再栽一次的坑。</p>
+      </div>
+    </section>
+
+    <!-- 08 A Practical Operating Model -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 08</div>
+          <h2 class="cap-title-en">A Practical Operating Model</h2>
+          <div class="cap-title-cn">7 步实操流程——从今天就能开始跑</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap08.jpg" alt="Operating model: goal flows into executor AI coding agent, which produces verifiers outputs (syntax and linting, unit tests, security scan), which become proof artifacts (clean code, test reports, logs), which feed session learnings (feedback loop, model updates) back to the executor">
+          <div class="cap-diagram-caption">cap 08 配图：<strong>Goal</strong> → <strong>Executor (AI Coding Agent)</strong> → <strong>Verifiers</strong>（Syntax & Linting / Unit Tests / Security Scan）→ <strong>Proof Artifacts</strong>（Clean Code / Test Reports / Logs）→ <strong>Session Learnings</strong>（Feedback Loop / Model Updates）→ 回到 Executor</div>
+        </div>
+
+        <p>cap 08 是 Elvis 在文末给的"实操手册"。原文是 7 条无序列表，我把它原样保留：</p>
+
+        <div class="flow-step">
+          <div class="flow-step-num">01</div>
+          <div class="flow-step-text"><strong>Start with a small, cheap subset</strong> before launching the full autonomous run.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">02</div>
+          <div class="flow-step-text"><strong>Write a goal</strong> with measurable success criteria, explicit constraints, and a turn or time budget (where possible).</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">03</div>
+          <div class="flow-step-text"><strong>Separate the executor from the evaluator</strong> so implementation and judgment are not collapsed into one role.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">04</div>
+          <div class="flow-step-text"><strong>Define external verifiers</strong> before the long-running loop starts.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">05</div>
+          <div class="flow-step-text"><strong>Use deterministic checks</strong> wherever possible, then add agent review for fuzzy criteria.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">06</div>
+          <div class="flow-step-text"><strong>Require proof artifacts</strong> such as logs, screenshots, benchmark curves, or changed files.</div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-step-num">07</div>
+          <div class="flow-step-text"><strong>Mine past sessions</strong> and promote repeated lessons into project instructions.</div>
+        </div>
+
+        <p>Elvis 在这 7 步之后收了一句很重的话：</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"That is the difference between using a coding agent and <strong>engineering an autonomous coding system</strong>. One gives you a conversation. The other gives you a harness."</p>
+
+        <p>把 7 步和 cap 01-07 串起来看，顺序就是<strong>实操流程</strong>：</p>
+
+        <ul class="cap-features">
+          <li>第 1-2 步 = cap 01 的 goal design（写契约）</li>
+          <li>第 3-5 步 = cap 02-03 的 evaluator + verifier（拆角色、给外部检查）</li>
+          <li>第 6 步 = cap 06 的 visual artifact（要求证据）</li>
+          <li>第 7 步 = cap 07 的 session mining（把经验沉淀成规则）</li>
+        </ul>
+
+        <p>也就是说 cap 01-07 讲的是 control system 的 7 个零件，cap 08 讲的是这 7 个零件怎么<strong>按顺序装</strong>。</p>
+      </div>
+    </section>
+
+    <!-- 09 What Still Breaks -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 09</div>
+          <h2 class="cap-title-en">What Still Breaks</h2>
+          <div class="cap-title-cn">什么仍然会坏</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-diagram">
+          <img src="images/2026-06-15-omarsar0-cap09.jpg" alt="Five failure modes (shortcutting, early stopping, weak plans, benchmark overfitting, stale context) all feed into stronger control system which produces robust outcome, with feedback loop back to control system">
+          <div class="cap-diagram-caption">cap 09 配图：5 种失败模式（<strong>Shortcutting / Early Stopping / Weak Plans / Benchmark Overfitting / Stale Context</strong>）→ <strong>Stronger Control System</strong> → <strong>Robust Outcome</strong>，虚线回环到 Control System</div>
+        </div>
+
+        <p>最后一节 Elvis 没讲漂亮话，<strong>他列了四件仍然会坏的事</strong>：</p>
+
+        <ul class="cap-features">
+          <li><strong>Agents still take shortcuts</strong>——遇到阻力就绕，遇到代价就避</li>
+          <li><strong>They still stop early</strong>——turn 限到了、信心没了、context 满了就停</li>
+          <li><strong>They still overestimate completion</strong>——cap 02 提过的"self-grading 偏 yes"</li>
+          <li><strong>They still produce confident but weak plans</strong>——尤其是遇到最近的论文、不熟悉的 benchmark、训练分布外的系统</li>
+        </ul>
+
+        <p>这一节最后两句话是整篇的核心：</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"Trusting them more will not solve this. Better control systems will. Goals, loops, evaluators, deterministic checks, visual artifacts, and session memory are all ways of making autonomy <strong>observable and correctable</strong>."</p>
+
+        <p style="font-family:'Noto Serif SC',serif;font-size:17px;color:var(--text-primary);line-height:1.85;">"The direction is clear. The future of coding agents depends on better orchestration around more capable models, where engineers design the conditions under which agents can safely run for hours or days and still produce work that can be verified."</p>
+
+        <p>把这两句放回去看 cap 01：<strong>"from better prompting to better control systems"</strong>——Elvis 这篇文章从头到尾就在讲这一件事。不是 prompt 没用了，是<strong>信任 prompt 不解决问题，信任 control system 才能</strong>。未来的 coding agent 比拼的不再是单个模型有多强，而是<strong>围绕它的 control system 设计得有多稳</strong>。</p>
+      </div>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">你不能再相信 agent 自己说"做完了"。<strong>去设计让 agent 没法糊弄你的控制系统。</strong></p>
+      <p class="closing-caption">Goal + Evaluator + Verifier + Loop + Planning + Artifact + Session Mining = 7 件套，按 cap 08 的顺序装，今天就能跑。</p>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>Autonomous Long-Running Coding Agents</em><br>
+          作者：Elvis Saravia (@omarsar0) · DAIR.AI 联合创始人 · 发布于 2026/06/13 · 172K 浏览 / 673 点赞 / 1537 书签 / 85 转发 / 27 回复<br>
+          原文链接：<a href="https://x.com/omarsar0/status/2065880971031834786" target="_blank" rel="noopener">https://x.com/omarsar0/status/2065880971031834786</a>
+        </li>
+        <li>
+          <strong>X LONG-FORM ARTICLE URL</strong>
+          文章本身的 X 长文版：<a href="https://x.com/i/article/2065876120965111808" target="_blank" rel="noopener">https://x.com/i/article/2065876120965111808</a> · 基于 DAIR.AI Academy 直播"Autonomous Long-Running Coding Agents"，跟 Codex + Claude Code 协作改稿
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          Elvis Saravia / @omarsar0<br>
+          <a href="https://x.com/omarsar0" target="_blank" rel="noopener">https://x.com/omarsar0</a>
+        </li>
+        <li>
+          <strong>AUTHOR · NEWSLETTER</strong>
+          AI Agents Weekly · 7.3 万 GitHub stars 的 Prompt Engineering Guide 作者主理的 newsletter<br>
+          <a href="https://nlp.elvissaravia.com" target="_blank" rel="noopener">https://nlp.elvissaravia.com</a>
+        </li>
+        <li>
+          <strong>AUTHOR · YOUTUBE</strong>
+          Elvis Saravia · YouTube 频道（每周教程 + 论文总结）<br>
+          <a href="https://www.youtube.com/@elvissaravia" target="_blank" rel="noopener">https://www.youtube.com/@elvissaravia</a>
+        </li>
+        <li>
+          <strong>DAIR.AI ACADEMY</strong>
+          Elvis 创办的 AI 教育平台 · 本文的源头直播就在 Academy 办的<br>
+          <a href="https://academy.dair.ai" target="_blank" rel="noopener">https://academy.dair.ai</a>
+        </li>
+        <li>
+          <strong>RELATED POST · DAIR.AI ACADEMY SESSION ANNOUNCEMENT</strong>
+          <em>How to effectively run autonomous long-running coding agents?</em><br>
+          Elvis 在 2026/06/11 发的长推，配套本文的 Academy 直播<br>
+          <a href="https://x.com/omarsar0/status/2065491829760651328" target="_blank" rel="noopener">https://x.com/omarsar0/status/2065491829760651328</a>
+        </li>
+        <li>
+          <strong>DIAGRAMS (10 张全部保留)</strong>
+          Elvis 这篇 X 长文配了 1 张标题图（cover）+ 9 张正文配图（每个 H2 section 一张），本文 10 张全部保留原貌嵌入：
+          <ul style="margin: 6px 0 0 20px; padding: 0; list-style: disc; color: var(--text-muted); font-size: 13px;">
+            <li><strong>标题图（HERO 顶部）</strong>：EX×JD 双 phase 标题架构图（更紧凑版本，Finish 箭头收尾）· <a href="https://pbs.twimg.com/media/HKt5fBiWUAAHm62.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 01</strong>：EX×JD 双 phase 完整架构图（含 Deployed/Complete 终点）· <a href="https://pbs.twimg.com/media/HKt4pt7WEAAGKTl.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 02</strong>：Goal Contract → Executor → Project Files + Version Control · <a href="https://pbs.twimg.com/media/HKt3frzWYAA_qqi.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 03</strong>：Reliable Verifiers → Trust Boundary → Held-out Evals · <a href="https://pbs.twimg.com/media/HKt4tESXsAA_tw7.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 04</strong>：Durable Autonomy Loop (Over Time) · <a href="https://pbs.twimg.com/media/HKt41ErW8AA7HkP.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 05</strong>：Architecture Decision: Model Choice（Planner vs Executor）· <a href="https://pbs.twimg.com/media/HKt42yoWUAAGE49.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 06</strong>：Logs/Vault/Screenshots/Metrics → Live Artifact + Feedback Loop · <a href="https://pbs.twimg.com/media/HKt44tSXAAApIRK.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 07</strong>：Past Sessions → Data Mining → Repeated Failures → 多路输出 · <a href="https://pbs.twimg.com/media/HKt46hQXsAAKiT1.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 08</strong>：Goal → Executor → Verifiers → Proof Artifacts → Session Learnings · <a href="https://pbs.twimg.com/media/HKt48D2WsAAaQnB.jpg" target="_blank" rel="noopener">原图</a></li>
+            <li><strong>cap 09</strong>：5 种失败模式 → Stronger Control System → Robust Outcome · <a href="https://pbs.twimg.com/media/HKt49uhXsAAxBan.jpg" target="_blank" rel="noopener">原图</a></li>
+          </ul>
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为 Elvis 原文逐节中文解读版。原英文长文 9 个 H2 section 全部保留并一一对应（cap 01-09），所有关键术语、配方（Opus 4.8 / GPT-5.5 / Deepseek-Qwen-Kimi 模型分工）、案例（research 实验 vs UI 任务）、7 步实操流程均原样保留；中文版为意译，保留英文原貌便于直接复制使用。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">Elvis 在文末抛了一个判断——"Trusting them more will not solve this. Better control systems will."——可以把它跟 6/9 那篇 loop engineering 文章放一起读：loop engineering 教你怎么把循环写出来，本文教你怎么在循环上装一整套控制台（goal / evaluator / verifier / artifact / session memory）。两篇加起来，coding agent 从"你跟它对话"到"它替你跑几小时不停"的全套基础设施就齐了。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">9 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">From Prompting to Goal Design</span>
+          <span class="nav-item-cn">从提示到设计目标</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Evaluator Becomes a First-Class Component</span>
+          <span class="nav-item-cn">Evaluator 升格为一等公民</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Verifiers Define the Boundary of Trust</span>
+          <span class="nav-item-cn">Verifier 决定信任边界</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Loops Make Autonomy Durable</span>
+          <span class="nav-item-cn">Loop 让自主性撑得久</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Planning Is Where Expertise Enters</span>
+          <span class="nav-item-cn">规划才是你的专业进场的地方</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Visual Artifacts Become Control Surfaces</span>
+          <span class="nav-item-cn">可视化 artifact 变成控制台</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Session Mining Turns Usage Into Memory</span>
+          <span class="nav-item-cn">挖历史 session</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">A Practical Operating Model</span>
+          <span class="nav-item-cn">7 步实操流程</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">What Still Breaks</span>
+          <span class="nav-item-cn">什么仍然会坏</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
