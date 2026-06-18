@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Art of Loop Engineering · LangChain 的 4 层循环栈 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+    .back-link {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    /* ARTICLE HERO */
+    .article-hero {
+      padding: 88px 0 64px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 24px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(30px, 4.5vw, 44px);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      line-height: 1.25;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      white-space: nowrap;
+    }
+    .article-title .highlight { color: #C8161D; }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+      margin: 4px auto 28px;
+      max-width: 720px;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep    { color: var(--border-subtle); }
+    .article-desc {
+      max-width: 620px;
+      margin: 32px auto 0;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* HERO COVER IMG */
+    .hero-cover {
+      max-width: 1080px;
+      margin: 56px auto 0;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .hero-cover img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* SECTIONS */
+    .section {
+      padding: 64px 0;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .section .container { max-width: 760px; }
+    .section-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(24px, 3.6vw, 32px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      letter-spacing: 0.01em;
+      line-height: 1.3;
+    }
+    .section p {
+      font-size: 16px;
+      color: var(--text-primary);
+      line-height: 1.85;
+      margin-bottom: 20px;
+    }
+    .section p strong { color: var(--text-primary); font-weight: 600; }
+    .section ul, .section ol {
+      margin: 0 0 24px 24px;
+      color: var(--text-primary);
+    }
+    .section li { margin-bottom: 8px; line-height: 1.8; }
+
+    /* INTRO LEAD */
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      border-left: 2px solid var(--accent-gold);
+      padding-left: 18px;
+      margin: 24px 0;
+    }
+
+    /* LOOP STACK DIAGRAM */
+    .loop-stack {
+      margin: 48px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .loop-stack-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 20px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .loop-stack-row:hover {
+      transform: scale(1.012);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+      background-color: var(--bg-secondary);
+    }
+    .loop-stack-row + .loop-stack-row { border-top: none; }
+    .loop-stack-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 50px;
+      letter-spacing: 0.02em;
+    }
+    .loop-stack-content { flex: 1; }
+    .loop-stack-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .loop-stack-en {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent-gold-dim);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .loop-stack-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* LOOP CHAPTER */
+    .loop-chapter {
+      padding: 64px 0;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .loop-chapter + .loop-chapter { border-top: 1px solid var(--border-subtle); }
+    .loop-num {
+      display: flex;
+      align-items: baseline;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    .loop-num-digit {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      line-height: 1;
+    }
+    .loop-num-stack { display: flex; flex-direction: column; gap: 4px; }
+    .loop-num-en {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+    }
+    .loop-num-cn {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+    .loop-chapter p {
+      font-size: 16px;
+      color: var(--text-primary);
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+    .loop-chapter code {
+      font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: 14px;
+      background: var(--bg-code);
+      color: #e5e5e8;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+    .loop-figure {
+      margin: 32px 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--bg-card);
+      box-shadow: var(--shadow-card);
+    }
+    .loop-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .loop-figure-caption {
+      padding: 12px 18px;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+      font-style: italic;
+    }
+
+    /* CALLOUT BOX */
+    .callout {
+      margin: 32px 0;
+      padding: 24px 28px;
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 0 4px 4px 0;
+    }
+    .callout-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 10px;
+    }
+    .callout p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 8px;
+    }
+    .callout p:last-child { margin-bottom: 0; }
+
+    /* KEY TERM */
+    .keyterm {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-style: italic;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* TABLE */
+    .loop-table-wrap {
+      max-width: 880px;
+      margin: 48px auto;
+      padding: 0 24px;
+    }
+    .loop-table-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .loop-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      font-size: 14px;
+    }
+    .loop-table thead th {
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      text-align: left;
+    }
+    .loop-table tbody td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .loop-table tbody tr:last-child td { border-bottom: none; }
+    .loop-table tbody tr {
+      transition: background 0.2s;
+    }
+    .loop-table tbody tr:hover { background: var(--bg-secondary); }
+    .loop-table .col-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      width: 50px;
+      text-align: center;
+    }
+    .loop-table .col-en {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-style: italic;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .loop-table .col-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .loop-table code {
+      font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: 12px;
+      background: var(--bg-code);
+      color: #e5e5e8;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    /* HUMAN OVERSIGHT LIST */
+    .oversight-list {
+      margin: 24px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .oversight-item {
+      display: flex;
+      gap: 18px;
+      padding: 18px 20px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      margin-bottom: 12px;
+      border-radius: 4px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .oversight-item:hover {
+      transform: scale(1.012);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .oversight-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 38px;
+      line-height: 1.1;
+    }
+    .oversight-content { flex: 1; }
+    .oversight-loop {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 4px;
+    }
+    .oversight-text {
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.7;
+    }
+
+    /* REFERENCES (极简) */
+    .references-minimal {
+      max-width: 760px;
+      margin: 64px auto 48px;
+      padding: 32px 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-minimal-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .references-minimal-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+    }
+    .references-minimal-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+    }
+    .references-minimal-list li {
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .references-minimal-list a {
+      color: var(--accent-gold-dim);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .references-minimal-list a:hover { text-decoration: underline; }
+    .references-minimal-note {
+      margin-top: 20px;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border-left: 2px solid var(--accent-gold);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 100px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 20px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-size: 11.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-title { white-space: normal; font-size: 26px; }
+      .article-subtitle { font-size: 17px; }
+      .article-byline { gap: 8px; font-size: 12px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .section { padding: 40px 0; }
+      .loop-chapter { padding: 40px 0; }
+      .loop-num-digit { font-size: 40px; }
+      .loop-num-cn { font-size: 22px; }
+      .loop-table { font-size: 13px; }
+      .loop-table thead th,
+      .loop-table tbody td { padding: 10px 8px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="container">
+        <div class="article-category">AGENT ARCHITECTURE · LOOP ENGINEERING</div>
+        <h1 class="article-title">The Art of <span class="highlight">Loop Engineering</span></h1>
+        <p class="article-subtitle">LangChain 的 4 层循环栈 · 从单循环到持续进化的工程化方法</p>
+        <div class="article-byline">
+          <span class="byline-author">朱有以</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">原文 Sydney Runkle (@sydneyrunkle) · 215.6K 浏览</span>
+          <span class="byline-sep">·</span>
+          <span>2026/06/18</span>
+        </div>
+        <p class="article-desc">Sydney Runkle（LangChain 核心开发）把"loop engineering"从思想金句变成可落地的工程方法——4 层 loop 栈包裹 agent，每层解决一类问题，最外层甚至能自我进化。读完这一篇，你能直接照着 LangChain 的中间件搭一套能自我改进的 agent 系统。</p>
+
+        <div class="hero-cover">
+          <img src="images/2026-06-18-loop-engineering-cover.png" alt="The Art of Loop Engineering — 4 层循环栈">
+        </div>
+      </div>
+    </section>
+
+    <!-- INTRO -->
+    <section class="section">
+      <div class="container">
+        <p class="section-kicker">导言</p>
+        <h2 class="section-title">loop 不再是一句金句</h2>
+
+        <p class="intro-lead">6 月 7 号，<strong>Peter Steinberger（@steipete）</strong> 在 X 上扔下一句：</p>
+
+        <p class="intro-statement">"Stop prompting. Start designing the loop that runs the agent."<br>——别再提示 agent 了。你应该设计让 agent 自己跑起来的 loop。</p>
+
+        <p>一句话，<strong>6.39M 浏览</strong>。那天起，"loop" 这个词从程序员嘴里的 for-while 变成了产品经理嘴里的"agent 自动化方法论"。<a href="2026-06-09-loop-engineering.html">那篇文章</a> 我们已经写过，steipete 讲的是"为什么"——人要从循环里撤出来，让 agent 自己跑。</p>
+
+        <p>9 天后，<strong>Sydney Runkle（@sydneyrunkle，LangChain 核心开发）</strong> 在 X 上发了一篇更长的文章：<em>The Art of Loop Engineering</em>。她在 LangChain 的视角把"loop"具体拆成了 4 层可落地的工程栈。</p>
+
+        <p>两篇对照读刚好：steipete 给了"为什么"，Sydney 给了"怎么做"。这一篇就是后者的解读——4 层 loop 栈怎么搭、每层用什么 LangChain 原生工具、代价是什么、什么时候需要人审。</p>
+
+        <div class="callout">
+          <div class="callout-title">本文核心</div>
+          <p>4 层 loop 从内到外：<strong>Agent 循环 → 验证循环 → 事件驱动循环 → 爬山循环</strong>。前 3 层自动化"做事"，第 4 层自动化"改进"。人在每一层都有自然的接入点。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SWYX LOOPCRAFT -->
+    <section class="section">
+      <div class="container">
+        <p class="section-kicker">铺垫</p>
+        <h2 class="section-title">swyx 的 "loopcraft"：4 层栈的思想来源</h2>
+
+        <p>Sydney 在文章一开头就引用了 <strong>swyx</strong>（AI Engineer Summit 创始人）最近的一篇：<em>"loopcraft: the art of stacking loops"</em>。</p>
+
+        <p>swyx 的核心观点是：<strong>loop 是可以堆叠的</strong>。最基础的 loop 是 LLM 调工具（Loop 1），但你可以<strong>在外面再包 loop</strong>——包一层做验证（Loop 2），再包一层接生态（Loop 3），再包一层让它自我改进（Loop 4）。每包一层，agent 系统的"做事的种类"就多一类。</p>
+
+        <p>Sydney 的贡献是把 swyx 的思想<strong>在 LangChain 框架里具象化</strong>。每一层对应一个或一组 LangChain 原生组件：</p>
+
+        <ul>
+          <li>Loop 1 → <code>create_agent</code></li>
+          <li>Loop 2 → <code>RubricMiddleware</code> / <code>after_agent</code> hook</li>
+          <li>Loop 3 → <code>LangSmith Deployment</code> / <code>Fleet channels</code></li>
+          <li>Loop 4 → <code>LangSmith Engine</code></li>
+        </ul>
+
+        <p>所以这一篇不只是 Sydney 个人观点——它是 <strong>swyx 思想 + LangChain 工程</strong> 的组合。如果你已经在用 LangChain，下面 4 层直接照着装；如果你在用别的框架（如 LangGraph、CrewAI、AutoGen），核心思想一样，只是组件名不同。</p>
+
+        <div class="callout">
+          <div class="callout-title">社区共识</div>
+          <p>Sydney 在文章结尾提到：<strong>Steipete、Boris (PowerVee)、Andrej (Karpathy)</strong> 都独立得出过同一个结论——"agent 的潜力不在模型本身，在模型外面那一层层 loop"。这不是一个人的想法，是 2026 年 agent 工程界的共识。</p>
+        </div>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">swyx 的两层判断标准</h3>
+
+        <p>swyx 在 "loopcraft" 里给了个简单判断：<strong>什么时候该加一层 loop</strong>？看两件事。</p>
+
+        <ol>
+          <li><strong>当前层的失败率能不能接受？</strong> 如果 Loop 1 还在 50% 成功率徘徊，别上 Loop 3——你只是把烂结果自动化输出了。先把当前层做到 90%+ 再说。</li>
+          <li><strong>失败的模式是不是固定的？</strong> 如果失败模式飘忽不定（这次错在工具调用、那次错在 prompt 理解），加新层是治标不治本——先把失败归因分析做了，搞清楚是哪些类问题，再决定 Loop 2 / 3 解决哪类。</li>
+        </ol>
+
+        <p>Sydney 的 4 层栈就是按这个判断标准排出来的：从最该稳定的（Loop 1）到最高阶的（Loop 4），一层一层叠。</p>
+      </div>
+    </section>
+
+    <!-- LOOP STACK OVERVIEW -->
+    <section class="section">
+      <div class="container">
+        <p class="section-kicker">总览</p>
+        <h2 class="section-title">4 层 loop 栈长什么样</h2>
+
+        <p>先看一个俯瞰图。后面会逐层展开——这是给 agent builder 看的全貌，给普通读者看的是"agent 周围能叠几层自动化"。</p>
+      </div>
+
+      <div class="loop-stack">
+        <div class="loop-stack-row">
+          <div class="loop-stack-num">4</div>
+          <div class="loop-stack-content">
+            <div class="loop-stack-en">HILL CLIMBING</div>
+            <div class="loop-stack-title">爬山循环</div>
+            <div class="loop-stack-desc">trace 分析 → 自动改 harness（prompt/tool/grader）。外层循环改进内层。</div>
+          </div>
+        </div>
+        <div class="loop-stack-row">
+          <div class="loop-stack-num">3</div>
+          <div class="loop-stack-content">
+            <div class="loop-stack-en">EVENT-DRIVEN</div>
+            <div class="loop-stack-title">事件驱动循环</div>
+            <div class="loop-stack-desc">cron / webhook / Slack 消息触发，agent 永远在后台跑。</div>
+          </div>
+        </div>
+        <div class="loop-stack-row">
+          <div class="loop-stack-num">2</div>
+          <div class="loop-stack-content">
+            <div class="loop-stack-en">VERIFICATION</div>
+            <div class="loop-stack-title">验证循环</div>
+            <div class="loop-stack-desc">grader 检查输出，分数不达标就回灌到 model 重写。</div>
+          </div>
+        </div>
+        <div class="loop-stack-row">
+          <div class="loop-stack-num">1</div>
+          <div class="loop-stack-content">
+            <div class="loop-stack-en">AGENT</div>
+            <div class="loop-stack-title">代理人循环</div>
+            <div class="loop-stack-desc">最底层：LLM 在 loop 里调工具，直到任务完成。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOOP 1: AGENT -->
+    <section class="loop-chapter" id="loop-1">
+      <div class="container">
+        <div class="loop-num">
+          <div class="loop-num-digit">01</div>
+          <div class="loop-num-stack">
+            <div class="loop-num-en">LOOP 1 · THE AGENT</div>
+            <div class="loop-num-cn">代理人循环</div>
+          </div>
+        </div>
+
+        <h2 class="section-title">最基础的那一层：model 在 loop 里调工具</h2>
+
+        <p>整个 agent 体系的最底层只有一句话：<strong>给 LLM 一个 context，让它在一个 loop 里调工具，直到任务做完</strong>。</p>
+
+        <p>这就是 Sydney 说的"the most fundamental loop"。看着简单，但它就是后面所有层的基础——后面三层都是包在它外面做事的循环。</p>
+
+        <p>在 LangChain 里，这一层的标准实现是 <code>create_agent</code>。选一个模型，插一组工具，你就拿到了一个能工作的 agent loop。Tools 才是让 agent 真正"在真实世界动手"的部分——没有工具的 LLM 只能说话，有了工具的 agent 才能改仓库、跑测试、开 PR、转账。</p>
+
+        <p>Sydney 用 LangChain 内部一个 <strong>docs agent</strong> 做贯穿全文的例子：</p>
+
+        <ul>
+          <li>agent 收到一条"改文档"的请求</li>
+          <li>模型规划 + 起草改动</li>
+          <li>调工具 clone 仓库、读文件、写文档、开 PR</li>
+        </ul>
+
+        <p>这就是 Loop 1。后面三层，都是包在它外面解决不同问题的。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">实操：<code>create_agent</code> 的最小骨架</h3>
+
+        <p>对 agent builder 来说，<code>create_agent</code> 写出来大概是这样：</p>
+
+        <pre style="background: var(--bg-code); color: #e5e5e8; padding: 18px 20px; border-radius: 4px; overflow-x: auto; font-size: 13px; line-height: 1.7; font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace; margin: 16px 0 24px;"><span style="color: #c9a962;">from</span> langchain <span style="color: #c9a962;">import</span> create_agent
+<span style="color: #c9a962;">from</span> langchain.tools <span style="color: #c9a962;">import</span> clone_repo, read_file, write_file, open_pr
+
+agent = <span style="color: #c9a962;">create_agent</span>(
+    model=<span style="color: #8ec07c;">"claude-sonnet-4-6"</span>,
+    tools=[clone_repo, read_file, write_file, open_pr],
+    system_prompt=<span style="color: #8ec07c;">"You improve internal documentation..."</span>,
+)
+
+result = agent.invoke({<span style="color: #8ec07c;">"request"</span>: <span style="color: #8ec07c;">"add an example for X"</span>})</pre>
+
+        <p>三件事：选模型、给工具、写 system prompt。这一步 5 分钟能跑起来，<strong>但 80% 的人会卡在 tool 设计上</strong>——给太多工具 agent 选错，给太少它干不了。docs agent 的工具集就 4 个：clone / read / write / PR，刚好够、不多给。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">tools 设计的 3 个原则</h3>
+
+        <p>tools 是 Loop 1 的灵魂。设计原则 3 条：</p>
+
+        <ol>
+          <li><strong>一个工具只做一件事</strong>。别写 <code>edit_file(path, content, mode)</code>，写 <code>create_file</code> / <code>update_file</code> / <code>delete_file</code> 三个独立工具。工具粒度越细，model 选错的概率越低。</li>
+          <li><strong>tool 描述要写得跟 spec 一样</strong>。description 不是 "useful for editing files"，要写"<strong>把文件 path 替换为 content；path 必须存在；返回 success/fail</strong>"。description 是 model 选工具的依据，模糊描述 = 选错。</li>
+          <li><strong>工具调用要幂等</strong>。同一工具同一参数调两次，状态应该一致（或者明确返回 "already done"）。非幂等的工具在 retry / 并发场景下会出大事。</li>
+        </ol>
+
+        <div class="loop-figure">
+          <img src="images/2026-06-18-loop-01.jpg" alt="Loop 1 — 代理人循环" loading="lazy">
+          <div class="loop-figure-caption">Loop 1: LLM 在 loop 里调工具，直到任务完成（图：Sydney Runkle / X）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOOP 2: VERIFICATION -->
+    <section class="loop-chapter" id="loop-2">
+      <div class="container">
+        <div class="loop-num">
+          <div class="loop-num-digit">02</div>
+          <div class="loop-num-stack">
+            <div class="loop-num-en">LOOP 2 · VERIFICATION</div>
+            <div class="loop-num-cn">验证循环</div>
+          </div>
+        </div>
+
+        <h2 class="section-title">做完不等于做对：加一层 grader 把关</h2>
+
+        <p>Loop 1 能把活干完，但<strong>不一定干得对</strong>。当一致性比速度更重要时，最常见的做法是在外面包一层<strong>验证循环</strong>——加一个 grader 检查 agent 的输出，达不到标准就把结果和反馈回灌给 model 让它重写。</p>
+
+        <p>grader 本身可以是两种：</p>
+
+        <ul>
+          <li><strong>deterministic</strong>：跑测试、检查链接是否 resolve、diff 是否只动了请求范围</li>
+          <li><strong>agentic</strong>：用另一个 LLM 当 judge（"这个文档写清楚了吗？给个 0-1 分"）</li>
+        </ul>
+
+        <p>在 LangChain 里，<code>RubricMiddleware</code> 就专门管这个模式。或者你可以在 <code>create_agent</code> 上挂一个 <code>after_agent</code> hook，自己接 grader。</p>
+
+        <p>回到 docs agent 的例子，grader 在每次提交后跑测试，检查三件事：</p>
+
+        <ol>
+          <li>所有链接 resolve</li>
+          <li>所有 CI check 通过</li>
+          <li>diff 只动了用户实际请求的部分</li>
+        </ol>
+
+        <p>这层 grader 把"链接死链 / CI 挂了 / 越界改文件"这类机械错误完全兜住——不需要人 review。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">grader 设计的 3 个原则</h3>
+
+        <p>实测下来，grader 写得好不好决定 Loop 2 是不是真的有价值。三个原则：</p>
+
+        <ol>
+          <li><strong>能 deterministic 就别 agentic</strong>。能跑测试解决的别让 LLM 当 judge——确定性 grader 速度快、成本低、可复现。agentic grader 只在"判断"类任务上用（这个文档讲清楚了吗？这个 commit message 表达清楚了吗？）。</li>
+          <li><strong>grader 失败要给具体反馈</strong>。回灌给 model 的反馈不能只是"fail"——必须是"<strong>第 3 行引用了不存在的图片</strong>"这种具体信号。模糊反馈只会让 model 再瞎试。</li>
+          <li><strong>grader 自己也要被测</strong>。grader 写错比没 grader 还糟——它会系统性地让好答案被判为差，把 model 往反方向推。grader 跑出 0 分时，人工 spot-check 一下结果样本。</li>
+        </ol>
+
+        <div class="callout">
+          <div class="callout-title">代价提醒</div>
+          <p>加验证循环 = 每次多跑一次 grader = <strong>延迟 + 成本上升</strong>。质量优先于速度的场景才值得。多数生产环境是，但"一次性 demo"不是。</p>
+        </div>
+
+        <div class="loop-figure">
+          <img src="images/2026-06-18-loop-02.jpg" alt="Loop 2 — 验证循环" loading="lazy">
+          <div class="loop-figure-caption">Loop 2: agent 跑完 → grader 打分 → 不达标回灌重写（图：Sydney Runkle / X）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOOP 3: EVENT-DRIVEN -->
+    <section class="loop-chapter" id="loop-3">
+      <div class="container">
+        <div class="loop-num">
+          <div class="loop-num-digit">03</div>
+          <div class="loop-num-stack">
+            <div class="loop-num-en">LOOP 3 · EVENT-DRIVEN</div>
+            <div class="loop-num-cn">事件驱动循环</div>
+          </div>
+        </div>
+
+        <h2 class="section-title">从"我点一下跑一次"到"事件来了自己跑"</h2>
+
+        <p>Loop 1 和 Loop 2 都是"被调用才跑"——你触发，它跑一次。生产环境里没人会一直点按钮。Loop 3 把 agent 接进你的生态：</p>
+
+        <p><strong>事件驱动循环</strong>的核心是：<span class="keyterm">一个事件触发 agent 跑</span>。事件的来源可以是：</p>
+
+        <ul>
+          <li>cron schedule（定时）</li>
+          <li>webhook（外部系统推）</li>
+          <li>新文档落地</li>
+          <li>Slack 消息</li>
+          <li>邮件</li>
+        </ul>
+
+        <p>Agent 不再是你手动触发的东西，而是<strong>永远在后台跑的一个组件</strong>。事件来了它就跑，没事就待着。</p>
+
+        <p>LangChain 这边，<code>LangSmith Deployment</code> 提供了 trigger 基础设施——支持 cron 调度和 webhook。一个很火的例子是 <strong>openclaw</strong> 里的 <strong>heartbeats</strong>：把 agent 变成永远在线、主动干活的助手。</p>
+
+        <p>docs agent 在 LangChain 内部是这样跑起来的：他们用 <strong>Fleet</strong>（LangChain 自己的 no-code agent 构建器），Fleet 的 channels + schedules 负责 event-driven 和 cron 触发。具体怎么用？</p>
+
+        <div class="callout">
+          <div class="callout-title">案例：#docs-plz 频道</div>
+          <p>Slack 里有个 <code>#docs-plz</code> 频道，谁在里面发消息，docs agent 就被触发。事件 = Slack 消息，agent = 写文档，输出 = 开 PR。一条消息就完成"找问题 → 改文档 → 提 PR"全流程。</p>
+        </div>
+
+        <p>到这里你开始看到 loop 1+2+3 加起来的威力：<strong>agent 不再是 demo，是真在改公司代码库的一个常驻工</strong>。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">channel 的 4 种类型</h3>
+
+        <p>LangSmith Deployment / Fleet 里的 channel 是 Loop 3 的入口。最常见的 4 种：</p>
+
+        <ul>
+          <li><strong>Slack channel</strong>：消息触发。docs agent 的 #docs-plz 就是这种。优点：人能看到 agent 在跑。缺点：消息量大会爆。</li>
+          <li><strong>Webhook</strong>：外部系统推。GitHub PR 开 / Stripe 收款 / Sentry 报警过来都能触发。优点：响应式，事件来了就动。缺点：要写 webhook handler。</li>
+          <li><strong>Cron schedule</strong>：定时跑。每天早上 9 点拉昨天未解决的 issue、每周一拉上周 metrics。优点：稳定可预期。缺点：实时性差。</li>
+          <li><strong>Heartbeats</strong>（openclaw 风格）：agent 自己按固定间隔心跳，没事也跑一次。优点：把"被动响应"变成"主动巡查"。缺点：成本最高（没事也烧 token）。</li>
+        </ul>
+
+        <p>选哪种取决于你想要的"响应模型"：<strong>事件来了才动</strong>选 webhook；<strong>周期性整理</strong>选 cron；<strong>团队协作 + 看到 agent 干啥</strong>选 Slack；<strong>agent 主动发现问题</strong>选 heartbeats。</p>
+
+        <div class="loop-figure">
+          <img src="images/2026-06-18-loop-03.jpg" alt="Loop 3 — 事件驱动循环" loading="lazy">
+          <div class="loop-figure-caption">Loop 3: 事件 → 触发 agent 跑 → 输出到真实系统（图：Sydney Runkle / X）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOOP 4: HILL CLIMBING -->
+    <section class="loop-chapter" id="loop-4">
+      <div class="container">
+        <div class="loop-num">
+          <div class="loop-num-digit">04</div>
+          <div class="loop-num-stack">
+            <div class="loop-num-en">LOOP 4 · HILL CLIMBING</div>
+            <div class="loop-num-cn">爬山循环</div>
+          </div>
+        </div>
+
+        <h2 class="section-title">让 agent 改自己：自动化的尽头是自动化改进</h2>
+
+        <p>前 3 层 loop 自动化"做工作"。<strong>第 4 层（也是 Sydney 强调"arguably most important"）自动化"做改进"</strong>。</p>
+
+        <p>每次 agent 跑都会留下一条 <span class="keyterm">trace</span>——记录 model 做了啥、调了哪些工具、grader 给什么分。这些 trace 里藏着大量信号：什么 prompt 起作用、什么 tool 常失败、什么场景 grader 一直给低分。</p>
+
+        <p><strong>爬山循环</strong>做的事：</p>
+
+        <ol>
+          <li>跑一批 agent</li>
+          <li>收集全部 trace</li>
+          <li>跑一个<strong>分析 agent</strong> 读这些 trace</li>
+          <li>分析 agent 改写 <span class="keyterm">harness</span>（prompt / tool / grader 的配置）</li>
+          <li>下一轮 agent 跑在新 harness 上</li>
+        </ol>
+
+        <p>在 LangChain 里，<code>LangSmith Engine</code> 就是这个分析 agent。</p>
+
+        <p>回到 docs agent：他们跑 Engine 去分析所有 docs agent 的 trace，检测有没有共性问题。当多条 trace 都指向同一个 prompt 或 tool 出了 bug，Engine 会<strong>自动开一个 issue</strong>，要求改这个 prompt 或 tool。</p>
+
+        <div class="callout">
+          <div class="callout-title">关键设计：返回箭头穿进去</div>
+          <p>注意箭头方向：第 4 层 loop 跑完一圈，<strong>不是回到最顶层再跑一次</strong>，而是<strong>穿进去改第 1 / 2 / 3 层</strong>。每一轮外层循环让内层循环更有效。这才是"自我进化"的真正形态——不是 agent 变聪明，是 agent 周围那套 harness 在持续优化。</p>
+        </div>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">前 3 层优化是起步</h3>
+
+        <p>改 prompt / 改 tool / 改 grader 是最直接能优化的。但 Sydney 提了一个前瞻：</p>
+
+        <blockquote style="border-left: 3px solid var(--accent-gold); padding: 12px 20px; margin: 24px 0; background: var(--bg-secondary); font-style: italic; color: var(--text-secondary);">
+          <strong>Looking forward:</strong> prompt and tool configuration are the most simple things to improve, but they're not the only options. For teams running open-weight models, the hill climbing loop can feed into <strong>RL fine-tuning</strong>, using trace or eval outcomes as training signal to improve the model itself. Auxiliary context like <strong>memory and retrieved skills</strong> can be improved the same way. The loop is the pattern; what it optimizes is up to you.
+        </blockquote>
+
+        <p>翻译一下：</p>
+
+        <ul>
+          <li><strong>open-weight 模型</strong>：第 4 层 loop 可以喂到 RL fine-tuning，用 trace / eval 结果当训练信号，<strong>连 model 本身都在变</strong></li>
+          <li><strong>memory / retrieved skills</strong>：外挂的 context 也能用同模式优化</li>
+        </ul>
+
+        <p>loop 是范式，具体优化什么是你的选择。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">Engine 改 harness 的最少条件</h3>
+
+        <p>Loop 4 是 4 层里最容易跑空的——很多团队上了 Engine，发现它改出来的 prompt 越改越差。原因通常不是 Engine 不行，是<strong>trace 流水线不合格</strong>。Engine 改 harness 至少需要 3 个东西：</p>
+
+        <ol>
+          <li><strong>稳定的 trace 记录</strong>。每次 agent 跑的 prompt、tool call、grader 分数、最终输出都要落库。没有 trace，Engine 拿不到信号，输出就是瞎猜。</li>
+          <li><strong>明确的优化目标</strong>。Engine 不知道你想优化什么——是 grader 通过率？是 tool call 次数？是 token 成本？目标越具体，Engine 改的越准。模糊目标 = 噪声改进。</li>
+          <li><strong>改 harness 后的回测机制</strong>。Engine 改完 prompt / tool 配置，必须能在旧 trace 上重跑一遍看分有没有涨。没有回测，Engine 改完你不知道是变好了还是变差了。</li>
+        </ol>
+
+        <p>三件齐了，Loop 4 才有意义。少一件，Engine 跑出来是噪声，建议先别上。</p>
+
+        <div class="loop-figure">
+          <img src="images/2026-06-18-loop-04.jpg" alt="Loop 4 — 爬山循环" loading="lazy">
+          <div class="loop-figure-caption">Loop 4: trace → 分析 agent → 改 harness → 内层变强（图：Sydney Runkle / X）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HUMAN OVERSIGHT -->
+    <section class="loop-chapter" id="human-oversight">
+      <div class="container">
+        <p class="section-kicker">人在环上</p>
+        <h2 class="section-title">自动化 ≠ 移除人</h2>
+
+        <p>Sydney 在 4 层 loop 之后，专门加了一节讲 <span class="keyterm">human oversight</span>。重点不是"在不在场"——重点是"在哪些点自然需要人"。</p>
+
+        <p>她的原话：</p>
+
+        <blockquote style="border-left: 3px solid var(--accent-gold); padding: 12px 20px; margin: 24px 0; background: var(--bg-secondary); font-style: italic; color: var(--text-secondary);">
+          An automated grader can check whether links resolve; it takes a human to notice the framing is wrong for the audience.
+        </blockquote>
+
+        <p>自动 grader 能查链接死没死，但<strong>判断文风是不是对的</strong>，只有人能干。这种判断——从 context、经验、品味里长出来的——就是人审存在的理由。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">4 层 loop 的天然人审点</h3>
+
+        <p>Sydney 给了 4 个具体点：</p>
+
+        <ul class="oversight-list">
+          <li class="oversight-item">
+            <div class="oversight-num">1</div>
+            <div class="oversight-content">
+              <div class="oversight-loop">AGENT LOOP</div>
+              <div class="oversight-text"><strong>sensitive tool calls 之前</strong>，必须 human input。比如转账、动数据库、改权限——这些不能 agent 自主决定。</div>
+            </div>
+          </li>
+          <li class="oversight-item">
+            <div class="oversight-num">2</div>
+            <div class="oversight-content">
+              <div class="oversight-loop">VERIFICATION LOOP</div>
+              <div class="oversight-text"><strong>sensitive workflow 的 grader 由人当</strong>。比如金融合规、医疗建议——LLM 当 judge 不够，必须人审。</div>
+            </div>
+          </li>
+          <li class="oversight-item">
+            <div class="oversight-num">3</div>
+            <div class="oversight-content">
+              <div class="oversight-loop">APPLICATION LOOP</div>
+              <div class="oversight-text">输出给终端用户<strong>之前人审</strong>。对外的内容、有品牌风险的、客户能看到的，agent 跑完人过一遍。</div>
+            </div>
+          </li>
+          <li class="oversight-item">
+            <div class="oversight-num">4</div>
+            <div class="oversight-content">
+              <div class="oversight-loop">HILL CLIMBING LOOP</div>
+              <div class="oversight-text">harness 改进<strong>上线前人审</strong>。Engine 改出来的 prompt / tool 配置不能直接生效，必须人确认。</div>
+            </div>
+          </li>
+        </ul>
+
+        <p>Sydney 最后强调：<strong>LangChain 把 "human in the loop" 作为 first-class primitive</strong>。不是"如果你想加可以加"，是"这是设计的一部分"。</p>
+
+        <div class="loop-figure">
+          <img src="images/2026-06-18-loop-05.jpg" alt="Human oversight" loading="lazy">
+          <div class="loop-figure-caption">人在每一层都有自然的接入点（图：Sydney Runkle / X）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 LOOPS TABLE -->
+    <section class="loop-table-wrap" id="summary-table">
+      <p class="loop-table-title">4 LOOPS · ONE TABLE</p>
+      <div class="loop-figure" style="max-width: 720px; margin: 0 auto 32px;">
+        <img src="images/2026-06-18-loop-07.jpg" alt="4 层 loop 栈全景" loading="lazy">
+        <div class="loop-figure-caption">从 Sydney 的视角画出来的 4 层 loop 栈全貌（图：Sydney Runkle / X）</div>
+      </div>
+      <h2 class="section-title" style="text-align: center; margin-bottom: 28px;">4 层 loop 一张表看全</h2>
+
+      <table class="loop-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>中文名</th>
+            <th>英文名</th>
+            <th>做什么</th>
+            <th>LangChain 原生工具</th>
+            <th>代价</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-num">1</td>
+            <td class="col-cn">代理人循环</td>
+            <td class="col-en">Agent loop</td>
+            <td>model + tools 在 loop 里跑到任务完成</td>
+            <td><code>create_agent</code></td>
+            <td>每跑一次 = 一次完整 LLM 调用链</td>
+          </tr>
+          <tr>
+            <td class="col-num">2</td>
+            <td class="col-cn">验证循环</td>
+            <td class="col-en">Verification loop</td>
+            <td>agent 跑完，grader 打分；不达标回灌重写</td>
+            <td><code>RubricMiddleware</code> / <code>after_agent</code> hook</td>
+            <td>每次多跑 grader = 延迟 + 成本 ↑</td>
+          </tr>
+          <tr>
+            <td class="col-num">3</td>
+            <td class="col-cn">事件驱动循环</td>
+            <td class="col-en">Event-driven loop</td>
+            <td>cron / webhook / Slack 消息触发 agent 跑，输出落到真实系统</td>
+            <td><code>LangSmith Deployment</code> / <code>Fleet channels</code></td>
+            <td>agent 永远在后台 = 资源 + 监控成本</td>
+          </tr>
+          <tr>
+            <td class="col-num">4</td>
+            <td class="col-cn">爬山循环</td>
+            <td class="col-en">Hill climbing loop</td>
+            <td>trace → 分析 agent → 改 harness → 内层变强</td>
+            <td><code>LangSmith Engine</code></td>
+            <td>需要稳定 trace 流水线 + 改 harness 的部署节奏</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- PUTTING IT TOGETHER -->
+    <section class="loop-chapter" id="wrap-up">
+      <div class="container">
+        <p class="section-kicker">总结</p>
+        <h2 class="section-title">写在最后：重点该转向 3 和 4</h2>
+
+        <p>Sydney 的结尾很直接：</p>
+
+        <blockquote style="border-left: 3px solid var(--accent-gold); padding: 12px 20px; margin: 24px 0; background: var(--bg-secondary); font-style: italic; color: var(--text-secondary);">
+          We've been thinking about loops 1 and 2 for a while. But focus should pivot to <strong>loops 3 and 4</strong> where value compounds by embedding agents into your ecosystem that <strong>continuously improve</strong> in response to your criteria.
+        </blockquote>
+
+        <p>翻译：loop 1 和 2 我们已经想了很久。真正值钱的是 3 和 4——把 agent 嵌进你的生态，让它按你的标准<strong>持续变好</strong>。</p>
+
+        <p>她还引了 Satya（Microsoft CEO）的话：</p>
+
+        <blockquote style="border-left: 3px solid var(--accent-gold); padding: 12px 20px; margin: 24px 0; background: var(--bg-secondary); font-style: italic; color: var(--text-secondary);">
+          Companies that build <strong>learning loops</strong> early, where human judgment and token capital compound together, will build an <strong>advantage that's hard to replicate</strong>.
+        </blockquote>
+
+        <p>企业级视角：<strong>学习循环跑得早就赢</strong>。人的判断力 + token 资本一起复合增长，是别人抄不走的护城河。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">给读者的 3 件事</h3>
+
+        <p>读完这一篇，你能立刻做的 3 件事：</p>
+
+        <ol>
+          <li><strong>先确定你的痛点在哪一层</strong>。loop 不是越叠越有用——<span class="keyterm">Loop 1 都不稳，就别急着上 Loop 3</span>。绝大多数生产事故出在 Loop 1（工具不对、prompt 没写好、grader 缺失）。</li>
+          <li><strong>Loop 2 的 grader 写好 = ROI 最高的一步</strong>。一个能跑测试 + 查链接 + 看 diff scope 的 grader，能干掉 80% 的机械错误。</li>
+          <li><strong>Loop 4 别追太早</strong>。爬山循环需要稳定的 trace 流水线 + 改 harness 的部署节奏。量没到那个规模，Engine 跑出来的"改进"很多是噪声。先把 Loop 1+2 跑到 95% 通过率，再考虑 Loop 3+4。</li>
+        </ol>
+
+        <div class="loop-figure">
+          <img src="images/2026-06-18-loop-06.jpg" alt="Putting it all together" loading="lazy">
+          <div class="loop-figure-caption">4 层 loop 栈叠起来：value compounds（图：Sydney Runkle / X）</div>
+        </div>
+
+        <p style="margin-top: 32px;">和 steipete 那篇 6.39M 金句对照读，<strong>这一篇把"写 loop"从口号变成了"装 loop"</strong>。LangChain 的 <code>create_agent</code>、<code>RubricMiddleware</code>、<code>LangSmith Deployment</code>、<code>Engine</code> 是 4 层对应的现成组件——你要做的是决定要不要按这个顺序叠上去，以及每一层上多少人审。</p>
+
+        <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 16px;">什么时候该上哪一层：决策树</h3>
+
+        <p>如果你读完还不确定从哪一层开始，按这个顺序问自己：</p>
+
+        <ol>
+          <li><strong>"我的 agent 有没有工具调用？"</strong> 没有 → 上 Loop 1（<code>create_agent</code>）。有但成功率 &lt; 70% → 回到 Loop 1 调工具和 prompt，别急着叠。</li>
+          <li><strong>"agent 跑出来经常错但又说不清错在哪？"</strong> 是 → 上 Loop 2。deterministic grader 先上（跑测试、查链接），agentic grader 视情况。</li>
+          <li><strong>"我想让 agent 不用我点就自己跑？"</strong> 是 → 上 Loop 3。从最稳的 channel 开始（cron 跑日报 → Slack 消息触发 → webhook 响应）。</li>
+          <li><strong>"我的 trace 数据齐 + 目标明确 + 已经有回测机制？"</strong> 三件齐 → 可以试 Loop 4。少一件 → 别上，先补基础设施。</li>
+        </ol>
+
+        <p>4 层是<strong>堆叠</strong>，不是<strong>替代</strong>。每一层都解决上一层的具体问题，按需叠加，没有"必须全装"这种事。多数团队做到 Loop 1+2 就能解决 80% 的场景。</p>
+
+        <div class="loop-figure">
+          <img src="images/2026-06-18-loop-08.jpg" alt="LangChain stack — 4 层 loop 工程化实现" loading="lazy">
+          <div class="loop-figure-caption">LangChain 提供的完整 stack：4 层 loop 都能用现成组件装起来（图：Sydney Runkle / X）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REFERENCES (极简) -->
+    <section class="references-minimal" id="references">
+      <p class="references-minimal-kicker">SOURCES</p>
+      <h2 class="references-minimal-title">参考</h2>
+      <ul class="references-minimal-list">
+        <li>
+          <strong>ORIGINAL · X LONG-FORM ARTICLE</strong><br>
+          <em>The Art of Loop Engineering</em> · Sydney Runkle (@sydneyrunkle) · 2026/06/16 · 215.6K 浏览<br>
+          <a href="https://x.com/sydneyrunkle/status/2066928783534289358" target="_blank" rel="noopener">https://x.com/sydneyrunkle/status/2066928783534289358</a>
+        </li>
+        <li>
+          <strong>SISTER PIECE · 本站 steipete 那篇</strong><br>
+          <em>Loop Engineering · 从提示 agent 到设计提示 agent 的循环</em><br>
+          <a href="2026-06-09-loop-engineering.html">2026-06-09-loop-engineering.html</a>（6.39M 浏览、思想缘起）
+        </li>
+        <li>
+          <strong>KEY CONCEPT</strong><br>
+          swyx · "loopcraft: the art of stacking loops"（被 Sydney 引用作为 4 层栈的思想来源）
+        </li>
+      </ul>
+      <div class="references-minimal-note">
+        <strong>本文为解读版本。</strong>原文中所有 LangChain 原生工具（<code>create_agent</code> / <code>RubricMiddleware</code> / <code>LangSmith Deployment</code> / <code>Engine</code> / <code>Fleet</code>）保留英文原貌；中文版为意译，便于理解。loop 不是越叠越有用——先确认你的痛点在哪一层，再决定叠不叠。
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- FLOATING NAV -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">8 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#loop-1" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Agent</span>
+          <span class="nav-item-cn">代理人循环</span>
+        </span>
+      </a>
+      <a href="#loop-2" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Verification</span>
+          <span class="nav-item-cn">验证循环</span>
+        </span>
+      </a>
+      <a href="#loop-3" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Event-driven</span>
+          <span class="nav-item-cn">事件驱动循环</span>
+        </span>
+      </a>
+      <a href="#loop-4" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Hill climbing</span>
+          <span class="nav-item-cn">爬山循环</span>
+        </span>
+      </a>
+      <a href="#human-oversight" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Human oversight</span>
+          <span class="nav-item-cn">人在环上</span>
+        </span>
+      </a>
+      <a href="#summary-table" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">4 loops table</span>
+          <span class="nav-item-cn">4 层对照表</span>
+        </span>
+      </a>
+      <a href="#wrap-up" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Wrap-up</span>
+          <span class="nav-item-cn">写在最后</span>
+        </span>
+      </a>
+      <a href="#references" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">References</span>
+          <span class="nav-item-cn">参考</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      var btn = document.getElementById('navToggle');
+      var panel = document.getElementById('navPanel');
+      if (!btn || !panel) return;
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        panel.classList.toggle('active');
+      });
+      document.addEventListener('click', function(e) {
+        if (!panel.contains(e.target) && e.target !== btn) {
+          panel.classList.remove('active');
+        }
+      });
+      panel.querySelectorAll('.nav-item').forEach(function(a) {
+        a.addEventListener('click', function() { panel.classList.remove('active'); });
+      });
+    })();
+  </script>
+
+</body>
+</html>
