@@ -294,6 +294,8 @@
       color: var(--accent-gold-dim);
       padding: 1px 8px;
       border-radius: 3px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .cap-body em { font-style: italic; color: var(--text-primary); }
     .cap-body pre {
@@ -332,6 +334,7 @@
       margin: 20px 0;
       font-size: 14px;
     }
+    .table-wrap { overflow-x: auto; width: 100%; max-width: 100%; }
     .cap-body th, .cap-body td {
       padding: 10px 14px;
       text-align: left;
@@ -794,16 +797,18 @@
 
         <p><strong>Skill / Engine / Harness</strong>：这是 last30days 仓库自己用的术语——</p>
 
-        <table>
-          <thead>
-            <tr><th>词</th><th>含义</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Skill</strong></td><td>一个打包好的能力包，由 <code>SKILL.md</code>（给 AI 看的指令合同）+ <code>scripts/</code>（实际干活的代码）组成</td></tr>
-            <tr><td><strong>Engine</strong></td><td>Skill 里那个真正干活的 Python 脚本（<code>scripts/last30days.py</code>），AI 调用它执行查询</td></tr>
-            <tr><td><strong>Harness</strong></td><td>装在哪个 AI 工具里跑。Claude Code 是最常见的 harness，但同一个 skill 在 Codex、Cursor 里也是同一份逻辑</td></tr>
-          </tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>词</th><th>含义</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Skill</strong></td><td>一个打包好的能力包，由 <code>SKILL.md</code>（给 AI 看的指令合同）+ <code>scripts/</code>（实际干活的代码）组成</td></tr>
+              <tr><td><strong>Engine</strong></td><td>Skill 里那个真正干活的 Python 脚本（<code>scripts/last30days.py</code>），AI 调用它执行查询</td></tr>
+              <tr><td><strong>Harness</strong></td><td>装在哪个 AI 工具里跑。Claude Code 是最常见的 harness，但同一个 skill 在 Codex、Cursor 里也是同一份逻辑</td></tr>
+            </tbody>
+          </table>
+        </div>
 
         <p><strong>Keyless path vs Keyed path</strong>：这个最重要。</p>
 
@@ -933,19 +938,21 @@
         <p>零配置够用一段时间后，你会开始想"我还想看 X 上怎么说、想看 YouTube 视频的字幕、想看 TikTok 创作者的反应"。这时候就要配 key 了。</p>
         <p><strong>先说推荐顺序</strong>——别一上来把 8 个 key 全配了，先配你 80% 时间想要的那 1-2 个：</p>
 
-        <table>
-          <thead>
-            <tr><th>Key</th><th>解锁什么</th><th>推荐度</th><th>备注</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><code>SCRAPECREATORS_API_KEY</code></td><td>TikTok + Instagram + Threads + Pinterest</td><td>⭐⭐⭐⭐⭐</td><td>一次性开 4 个平台，10K 免费调用</td></tr>
-            <tr><td>Bluesky 的 <code>BSKY_HANDLE</code> + <code>BSKY_APP_PASSWORD</code></td><td>Bluesky</td><td>⭐⭐⭐⭐</td><td>免费，去 bsky.app/settings/app-passwords 申请 19 位 app password</td></tr>
-            <tr><td>X 的 <code>AUTH_TOKEN</code> + <code>CT0</code>（浏览器 cookie）</td><td>X / Twitter</td><td>⭐⭐⭐⭐</td><td>免费但不优雅——导出浏览器 cookie，技术门槛有</td></tr>
-            <tr><td><code>BRAVE_API_KEY</code></td><td>Web search 后端</td><td>⭐⭐⭐</td><td>有免费额度，配了能让"补充搜索"质量更好</td></tr>
-            <tr><td><code>OPENAI_API_KEY</code> 或 <code>GEMINI_API_KEY</code></td><td>推理 provider</td><td>⭐⭐⭐</td><td>Claude Code / Codex 用户其实不需要，主模型自己就是推理器</td></tr>
-            <tr><td><code>XAI_API_KEY</code> / xAI 直接调 X</td><td>X</td><td>⭐⭐</td><td>付费，X 一次查询成本不低</td></tr>
-          </tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Key</th><th>解锁什么</th><th>推荐度</th><th>备注</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>SCRAPECREATORS_API_KEY</code></td><td>TikTok + Instagram + Threads + Pinterest</td><td>⭐⭐⭐⭐⭐</td><td>一次性开 4 个平台，10K 免费调用</td></tr>
+              <tr><td>Bluesky 的 <code>BSKY_HANDLE</code> + <code>BSKY_APP_PASSWORD</code></td><td>Bluesky</td><td>⭐⭐⭐⭐</td><td>免费，去 bsky.app/settings/app-passwords 申请 19 位 app password</td></tr>
+              <tr><td>X 的 <code>AUTH_TOKEN</code> + <code>CT0</code>（浏览器 cookie）</td><td>X / Twitter</td><td>⭐⭐⭐⭐</td><td>免费但不优雅——导出浏览器 cookie，技术门槛有</td></tr>
+              <tr><td><code>BRAVE_API_KEY</code></td><td>Web search 后端</td><td>⭐⭐⭐</td><td>有免费额度，配了能让"补充搜索"质量更好</td></tr>
+              <tr><td><code>OPENAI_API_KEY</code> 或 <code>GEMINI_API_KEY</code></td><td>推理 provider</td><td>⭐⭐⭐</td><td>Claude Code / Codex 用户其实不需要，主模型自己就是推理器</td></tr>
+              <tr><td><code>XAI_API_KEY</code> / xAI 直接调 X</td><td>X</td><td>⭐⭐</td><td>付费，X 一次查询成本不低</td></tr>
+            </tbody>
+          </table>
+        </div>
 
         <p><strong>配在哪里？</strong>在你的 home 目录建 <code>~/.config/last30days/.env</code> 文件：</p>
 <pre># 第一次配 key
@@ -1073,20 +1080,22 @@ BSKY_APP_PASSWORD=xxxx-xxxx-xxxx-xxxx
       <div class="cap-body">
         <p><strong>第一部分：踩坑速查（出错先翻这一节）</strong></p>
 
-        <table>
-          <thead>
-            <tr><th>现象</th><th>最常见原因</th><th>怎么查</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>跑出来内容很少</td><td>没数据 / 数据源被 key 锁了</td><td>跑 <code>--diagnose</code> 看 footer 里 <code>✗</code> 的源</td></tr>
-            <tr><td>配了 key 还是不生效</td><td><code>.env</code> 路径不对或权限不是 600</td><td>看 stderr 警告；<code>ls -la ~/.config/last30days/.env</code></td></tr>
-            <tr><td>X 一直不出结果</td><td>X 是封闭平台，cookie 过期了</td><td>重新导出 <code>AUTH_TOKEN</code> + <code>CT0</code>；或改用 <code>XAI_API_KEY</code></td></tr>
-            <tr><td>跑一次要 10+ 分钟</td><td>网络慢或触发了 <code>--deep-research</code> 标志</td><td>不要随便加 <code>--deep-research</code>（每次 $0.9）</td></tr>
-            <tr><td>装完 Claude Code 不认</td><td>marketplace 没 add 或缓存过时</td><td>重新跑 <code>/plugin marketplace add</code> + <code>/plugin install</code></td></tr>
-            <tr><td>Python 报错</td><td>Python &lt; 3.12</td><td>装 Python 3.12+：<code>brew install python@3.12</code></td></tr>
-            <tr><td>怎么知道 key 起没起作用</td><td>—</td><td>跑 <code>/last30days</code> 任何关键词，看 footer 的 <code>✓</code> / <code>✗</code> 列表</td></tr>
-          </tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>现象</th><th>最常见原因</th><th>怎么查</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>跑出来内容很少</td><td>没数据 / 数据源被 key 锁了</td><td>跑 <code>--diagnose</code> 看 footer 里 <code>✗</code> 的源</td></tr>
+              <tr><td>配了 key 还是不生效</td><td><code>.env</code> 路径不对或权限不是 600</td><td>看 stderr 警告；<code>ls -la ~/.config/last30days/.env</code></td></tr>
+              <tr><td>X 一直不出结果</td><td>X 是封闭平台，cookie 过期了</td><td>重新导出 <code>AUTH_TOKEN</code> + <code>CT0</code>；或改用 <code>XAI_API_KEY</code></td></tr>
+              <tr><td>跑一次要 10+ 分钟</td><td>网络慢或触发了 <code>--deep-research</code> 标志</td><td>不要随便加 <code>--deep-research</code>（每次 $0.9）</td></tr>
+              <tr><td>装完 Claude Code 不认</td><td>marketplace 没 add 或缓存过时</td><td>重新跑 <code>/plugin marketplace add</code> + <code>/plugin install</code></td></tr>
+              <tr><td>Python 报错</td><td>Python &lt; 3.12</td><td>装 Python 3.12+：<code>brew install python@3.12</code></td></tr>
+              <tr><td>怎么知道 key 起没起作用</td><td>—</td><td>跑 <code>/last30days</code> 任何关键词，看 footer 的 <code>✓</code> / <code>✗</code> 列表</td></tr>
+            </tbody>
+          </table>
+        </div>
 
         <p><strong>最常用的自救命令</strong>（记这一个就够）：</p>
 <pre>python3 skills/last30days/scripts/last30days.py --diagnose</pre>
