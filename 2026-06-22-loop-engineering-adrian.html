@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loop Engineering · 从 0 到 1 小白完整教程 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-prompt {
+      margin: 20px 0;
+    }
+    .cap-prompt-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-prompt pre {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      padding: 18px 22px;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-x: auto;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-prompt pre:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+
+    /* PROMPT CARD — 仅中文（暗色卡片 + head 头 + Copy） */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 6px;
+      border: 1px solid #1f1f23;
+      overflow: hidden;
+      margin: 28px 0 12px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.3);
+    }
+    .prompt-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #1f1f23;
+      background: #0a0a0c;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+      min-width: 32px;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .prompt-name-en {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #e8e8ea;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #8a8a8e;
+      letter-spacing: 0.04em;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* REFERENCES — 引用与原文出处 */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* IMAGE GRID (single image wrapper) */
+    .cap-image {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      margin: 28px 0;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-image:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-image img { display: block; width: 100%; height: auto; }
+    .cap-image figcaption {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cap-image figcaption strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">LOOP · ENGINEERING</div>
+      <h1 class="article-title">Loop Engineering</h1>
+      <p class="article-subtitle">从 0 到 1 小白完整教程</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Adrian Punk (@AdrianPunk115) · 623.1K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/22</span>
+      </div>
+      <p class="article-desc">Adrian Punk (@AdrianPunk115) 那条 623.1K 浏览的中文 X 长文。Loop Engineering 是把"单次提问"换成"设计 AI 自动干活的循环"——本文 9 章讲透小白入门路径：什么是 Loop / 哪些任务适合 / 4 个核心模块（目标·步骤·检查·停止）/ 5 个照抄即用 prompt 模板（最小 Loop / 写文章 / 写代码 / 学习技能 / 通用任务）。</p>
+    </section>
+
+    <!-- COVER IMAGE -->
+    <section class="cover-frame">
+      <img src="images/2026-06-22-loop-engineering-adrian-cover.jpg" alt="Loop Engineering 从 0 到 1 小白完整教程">
+      <p class="cover-caption">Adrian Punk · Loop Engineering 从 0 到 1 小白完整教程 · 2026/06/22</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">你现在打开 AI，大概率还是这样用：「帮我写一篇文章。」「帮我改一下代码。」「帮我总结这个文件。」——这叫<strong>单次提问</strong>。</p>
+      <p class="intro-lead">但真正会用 AI 的人，已经不只是提问了。他们在设计一个<strong>循环</strong>：让 AI 先理解任务，再执行，再检查，再修正，直到结果达标。</p>
+      <p class="intro-statement">本文按 9 章展开：先把 Loop Engineering 和普通 prompt 的本质区别讲清楚（cap 01-02），再告诉你哪些任务值得设计 Loop（cap 03）、最小可用模板长什么样（cap 04）、4 个核心模块怎么搭（cap 05），接着给 3 个直接照抄的 Loop + 5 个 prompt 模板（cap 06 + cap 09），中间夹一份小白学习路径（cap 07）和 5 个最容易踩的坑（cap 08）。看完你能直接动手。</p>
+    </section>
+
+    <!-- PULL QUOTE 1 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Prompt Engineering 解决怎么问<span class="arrow">·</span>Loop Engineering 解决怎么做完</div>
+      <div class="pull-quote-caption">Adrian Punk · on the difference between prompt and loop</div>
+    </section>
+
+    <!-- 01 WHY LOOP ENGINEERING -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">Why you need Loop Engineering</h2>
+          <div class="cap-title-cn">为什么需要理解 Loop Engineering</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>以前用 AI，最重要的是 <strong>Prompt Engineering</strong>——也就是你怎么问，AI 才能答得更好。但现在问题变了。</p>
+
+        <p>因为 AI 不只是会聊天了，它已经能读文件、写代码、查资料、操作网页、调用工具、运行测试。这时候，你只会写提示词，就像你只会给员工发一句微信：「把这个项目做好。」听起来很有方向，实际很难落地。</p>
+
+        <p><strong>Loop Engineering 解决的是另一个问题</strong>：怎么让 AI 按步骤持续工作，并且自己检查结果。</p>
+
+        <p>举个简单例子：你要让 AI 写一篇小红书笔记——</p>
+
+        <div class="cap-example">
+          <p class="cap-example-label">普通提示词</p>
+          <div class="cap-example-text">帮我写一篇关于减肥餐的小红书笔记。</div>
+        </div>
+
+        <div class="cap-example">
+          <p class="cap-example-label">Loop 提示词</p>
+          <div class="cap-example-text">先分析目标用户是谁。<br>再给我 5 个标题方向。<br>选出最有点击感的 1 个。<br>然后写正文。<br>写完后检查：标题是否有吸引力、正文是否像真人写的、有没有夸张承诺。<br>如果不符合，就自己修改一轮。<br>最后输出最终版。</div>
+        </div>
+
+        <p>差别不在"词写得更高级"。差别在于，你把 AI 从"答题机器"变成了"执行流程的人"。</p>
+      </div>
+    </section>
+
+    <!-- 02 WHAT IS LOOP ENGINEERING -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">What Loop Engineering really is</h2>
+          <div class="cap-title-cn">Loop Engineering 到底是什么</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Loop，中文就是循环。Engineering，是工程化。<strong>Loop Engineering，就是把一个任务拆成可以反复执行、检查、修正的工作循环。</strong></p>
+
+        <p>最小的 Loop 只有 <strong>5 个环节</strong>：</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-06-22-loop-engineering-adrian-5-steps.jpg" alt="Loop 5 环节">
+          <figcaption><strong>5 环节</strong>输入目标 → 制定计划 → 执行第一版 → 自查修正 → 输出结果。Adrian Punk 原文插图。</figcaption>
+        </figure>
+
+        <p>你可以把它想成洗衣机——你不会每 5 分钟手动告诉洗衣机："现在进水。""现在搅拌。""现在排水。""现在甩干。"你只需要选择模式，然后机器自己完成一整套流程。</p>
+
+        <p>Loop Engineering 也是一样。你不是每一步都亲自盯着 AI，而是提前告诉它：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">"做事顺序是什么。"<br>"什么叫合格。"<br>"失败了怎么修。"<br>"什么时候停止。"</div>
+        </div>
+
+        <p>这四件事说清楚，AI 才能稳定输出。</p>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 2 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Loop，不是让 AI 自由发挥<span class="arrow">·</span>而是给 AI 装上轨道</div>
+      <div class="pull-quote-caption">Adrian Punk · on the purpose of loop design</div>
+    </section>
+
+    <!-- 03 WHICH TASKS FIT LOOP -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">Which tasks fit a Loop</h2>
+          <div class="cap-title-cn">哪些任务适合做成 Loop</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>不是所有任务都需要 Loop。如果你只是问「帮我翻译这句话」「给我 10 个标题」「解释一下这个概念」，这种一次性任务，用普通提示词就够了。</p>
+
+        <p>适合 Loop 的任务，一般有三个特点：</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-06-22-loop-engineering-adrian-judgement.jpg" alt="判断任务是否需要 Loop">
+          <figcaption><strong>判断标准</strong>需要做 2 轮以上的事，就值得设计 Loop。Adrian Punk 原文插图。</figcaption>
+        </figure>
+
+        <p><strong>1. 需要多步骤</strong>。比如写一篇长文章，它不是一句话能完成的。你至少要经历：选题分析、标题设计、大纲搭建、正文写作、风格检查、删废话、最终润色。如果你每一步都手动问，过程会很碎。做成 Loop，就可以让 AI 一口气跑完整个流程。</p>
+
+        <p><strong>2. 需要检查质量</strong>。比如写代码——代码不是"看起来像代码"就行。它要能运行，要没有明显报错，要符合项目已有风格。这就必须有检查动作：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">写完后运行测试。<br>如果测试失败，读取报错原因并修复。<br>修复后再次运行测试。<br>直到测试通过或说明无法继续。</div>
+        </div>
+
+        <p>这就是典型的 Loop。</p>
+
+        <p><strong>3. 需要反复修改</strong>。比如做简历、做销售文案、做短视频脚本。第一版通常不会最好。你需要它自己问：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">"这个标题够具体吗？"<br>"这个案例够真实吗？"<br>"这个开头能不能更抓人？"</div>
+        </div>
+
+        <p>只要任务需要反复打磨，就适合 Loop。<strong>判断标准很简单：需要做两轮以上的事，就值得设计 Loop。</strong></p>
+      </div>
+    </section>
+
+    <!-- 04 MINIMAL VIABLE LOOP -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">A minimal viable Loop</h2>
+          <div class="cap-title-cn">一个最小可用 Loop 长什么样</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>小白可以直接套这个模板。</p>
+
+        <p>这个模板已经能解决大部分小白任务。比如你要写公众号文章，可以这样填：</p>
+
+        <div class="prompt-card" data-card id="prompt-01">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">01</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">最小可用 Loop</span>
+              <span class="prompt-name-cn">小白起步模板</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body">你要完成的任务是：【写清楚任务】
+请按以下流程执行：
+1. 先理解目标和限制
+2. 再制定 3-5 步计划
+3. 按计划逐步完成
+4. 完成后按验收标准自查
+5. 如果不合格，修改一轮
+6. 合格后输出最终结果和简短说明
+
+验收标准：
+标准 1：【写清楚】
+标准 2：【写清楚】
+标准 3：【写清楚】
+
+停止条件：
+当所有验收标准都满足时停止，不要无限扩写。</div>
+      </div>
+
+        <p>这就是第一个 Loop。它不复杂，但已经比"帮我写一篇文章"强很多。<strong>小白学 Loop，不是先学复杂系统，而是先学会写清楚验收标准。</strong></p>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 3 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">没有检查标准的 Loop<span class="arrow">·</span>就像没有刹车的车</div>
+      <div class="pull-quote-caption">Adrian Punk · on why verification matters</div>
+    </section>
+
+    <!-- 05 FOUR CORE MODULES -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">The 4 core modules</h2>
+          <div class="cap-title-cn">Loop Engineering 的 4 个核心模块</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <figure class="cap-image">
+          <img src="images/2026-06-22-loop-engineering-adrian-4-modules.jpg" alt="4 个核心模块">
+          <figcaption><strong>4 模块</strong>目标 → 步骤 → 检查 → 停止。Adrian Punk 原文插图。</figcaption>
+        </figure>
+
+        <p><strong>1. 目标模块：告诉 AI 要去哪里</strong></p>
+
+        <p>目标越模糊，Loop 越容易跑偏。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">❌ 错误写法：帮我做一个好看的网页。</div>
+        </div>
+
+        <div class="cap-example">
+          <div class="cap-example-text">✓ 正确写法：帮我做一个适合手机浏览的个人作品集首页。<br>风格要简洁，包含头像、简介、项目列表、联系方式。<br>页面打开后第一屏就能看清我是谁。</div>
+        </div>
+
+        <p>你看，后者有对象、有场景、有内容、有结果。AI 就不容易乱猜。<strong>检验标准：你把目标发给一个真人，他能不能知道要交付什么。</strong></p>
+
+        <p><strong>2. 步骤模块：告诉 AI 怎么走</strong></p>
+
+        <p>不要只说"做好"。要让它按顺序来。比如：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">第一步：先分析需求<br>第二步：列出页面结构<br>第三步：写代码<br>第四步：检查移动端<br>第五步：修复明显问题<br>第六步：总结修改内容</div>
+        </div>
+
+        <p>这就像你给新人安排工作。如果你只说"你去做运营"，他会懵。如果你说"先整理 20 个竞品标题，再归类，再写 10 个新标题"，他就能动起来。<strong>步骤不是限制 AI，而是减少 AI 犯傻的空间。</strong></p>
+
+        <p><strong>3. 检查模块：告诉 AI 什么叫合格</strong></p>
+
+        <p>这是 Loop Engineering 最重要的一步。很多人只写任务，不写检查标准。结果 AI 输出一堆看似完整、实际不能用的东西。</p>
+
+        <p>比如你让 AI 写文章，检查标准可以是：</p>
+        <ul class="cap-features">
+          <li>开头有没有具体人或数字</li>
+          <li>每段是不是太长</li>
+          <li>有没有空话套话</li>
+          <li>读者看完知不知道下一步做什么</li>
+        </ul>
+
+        <p>比如你让 AI 写代码，检查标准可以是：</p>
+        <ul class="cap-features">
+          <li>页面能不能打开</li>
+          <li>控制台有没有报错</li>
+          <li>核心功能能不能点击</li>
+          <li>手机端有没有遮挡</li>
+        </ul>
+
+        <p>比如你让 AI 做表格，检查标准可以是：</p>
+        <ul class="cap-features">
+          <li>列名是否完整</li>
+          <li>数据是否重复</li>
+          <li>公式是否能计算</li>
+          <li>汇总结果是否合理</li>
+        </ul>
+
+        <p>检查标准越具体，AI 越能自己修。<strong>没有检查标准的 Loop，就像没有刹车的车。</strong></p>
+
+        <p><strong>4. 停止模块：告诉 AI 什么时候结束</strong></p>
+
+        <p>Loop 最怕两种情况。一种是没做完就停。另一种是已经做完了还继续改，把好东西改坏。所以你必须写停止条件。比如：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">当所有检查项都通过后，停止修改，只输出最终结果。</div>
+        </div>
+
+        <p>或者：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">最多修改 2 轮。<br>如果 2 轮后仍然不满足，请说明原因，不要继续猜。</div>
+        </div>
+
+        <p>这个设置非常重要。因为 AI 有时候很"勤奋"，会不断优化。但优化不等于变好。比如标题第一版很有力：「普通人用 AI 翻身，先学会这 4 个循环」。改到第五版可能变成：「关于人工智能应用能力提升的系统性方法研究」。看起来高级，实际上没人想点。<strong>好的 Loop，不是永远运行，而是在正确的时候停止。</strong></p>
+      </div>
+    </section>
+
+    <!-- 06 THREE LOOPS TO COPY -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 06</div>
+          <h2 class="cap-title-en">3 Loops you can copy now</h2>
+          <div class="cap-title-cn">3 个小白可以直接照抄的 Loop</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>1. 写文章 Loop</strong>——适合：公众号、小红书、X。</p>
+
+        <div class="prompt-card" data-card id="prompt-02">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">02</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">写文章 Loop</span>
+              <span class="prompt-name-cn">内容创作</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body">请帮我写一篇文章。
+
+流程：
+1. 先判断读者是谁
+2. 再列出文章大纲
+3. 写正文
+4. 检查是否有空话、长段落、抽象概念
+5. 如果有，改成更具体、更适合手机阅读的版本
+
+验收标准：
+· 开头有具体案例或数字
+· 每节都有明确小标题
+· 每个观点后面有例子
+· 结尾告诉读者今天能做什么
+
+满足后停止。</div>
+      </div>
+
+        <p><strong>2. 写代码 Loop</strong>——适合：个人网站、工具页面、自动化脚本、小程序原型。</p>
+
+        <div class="prompt-card" data-card id="prompt-03">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">03</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">写代码 Loop</span>
+              <span class="prompt-name-cn">编程开发</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body">请帮我完成这个功能。
+
+流程：
+1. 先阅读现有项目结构
+2. 找到相关文件
+3. 说明你准备怎么改
+4. 修改代码
+5. 运行检查或测试
+6. 如果失败，根据错误继续修复
+7. 最后总结改了什么
+
+验收标准：
+· 功能能正常使用
+· 不破坏原有功能
+· 没有明显报错
+· 风格和现有项目一致
+
+如果无法完成，请说明卡在哪里。</div>
+      </div>
+
+        <p><strong>3. 学习技能 Loop</strong>——适合：学 AI、学编程、学剪辑、学写作、学英语。</p>
+
+        <div class="prompt-card" data-card id="prompt-04">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">04</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">学习技能 Loop</span>
+              <span class="prompt-name-cn">自我提升</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body">请帮我学习【某个技能】。
+
+流程：
+1. 先判断我现在是零基础
+2. 拆成 7 天学习计划
+3. 每天只安排 1 个核心动作
+4. 每天给一个练习题
+5. 每个阶段给一个检验标准
+
+验收标准：
+· 不使用我听不懂的术语
+· 每天任务能在 30 分钟内完成
+· 每个练习都能产出一个具体作品
+
+最后输出第一天要做什么。</div>
+      </div>
+      </div>
+    </section>
+
+    <!-- 07 LEARNING PATH -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 07</div>
+          <h2 class="cap-title-en">From newbie to pro: a learning path</h2>
+          <div class="cap-title-cn">从新手到进阶的学习路径</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>第一阶段：先学会写清楚任务</strong>（时间：1-3 天）</p>
+
+        <p>你先不用管什么 Agent、工作流、自动化平台。每天拿一个真实任务练习：</p>
+
+        <ul class="cap-features">
+          <li>改一篇文章</li>
+          <li>整理一个表格</li>
+          <li>写一个脚本</li>
+          <li>做一个旅行计划</li>
+          <li>生成一个短视频选题表</li>
+        </ul>
+
+        <p>每次都按这个格式写：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">目标是什么<br>步骤是什么<br>检查标准是什么<br>停止条件是什么</div>
+        </div>
+
+        <p>检验标准：你能不用模板，也能写出一个清晰任务。</p>
+
+        <p><strong>第二阶段：学会加检查清单</strong>（时间：3-7 天）</p>
+
+        <p>这一阶段重点不是让 AI 多做，而是让 AI 做完会检查。</p>
+
+        <p>比如写文章，就加：检查有没有空话。检查有没有长段落。检查有没有不适合小白的词。</p>
+
+        <p>比如写代码，就加：检查功能是否可点击。检查页面是否报错。检查移动端是否正常。</p>
+
+        <p>检验标准：AI 每次输出前，都会主动做一次自查。</p>
+
+        <p><strong>第三阶段：学会控制迭代次数</strong>（时间：7-14 天）</p>
+
+        <p>你要开始控制 Loop 的边界。比如：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">最多修改 2 轮。<br>每轮只解决最重要的 3 个问题。<br>不要为了润色而大改结构。</div>
+        </div>
+
+        <p>这会让 AI 更稳定。否则它可能一轮又一轮地改，最后偏离最初目标。</p>
+
+        <p>检验标准：AI 不会无限扩写，也不会把任务越做越大。</p>
+
+        <p><strong>第四阶段：学会组合多个 Loop</strong>（时间：14-30 天）</p>
+
+        <p>当你熟练以后，可以把大任务拆成多个小 Loop。比如做一个知识付费小课：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">第一个 Loop：选题分析<br>第二个 Loop：课程大纲<br>第三个 Loop：单节课脚本<br>第四个 Loop：海报文案<br>第五个 Loop：发布计划</div>
+        </div>
+
+        <p>每个 Loop 只负责一件事。这样比让 AI 一次性"帮我做一门课"靠谱很多。<strong>复杂任务的秘密，不是一个超级 Prompt，而是一串小 Loop。</strong></p>
+      </div>
+    </section>
+
+    <!-- 08 FIVE PITFALLS -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 08</div>
+          <h2 class="cap-title-en">5 pitfalls every beginner hits</h2>
+          <div class="cap-title-cn">新手最容易踩的 5 个坑</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>坑 1：目标太大</strong></p>
+
+        <p>"帮我做一个赚钱项目。"——这句话基本没法执行。你要改成：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-text">"帮我设计一个适合上班族周末做的 AI 简历优化服务，包含目标用户、交付内容、定价和第一批获客方式。"</div>
+        </div>
+
+        <p>越具体，越能落地。</p>
+
+        <p><strong>坑 2：没有验收标准</strong></p>
+
+        <p>"写得好一点。"这不是标准。"标题 20 字以内，有具体收益，不夸张承诺。"——这才是标准。</p>
+
+        <p><strong>坑 3：让 AI 一次做太多事</strong></p>
+
+        <p>小白最喜欢一句话塞满："帮我写商业计划书、做 PPT、设计 logo、分析竞品、顺便给我一个融资方案。"AI 会做，但质量会飘。正确做法是拆开：先做竞品分析，再做定位，再做方案。</p>
+
+        <p><strong>坑 4：不让 AI 解释过程</strong></p>
+
+        <p>有些任务你只要结果就行。但新手阶段，最好让 AI 简短说明："你做了什么？""为什么这样做？""还有什么风险？"——这能帮你理解 Loop 是怎么跑的。</p>
+
+        <p><strong>坑 5：过度相信 AI 自查</strong></p>
+
+        <p>AI 会检查，但它不是神。<strong>尤其是事实、数据、法律、医学、金融这类内容，你必须人工复核。</strong>Loop 能提高效率，但不能替你承担判断责任。AI 可以帮你跑流程，但最后按下发布键的人还是你。</p>
+      </div>
+    </section>
+
+    <!-- 09 PRACTICE TODAY -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 09</div>
+          <h2 class="cap-title-en">Start practicing today</h2>
+          <div class="cap-title-cn">你今天就能开始的练习</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>别先学理论，今天就做一个最小练习。选择一个你手上真实的小任务，比如：</p>
+
+        <ul class="cap-features">
+          <li>改一篇朋友圈文案</li>
+          <li>整理一个会议纪要</li>
+          <li>做一个 7 天学习计划</li>
+          <li>写一个产品介绍</li>
+          <li>优化一页简历</li>
+        </ul>
+
+        <p>然后复制这段：</p>
+
+        <div class="prompt-card" data-card id="prompt-05">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">05</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">通用任务 Loop</span>
+              <span class="prompt-name-cn">任意任务起步</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body">请你用 Loop 的方式完成这个任务。
+
+目标：【填你的任务】
+
+流程：
+1. 先理解目标
+2. 再列出计划
+3. 执行第一版
+4. 按标准自查
+5. 不合格就修改一轮
+6. 合格后停止
+
+验收标准：
+【标准 1】
+【标准 2】
+【标准 3】
+
+最后输出：
+1. 最终结果
+2. 自查结果
+3. 下一步建议</div>
+      </div>
+
+        <p>你只要能把括号里的内容填好，就已经入门了。</p>
+
+        <p>Loop Engineering 的核心就一句话：<strong>把"我希望 AI 做好"，改成"我告诉 AI 怎么判断做好"。</strong></p>
+
+        <p>从今天开始，不要只问 AI 一个问题。</p>
+
+        <ul class="cap-features">
+          <li>给它一个目标</li>
+          <li>给它一个流程</li>
+          <li>给它一个检查表</li>
+          <li>再给它一个停止条件</li>
+        </ul>
+
+        <p>这就是你从普通 AI 用户，变成 Loop Engineer 的第一步。</p>
+
+        <div class="cap-body" style="margin-top: 32px;">
+          <div class="source-quote">
+            <strong>关于作者</strong>
+            Adrian Punk｜中科大 MBA｜被大厂优化，在 X 上重新进化｜HerName 首席设计师｜AI 提示词｜分享小白能看懂、复制能上手的 AI / Web3 / 搞钱方法｜<a href="https://x.com/AdrianPunk115" target="_blank" rel="noopener">@AdrianPunk115</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>Loop Engineering 从 0 到 1 小白完整教程</em><br>
+          作者：Adrian Punk (@AdrianPunk115) · 发布于 2026/06/22 · 623.1K 浏览<br>
+          原文链接：<a href="https://x.com/AdrianPunk115/status/2068947825120223659" target="_blank" rel="noopener">https://x.com/AdrianPunk115/status/2068947825120223659</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/AdrianPunk115" target="_blank" rel="noopener">https://x.com/AdrianPunk115</a>
+        </li>
+        <li>
+          <strong>AUTHOR · GITHUB</strong>
+          <a href="https://github.com/adrianpunk/Punk-Skill" target="_blank" rel="noopener">https://github.com/adrianpunk/Punk-Skill</a> — Punk-Skill 仓库
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文中所有 prompt 模板均保留中文原貌，便于直接复制使用。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">这 5 个 prompt 模板是 Adrian Punk 公开分享的，复制即用——但建议按你的具体任务调整。Loop 不是越通用越好用，而是越贴合你的目标、步骤、检查标准、停止条件，越能让 AI 稳定输出。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">从今天开始，不要只问 AI 一个问题<strong>·</strong>给它一个目标、一个流程、一个检查表、一个停止条件。</p>
+      <p class="closing-caption">读完了。下一步：挑一个今天的小任务，复制 Prompt 1，把括号填上。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">9 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Why Loop</span>
+          <span class="nav-item-cn">为什么需要</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">What is Loop</span>
+          <span class="nav-item-cn">到底是什么</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Which tasks</span>
+          <span class="nav-item-cn">哪些任务适合</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Minimal Loop</span>
+          <span class="nav-item-cn">最小可用模板</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">4 modules</span>
+          <span class="nav-item-cn">4 个核心模块</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">3 Loops to copy</span>
+          <span class="nav-item-cn">3 个照抄 Loop</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Learning path</span>
+          <span class="nav-item-cn">学习路径</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">5 pitfalls</span>
+          <span class="nav-item-cn">5 个坑</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Practice today</span>
+          <span class="nav-item-cn">今天开始练习</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // ===== Prompt Card: Copy =====
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const body = card.querySelector('.prompt-card-body');
+      const content = body.textContent;
+
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else {
+        fallbackCopy(content, showCopied);
+      }
+    }
+
+    function fallbackCopy(content, cb) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(textarea);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
