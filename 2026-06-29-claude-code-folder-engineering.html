@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code 工程化指南：高效组织 .claude/ 目录 · Vince 12.2K 浏览 X 长文解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(28px, 4.2vw, 40px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+    }
+    .article-title .highlight { color: #C8161D; }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* VIDEO FRAME (新模式) */
+    .video-frame {
+      padding: 64px 0;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-code);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .video-wrapper:hover {
+      box-shadow: var(--shadow-hover);
+      transform: scale(1.006);
+    }
+    .video-poster {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s;
+    }
+    .video-play-btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 76px; height: 76px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.55);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      color: #fff;
+      font-size: 30px;
+      display: flex; align-items: center; justify-content: center;
+      padding-left: 6px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .video-wrapper:hover .video-play-btn {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+    .video-element {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: none;
+      background: #000;
+    }
+    .video-wrapper.is-playing .video-poster { display: none; }
+    .video-wrapper.is-playing .video-play-btn { display: none; }
+    .video-wrapper.is-playing .video-element { display: block; }
+    .video-caption {
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(24px, 3.8vw, 32px);
+      font-weight: 300;
+      line-height: 1.45;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+
+    /* 原句引用块 */
+    .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* 小技能清单 */
+    .skill-stack {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .skill-stack li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .skill-stack li:last-child { border-bottom: none; }
+    .skill-stack li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .skill-stack li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* 代码块 */
+    .code-block {
+      margin: 24px 0;
+      padding: 20px 24px;
+      background: var(--bg-code);
+      color: #e8e8ea;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre;
+      overflow-x: auto;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .code-block .c-comment { color: #6e6e73; font-style: italic; }
+    .code-block .c-key { color: #c9a962; }
+    .code-block .c-str { color: #98c379; }
+
+    /* 实战例子框 */
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* 表格 */
+    .mistake-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14.5px;
+      line-height: 1.7;
+    }
+    .mistake-table th, .mistake-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+    }
+    .mistake-table th {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      background: var(--bg-secondary);
+    }
+    .mistake-table td:first-child {
+      color: var(--accent-red);
+      font-weight: 500;
+      width: 40%;
+    }
+    .mistake-table td:last-child {
+      color: var(--text-secondary);
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-title { font-size: 24px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 24px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-head { flex-direction: column; gap: 12px; }
+      .video-frame { padding: 48px 0; }
+      .video-play-btn { width: 60px; height: 60px; font-size: 24px; }
+      .code-block { font-size: 11.5px; padding: 16px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">CLAUDE CODE · 工程化 · 解读</div>
+      <h1 class="article-title">Claude Code <span class="highlight">工程化指南</span>：高效组织 .claude/ 目录</h1>
+      <p class="article-subtitle">一个组织良好的 .claude/ 文件夹，让 Claude 更易被引导、被信任、易扩展</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Vince (@vincemask) · 122.5K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/05/19</span>
+      </div>
+      <p class="article-desc">大多数 Claude Code 用户知道 <code>.claude/</code> 文件夹的存在，但很少有人认真思考它的组织方式。项目小的时候一个 <code>CLAUDE.md</code>、几个设置文件就够了；增长后指令散落、文件变成"有用配置+难以解释的混乱"的混合物。Vince 这篇 122.5K 浏览的长文把这件事讲透了：5 段核心原则 + 渐进式成长路径 + 常见错误 + 配套录屏。文末附 1 个完整可复制的 <code>.claude/</code> 目录蓝图。</p>
+    </section>
+
+    <!-- COVER IMAGE -->
+    <section class="cover-frame">
+      <img src="images/2026-06-29-claude-code-folder-engineering-cover.jpg" alt="Claude Code 工程化指南 封面">
+      <p class="cover-caption">Vince · Claude Code 工程化指南：高效组织 .claude/ 目录 · 2026/05/19</p>
+    </section>
+
+    <!-- VIDEO -->
+    <section class="video-frame">
+      <div class="container">
+        <div class="video-wrapper" id="videoWrap">
+          <img class="video-poster" src="images/2026-06-29-claude-code-folder-engineering-cover.jpg" alt="视频封面：Claude Code .claude/ 目录组织">
+          <button class="video-play-btn" id="videoPlayBtn" aria-label="播放视频">▶</button>
+          <video class="video-element" id="videoEl" controls preload="none" playsinline>
+            <source src="videos/2026-06-29-claude-code-folder-engineering.mp4" type="video/mp4">
+            你的浏览器不支持 video 标签。
+          </video>
+        </div>
+        <p class="video-caption">77 秒 · 1920 × 1080 · 原文配套录屏 · @vincemask</p>
+      </div>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">你打开这篇文的时候，可能正在想一件事：<strong>"我的 .claude/ 怎么越用越乱？"</strong></p>
+      <p class="intro-lead">Vince 的回答很直接——大多数 Claude Code 用户没认真想过 <code>.claude/</code> 的组织方式。<strong>项目小的时候一个 CLAUDE.md、几个 settings 文件就够了；项目一长，指令开始散落、文件变成"有用配置 + 难以解释的混乱"的混合物。</strong></p>
+      <p class="intro-statement">本文按 9 章拆解这篇 122.5K 浏览的长文（含配套录屏）。第 1 章给完整目录蓝图；第 2-6 章讲透 5 段核心原则——顶层要轻、CLAUDE.md 与 rules/ 怎么分、hooks/ 和 commands/ 怎么分、skills/ 和 agents/ 怎么用进阶结构、团队结构和个人结构怎么分；第 7 章给 6 步渐进式成长路径；第 8 章列 6 个常见错误；第 9 章是收尾的关键要点。</p>
+      <p class="intro-statement">原文是写给 Claude Code 用户的工程化方法论；本文保留所有核心判断，但把场景从"职业开发者"平移到"任何用 Claude Code 干活的非程序人"——AI 自媒体写作、内容流水线、Agent 工作流搭建，全用得上。</p>
+    </section>
+
+    <!-- PULL QUOTE 1 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">最高效的 .claude/ 文件夹不是功能最丰富的<span class="arrow">·</span>而是每个部分都有清晰用途的</div>
+      <div class="pull-quote-caption">Vince · on what an organized .claude/ actually looks like</div>
+    </section>
+
+    <!-- 01 目标结构蓝图 -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE BLUEPRINT</div>
+          <h2 class="cap-title-en">The target folder structure</h2>
+          <div class="cap-title-cn">目标结构蓝图 —— 一张图看清全貌</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>先看一眼完整的目录长什么样。这是项目最终的样子，<strong>不是起步的样子</strong>——Vince 在第 7 章会告诉你怎么从最小可用版本逐步加进这些文件夹。</p>
+        <pre class="code-block">your-project/
+├── <span class="c-key">CLAUDE.md</span>              <span class="c-comment"># 主项目指令</span>
+├── <span class="c-key">CLAUDE.local.md</span>         <span class="c-comment"># 个人覆盖（不提交）</span>
+└── <span class="c-key">.claude/</span>
+    ├── <span class="c-key">settings.json</span>        <span class="c-comment"># 控制层</span>
+    ├── <span class="c-key">settings.local.json</span>  <span class="c-comment"># 本地覆盖</span>
+    ├── <span class="c-key">rules/</span>               <span class="c-comment"># 模块化指令</span>
+    ├── <span class="c-key">hooks/</span>               <span class="c-comment"># 自动化脚本</span>
+    ├── <span class="c-key">commands/</span>            <span class="c-comment"># 可复用提示词工作流</span>
+    ├── <span class="c-key">skills/</span>              <span class="c-comment"># 打包能力</span>
+    └── <span class="c-key">agents/</span>              <span class="c-comment"># 专用子代理</span></pre>
+        <p>这一张图就把全文讲透了——<strong>分成两半看</strong>。左半边（项目根目录的 <code>CLAUDE.md</code> + <code>.claude/</code>）是团队共享的，提交到 Git；右半边（<code>CLAUDE.local.md</code> + <code>.claude/settings.local.json</code> + <code>~/.claude/</code>）是个人偏好的，不提交。后面的 5 段核心原则会逐条解释这每一层是干嘛的、为什么这么放、什么时候该拆出来。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            不用现在就建出全部 7 个文件夹。先把根目录的 <code>CLAUDE.md</code> + <code>.claude/settings.json</code> 用上，后面按需添加。这张图是你的<strong>目标参考点</strong>，不是 Day 1 的 TODO 清单。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 核心原则 1. 顶层要轻 -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRINCIPLE 01</div>
+          <h2 class="cap-title-en">Keep the top layer light</h2>
+          <div class="cap-title-cn">顶层要轻 —— 一层引导，一层控制</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第一段原则就一句话：<strong>CLAUDE.md 负责引导，settings.json 负责控制。分开。</strong></p>
+        <p>大多数人的第一反应是把所有东西都塞进 <code>CLAUDE.md</code>。"这是给 Claude 的指令"——听着对，做法错。因为 <code>CLAUDE.md</code> 的内容是每次会话都会被重新读入上下文的，文件越大、噪声越多，Claude 越容易忽略后面的内容。</p>
+        <p>更干净的做法是分两层：</p>
+        <ul class="skill-stack">
+          <li><strong>引导层：CLAUDE.md</strong> —— 解释项目"是什么"（技术栈、架构、关键命令）和"怎么工作"（全局约定）。Claude 读了知道自己处在哪个项目、可以做什么。</li>
+          <li><strong>控制层：.claude/settings.json</strong> —— 控制 Claude "能做什么"（权限范围、自动执行什么、要确认什么）和"在哪一层操作"（项目级 / 用户级行为）。</li>
+        </ul>
+        <p>这两层<strong>不要混在一起</strong>。"禁用 npm 强制推送"是一条控制指令，应该在 settings.json 里、不该在 CLAUDE.md 里；"用 pnpm 不用 npm"是一条约定，应该在 CLAUDE.md 里、不该在 settings.json 里。混了之后调整起来分不清哪条是谁的。</p>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          claude.md explains how the project works. settings.json controls how claude operates inside it. keep these two layers separate.
+        </div>
+        <p>中间层是两个 <code>.local</code> 文件——<code>CLAUDE.local.md</code> 和 <code>.claude/settings.local.json</code>。它们是<strong>个人覆盖</strong>，不进 Git 版本控制。这一层是团队结构和个人偏好之间的隔离带，下一章会细讲。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            检查一下你现在的 <code>CLAUDE.md</code>。如果有"禁用某个危险命令""自动跑测试"这种<strong>控制</strong>类内容，把它们搬进 <code>.claude/settings.json</code> 的 <code>permissions</code> 字段。CLAUDE.md 留 <strong>只读解释</strong>——栈、架构、约定。文件控制在 200 行内。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 核心原则 2. CLAUDE.md 与 rules/ 划分 -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRINCIPLE 02</div>
+          <h2 class="cap-title-en">CLAUDE.md vs rules/</h2>
+          <div class="cap-title-cn">CLAUDE.md 与 rules/ 划分 —— 每次都读 vs 按需加载</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>项目一长，CLAUDE.md 就开始拥挤。这是必然的——指令多了、约定多了，文件就开始长。这个阶段<strong>不要硬塞</strong>，而是把"专项指导"拆进 <code>rules/</code> 文件夹。</p>
+        <p>划分标准很简单：<strong>每次会话都需要的内容放 CLAUDE.md，只有相关场景才用到的放 rules/</strong>。</p>
+        <p><strong>CLAUDE.md 放什么：</strong></p>
+        <ul class="skill-stack">
+          <li><strong>主要技术栈</strong>——用的什么语言、什么框架、什么包管理器</li>
+          <li><strong>高层架构</strong>——模块怎么拆、为什么这么拆</li>
+          <li><strong>最重要的开发命令</strong>——怎么跑、怎么测、怎么构建</li>
+          <li><strong>广泛适用的代码约定</strong>——命名风格、文件组织、提交规范</li>
+          <li><strong>项目级警告或约束</strong>——绝对不能碰的边界</li>
+        </ul>
+        <p><strong>rules/ 放什么：</strong></p>
+        <ul class="skill-stack">
+          <li><strong>某模块/某领域的专项规则</strong>——前端组件怎么写、后端 API 怎么设计、测试覆盖标准、数据管道约定</li>
+          <li><strong>不同人有不同标准的细节</strong>——<code>frontend.md</code> 一个人写、<code>backend-api.md</code> 另一个人写</li>
+          <li><strong>想按路径限定作用域的规则</strong>——只有改 <code>/src/api/</code> 时才需要加载 <code>api-style.md</code></li>
+        </ul>
+        <pre class="code-block">.claude/
+└── <span class="c-key">rules/</span>
+    ├── <span class="c-key">frontend.md</span>           <span class="c-comment"># 组件结构、状态管理、样式约定</span>
+    ├── <span class="c-key">backend-api.md</span>        <span class="c-comment"># REST 设计、错误码、鉴权</span>
+    ├── <span class="c-key">testing.md</span>            <span class="c-comment"># 测试覆盖、命名、断言风格</span>
+    └── <span class="c-key">data-pipelines.md</span>     <span class="c-comment"># schema 演进、partition、监控</span></pre>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          claude.md holds the project-wide rules — everything that applies every session. rules/ holds the focused guidance — one file per area of the codebase, scoped to the work it covers.
+        </div>
+        <p>判断要不要拆出来的标志有 5 个：</p>
+        <ul class="skill-stack">
+          <li><strong>CLAUDE.md 开始显得拥挤。</strong>超过 200 行就开始拆。</li>
+          <li><strong>不同仓库区域需要不同指导。</strong>前端 / 后端 / 数据的规则本来就不一样，混在一起 Claude 也会困惑。</li>
+          <li><strong>不同人有不同标准。</strong>拆文件之后可以分人维护。</li>
+          <li><strong>团队经常更新约定。</strong>小文件更容易改、PR review 也好做。</li>
+          <li><strong>想按路径限定指令作用域。</strong>这是 rules/ 相比 CLAUDE.md 的核心优势——只有改相关文件时才加载。</li>
+        </ul>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            你的 <code>CLAUDE.md</code> 如果超过 200 行，<strong>今天就拆一次</strong>。把"只在改前端时用得到"的指令搬到 <code>rules/frontend.md</code>，CLAUDE.md 留"每次都要看的"。别等它长到 500 行再拆——那时候 Claude 已经开始忽略后面一半了。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 核心原则 3. hooks/ 和 commands/ 分工 -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRINCIPLE 03</div>
+          <h2 class="cap-title-en">hooks/ vs commands/</h2>
+          <div class="cap-title-cn">hooks/ 和 commands/ 分工 —— 自动跑 vs 手动触发</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 3 段原则讲的是<strong>自动化</strong>和<strong>可复用</strong>的区别——hooks/ 是"不需要你说就跑"，commands/ 是"你说一声才跑"。</p>
+        <p><strong>hooks/：自动运行的脚本</strong>，不进对话。Claude 不会知道它们存在，它们只是在事件发生时拦截、清理、验证。</p>
+        <ul class="skill-stack">
+          <li><strong>拦截危险操作。</strong><code>block-dangerous-commands.sh</code> 拦下 <code>rm -rf /</code>、<code>git push --force</code> 这种命令。</li>
+          <li><strong>清理或验证输出。</strong><code>format-edits.sh</code> 在 Claude 改完 TypeScript 文件后自动跑 prettier。</li>
+          <li><strong>强制执行工作流要求。</strong><code>run-tests-before-stop.sh</code> 让 Claude 在宣布"完成"前必须跑一遍测试。</li>
+        </ul>
+        <p><strong>commands/：可复用的提示词工作流</strong>，不是自动运行的。你写一段 Markdown，Claude 读进去执行。一个文件就是一条工作流。</p>
+        <ul class="skill-stack">
+          <li><strong>审查 PR。</strong><code>review-pr.md</code> 告诉 Claude"按这份清单审查 PR"。</li>
+          <li><strong>编写测试。</strong><code>write-tests.md</code> 告诉 Claude"按这个模板写单测"。</li>
+          <li><strong>为发布准备变更摘要。</strong><code>summarize-changes.md</code> 让 Claude 把过去一周的 commit 整理成用户能看的 changelog。</li>
+        </ul>
+        <pre class="code-block">.claude/
+├── <span class="c-key">hooks/</span>
+│   ├── <span class="c-key">block-dangerous-commands.sh</span>
+│   ├── <span class="c-key">format-edits.sh</span>
+│   └── <span class="c-key">run-tests-before-stop.sh</span>
+└── <span class="c-key">commands/</span>
+    ├── <span class="c-key">review-pr.md</span>
+    ├── <span class="c-key">write-tests.md</span>
+    └── <span class="c-key">summarize-changes.md</span></pre>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          hooks/ runs without being told. commands/ only runs when you ask. the line between them is whether you want a guardrail or a workflow.
+        </div>
+        <p>这条原则里 Vince 顺带提了一个容易踩的坑：<strong>命名要让用途一目了然</strong>。<code>format-edits.sh</code> 一看就知道干嘛的，<code>script1.sh</code> 永远要再打开看一眼。commands/ 同理——<code>write-tests.md</code> 比 <code>cmd1.md</code> 强 10 倍。命名 = 搜索 = 找得到 = 用得上。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            挑一件<strong>你今天就要做</strong>的事，看它属于哪一类。如果你想"以后改 .ts 文件自动格式化"——<strong>这是 hook</strong>，写一个 <code>format-edits.sh</code>。如果你想"以后 PR review 时按固定清单审"——<strong>这是 command</strong>，写一个 <code>review-pr.md</code>。先做一件，不要一次写一堆。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 核心原则 4. skills/ 和 agents/ 的进阶结构 -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRINCIPLE 04</div>
+          <h2 class="cap-title-en">skills/ and agents/</h2>
+          <div class="cap-title-cn">skills/ 和 agents/ 进阶结构 —— 打包能力 vs 专用子代理</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>hooks/ 和 commands/ 处理的是"单个动作"。当一个工作流变深、有多个步骤、要带配套文档，commands/ 就撑不住了——这时候上 <strong>skills/</strong>。当一个角色变专、需要独立思考空间、要做隔离决策，上 <strong>agents/</strong>。</p>
+        <p><strong>skills/：打包的能力。</strong>工作流有多个步骤、每个步骤要配套文档时用。一个 skill 是一个目录，目录里放 <code>SKILL.md</code>（入口说明）和其他配套文件。</p>
+        <pre class="code-block">.claude/
+└── <span class="c-key">skills/</span>
+    ├── <span class="c-key">release-prep/</span>
+    │   ├── <span class="c-key">SKILL.md</span>              <span class="c-comment"># 入口：如何运行这个 skill</span>
+    │   └── <span class="c-key">release-template.md</span>   <span class="c-comment"># 配套模板</span>
+    └── <span class="c-key">docs-audit/</span>
+        ├── <span class="c-key">SKILL.md</span>
+        └── <span class="c-key">style-guide.md</span></pre>
+        <p><strong>agents/：专用子代理。</strong>需要更聚焦的角色时用——比如专门做 code review 的 agent、专门做安全审计的 agent、专门写文档的 agent。agents 有自己的上下文和工具集，能在不污染主对话的情况下独立完成深度任务。</p>
+        <pre class="code-block">.claude/
+└── <span class="c-key">agents/</span>
+    ├── <span class="c-key">code-reviewer.md</span>      <span class="c-comment"># 按团队 PR 标准审代码</span>
+    ├── <span class="c-key">security-auditor.md</span>   <span class="c-comment"># 安全漏洞审计</span>
+    └── <span class="c-key">docs-writer.md</span>        <span class="c-comment"># 按风格指南写文档</span></pre>
+        <p><strong>commands/ vs skills/ 的区别：</strong></p>
+        <ul class="skill-stack">
+          <li><strong>commands/</strong> = 轻量可复用任务。一个文件够了。</li>
+          <li><strong>skills/</strong> = 更丰富的打包工作流。多个步骤 + 配套文档。</li>
+        </ul>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          each skill solves a recurring workflow with multiple steps. each agent owns a focused role. if two files overlap heavily, merge them or simplify.
+        </div>
+        <p>Vince 在这一段提了一个<strong>重要的合并信号</strong>：如果两个 skill 高度重叠，合并或简化；agents/ 同理。文件夹多不是目标，<strong>每个文件夹有清晰独立的用途</strong>才是。文件越多越要警惕——这正是组织失序的开始。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            <strong>不是起步阶段。</strong>先在 commands/ 里把工作流跑顺，等一个工作流真的<strong>稳定重复 + 需要配套文档</strong>了，再拆成 skill。比如 "release-prep"——你每次发版都要做，步骤 5 步以上，要带 changelog 模板——这种就该升级成 skill。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 核心原则 5. 团队结构 vs 个人结构 -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRINCIPLE 05</div>
+          <h2 class="cap-title-en">Team vs personal structure</h2>
+          <div class="cap-title-cn">团队结构 vs 个人结构 —— 一条标准决定放哪</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 5 段原则解决的是<strong>个人偏好污染团队文件</strong>的问题。这是 Claude Code 团队协作里最常踩的坑之一。</p>
+        <p>判断标准只有一条，Vince 把它写得极简：</p>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          <strong>判断标准</strong>：如果配置帮助整个团队更一致地工作 → 放项目级。如果主要反映一个人的工作流 → 放本地或全局设置。
+        </div>
+        <p>翻译成更直白的判断：</p>
+        <ul class="skill-stack">
+          <li><strong>"所有人 / 大多数人都应该这样"</strong> → 项目级 <code>CLAUDE.md</code> / <code>.claude/settings.json</code> / <code>rules/</code></li>
+          <li><strong>"就我个人偏好这样"</strong> → 本地 <code>CLAUDE.local.md</code> / <code>.claude/settings.local.json</code> 或全局 <code>~/.claude/</code></li>
+        </ul>
+        <p>举个例子。"代码用 single quote 不用 double quote"——这是团队约定，放项目级。"我习惯用 <code>pnpm</code> 不用 <code>npm</code>"——这是个人偏好，放 <code>~/.claude/settings.local.json</code>。"我会先读 README 再开始工作"——也是个人偏好，放 <code>CLAUDE.local.md</code>。</p>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          <strong>本地覆盖文件</strong>：CLAUDE.local.md 和 .claude/settings.local.json 是很好的中间层，让人可以在不污染版本控制的情况下调整行为。
+        </div>
+        <p>这两个 <code>.local</code> 文件是<strong>团队结构和个人偏好之间最重要的隔离带</strong>。它的存在让你能调整自己用 Claude 的方式，但不影响别人拉代码后看到的内容。<code>.gitignore</code> 里加上两行：</p>
+        <pre class="code-block"><span class="c-comment"># .gitignore</span>
+CLAUDE.local.md
+.claude/settings.local.json</pre>
+        <p>把这两个文件排除出版本控制——个人配置就不进 Git 仓库，不污染团队文件。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            写下你最近一次想让 Claude 改但改得不顺的事。问自己：<strong>"团队其他人也想这样吗？"</strong>如果是 → 加到项目 <code>CLAUDE.md</code>，提 PR 让所有人受益。如果只是你 → 加到 <code>CLAUDE.local.md</code>，不污染别人。下次调整前先做这个判断，少很多冲突。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 2 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">如果配置帮助整个团队更一致地工作<span class="arrow">·</span>放项目级。如果主要反映一个人的工作流<span class="arrow">·</span>放本地或全局设置</div>
+      <div class="pull-quote-caption">Vince · the one-line rule for what goes where</div>
+    </section>
+
+    <!-- 07 渐进式成长路径 -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PROGRESSIVE GROWTH</div>
+          <h2 class="cap-title-en">Add folders only when you need them</h2>
+          <div class="cap-title-cn">渐进式成长路径 —— 不要一开始就填满所有文件夹</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>看到第 1 章那个完整蓝图，你的本能反应可能是"那我直接全建出来"。<strong>不要。</strong>Vince 明确反对"为存在而建文件夹"的做法。</p>
+        <p>正确做法是<strong>按需增加</strong>。每加一个文件夹之前先问一句：我现在真的用得到吗？</p>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          don't start with every folder filled in. add them as the work demands.
+        </div>
+        <p>Vince 给的 6 步渐进路径：</p>
+        <ol class="skill-stack">
+          <li><strong>起步</strong>：<code>CLAUDE.md</code> + <code>.claude/settings.json</code>。这是 Day 1 的最小配置——CLAUDE.md 写项目是什么、怎么工作，settings.json 设权限。能覆盖 80% 场景。</li>
+          <li><strong>指令膨胀</strong>：加 <code>rules/</code>。CLAUDE.md 超过 200 行就开始拆。规则按模块/区域分文件，按需加载。</li>
+          <li><strong>需要自动化</strong>：加 <code>hooks/</code>。有些动作你希望"不必说就跑"——改完文件自动格式化、提交前自动跑测试、危险命令自动拦截——这些放 hooks/。</li>
+          <li><strong>提示词重复</strong>：加 <code>commands/</code>。你发现自己每次都要和 Claude 说同一段话（"按这个清单审 PR"），把它写进 <code>commands/</code>，以后一句话就能调出来。</li>
+          <li><strong>工作流变深</strong>：加 <code>skills/</code>。一个 command 已经撑不住你的工作流——多步骤、要配套文档、要 SKILL.md 入口——升级成 skill。</li>
+          <li><strong>需要专精角色</strong>：加 <code>agents/</code>。一个工作流需要独立思考、要隔离上下文、要专属工具集——派一个 agent 出去。</li>
+        </ol>
+        <p>这个顺序不是死规矩，但<strong>反映了从轻到重、从单文件到多文件、从自动到专精的演进</strong>。每个新文件夹的加入都应该回答"为什么之前的形式不够用了"——而不是"为什么不该有"。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            今天就检查一遍你的 <code>.claude/</code>。<strong>删掉所有你过去 30 天没用过的空文件夹和空文件</strong>。如果一个 <code>skills/release-prep/</code> 三个月没打开过，删掉。组织的目的不是"显得工程化"，是"每天用得到"。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 常见错误 -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">COMMON MISTAKES</div>
+          <h2 class="cap-title-en">What to avoid</h2>
+          <div class="cap-title-cn">常见错误 —— 6 个最容易踩的坑</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这一章是<strong>反面清单</strong>——Vince 列了 6 个他在别人项目里反复看到的失败模式。每个错误都附了正确做法。</p>
+        <table class="mistake-table">
+          <thead>
+            <tr>
+              <th>错误做法</th>
+              <th>正确做法</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CLAUDE.md 塞太多内容</td>
+              <td>专项指导移入 <code>rules/</code>，CLAUDE.md 只留每次会话都用的</td>
+            </tr>
+            <tr>
+              <td>提前创建不需要的文件夹</td>
+              <td>等工作流<strong>确实需要</strong>时再加，按第 7 章的渐进路径走</td>
+            </tr>
+            <tr>
+              <td>个人偏好混入团队文件</td>
+              <td>用 <code>CLAUDE.local.md</code> 或 <code>~/.claude/</code>，<code>.gitignore</code> 排除</td>
+            </tr>
+            <tr>
+              <td>文件名模糊（<code>script1.sh</code>）</td>
+              <td>命名要让用途一目了然——<code>format-edits.sh</code>、<code>review-pr.md</code></td>
+            </tr>
+            <tr>
+              <td>废弃文件不清理</td>
+              <td>定期清理 <code>commands/</code>、<code>skills/</code>、<code>agents/</code> 里的死文件</td>
+            </tr>
+            <tr>
+              <td>把所有指令同等对待</td>
+              <td>区分全局指令、模块化规则、自动化脚本、可复用工作流——各进各的文件夹</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          the most efficient .claude/ is not the one with the most features. it's the one where every part has a clear purpose.
+        </div>
+        <p>这一章是全文的镜子——前面讲的所有原则都是为了避开这 6 个坑。最危险的不是"做错了什么"，是"做了一个看起来有但实际没用的文件夹"。空文件夹是混乱的开始，<strong>不是因为它做了坏事，是因为它让人误以为"已经组织好了"</strong>。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            把这 6 条做成 checklist，每次你加新文件 / 新文件夹前过一遍：(1) 是全局还是模块？(2) 现在真的用得到吗？(3) 是个人还是团队？(4) 命名够清楚吗？(5) 以后会清理吗？(6) 它属于哪一类？任何一条答不上来就停手。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 关键要点 -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">KEY TAKEAWAYS</div>
+          <h2 class="cap-title-en">The questions an organized folder answers</h2>
+          <div class="cap-title-cn">关键要点 —— 组织好的 .claude/ 能立即回答这 6 个问题</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>原文收尾那段写得最好——<strong>一个组织良好的 .claude/ 文件夹应该能立即回答下面这些问题</strong>。每个新成员 / 你自己隔 3 个月回来 / 新机器上 clone 代码，都应该能在 1 分钟内答出这些问题。</p>
+        <ul class="skill-stack">
+          <li><strong>项目级指令在哪里？</strong>→ <code>CLAUDE.md</code> + <code>.claude/settings.json</code>，进 Git</li>
+          <li><strong>模块化规则放哪里？</strong>→ <code>rules/</code>，按模块 / 区域分文件，按需加载</li>
+          <li><strong>自动化脚本放哪里？</strong>→ <code>hooks/</code>，事件触发自动跑，不进对话</li>
+          <li><strong>可复用工作流放哪里？</strong>→ <code>commands/</code>（轻量）或 <code>skills/</code>（多步骤打包）</li>
+          <li><strong>哪些是共享的，哪些是私人的？</strong>→ 项目级进 Git，<code>.local</code> 和 <code>~/.claude/</code> 不进</li>
+          <li><strong>哪些是活跃的，哪些只是实验？</strong>→ 活跃的留，实验性的 30 天没动就删</li>
+        </ul>
+        <p>Vince 收尾一句：<strong>"最高效的 .claude/ 文件夹不是功能最丰富的，而是每个部分都有清晰用途的。"</strong></p>
+        <div class="source-quote">
+          <strong>VINCE · 原句</strong>
+          when .claude/ is organized, claude becomes predictable, maintainable, and easy to share across a team.
+        </div>
+        <p>翻译过来：<strong>组织好的 .claude/，让 Claude 用起来变得可预测、可维护、易于团队共享。</strong>三个词——可预测、可维护、可共享——这是组织工作的全部回报。它不是"让文件好看"，是让 Claude 在你的项目里<strong>用起来感觉像同一个工具</strong>，而不是每次都在猜你想要什么。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            上面 6 个问题，每个项目问自己一遍。答不上的那些就是你这周要修的。修完一个删一个，直到 6 个全答得上。这一件事做完——比多写 100 条指令有用。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>Claude Code 工程化指南：高效组织 .claude/ 目录</em><br>
+          作者：Vince (@vincemask) · 发布于 2026/05/19 · 122.5K 浏览<br>
+          原文链接（X 长文）：<a href="https://x.com/i/article/2056725327167275008" target="_blank" rel="noopener">https://x.com/i/article/2056725327167275008</a><br>
+          摘要链接（X 主帖）：<a href="https://x.com/vincemask/status/2056757482152960110" target="_blank" rel="noopener">https://x.com/vincemask/status/2056757482152960110</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/vincemask" target="_blank" rel="noopener">https://x.com/vincemask</a>
+        </li>
+        <li>
+          <strong>ACCOMPANYING VIDEO</strong>
+          原文附 77 秒 1080p 录屏展示 .claude/ 目录组织方式，本文已内嵌在文章开头位置。
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文是写给 Claude Code 用户的工程化方法论长文，本文保留所有核心判断和目录蓝图（项目级 vs 用户级完整结构、5 段核心原则、渐进式成长路径、6 个常见错误），并把场景从"职业开发者"平移到"任何用 Claude Code 干活的非程序人"——AI 自媒体写作、内容流水线、Agent 工作流搭建，全用得上。
+        </li>
+      </ul>
+      <p class="references-note">如果你只做一件事：今天就检查一遍你的 <code>.claude/</code>。删掉过去 30 天没用过的空文件夹和空文件，<code>CLAUDE.md</code> 控制在 200 行内，超出的部分拆进 <code>rules/</code>。最高效的 .claude/ 不是功能最丰富的，而是每个部分都有清晰用途的。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">组织良好的 .claude/，让 Claude 用起来变得<strong>可预测、可维护、可共享</strong>。</p>
+      <p class="closing-caption">读完了。下一步：打开你的 .claude/，删一个空文件夹。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">9 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Target folder structure</span>
+          <span class="nav-item-cn">目标结构蓝图</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Keep the top layer light</span>
+          <span class="nav-item-cn">顶层要轻</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">CLAUDE.md vs rules/</span>
+          <span class="nav-item-cn">CLAUDE.md 与 rules/ 划分</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">hooks/ vs commands/</span>
+          <span class="nav-item-cn">hooks/ 和 commands/ 分工</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">skills/ and agents/</span>
+          <span class="nav-item-cn">skills/ 和 agents/ 进阶</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Team vs personal structure</span>
+          <span class="nav-item-cn">团队 vs 个人结构</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Progressive growth path</span>
+          <span class="nav-item-cn">渐进式成长路径</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Common mistakes</span>
+          <span class="nav-item-cn">常见错误</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Key takeaways</span>
+          <span class="nav-item-cn">关键要点</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+
+      navPanel.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', function() {
+          navPanel.classList.remove('active');
+        });
+      });
+
+      // 视频点击播放
+      const videoWrap = document.getElementById('videoWrap');
+      const videoEl = document.getElementById('videoEl');
+      const playBtn = document.getElementById('videoPlayBtn');
+      if (videoWrap && videoEl && playBtn) {
+        const start = () => {
+          videoWrap.classList.add('is-playing');
+          videoEl.play().catch(() => {});
+        };
+        playBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          start();
+        });
+        videoWrap.addEventListener('click', function(e) {
+          if (e.target === playBtn) return;
+          if (!videoWrap.classList.contains('is-playing')) start();
+        });
+        videoEl.addEventListener('ended', function() {
+          videoWrap.classList.remove('is-playing');
+          videoEl.currentTime = 0;
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>
