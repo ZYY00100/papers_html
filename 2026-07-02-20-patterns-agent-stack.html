@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20个Loop设计模型 · X 长文完整中文解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* PROMPT CARD — 套 30-system-prompts 模板（暗色卡片 + head 头 + EN/中文 toggle + Copy） */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 6px;
+      border: 1px solid #1f1f23;
+      overflow: hidden;
+      margin: 28px 0 12px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.3);
+    }
+    .prompt-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #1f1f23;
+      background: #0a0a0c;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+      min-width: 32px;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .prompt-name-en {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #e8e8ea;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #8a8a8e;
+      letter-spacing: 0.04em;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* REFERENCES — 引用与原文出处 */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* IMAGE GRID (single image wrapper) */
+    .cap-image {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      margin: 28px 0;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-image:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-image img { display: block; width: 100%; height: auto; }
+    .cap-image figcaption {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cap-image figcaption strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* 层级图（spectrum 4 阶） */
+    .spectrum-stack {
+      list-style: none;
+      margin: 24px 0;
+      padding: 0;
+    }
+    .spectrum-row {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      margin-bottom: 8px;
+      border-radius: 4px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .spectrum-row:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-red);
+    }
+    .spectrum-level {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 64px;
+      padding-top: 2px;
+    }
+    .spectrum-text {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .spectrum-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-prompt pre { font-size: 11.5px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+      .spectrum-row { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">AGENT · LOOP DESIGN PATTERNS</div>
+      <h1 class="article-title">20个<span class="highlight">Loop</span>设计模型</h1>
+      <p class="article-subtitle">20 个 loop design pattern · X 长文完整中文解读</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Rahul (@sairahul1) · 91.3K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/07/02</span>
+      </div>
+      <p class="article-desc">Rahul (@sairahul1) 2026/07/01 的 X 长文 "20 Loop Design Patterns Every AI Engineer Should Know" 91.3K 浏览。原文按 5 类（Quality / Memory / Planning / Exploration / System Optimization）拆 20 个 loop design pattern，每个配原文插图、代码、真实用例。本文按 10 章完整翻译：先讲 agent 和 loop 的核心区别（cap 01-02），再按 5 类逐个拆 20 个 pattern（cap 03-07），最后讲 20 个 pattern 背后的统一结构（cap 08-10）。14 张原文配图、10 段代码、20 个 pattern 完整保留。</p>
+    </section>
+
+    <!-- COVER -->
+    <section class="cover-frame">
+      <img src="images/2026-07-02-sairahul-loop-patterns/x-14.jpg" alt="20 Loop Design Patterns Every AI Engineer Should Know · 原文封面">
+      <p class="cover-caption">Rahul · 20 Loop Design Patterns Every AI Engineer Should Know · 2026/07/01 · <a href="https://x.com/sairahul1/status/2072258045460226373" target="_blank" rel="noopener">原 X 文章链接</a></p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">多数 AI 工程师知道怎么搭一个 agent。</p>
+      <p class="intro-lead">但很少有人知道怎么搭一个<strong>第一次尝试之后还能持续变好的系统</strong>。</p>
+      <p class="intro-statement" style="color: var(--accent-red); font-weight: 500;">这个差距价值六位数。</p>
+      <p class="intro-statement">本文按 10 章拆解这篇 91.3K 浏览的 X 长文。cap 01-02 讲 agent 和 loop 的本质区别；cap 03-07 按 5 类把 20 个 pattern 逐个翻完（Quality 5 个 + Memory 5 个 + Planning 5 个 + Exploration 3 个 + System Optimization 2 个）；cap 08-10 讲 20 个 pattern 背后的统一结构和最后的 shift。原文所有配图、代码、用例都保留。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">An agent is a worker<span class="arrow">·</span>a loop is what makes the worker <span class="arrow">improve</span></div>
+      <div class="pull-quote-caption">Rahul · 20 Loop Design Patterns · X 2026/07/01</div>
+    </section>
+
+    <!-- 01 -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">An agent is a worker</h2>
+          <div class="cap-title-cn">agent 是工人 —— 不是未来，未来是 loop</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>多数 AI 工程师知道怎么搭一个 agent。但很少有人知道怎么搭一个<strong>第一次尝试之后还能持续变好的系统</strong>。</p>
+
+        <p>这个差距价值六位数。</p>
+
+        <p>区别是：</p>
+
+        <p><strong>Agent 是工人。</strong></p>
+
+        <p><strong>Loop 是让工人变强的东西。</strong></p>
+
+        <p>今天生产环境里最强的 AI 系统，<strong>不是</strong>单次模型调用。它们是 loop——<code>Generate → Evaluate → Learn → Improve</code>，一次又一次，直到输出真的够好。</p>
+
+        <p>下面是 20 个在生产环境 AI 系统里反复出现的 loop design pattern。收藏这篇文章。你会用上它们。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-02.jpg" alt="Old Way single call vs New Way loop · 原文配图">
+          <figcaption><strong>THE GAP</strong>Old way（单次调用）vs New way（loop）— 中间那行字 "THIS GAP IS WORTH SIX FIGURES"。</figcaption>
+        </figure>
+
+        <div class="cap-body"><div class="source-quote"><strong>RAHUL 原话</strong>Most AI engineers know how to build an agent. Very few know how to build a system that gets better after the first attempt. That gap is worth six figures. Here's the difference: An agent is a worker. A loop is what makes the worker improve.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            记住这句话：<strong>agent 不是答案，loop 才是</strong>。你写的每个 Claude agent / Claude Code workflow，问自己一句——它有没有 loop？如果只是 prompt → response → end，是 chat；加了 loop 才是 agent。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">Agents vs Loops</h2>
+          <div class="cap-title-cn">agent vs loop —— 工厂工人 vs 改写手册的工人</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>原文用一个对比把整篇文章的支点摆出来：</p>
+
+        <p><strong>旧方法：</strong>Prompt → Response → Done.</p>
+        <p><strong>新方法：</strong>Generate → Critique → Rewrite → Score → Retry → Remember → Improve.</p>
+
+        <p>一个是工厂工人，<strong>做一次活就下班</strong>。</p>
+
+        <p>另一个是工厂工人，<strong>研究每一次错误，改写工作手册，每一班效率提升 3%</strong>。</p>
+
+        <p>现在 production 里跑得最好的 AI 团队，不是写更好的 prompt——他们在<strong>搭更好的 loop</strong>。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>RAHUL 原话</strong>Old way: Prompt → Response → Done. New way: Generate → Critique → Rewrite → Score → Retry → Remember → Improve. One is a factory worker who does the job once. The other is a factory worker who studies every mistake, rewrites the playbook, and gets 3% better every single shift. The teams shipping production AI right now are not writing better prompts. They are building better loops.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            检查你最近写的 3 个 agent：每个的"主循环"是 prompt → response 还是 generate → evaluate → improve？后者才进 production。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 CATEGORY 1: QUALITY LOOPS -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CATEGORY 1 · QUALITY</div>
+          <h2 class="cap-title-en">Quality Improvement Loops</h2>
+          <div class="cap-title-cn">5 个质量改进 loop —— 让输出在离开系统前变好</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第一类的共同目标：<strong>在输出离开系统之前，把它做得更好</strong>。不是事后补救，是流水线内部就修了。</p>
+
+        <p><strong>Pattern 1 · Generate → Critique → Rewrite</strong></p>
+        <p>AI 工程里最重要的 loop。</p>
+        <p>生成输出。批评家审阅。生成器根据反馈重写。重复，直到达到质量门槛。</p>
+        <p>不是单个模型。两个角色。一条流水线。</p>
+
+        <pre class="code-block">[Generator] → draft
+[Critic]    → "paragraph 3 is vague. missing evidence. tone is off."
+[Generator] → rewrite based on critique
+[Critic]    → "better. but conclusion still weak."
+[Generator] → final rewrite</pre>
+
+        <p>用途：写作、code review、报告、战略文档、销售邮件。</p>
+        <p>洞察：负责生成的模型不是自己输出的最佳评判者。独立的批评家每次都能找到生成器漏掉的东西。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-01.jpg" alt="Generate → Critique → Rewrite 原文配图">
+          <figcaption><strong>PATTERN 1</strong>Generate → Critique → Rewrite — 质量门槛检查循环。Not met → loop again；Met → exit loop。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Projects 里开两个 prompt：一个 generator 写，一个 critic 审。Generator 输出后立刻接 critic 反馈，重写到 critic 沉默为止。Claude Code 配 sub-agent 一个写一个审，效果立刻拉一档。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 2 · Score-and-Retry Loop</strong></p>
+        <p>生成。评分。低于门槛就重试。</p>
+        <p>简单。强大。被低估。</p>
+
+        <pre class="code-block">score = evaluate(output)
+
+while score &lt; threshold:
+    output = generate(prompt)
+    score = evaluate(output)
+    attempts += 1
+    if attempts &gt; max_retries:
+        return best_so_far</pre>
+
+        <p>最适合质量可度量的场景——抽取准确率、格式合规、事实正确性、线索打分。</p>
+        <p>生成器不知道它正在被评分。评分器知道。<strong>这种分离就是 pattern。</strong></p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            用 Claude + Python 写一个自动评估脚本（比如"这段代码通过所有 lint + 5 个 unit test 吗"）。不通过就重试 3 次。比你手动审 Claude 输出快 10 倍。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 3 · Multi-Critic Loop</strong></p>
+        <p>一个批评家有盲区。用四个。</p>
+        <ul class="cap-features">
+          <li><strong>Correctness critic</strong> —— is it factually accurate?</li>
+          <li><strong>Style critic</strong> —— is it clear and well-written?</li>
+          <li><strong>Safety critic</strong> —— is it appropriate and safe?</li>
+          <li><strong>Domain critic</strong> —— does it meet specialist standards?</li>
+        </ul>
+        <p>每个独立评估。最终输出必须同时满足这四个才能离开。</p>
+        <p>用途：医疗 AI、法律文档审阅、金融分析、监管内容。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-04.jpg" alt="Multi-Critic Loop 原文配图">
+          <figcaption><strong>PATTERN 3</strong>4 个 critic (Correctness / Domain / Style / Safety) — Must pass all 4 → exit；Fail any → rewrite。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Code 配 4 个 sub-agent 做 code review：correctness 看 bug，style 看可读性，safety 看安全漏洞，domain 看业务逻辑。任何一个 fail 就不 merge。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 4 · Adversarial Critique Loop</strong></p>
+        <p>批评家唯一的工作是<strong>打破答案</strong>。不是改进。是打破。</p>
+        <p>对抗性批评家会问的问题：</p>
+        <ul class="cap-features">
+          <li><strong>What assumptions fail here?</strong></li>
+          <li><strong>What evidence is missing?</strong></li>
+          <li><strong>What would a skeptic say?</strong></li>
+          <li><strong>Where is this confidently wrong?</strong></li>
+        </ul>
+        <p>然后生成器辩护或重写。<strong>最好的答案扛过这次攻击。</strong></p>
+        <p>用途：研究综述、投资论点审阅、战略规划、风险分析。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            写投资 memo / 商业分析时，配一个 "red team" sub-agent：它的唯一任务是攻击你的论点，挑假设的漏洞，举反例。比让 generator 自己审自己稳得多。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 5 · Judge Ensemble Loop</strong></p>
+        <p>一个评审给出的分数有噪声。五个评审把噪声平均掉。</p>
+        <p>让同一个输出跑多个评审。汇总分数。只有高一致性的输出能往下走。</p>
+        <p>适用场景：单模型评估不可靠、风险高、边缘 case 重要。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-03.jpg" alt="Judge Ensemble Loop 原文配图">
+          <figcaption><strong>PATTERN 5</strong>5 个 judge 评分 7/8/6/8/7 → average 7.2/10 — ≥ 8.0 → pass；&lt; 8.0 → retry。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            5 个 Claude sub-agent 各打一个 1-10 分，取中位数。比单 agent 评分方差小一半以上，边缘 case 表现稳很多。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 CATEGORY 2: MEMORY LOOPS -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CATEGORY 2 · MEMORY</div>
+          <h2 class="cap-title-en">Memory Loops</h2>
+          <div class="cap-title-cn">5 个记忆 loop —— 从发生过的事里学，下次更聪明</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-05.jpg" alt="Memory Loops 原文配图">
+          <figcaption><strong>MEMORY = SYSTEM INTELLIGENCE OVER TIME</strong>4 个 memory 子 pattern:Reflexion Loop / Error Library / Success Pattern / Memory Compression。</figcaption>
+        </figure>
+
+        <p><strong>Pattern 6 · Reflexion Loop</strong></p>
+        <p>现有最重要的自我改进 pattern。</p>
+        <p>Agent 失败。Agent 分析为什么失败。Agent 存下教训。Agent 带着这个教训重试。</p>
+        <p>每次迭代：比上一次更聪明。</p>
+
+        <pre class="code-block">attempt 1: fails
+reflection: "I assumed X but X was wrong. Next time verify X first."
+attempt 2: incorporates lesson → partial success
+reflection: "Better. But I skipped Y. Add Y check."
+attempt 3: succeeds</pre>
+
+        <p><strong>"失败一次的系统"和"只失败一次的系统"，区别就在这里。</strong></p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-06.jpg" alt="Reflexion Loop 原文配图">
+          <figcaption><strong>PATTERN 6</strong>Attempt 1 fail → 2 partial → 3 success — "Each failure makes the next attempt smarter"。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Code 每次失败自动触发"为什么失败"prompt，把答案存到 AGENTS.md。下次跑同一个 task，先读 AGENTS.md 知道上次踩的坑。失败一次就够。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 7 · Memory Update Loop</strong></p>
+        <p>每次任务之后，存三件事：</p>
+        <ul class="cap-features">
+          <li><strong>What decision was made</strong></li>
+          <li><strong>What the outcome was</strong></li>
+          <li><strong>What would be done differently</strong></li>
+        </ul>
+        <p>后续运行继承这些知识。</p>
+        <p>第 6 个月的系统已经不是第 1 个月的那个。<strong>它已经读过自己 6 个月的历史。</strong></p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Projects 配 hook：每次对话结束自动把"决定/结果/反思"写到项目的 progress.md。下次开新对话，先读 progress.md。一年后这个项目的 Claude 比你记得还清。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 8 · Error Library Loop</strong></p>
+        <p>存下每一次失败。</p>
+        <p>错答案。坏输出。失败执行。边缘 case。</p>
+        <p>在开始新任务之前：</p>
+        <ul class="cap-features">
+          <li>先搜错误库</li>
+          <li>如果有相似的失败 → 在动手之前就用上已知的修法</li>
+        </ul>
+        <p>系统不再犯同样的错两次。</p>
+        <p><strong>生产环境 AI 中最被低估的 pattern。</strong></p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            维护一个 errors.md 存每次 Claude 出错的案例 + 修法。下次 Claude 跑新 task，先在 prompt 里注入相关 error history。比让它"自己小心"靠谱 10 倍。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 9 · Success Pattern Loop</strong></p>
+        <p>大多数工程师只存失败。也存成功。</p>
+        <p>任务做得好的时候：</p>
+        <ul class="cap-features">
+          <li>存下方法</li>
+          <li>存下上下文</li>
+          <li>存下让它 work 的原因</li>
+        </ul>
+        <p>面对相似任务时调用成功模式。</p>
+        <p><strong>从赢里学。不只是从错里学。</strong></p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Code 跑通一个高难度 task 后，花 2 分钟总结"这次为什么能跑通"，存到 CLAUDE.md。下次类似 task 直接复用。不要只记错不记对——只记错会让 agent 越来越保守。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 10 · Memory Compression Loop</strong></p>
+        <p>记忆永远增长。<strong>没有上限的记忆是用不了的记忆。</strong></p>
+        <p>累积 N 条之后：压缩。</p>
+        <p>很多具体记忆 → 压缩成更少的高层抽象。</p>
+
+        <pre class="code-block">Before compression:
+"Failed on task A because of X"
+"Failed on task B because of X"
+"Failed on task C because of X"
+
+After compression:
+"Pattern: X causes failures. Always check X first."</pre>
+
+        <p>上下文保持可管理。模式保持可访问。系统保持快速。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            CLAUDE.md / AGENTS.md 不能无限增长。每月让 Claude 跑一次"压缩记忆"：把 30 条具体规则合并成 5 条抽象规则。token 用量降一半，Claude 实际遵循率反而上升（规则少更好记）。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 CATEGORY 3: PLANNING LOOPS -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CATEGORY 3 · PLANNING</div>
+          <h2 class="cap-title-en">Planning Loops</h2>
+          <div class="cap-title-cn">5 个规划 loop —— 现实变了，plan 跟着改</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Pattern 11 · Plan → Execute → Replan</strong></p>
+        <p>AI agent 设计里最常见的错误：<strong>把 plan 当成固定的</strong>。</p>
+        <p>Plan 一撞到现实就碎。</p>
+        <p>这个 pattern：<code>Create plan → execute step → observe outcome → update plan → continue</code></p>
+        <p>不是 waterfall。<strong>是 spiral。</strong>每一圈让方法更紧。</p>
+        <p>适用场景：环境变化、任务有依赖、长期目标。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-07.jpg" alt="Plan → Execute → Replan 原文配图">
+          <figcaption><strong>PATTERN 11</strong>Plan 1 → Execute → Replan → Execute → ... → Goal Achieved — "Each loop tightens the approach"。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Code 的 <code>/plan</code> 模式就是这个 loop 的简化版——先出 plan，跑一步，看结果，改 plan。复杂 task 必开，不要让 agent 一次写到结尾。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 12 · Dynamic Workflow Loop</strong></p>
+        <p>大多数流水线是固定的。Step 1 → Step 2 → Step 3。永远。</p>
+        <p>动态工作流根据结果改变。</p>
+        <ul class="cap-features">
+          <li>如果输出 A → 跑分支 X</li>
+          <li>如果输出 B → 跑分支 Y</li>
+          <li>如果输出 C → 直接跳到 step 5</li>
+        </ul>
+        <p>流水线在 runtime 自己决定自己的形状。</p>
+        <p>用途：多文档研究、客服路由、自适应内容流水线。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            客户支持场景：Claude 判断 query 类型，是 bug 报告就 dispatch 给 dev agent，是 feature request 就给 PM agent。简单的 2-3 路 dynamic workflow 就够，不用上 LangGraph。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 13 · Goal Decomposition Loop</strong></p>
+        <p>大目标进来。系统拆成子目标。每个子目标拆成任务。每个任务拆成步骤。</p>
+        <p><strong>拆到每个单元小到可以一次调用完成。</strong></p>
+
+        <pre class="code-block">Goal: "Write a comprehensive competitive analysis"
+↓
+Subgoal 1: "Identify top 5 competitors"
+Subgoal 2: "Analyze each competitor's product"
+Subgoal 3: "Compare pricing models"
+Subgoal 4: "Identify gaps"
+↓
+Each subgoal → tasks → individual model calls</pre>
+
+        <p>这个 loop 一直拆到系统能行动。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-08.jpg" alt="Goal Decomposition 原文配图">
+          <figcaption><strong>PATTERN 13</strong>Plan → Execute → Replan + Goal Decomposition + Constraint Satisfaction 三个 pattern 一图收。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Code 的 Task tool 本质就是 Goal Decomposition。给一个复杂目标，先让 Claude 拆成 subagent 任务，每个 subagent 跑一个 atomic 任务。比让一个 agent 干完所有事稳。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 14 · Progress Evaluation Loop</strong></p>
+        <p>每 N 步：停下来问。<strong>"我们是不是真的更接近目标了？"</strong></p>
+        <ul class="cap-features">
+          <li>如果是：继续当前策略</li>
+          <li>如果不是：换策略、换工具、换 plan</li>
+        </ul>
+        <p>系统监控自己的进度。不是盲目执行。</p>
+        <p>用途：长跑研究 agent、多天自主任务、debug agent。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            跑 long-horizon Claude Code 任务（比如多文件重构），每完成 5 个 sub-task 强制触发"还剩多少 / 还在原计划上吗"的 checkpoint。发现跑偏立刻 abort 重新规划，不要让 agent 跑 30 步发现全错。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 15 · Constraint Satisfaction Loop</strong></p>
+        <p>一直跑到所有约束都满足。</p>
+
+        <pre class="code-block">while not all_constraints_satisfied(output):
+    output = improve(output, unsatisfied_constraints)
+
+constraints = [
+    budget_under_limit,
+    quality_above_threshold,
+    latency_under_200ms,
+    tone_matches_brand,
+    no_hallucinations
+]</pre>
+
+        <p>在生产系统里非常常见。在每一条业务规则通过之前，输出不算完成。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            内容生产 agent：必须同时满足"长度 &lt; 1000 字" + "无禁用词" + "有 CTA" + "品牌声音匹配"。任何一个 fail 就改，全部 pass 才发布。比单一 KPI 卡得严。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 CATEGORY 4: EXPLORATION LOOPS -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CATEGORY 4 · EXPLORATION</div>
+          <h2 class="cap-title-en">Exploration Loops</h2>
+          <div class="cap-title-cn">3 个探索 loop —— 试多条路，选最好的</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Pattern 16 · Branch-and-Explore Loop</strong></p>
+        <p>不要只押一条路。同时探索几条。</p>
+
+        <pre class="code-block">paths = [
+    generate(approach="conservative"),
+    generate(approach="aggressive"),
+    generate(approach="creative")
+]
+
+scores = [evaluate(p) for p in paths]
+best = paths[scores.index(max(scores))]</pre>
+
+        <p>比较结果。选最好的分支。丢掉其他。</p>
+        <p>用途：内容变体、架构决策、debug 多个假设、A/B 生成。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-09.jpg" alt="Branch-and-Explore Loop 原文配图">
+          <figcaption><strong>PATTERN 16</strong>3 paths:Conservative (6/10) · Aggressive (8/10) · Creative (7/10) — "Choose the best path"。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            写产品文案时，一次让 Claude 出 3 个版本（严肃 / 轻松 / 故事化），你选最合适的。比改一版又改一版快得多。Claude Code 多 subagent 并行跑就行。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 17 · Tree Search Loop</strong></p>
+        <p>Branch-and-Explore 只往下走一层。Tree Search 想走多深走多深。</p>
+        <p>展开最有希望的节点。剪掉最弱的。一直找到解。</p>
+
+        <pre class="code-block">root → [A, B, C]
+A → [A1, A2]   # A looks promising, expand it
+B → prune      # B is weak, stop here
+A1 → [A1a, A1b]
+A1a → solution ✓</pre>
+
+        <p>用途：复杂推理链、多步规划、code debug、研究综述。</p>
+        <p>计算贵，但能找到单次调用找不到的解。</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            复杂 bug 排查：让 Claude 列出 5 个可能根因，挨个验证，失败的就 prune，找到为止。比让它"想想为什么"有效得多。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 18 · Debate Loop</strong></p>
+        <p>两个 agent。一个议题。相对立场。</p>
+        <p>Agent A 主张答案，Agent B 反对。</p>
+        <p>每轮挑战假设、要求证据、暴露弱逻辑。</p>
+        <p>最终答案从分歧中产生。<strong>不是从一致中产生。</strong></p>
+        <p>对抗压力找到单 agent 自信答案漏掉的东西。</p>
+        <p>用途：投资决策、战略规划、风险评估、研究批判。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-10.jpg" alt="Debate Loop 原文配图">
+          <figcaption><strong>PATTERN 18</strong>Agent A argues for · Agent B argues against · 3 rounds — "Survives the disagreement = probably correct"。</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            重要决策（技术选型、商业判断）前：让两个 Claude sub-agent 一正一反辩论 3 轮。辩论后还能站住的论点，大概率是对的。Claude Code 的 <code>/plan</code> 后接 <code>red team</code> 就是这个套路。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 CATEGORY 5: SYSTEM OPTIMIZATION LOOPS -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CATEGORY 5 · SYSTEM OPTIMIZATION</div>
+          <h2 class="cap-title-en">System Optimization Loops</h2>
+          <div class="cap-title-cn">2 个系统优化 loop —— loop 优化 loop 本身</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>Pattern 19 · Prompt Optimization Loop</strong></p>
+        <p>大多数工程师写一次 prompt 就再不动了。Prompt 优化 loop 改掉这点。</p>
+        <p>这个系统：</p>
+        <ul class="cap-features">
+          <li>在测试集上跑 prompt</li>
+          <li>给每个输出打分</li>
+          <li>找到 prompt 在哪失败</li>
+          <li>改写 prompt 修这些失败</li>
+          <li>重跑重打分</li>
+        </ul>
+        <p>Prompt 自动变好。<strong>没人碰它。</strong></p>
+
+        <pre class="code-block">current_prompt = "Summarize this document."
+
+for iteration in range(max_iterations):
+    outputs = [run(current_prompt, doc) for doc in test_set]
+    scores = [evaluate(o) for o in outputs]
+    avg_score = mean(scores)
+
+    if avg_score &gt;= target:
+        break
+
+    failures = [o for o, s in zip(outputs, scores) if s &lt; threshold]
+    current_prompt = improve_prompt(current_prompt, failures)
+    # Prompt rewrites itself based on where it fails</pre>
+
+        <p>用途：生产流水线、自动化内容系统、分类任务。</p>
+        <p>生产 AI 里最好的 prompt 不是人写的。<strong>是进化出来的。</strong></p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-11.jpg" alt="Prompt Optimization Loop 原文配图">
+          <figcaption><strong>PATTERN 19</strong>Run prompt on test set → Score every output → Find where prompt fails → Rewrite prompt automatically — "Human wrote it once. Loop improves it forever."</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Code 配 sub-agent 跑"prompt 自我优化"：拿一批历史 fail case，让 Claude 自己改 prompt，改完用 eval set 验证，pass 就用，fail 就再改。3 轮后通常 +20% 准确率。
+          </div>
+        </div>
+
+        <hr style="margin: 40px 0; border: none; border-top: 1px solid var(--border-subtle);">
+
+        <p><strong>Pattern 20 · Workflow Optimization Loop</strong></p>
+        <p>这是有趣的地方。<strong>Loop 在优化 loop 本身。</strong></p>
+        <p>系统度量自己的表现：</p>
+        <ul class="cap-features">
+          <li><strong>latency</strong> —— 每一步耗时多少？</li>
+          <li><strong>cost</strong> —— 每次调用多少 token？</li>
+          <li><strong>quality</strong> —— 每一阶段的输出分数是多少？</li>
+        </ul>
+        <p>然后它修改自己的工作流。</p>
+        <p>太慢？把两步并行。太贵？在质量允许的地方用小模型替换 GPT-4 调用。质量在掉？在最终输出前加一个 critic。</p>
+
+        <pre class="code-block">metrics = measure_workflow(outputs, latency, cost)
+
+if metrics.latency &gt; target_latency:
+    workflow = parallelize(slow_steps)
+
+if metrics.cost &gt; budget:
+    workflow = replace_with_cheaper_model(high_cost_steps)
+
+if metrics.quality &lt; threshold:
+    workflow = add_critic_before(final_output_step)</pre>
+
+        <p><strong>这是真正自改进系统开始的地方。</strong></p>
+        <p>不只是输出在变好。是系统在重新设计自己。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-12.jpg" alt="Workflow Optimization Loop 原文配图">
+          <figcaption><strong>PATTERN 20</strong>Workflow v1 (Latency 4.2s · Cost $0.08 · Quality 6.1) → Workflow v2 (Latency 1.3s · Cost $0.02 · Quality 9.2) — "The loop improves the loop. This is where self-improving systems begin."</figcaption>
+        </figure>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            Claude Code 跑生产 pipeline：每个 task 记录 latency / token / 成功率。周报让 Claude 自己分析"哪一步最慢/最贵/最差"，自动生成优化方案，你 review 后部署。3 个月后系统比人工优化好 5x。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 08</div>
+          <h2 class="cap-title-en">The pattern behind all 20 patterns</h2>
+          <div class="cap-title-cn">20 个 pattern 背后的统一结构 —— Act → Observe → Evaluate → Adjust</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>上面每一个 loop 共享一个结构：</p>
+
+        <p style="text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--accent-red); margin: 24px 0; font-weight: 500;"><strong>Act → Observe → Evaluate → Adjust</strong></p>
+
+        <p>这就是全部配方。</p>
+        <p>输出从来不是第一次就定稿。输出是起点。</p>
+        <p><strong>Loop 把起点变成可上生产的东西。</strong></p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-02-sairahul-loop-patterns/x-13.jpg" alt="20 patterns · One structure 原文配图">
+          <figcaption><strong>THE META-PATTERN</strong>20 patterns · One structure · 4 类 loop (Exploration / Planning / Memory / Quality) + Optimization loops。</figcaption>
+        </figure>
+
+        <div class="cap-body"><div class="source-quote"><strong>RAHUL 原话</strong>Every single loop above shares one structure: Act → Observe → Evaluate → Adjust. That is the entire recipe. The output is never final on the first attempt. The output is a starting point. The loop is what turns a starting point into something production-worthy.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            检查任何一个 Claude workflow：能找出这 4 步吗？Act（做什么）→ Observe（看什么结果）→ Evaluate（怎么判断好坏）→ Adjust（怎么改）。缺任何一步就是 broken loop。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 09</div>
+          <h2 class="cap-title-en">The full map</h2>
+          <div class="cap-title-cn">完整地图 —— 20 个 pattern 一眼看完</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <ul class="cap-features">
+          <li><strong>Category 1 — Quality Loops</strong> (Make output better before it leaves)<br>→ 1. Generate → Critique → Rewrite · 2. Score-and-Retry · 3. Multi-Critic · 4. Adversarial Critique · 5. Judge Ensemble</li>
+          <li><strong>Category 2 — Memory Loops</strong> (Learn from what happened)<br>→ 6. Reflexion · 7. Memory Update · 8. Error Library · 9. Success Pattern · 10. Memory Compression</li>
+          <li><strong>Category 3 — Planning Loops</strong> (Adapt when reality changes)<br>→ 11. Plan → Execute → Replan · 12. Dynamic Workflow · 13. Goal Decomposition · 14. Progress Evaluation · 15. Constraint Satisfaction</li>
+          <li><strong>Category 4 — Exploration Loops</strong> (Find best answer by trying many paths)<br>→ 16. Branch-and-Explore · 17. Tree Search · 18. Debate</li>
+          <li><strong>Category 5 — System Optimization Loops</strong> (The loop improves the loop)<br>→ 19. Prompt Optimization · 20. Workflow Optimization</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 10</div>
+          <h2 class="cap-title-en">Most engineers think agents are the future.</h2>
+          <div class="cap-title-cn">多数工程师觉得 agent 才是未来 —— 但真正改变游戏的是 loop</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Agent 只是工人。</p>
+        <p><strong>Loop 才是让工人变强的东西。</strong></p>
+        <p>AI 圈当下最大的转变不是更好的模型。是把：</p>
+        <p style="text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; margin: 16px 0;"><em>Prompt → Response</em></p>
+        <p>变成：</p>
+        <p style="text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--accent-red); margin: 16px 0;"><strong>Generate → Evaluate → Learn → Improve</strong></p>
+        <p>掌握 loop 设计的团队不会去写更好的 prompt。<strong>他们会搭部署后每天都在变好的系统,不用人动。</strong></p>
+
+        <div class="cap-body"><div class="source-quote"><strong>RAHUL 原话</strong>Agents are just workers. Loops are what make workers improve. The biggest shift happening in AI right now is not better models. It's moving from: Prompt → Response, to: Generate → Evaluate → Learn → Improve. The teams that master loop design will not build better prompts. They will build systems that get better every single day after deployment. Without anyone touching them.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            如果你只做一件事：从 20 个 pattern 里挑 1 个，<strong>本周就用起来</strong>。最容易上手的是 Pattern 1（Generate → Critique → Rewrite）——开两个 Claude sub-agent，一个写一个审，任何 task 立刻拉一档。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE CLOSING -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Generate <span class="arrow">→</span> Evaluate <span class="arrow">→</span> Learn <span class="arrow">→</span> Improve<span class="arrow">·</span> over and over</div>
+      <div class="pull-quote-caption">Rahul · 20 Loop Design Patterns · X 2026/07/01</div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>20 Loop Design Patterns Every AI Engineer Should Know</em><br>
+          作者：Rahul (@sairahul1) · Founder of nichetraffickit.com &amp; theaibuilders.co<br>
+          发布：2026/07/01 09:56 · X 平台 · 91.3K 浏览<br>
+          原文链接：<a href="https://x.com/sairahul1/status/2072258045460226373" target="_blank" rel="noopener">https://x.com/sairahul1/status/2072258045460226373</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/sairahul1" target="_blank" rel="noopener">https://x.com/sairahul1</a>
+        </li>
+        <li>
+          <strong>RELATED · MEDIUM LONG-FORM</strong>
+          <em>20 AI Agent Design Patterns — Organized as a Stack, Not a Menu</em> · kumaran srinivasan<br>
+          同一主题的深度技术版（14 分钟）· 含完整 weather-agent codebase · 4 层栈视角<br>
+          链接：<a href="https://medium.com/@kumaran.isk/20-ai-agent-design-patterns-organized-as-a-stack-not-a-menu-8e0df0ee99c3" target="_blank" rel="noopener">https://medium.com/@kumaran.isk/20-ai-agent-design-patterns-organized-as-a-stack-not-a-menu-8e0df0ee99c3</a>
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文中所有英文段落、代码、配图均保留原貌；中文部分为意译，便于理解。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">20 个 loop design pattern，14 张原文配图，10 段代码，5 类结构，全文中文解读。可截图保存作为长期参考。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">An agent is a worker. <strong>A loop is what makes the worker improve.</strong></p>
+      <p class="closing-text">From <em>Prompt → Response</em> to <strong>Generate → Evaluate → Learn → Improve</strong>.</p>
+      <p class="closing-caption">读完了。下一步：从 20 个 pattern 里挑 1 个，本周就用起来。</p>
+    </section>
+
+  </main>
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">10 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">An agent is a worker</span>
+          <span class="nav-item-cn">agent 是工人</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Agents vs Loops</span>
+          <span class="nav-item-cn">agent vs loop</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Quality Loops · 5</span>
+          <span class="nav-item-cn">5 个质量改进 loop</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Memory Loops · 5</span>
+          <span class="nav-item-cn">5 个记忆 loop</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Planning Loops · 5</span>
+          <span class="nav-item-cn">5 个规划 loop</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Exploration · 3</span>
+          <span class="nav-item-cn">3 个探索 loop</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">System Opt · 2</span>
+          <span class="nav-item-cn">2 个系统优化 loop</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The meta-pattern</span>
+          <span class="nav-item-cn">统一结构</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The full map</span>
+          <span class="nav-item-cn">完整地图</span>
+        </span>
+      </a>
+      <a href="#cap-10" class="nav-item">
+        <span class="nav-item-num">10</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The shift</span>
+          <span class="nav-item-cn">多数工程师觉得 agent 才是未来</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // ===== Prompt Card: EN/CN toggle + Copy =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) {
+              body.removeAttribute('hidden');
+            } else {
+              body.setAttribute('hidden', '');
+            }
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector(`.prompt-card-body[data-lang="${activeLang}"]`);
+      const content = body.textContent;
+
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else {
+        fallbackCopy(content, showCopied);
+      }
+    }
+
+    function fallbackCopy(content, cb) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(textarea);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
