@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一个人就是一家公司：Alook 实战拆解 · Akshay 解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-top: 16px;
+      text-transform: uppercase;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.4vw, 21px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(24px, 4vw, 32px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 600;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 8px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY (section) */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 6px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 3.5vw, 32px);
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(15px, 2vw, 17px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      background: var(--bg-secondary);
+      padding: 1px 6px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    /* CAP ROW (旧/新模式对比) */
+    .cap-rows {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    @media (max-width: 640px) { .cap-rows { grid-template-columns: 1fr; } }
+    .cap-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      padding: 18px 22px;
+      border-radius: 4px;
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+    .cap-row.new { border-left-color: var(--accent-red); }
+    .cap-row strong { color: var(--text-primary); font-weight: 600; }
+
+    /* SOURCE QUOTE (原文引用) */
+    .source-quote {
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      padding: 16px 22px;
+      margin: 24px 0;
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .source-quote strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      font-style: normal;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* CALLOUT (内嵌示例) */
+    .cap-callout {
+      background: var(--bg-code);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 24px 0;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      color: #e8e8ea;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #2a2a2e;
+    }
+
+    /* CODE BLOCK (bash 文件夹结构) */
+    .code-block {
+      background: var(--bg-code);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 24px 0;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      color: #e8e8ea;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #2a2a2e;
+    }
+
+    /* PROMPT CARDS - 完整套 06-08 那篇 */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin: 28px 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .prompt-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-card-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-red);
+      flex-shrink: 0;
+    }
+    .prompt-card-tag .prompt-num {
+      color: var(--accent-gold);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .prompt-name-en {
+      color: #e8e8ea;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', 'Rajdhani', sans-serif;
+      color: #8a8a8e;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* DIVIDER */
+    .divider {
+      border: 0;
+      border-top: 1px dashed var(--border-subtle);
+      margin: 32px 0;
+    }
+
+    /* INLINE IMAGE (memory feedback-original-article-images 第二节) */
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img {
+      display: block;
+      width: 100%;
+      max-width: 880px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .inline-image img:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .inline-image-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 64px 0 32px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .references-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3vw, 26px);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .references-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px 0;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .references-list em {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-style: italic;
+      color: var(--text-primary);
+    }
+    .references-list a {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note {
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-top: 16px;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+    }
+    /* VIDEO FRAME */
+    .video-frame {
+      padding: 64px 0;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-code);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .video-wrapper:hover {
+      box-shadow: var(--shadow-hover);
+      transform: scale(1.006);
+    }
+    .video-poster {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s;
+    }
+    .video-play-btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 76px; height: 76px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.55);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      color: #fff;
+      font-size: 30px;
+      display: flex; align-items: center; justify-content: center;
+      padding-left: 6px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.2s;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .video-wrapper:hover .video-play-btn {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+    .video-element {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: none;
+      background: #000;
+    }
+    .video-wrapper.is-playing .video-poster { display: none; }
+    .video-wrapper.is-playing .video-play-btn { display: none; }
+    .video-wrapper.is-playing .video-element { display: block; }
+    .video-caption {
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+    @media (max-width: 768px) {
+      .video-frame { padding: 48px 0; }
+      .video-play-btn { width: 60px; height: 60px; font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+  <main class="container">
+    <section class="article-hero">
+      <div class="article-category">AI AGENT · 案例拆解</div>
+      <h1 class="article-title">一个人就是一家公司</h1>
+      <p class="article-subtitle">Alook 实战拆解 · How to Build Your Own AI Company (0 employees, 100% open-source)</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Akshay (@akshay_pachaar) · 5.7K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/07/03</span>
+      </div>
+      <p class="article-desc">Akshay 用 Alook 在本地搭出一家四 agent 的"竞品价格监控公司"：brief 一次发完，整条 loop 自动跑下去。本文 6 章拆解 —— 背景预言 → 工具机制 → 组织架构 → 真实任务链路 → unattended 落地 → 关键启示。</p>
+    </section>
+
+    <section class="cover-frame">
+      <img src="images/2026-07-03-ai-company-alook/cover.jpg" alt="How to Build Your Own AI Company (0 employees, 100% open-source)">
+      <p class="cover-caption">原文封面 · Akshay (@akshay_pachaar) · 2026/07/03</p>
+    </section>
+
+    <section class="article-intro">
+      <p class="intro-lead">Dario Amodei 在 Anthropic 开发者大会上说过一句被反复引用的话：</p>
+      <p class="intro-lead"><strong>2026 年会出现"一人独角兽公司"，概率 70-80%。</strong></p>
+      <p class="intro-lead">他给的时间窗口很紧，语气很定。</p>
+      <p class="intro-lead">一年后，Matthew Gallagher 用 2 万美元启动资金做出 Medvi —— 一个 AI 跑业务的远程医疗公司，0 员工，第一年做了 4 亿美元营收。</p>
+      <p class="intro-lead">Amodei 的预言被坐实得有点快。</p>
+      <p class="intro-lead">Gallagher 的玩法很野：AI agent 之间互相发邮件协调，两个 agent 接不上就再造一个 agent 来搭桥，他自己只测试 prompt、修补断点。</p>
+      <p class="intro-lead">Akshay Pachaar 看完之后没讲故事，直接写了一篇教程 —— 把这个模式做成了普通人也能用的工具。</p>
+      <p class="intro-lead">他用到的就是 Alook。</p>
+      <p class="intro-lead">下面 6 章拆开看：<strong>背景预言 → 工具机制 → 组织架构 → 真实任务链路 → unattended 落地 → 关键启示</strong>。</p>
+    </section>
+
+    <section class="pull-quote">
+      <div class="pull-quote-text">A one-person billion-dollar company<span class="arrow">·</span>70 to 80 percent by 2026</div>
+      <div class="pull-quote-caption">Dario Amodei · Anthropic Code with Claude · 2025/05</div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- Section 1 · 背景预言 -->
+    <!-- ============================================================== -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">BACKGROUND</div>
+          <h2 class="cap-title-en">The prediction that already came true</h2>
+          <div class="cap-title-cn">Amodei 的预言已经成真</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>2025 年 5 月，Anthropic 在 Code with Claude 开发者大会上，Dario Amodei 被问到"第一个十亿美元的一人公司什么时候出现"。</p>
+        <p>他没犹豫：<strong>2026。</strong></p>
+        <p>然后给了个 70-80% 的概率。</p>
+        <p>在场的记者大多写成了"未来学家预测"。十四个月后，<strong>Matthew Gallagher 的 Medvi</strong> 把这个预测变成了财报数字：</p>
+        <div class="cap-rows">
+          <div class="cap-row"><strong>启动成本</strong><br>
+            <span style="color:var(--text-primary);font-weight:600;">$20,000 · 2 个月 · 1 台笔记本</span>
+          </div>
+          <div class="cap-row new"><strong>首年营收</strong><br>
+            <span style="color:var(--text-primary);font-weight:600;">$401,000,000 · 0 员工 · 全 AI agent 协调</span>
+          </div>
+          <div class="cap-row"><strong>第二年</strong><br>
+            <span style="color:var(--text-primary);font-weight:600;">正在奔 $1.8B 走 · 一人公司独角兽不是预测了</span>
+          </div>
+        </div>
+        <p>Gallagher 的 stack 简单到粗暴：<strong>一堆 AI agent 互相发邮件</strong>。两个 agent 协调不上，他就再造一个 agent 来搭桥。他自己只负责测试 prompt、修补断点。</p>
+        <p>这模式听起来很黑客，很不稳。Akshay 看完之后想的是另一件事 —— <strong>这套打法能复制吗？</strong></p>
+        <p>于是他写了一篇带完整 demo 的教程，把这套"搭公司"模式做成了普通人也能跑的开源工具。</p>
+        <p>工具叫 <strong>Alook</strong>。</p>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- Section 2 · Alook 是什么 -->
+    <!-- ============================================================== -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE TOOL</div>
+          <h2 class="cap-title-en">Alook — turn your coding agent into a "company"</h2>
+          <div class="cap-title-cn">Alook：把 coding agent 变成"公司员工"</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Alook 是个<strong>开源自托管</strong>的平台（GitHub: <a href="https://github.com/alookai/alook" target="_blank" rel="noopener">alookai/alook</a>），做一件事：</p>
+        <p><strong>把 Claude Code / OpenCode 这种"会写代码的 agent"，包装成"有岗位、有上下级、有公司邮箱"的员工。</strong></p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-01.jpg" alt="Alook 介绍卡：开源、自托管、Claude Code / OpenCode runtime">
+          <p class="inline-image-caption">原文配图 · Alook 介绍卡 · 开源 / 自托管 / Claude Code 或 OpenCode runtime · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+        <p>安装一行就够：</p>
+        <div class="code-block">npx @alook/app onboard</div>
+        <p>它检测你机器上已经装的 coding agent runtime（Claude Code 或 OpenCode），然后部署一家"agent 公司"，打开本地 dashboard：</p>
+        <p><code>http://localhost:15210</code></p>
+        <p>dashboard 上你能看到这张图：</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-02.jpg" alt="Alook 本地 dashboard 截图，四个 agent 节点连成的公司架构">
+          <p class="inline-image-caption">原文配图 · Alook 本地 dashboard · 每个节点是一个真实在跑的 Claude Code / OpenCode session · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+        <p>每个 agent 节点背后不是 mock，是真在跑的 Claude Code 或 OpenCode session，共享你机器上的所有工具（Bash、文件、Git、网络）。</p>
+        <p>每个 agent 有一个真实邮箱（<code>atlas@alook.ai</code>、<code>mara@alook.ai</code> ...），公司里发邮件一样发邮件。</p>
+        <p>协调层是 email，<strong>不是 webhook 也不是 RPC</strong>。一个 agent 给另一个 agent 发邮件，后者收到邮件后启动新一轮 session，处理完回信。整条决策链就是个 email thread，事后能翻看每一步。</p>
+        <p>这一下把"协调 agent"这件事从手搓 wiring 变成了"我给公司发邮件"。</p>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- Section 3 · 四 agent 公司怎么搭 -->
+    <!-- ============================================================== -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">ORG CHART</div>
+          <h2 class="cap-title-en">How to spin up a four-agent company</h2>
+          <div class="cap-title-cn">四 agent 的"公司"怎么搭</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Akshay 演示的案例是：一家<strong>"竞品价格监控"公司</strong>。</p>
+        <p>竞品情报本来是个人查个定价页、抄数字进表格、明天再来一遍的事。换成 4 个 agent 之后，工作流变成：<strong>用户发一句 brief，系统自己造爬虫、跑定时、发现变更时通知人</strong>。</p>
+        <p>四个 agent 的角色是这样分的：</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-03.jpg" alt="四个 agent 列表：Atlas CEO、Mara PM、Theo Engineer、Ren Ops">
+          <p class="inline-image-caption">原文配图 · 四个 agent 创建完成后的列表 · Atlas/Mara/Theo/Ren · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+        <ul style="list-style: none; padding-left: 0; margin: 16px 0;">
+          <li style="padding: 12px 0; border-bottom: 1px solid var(--border-subtle);">
+            <strong style="color: var(--accent-red);">Atlas（CEO）</strong> — 跟人对话的唯一接口。接 brief 后转给 Mara，不直接管别人。
+          </li>
+          <li style="padding: 12px 0; border-bottom: 1px solid var(--border-subtle);">
+            <strong style="color: var(--accent-red);">Mara（PM）</strong> — 把 brief 转成 spec，路由到 Theo 或 Ren。<strong style="color: var(--accent-red);">公司里唯一的路由节点。</strong>
+          </li>
+          <li style="padding: 12px 0; border-bottom: 1px solid var(--border-subtle);">
+            <strong style="color: var(--accent-red);">Theo（Engineer）</strong> — 写并维护爬虫，接 Mara 的 spec。完成回报 Mara。
+          </li>
+          <li style="padding: 12px 0;">
+            <strong style="color: var(--accent-red);">Ren（Ops & Customer-facing）</strong> — 盯定时跑的结果，价格真变化时通知人。
+          </li>
+        </ul>
+        <p>报告线是这样的：</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-04.jpg" alt="汇报层级图：Atlas 到 Mara，Mara 到 Theo 和 Ren，Theo 和 Ren 不直接对话">
+          <p class="inline-image-caption">原文配图 · 汇报层级：Atlas → Mara → Theo+Ren，Theo/Ren 互不直连 · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+        <p><strong>Theo 和 Ren 永远不直接对话，也不直连 Atlas</strong>。任何事都走 Mara。</p>
+        <p>为啥这么设计？Akshay 写得很直白：</p>
+        <p><em>"这套结构避免了混乱的 AI 群聊 —— 4 个 agent 全连全的话，会变成大家刷屏、context 丢失、谁也不知道谁在干什么。"</em></p>
+        <p>单一路由（Mara）+ 树形层级，是这个模式的关键工程决策。<strong>不是更复杂的网状，是更严格的树状</strong>。少一个连接，少一种失败模式。</p>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- Section 4 · 跑一个真任务 + 视频 -->
+    <!-- ============================================================== -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">RUNNING THE COMPANY</div>
+          <h2 class="cap-title-en">From a one-line brief to a working scraper</h2>
+          <div class="cap-title-cn">跑一个真任务：盯 railway.app/pricing</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Atlas 收到 brief 后不用我们管 4 个 agent。我们只对它说一句：</p>
+        <p><strong>"盯 railway.app/pricing。"</strong></p>
+        <p>下面这件事就由公司自己处理了：</p>
+
+        <p><strong>Step 1 · 用户对 Atlas 说 brief</strong></p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-05.jpg" alt="用户对 Atlas 的 brief 消息：盯 railway.app/pricing">
+          <p class="inline-image-caption">原文配图 · 用户对 Atlas 的 brief · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+
+        <p><strong>Step 2 · Atlas 在 chat 里回复，背后已经把 brief 通过 email 转给 Mara</strong></p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-06.jpg" alt="Atlas 回复同时 email 线程显示在同一个窗口">
+          <p class="inline-image-caption">原文配图 · Atlas 在 chat 回复 + 同一窗口里显示的 Mara email 线程 · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+
+        <p><strong>Step 3 · Mara 把 brief 转成 spec，分给 Theo</strong></p>
+        <p>spec 涵盖：爬虫该抓什么、每个时间点的快照、变更检测规则、每天跑一次、人能读懂的报告格式。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-07.jpg" alt="Mara 给 Theo 的 spec 邮件">
+          <p class="inline-image-caption">原文配图 · Mara 给 Theo 的 spec · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+
+        <p><strong>Step 4 · Theo 收到 spec，邮件确认后用 Bright Data CLI 造爬虫</strong></p>
+        <p>Bright Data CLI 让 Theo 可以用自然语言描述"我想要抓什么数据"，自动造出对应爬虫，自带反爬和 IP 池。这是把"写爬虫"从工程任务变成 agent 任务的关键配件。</p>
+        <p>原文里有一段 30 秒视频演示这个过程（Theo 怎么用 Bright Data 造爬虫）：</p>
+      </div>
+    </section>
+
+    <!-- VIDEO -->
+    <section class="video-frame">
+      <div class="container">
+        <div class="video-wrapper" id="videoWrap">
+          <img class="video-poster" src="images/2026-07-03-ai-company-alook/x-08.jpg" alt="视频封面：Theo 用 Bright Data CLI 造爬虫的过程">
+          <button class="video-play-btn" id="videoPlayBtn" aria-label="播放视频">▶</button>
+          <video class="video-element" id="videoEl" controls preload="none" playsinline>
+            <source src="videos/2026-07-03-ai-company-alook.mp4" type="video/mp4">
+            你的浏览器不支持 video 标签。
+          </video>
+        </div>
+        <p class="video-caption">26 秒 · 1150 × 720 · 原文配套录屏 · Theo 造爬虫的过程 · Akshay (@akshay_pachaar)</p>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- Section 4 cont · 跑一个真任务 (续) -->
+    <!-- ============================================================== -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE PIPELINE</div>
+          <h2 class="cap-title-en">Scraper up · dashboard live · relayed back</h2>
+          <div class="cap-title-cn">爬虫上线 · 接到 dashboard · 回传</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>视频里 Theo 把爬虫造好了，回报 Mara。上方视频里能看到完整过程 —— 这里看回报邮件：</p>
+
+        <p>这个爬虫是真实落到 Bright Data dashboard 的 —— Theo 自己造的，<strong>不是一个跑完就消失的 CLI 调用</strong>，是个长期资产：</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-09.jpg" alt="Bright Data dashboard 里的真实爬虫">
+          <p class="inline-image-caption">原文配图 · Bright Data dashboard 里的 Theo 造好的爬虫 · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+
+        <p>从同一个 dashboard 可以手动触发、也可以走 API：</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-10.jpg" alt="API 调用截图">
+          <p class="inline-image-caption">原文配图 · Bright Data API · 可以直接调 · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+
+        <p>Mara 把 build 状态回传给 Atlas，Atlas 在同一窗口告诉你"做完了"：</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-11.jpg" alt="Mara 回传 Atlas，Atlas 通知 human">
+          <p class="inline-image-caption">原文配图 · Mara 回传给 Atlas · Atlas 同步通知 human · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+
+        <p>从我们对 Atlas 说"盯 railway.app/pricing" 这一刻起到现在，整个链路：</p>
+        <ul style="list-style: none; padding-left: 0; margin: 16px 0;">
+          <li style="padding: 8px 0;">→ <strong>1 次</strong>用户对 Atlas 的输入</li>
+          <li style="padding: 8px 0;">→ <strong>3 封</strong> agent 之间 email（Atlas→Mara→Theo→Mara→Atlas）</li>
+          <li style="padding: 8px 0;">→ <strong>1 个</strong>真实长期爬虫落到 Bright Data dashboard</li>
+          <li style="padding: 8px 0;">→ <strong>0 次</strong>人工中间干预</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- Section 5 · unattended -->
+    <!-- ============================================================== -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">AUTONOMOUS</div>
+          <h2 class="cap-title-en">The company runs without you</h2>
+          <div class="cap-title-cn">整个 loop 可以 unattended</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Theo 报告爬虫上线后，事情还没完。</p>
+        <p>定时任务要排。跑出来的结果要人盯。这两件事 Theo 顺手就做了 —— 它把爬虫加进公司日历，每天早上 9 点跑一次：</p>
+        <div class="inline-image">
+          <img src="images/2026-07-03-ai-company-alook/x-12.jpg" alt="9am 定时任务加入日历">
+          <p class="inline-image-caption">原文配图 · Theo 自加的 9am 定时任务 · Akshay (@akshay_pachaar) · 2026/07/03</p>
+        </div>
+
+        <p>后半段归 Ren：盯着爬虫输出，价格真变化时给人发通知。</p>
+        <p>整条链路：<strong>我们交了一个 brief，公司自己造爬虫、排定时、安排人盯</strong>。再没人插过手。</p>
+        <p>Akshay 的总结：</p>
+        <p><em>"Every completed task builds context for the next one, so the agents aren't relearning the company from scratch on every run. Every email between them gets logged the same way, so you can read back exactly how a decision got made."</em></p>
+        <p>两件事很关键：</p>
+        <p><strong>第一，context 累积</strong>。每个任务跑完都被记住，下次不用从头开始学"这家公司是干嘛的"。</p>
+        <p><strong>第二，决策可回放</strong>。所有 email 都存档，你可以翻三个月前"为什么我们改用 Bright Data"，看完整链路 —— 谁提的、谁同意的、谁反对的、最终怎么决定的。</p>
+        <p>这俩特性是 web 时代公司天然就有的（邮件、文档库、CRM），Alook 把这套基础设施<strong>直接搬到了 agent 公司里</strong>。</p>
+      </div>
+    </section>
+
+    <section class="pull-quote">
+      <div class="pull-quote-text">We handed Atlas one brief<span class="arrow">·</span>the company provisioned a scraper, scheduled it, and kept watching</div>
+      <div class="pull-quote-caption">Akshay Pachaar · on running the Alook company</div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- Takeaways -->
+    <!-- ============================================================== -->
+    <section class="capability" id="cap-07" style="background: var(--bg-secondary); border-top: 1px solid var(--border-subtle);">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">TAKEAWAYS</div>
+          <h2 class="cap-title-en">What this means for us</h2>
+          <div class="cap-title-cn">关键启示 / 给我们的启发</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><strong>工具范式的进化：prompt → agent → org chart</strong></p>
+        <p>2023 我们写 prompt。2024 我们用 agent。2025-2026 我们开始<strong>搭公司</strong>。抽象层级在升高 —— 单元从一句话变成一个员工，组织结构从"我指挥 AI"变成"我管一家 AI 公司"。</p>
+        <p><strong>协调层从"手搓 wiring"变成 email</strong></p>
+        <p>之前要 agent A 触发 agent B，得自己接 webhook、配 queue、写错误重试。换成 email 之后，agent 之间的关系就是公司里人和人之间的关系 —— 发邮件、抄送、回信。<strong>人类公司运行了几十年的协调机制，被直接复用到了 agent 之间</strong>。</p>
+        <p><strong>决策可回放（email log）</strong></p>
+        <p>所有 email 都存档。这个特性是公司天然的，但 agent 公司里特别有价值 —— 因为 agent 的"决策过程"默认是黑箱（你只看到它输出的最终结果，看不到中间 reasoning）。email 强制把每一步暴露成可读文本。</p>
+        <p><strong>适用边界</strong></p>
+        <p>这套模式适合：</p>
+        <ul style="list-style: none; padding-left: 0; margin: 16px 0;">
+          <li style="padding: 6px 0;">→ 任务有明确上下游（brief → spec → build → monitor）</li>
+          <li style="padding: 6px 0;">→ 产出有结构（爬虫输出、报告、监控）</li>
+          <li style="padding: 6px 0;">→ 不需要实时创意（不是写剧本、做设计）</li>
+        </ul>
+        <p>不适合：</p>
+        <ul style="list-style: none; padding-left: 0; margin: 16px 0;">
+          <li style="padding: 6px 0;">→ 需要强判断的（产品定位、品牌方向）</li>
+          <li style="padding: 6px 0;">→ 高度动态的人际交互（销售、谈判）</li>
+          <li style="padding: 6px 0;">→ 创造性写作（剧本、歌词）</li>
+        </ul>
+        <p><strong>最后说回 Amodei 的预言</strong></p>
+        <p>2026 年出现一人独角兽，已经不是预测了 —— Medvi 已经在跑，Alook 把方法开源了。</p>
+        <p>下一个问题不是"会不会出现"，而是"什么时候我也能搭一家出来"。</p>
+        <p>Akshay 给的答案是：今天晚上 5 分钟就能搭起来。</p>
+      </div>
+    </section>
+
+    <section class="references">
+      <div class="references-kicker">REFERENCES</div>
+      <h2 class="references-title">参考与延伸阅读</h2>
+      <ul class="references-list">
+        <li>
+          <strong>原文 X 长文</strong>
+          <a href="https://x.com/akshay_pachaar/status/2073050056299835736" target="_blank" rel="noopener">Akshay Pachaar · How to Build Your Own AI Company</a> · 2026/07/03 · 5.7K 浏览 · 含 13 张原文配图与 1 段视频
+        </li>
+        <li>
+          <strong>Alook 开源仓库</strong>
+          <a href="https://github.com/alookai/alook" target="_blank" rel="noopener">github.com/alookai/alook</a> · 一行 <code>npx @alook/app onboard</code> 即可起手
+        </li>
+        <li>
+          <strong>Bright Data CLI</strong>
+          <a href="https://github.com/brightdata/cli" target="_blank" rel="noopener">github.com/brightdata/cli</a> · 文章里 Theo 用来造爬虫的配件
+        </li>
+        <li>
+          <strong>Amodei 预测来源</strong>
+          Anthropic · Code with Claude 开发者大会 · 2025/05 · 70-80% 概率 / 2026
+        </li>
+        <li>
+          <strong>Medvi 案例</strong>
+          Matthew Gallagher · 2024 启动 · 2 万美元 · 0 员工 · 首年 4.01 亿美元营收 · 第二年奔 1.8B
+        </li>
+        <li>
+          <strong>NOTE ON INLINE IMAGES</strong>
+          原文 12 张 inline 配图均为 X 公开图片，已通过 pbs.fxtwitter.com 全部下载到 <code>images/2026-07-03-ai-company-alook/</code>，按出现顺序命名 x-01 ~ x-12。
+        </li>
+        <li>
+          <strong>NOTE ON VIDEO</strong>
+          原文 1 段视频（26 秒，Theo 造爬虫过程，1150×720）已通过 video.fxtwitter.com 下载到 <code>videos/2026-07-03-ai-company-alook.mp4</code>，点击封面播放，不 autoplay。
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为中文解读版，所有事实细节（数字、命令、产品名、agent 角色名）严格忠于原文，叙述按中文阅读习惯重写。如需引用请以 X 原文为准。
+        </li>
+      </ul>
+    </section>
+
+    <section class="closing">
+      <p class="closing-text">A one-person billion-dollar company<span class="arrow">·</span>is no longer a prediction</p>
+      <p class="closing-text" style="font-size:18px;color:var(--text-secondary);font-style:italic;font-family:Noto Serif SC, serif;">2026 年不是"会不会出现"的问题了。<br>是<strong>"你什么时候搭一家"</strong>的问题。</p>
+      <p class="closing-caption">— Akshay Pachaar · on building your own AI company</p>
+    </section>
+
+    <footer class="article-footer">
+      <p>本文为解读版本 · 事实细节严格忠于 X 原文 · 2026/07/03</p>
+      <p class="credit">朱有以 · 为 AI 发电 · 2026/07</p>
+    </footer>
+  </main>
+  <button class="floating-nav-toggle" id="navToggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item"><span class="nav-item-num">01</span><span class="nav-item-stack"><span class="nav-item-en">The prediction that already came true</span><span class="nav-item-cn">预言已经成真</span></span></a>
+      <a href="#cap-02" class="nav-item"><span class="nav-item-num">02</span><span class="nav-item-stack"><span class="nav-item-en">Alook — turn coding agents into a company</span><span class="nav-item-cn">Alook 是什么</span></span></a>
+      <a href="#cap-03" class="nav-item"><span class="nav-item-num">03</span><span class="nav-item-stack"><span class="nav-item-en">Four-agent org chart</span><span class="nav-item-cn">四 agent 的公司</span></span></a>
+      <a href="#cap-04" class="nav-item"><span class="nav-item-num">04</span><span class="nav-item-stack"><span class="nav-item-en">From a brief to a working scraper</span><span class="nav-item-cn">跑一个真任务</span></span></a>
+      <a href="#cap-05" class="nav-item"><span class="nav-item-num">05</span><span class="nav-item-stack"><span class="nav-item-en">Scraper live · dashboard · relayed back</span><span class="nav-item-cn">爬虫上线与回传</span></span></a>
+      <a href="#cap-06" class="nav-item"><span class="nav-item-num">06</span><span class="nav-item-stack"><span class="nav-item-en">The company runs without you</span><span class="nav-item-cn">unattended loop</span></span></a>
+      <a href="#cap-07" class="nav-item"><span class="nav-item-num">07</span><span class="nav-item-stack"><span class="nav-item-en">What this means for us</span><span class="nav-item-cn">关键启示</span></span></a>
+    </div>
+  </nav>
+  <script>
+    // ===== Floating Nav Toggle =====
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    if (navToggle && navPanel) {
+      navToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+      document.addEventListener('click', (e) => {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+      navPanel.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => navPanel.classList.remove('active'));
+      });
+    }
+
+    // ===== Prompt Card: EN/CN toggle + Copy =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) body.removeAttribute('hidden');
+            else body.setAttribute('hidden', '');
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector('.prompt-card-body[data-lang="' + activeLang + '"]');
+      const content = body.textContent;
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else fallbackCopy(content, showCopied);
+    }
+
+    function fallbackCopy(content, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = content;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+</body>
+</html>
