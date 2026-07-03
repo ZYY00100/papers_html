@@ -1,0 +1,2936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用 Claude Fable 5 搭一家一人公司 · Rahul 解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-top: 16px;
+      text-transform: uppercase;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.4vw, 21px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(24px, 4vw, 32px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 600;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 8px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY (section) */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 6px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 3.5vw, 32px);
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(15px, 2vw, 17px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      background: var(--bg-secondary);
+      padding: 1px 6px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    /* CAP ROW (旧/新模式对比) */
+    .cap-rows {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    @media (max-width: 640px) { .cap-rows { grid-template-columns: 1fr; } }
+    .cap-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      padding: 18px 22px;
+      border-radius: 4px;
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+    .cap-row.new { border-left-color: var(--accent-red); }
+    .cap-row strong { color: var(--text-primary); font-weight: 600; }
+
+    /* SOURCE QUOTE (原文引用) */
+    .source-quote {
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      padding: 16px 22px;
+      margin: 24px 0;
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .source-quote strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      font-style: normal;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* CALLOUT (内嵌示例) */
+    .cap-callout {
+      background: var(--bg-code);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 24px 0;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      color: #e8e8ea;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #2a2a2e;
+    }
+
+    /* CODE BLOCK (bash 文件夹结构) */
+    .code-block {
+      background: var(--bg-code);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 24px 0;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      color: #e8e8ea;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #2a2a2e;
+    }
+
+    /* PROMPT CARDS - 完整套 06-08 那篇 */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin: 28px 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .prompt-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-card-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-red);
+      flex-shrink: 0;
+    }
+    .prompt-card-tag .prompt-num {
+      color: var(--accent-gold);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .prompt-name-en {
+      color: #e8e8ea;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', 'Rajdhani', sans-serif;
+      color: #8a8a8e;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* DIVIDER */
+    .divider {
+      border: 0;
+      border-top: 1px dashed var(--border-subtle);
+      margin: 32px 0;
+    }
+
+    /* INLINE IMAGE (memory feedback-original-article-images 第二节) */
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img {
+      display: block;
+      width: 100%;
+      max-width: 880px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .inline-image img:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .inline-image-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 64px 0 32px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .references-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3vw, 26px);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .references-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px 0;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .references-list em {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-style: italic;
+      color: var(--text-primary);
+    }
+    .references-list a {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note {
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-top: 16px;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+  <main class="container">
+    <section class="article-hero">
+      <div class="article-category">AI WORKFLOW · ONE-PERSON COMPANY</div>
+      <h1 class="article-title">用 Claude Fable 5 搭一家一人公司</h1>
+      <p class="article-subtitle">How To Build a One-Person Company — Rahul 的 20 个 prompt 完整中文解读</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Rahul (@sairahul1) · 129.1K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/07/02</span>
+      </div>
+      <p class="article-desc">五年前搭一家公司要 10–20 人。Claude Fable 5 之后,一人公司有了操作系统 —— 本文把 Rahul 整篇长文的 20 个 prompt 翻译 + 拆解给你,今晚就能搭起来。</p>
+    </section>
+    <section class="cover-frame">
+      <img src="images/2026-07-02-one-person-company-claude-fable-5/cover.jpg" alt="How To Build a One-Person Company With Claude Fable 5">
+      <p class="cover-caption">原文封面 · Rahul (@sairahul1) · 2026/07/02</p>
+    </section>
+    <section class="article-intro">
+      <p class="intro-lead">五年前,你要搭一家真正的公司,你需要一支团队。</p>
+      <p class="intro-lead">营销。研究。开发。销售。客服。</p>
+      <p class="intro-lead">就算一家小公司,也要 10–20 人,人力成本 100 万美元以上。</p>
+      <p class="intro-lead">这一切都变了。</p>
+      <p class="intro-lead">Claude Fable 5 是我用过的第一个不像 chatbot 的 AI 模型。</p>
+      <p class="intro-lead">它更像基础设施。</p>
+      <p class="intro-lead">大多数人还在这样用它:</p>
+      <p class="intro-lead">Prompt → Response → Done</p>
+      <p class="intro-lead">那不是 Fable 该有的用法。</p>
+      <p class="intro-lead">Fable 可以连续跑几天。</p>
+      <p class="intro-lead">它会规划、研究、执行、验证、学习,继续跑下去。</p>
+      <p class="intro-lead">最大的机会不是用 AI 省几分钟。</p>
+      <p class="intro-lead">是用 AI 替代整个部门。</p>
+      <p class="intro-lead">下面是一家我从零开始会搭的公司架构 —— 每一条都是真的。</p>
+      <p class="intro-lead">下面的每一个 prompt 都是复制即用。今晚就跑起来。</p>
+    </section>
+    <section class="pull-quote">
+      <div class="pull-quote-text">The founder no longer does the work<span class="arrow">·</span>The founder designs the operating system</div>
+      <div class="pull-quote-caption">Rahul · on the new model</div>
+    </section>
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE NEW MODEL</div>
+          <h2 class="cap-title-en">The old model vs the new model</h2>
+          <div class="cap-title-cn">新旧模式对比</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <div class="cap-rows">
+          <div class="cap-row"><strong>旧模式</strong><br>
+            <span style="color:var(--text-primary);font-weight:600;">你 → 招人 → 管人 → 发工资 → 祈祷它能跑通</span>
+          </div>
+          <div class="cap-row new"><strong>新模式</strong><br>
+            <span style="color:var(--text-primary);font-weight:600;">你 → 设计系统 → Fable 跑各部门 → 部门自己迭代</span>
+          </div>
+        </div>
+        <p>创始人不再亲手做。</p>
+        <p><strong>创始人设计操作系统。</strong></p>
+        <p>其余一切自动运转。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-02.jpg" alt="旧模式 vs 新模式对比 · 你 → 设计系统 → Fable 跑各部门">
+          <p class="inline-image-caption">原文配图 · 旧模式 vs 新模式对比 · 你 → 设计系统 → Fable 跑各部门 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 0 · FOUNDATION</div>
+          <h2 class="cap-title-en">Step 0 — Build the company brain first</h2>
+          <div class="cap-title-cn">Step 0 · 先建公司大脑</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>每个创始人都会跳过这一步。</p>
+        <p>他们直接跳到写 prompt,然后奇怪为什么 AI 像个啥也不懂的新人。</p>
+        <p>新人变熟手的差别就是上下文。</p>
+        <p>现在建这个目录结构:</p>
+        <div class="code-block">mkdir -p ~/company/{memory,skills,state,content,docs,sops}
+
+touch ~/company/founder.md
+touch ~/company/strategy.md
+touch ~/company/products.md
+touch ~/company/customers.md
+touch ~/company/memory/lessons.md
+touch ~/company/state/projects.md
+touch ~/company/state/pipeline.md
+touch ~/company/state/seo-tracker.md</div>
+        <p>用下面的模板填每个文件:</p>
+        <p><strong>founder.md</strong> — 创始人档案模板</p>
+    <div class="prompt-card" data-card id="prompt-01">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">01</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">founder.md</span>
+            <span class="prompt-name-cn">创始人档案</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en"># About Me
+
+## How I think
+[Fast and intuitive? Slow and deliberate? Risk-tolerant or cautious?]
+
+## My strengths
+[What you're genuinely good at — specific, not generic]
+
+## My weaknesses
+[What drains you or where you consistently make mistakes]
+
+## Communication style
+[How you want outputs — bullet points? prose? short? detailed?]
+
+## Non-negotiables
+[Things you will never compromise — quality bar, ethics, speed]
+
+## Decision framework
+[How you make hard calls — data first? gut first? consensus?]</div>
+      <div class="prompt-card-body" data-lang="cn" hidden># 关于我
+
+## 我怎么思考
+[直觉快还是深思熟虑?风险偏好还是保守?]
+
+## 我的长处
+[你真正擅长的事 — 具体点,别说套话]
+
+## 我的短板
+[什么会让你精力被耗干,或你反复犯的错]
+
+## 沟通风格
+[你想要的输出 — bullet?散文?简短?详细?]
+
+## 不可妥协的事
+[你绝不退让的事 — 质量底线 / 伦理 / 速度]
+
+## 决策框架
+[硬决策怎么下 — 数据优先?直觉?共识?]
+</div>
+    </div>
+        <p><strong>strategy.md</strong> — 公司战略模板</p>
+    <div class="prompt-card" data-card id="prompt-02">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">02</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">strategy.md</span>
+            <span class="prompt-name-cn">公司战略</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en"># Company Strategy
+
+## 2026 Goals
+1. [Specific measurable goal]
+2. [Specific measurable goal]
+3. [Specific measurable goal]
+
+## Target market
+[Job title, company size, industry, pain they have right now]
+
+## Pricing
+[$X for Y. Why this price. What the alternatives cost.]
+
+## Positioning
+[One sentence: We help [who] do [what] without [pain].]
+
+## Competitive advantage
+[The one thing we do better than anyone — be specific]
+
+## What we will NOT do
+[The 3 things we explicitly refuse to compete on]</div>
+      <div class="prompt-card-body" data-lang="cn" hidden># 公司战略
+
+## 2026 目标
+1. [具体可衡量的目标]
+2. [具体可衡量的目标]
+3. [具体可衡量的目标]
+
+## 目标市场
+[岗位 / 公司规模 / 行业 / 他们现在最痛的点]
+
+## 定价
+[$X 对应 Y。定价的理由。竞品都怎么收。]
+
+## 定位
+[一句话:我们帮 [谁] 实现 [什么],无需 [什么痛点]。]
+
+## 竞争优势
+[我们比所有人都好的一件事 — 说具体]
+
+## 我们不会做的事
+[我们明确放弃、不参与竞争的 3 件事]
+</div>
+    </div>
+        <p><strong>customers.md</strong> — 客户情报模板</p>
+    <div class="prompt-card" data-card id="prompt-03">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">03</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">customers.md</span>
+            <span class="prompt-name-cn">客户情报</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en"># Customer Intelligence
+
+## Ideal customer profile
+[Demographics, company type, job to be done, budget authority]
+
+## Top 5 customer pains (ranked)
+1. [Pain] — [how often they mention it]
+2.
+3.
+4.
+5.
+
+## Common objections and real reason behind them
+- "Too expensive" — actually means: [real concern]
+- "Not right now" — actually means: [real concern]
+- "We built something internal" — actually means: [real concern]
+
+## Best customer testimonials
+1. "[Quote]" — [Name, Role, Company]
+2.
+3.
+
+## Where customers hang out
+[Reddit subs, LinkedIn groups, newsletters, Slack communities]</div>
+      <div class="prompt-card-body" data-lang="cn" hidden># 客户情报
+
+## 理想客户画像
+[人口属性 / 公司类型 / 待完成的工作 / 预算决策权]
+
+## 排名前 5 的客户痛点(排序后)
+1. [痛点] — [他们提起的频率]
+2.
+3.
+4.
+5.
+
+## 常见反对意见和真实原因
+- "太贵了" — 其实意思是:[真实顾虑]
+- "现在不是时候" — 其实意思是:[真实顾虑]
+- "我们自己做了" — 其实意思是:[真实顾虑]
+
+## 最佳客户证言
+1. "[原话引用]" — [姓名,职位,公司]
+2.
+3.
+
+## 客户都混迹在哪里
+[Reddit 板块 / LinkedIn 群组 / 邮件列表 / Slack 社区]
+</div>
+    </div>
+        <p>在每个 Fable session 开始时加这条指令:</p>
+    <div class="prompt-card" data-card id="prompt-04">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">04</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">System Instruction</span>
+            <span class="prompt-name-cn">系统指令</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Before starting any task, read:
+- ~/company/founder.md
+- ~/company/strategy.md
+- ~/company/customers.md
+
+After completing any task, write key lessons to:
+- ~/company/memory/lessons.md
+
+Format: Date | Department | What worked | What failed | Next time
+One entry per lesson. Update existing entries instead of creating duplicates.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>开始任何任务之前,先读:
+- ~/company/founder.md
+- ~/company/strategy.md
+- ~/company/customers.md
+
+完成任何任务之后,把关键教训写到:
+- ~/company/memory/lessons.md
+
+格式:日期 | 部门 | 什么有效 | 什么失效 | 下次怎么做
+每条教训一行。要更新已有的条目,不要重复创建。
+</div>
+    </div>
+        <p>没有这些文件:AI 像个拿到冷 brief 的 freelancer。</p>
+        <p>有了这些文件:AI 像个跟你共事两年的同事。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-03.jpg" alt="公司大脑 · 七个 markdown 文件夹 = Fable 的上下文">
+          <p class="inline-image-caption">原文配图 · 公司大脑 · 七个 markdown 文件夹 = Fable 的上下文 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DEPARTMENT 1 · RESEARCH</div>
+          <h2 class="cap-title-en">Department 1 — Research</h2>
+          <div class="cap-title-cn">部门 1 · 研究</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>大多数创始人做 15 分钟 Google,管它叫市场调研。</p>
+        <p>这就是大多数产品错过市场的原因。</p>
+        <p>你的研究部门每周自动跑,不需要你管。</p>
+        <p>复制这条 prompt,每个周一跑一次:</p>
+    <div class="prompt-card" data-card id="prompt-05">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">05</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Research Director</span>
+            <span class="prompt-name-cn">研究总监</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">You are my Research Director.
+
+Read ~/company/strategy.md and ~/company/customers.md first.
+
+Run the full weekly research loop:
+
+━━━ COMPETITOR RESEARCH ━━━
+
+Search for the following about each competitor: [list 3-5 competitors]
+
+Find in the past 7 days:
+→ Any new product launches or feature announcements
+→ Any pricing page changes (use cached vs current comparison if possible)
+→ Their 3 most-engaged social posts and why they performed
+→ Customer complaints on Reddit, G2, Trustpilot, App Store
+
+━━━ CUSTOMER RESEARCH ━━━
+
+Search these Reddit communities: [r/sub1, r/sub2, r/sub3]
+
+Search queries to run:
+→ "I wish [competitor name] would..."
+→ "frustrated with [product category]"
+→ "looking for alternative to [competitor]"
+→ "anyone else having trouble with [pain area]"
+
+Find the top 10 complaints ranked by upvotes.
+Group similar complaints into themes.
+
+━━━ OPPORTUNITY RESEARCH ━━━
+
+Find in my niche:
+→ Keywords with search volume but weak top-10 competition
+→ Questions on Reddit/Quora with many upvotes but no satisfying answer
+→ Products people are asking for in forums that don't exist yet
+→ Any competitor who just raised prices (opportunity to position against)
+
+━━━ OUTPUT FORMAT ━━━
+
+Return exactly this structure:
+
+## Weekly Research Report — [Date]
+
+### Top 3 Competitor Moves This Week
+| Competitor | What they did | Why it matters | Recommended action |
+
+### Top 5 Customer Complaints (by frequency)
+| Complaint | How often | Opportunity this creates |
+
+### Top 3 Opportunities This Week
+| Opportunity | Evidence | Effort | Revenue potential | Recommended action |
+
+### One Contrarian Observation
+[Something you found that goes against conventional wisdom in this space]
+
+Save full report to: ~/company/state/research-[YYYY-MM-DD].md
+Update ~/company/memory/lessons.md with key discoveries.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>你是我的研究总监。
+
+先读 ~/company/strategy.md 和 ~/company/customers.md。
+
+跑完整的每周研究循环:
+
+━━━ 竞品研究 ━━━
+
+对每个竞品搜这些:[列 3-5 个竞品]
+
+找过去 7 天内:
+→ 新产品发布或新功能公告
+→ 定价页面变化(用缓存 vs 当前对比)
+→ 他们互动最高的 3 条社交贴及原因
+→ Reddit / G2 / Trustpilot / App Store 上的客户投诉
+
+━━━ 客户研究 ━━━
+
+在这些 Reddit 社区搜:[r/sub1, r/sub2, r/sub3]
+
+跑这些搜索:
+→ "I wish [竞品名] would..."
+→ "frustrated with [产品类别]"
+→ "looking for alternative to [竞品]"
+→ "anyone else having trouble with [痛点领域]"
+
+按 upvote 找出前 10 个抱怨。把相似的归到同一主题。
+
+━━━ 机会研究 ━━━
+
+在我的赛道里找:
+→ 有搜索量但前 10 名竞争弱的关键词
+→ Reddit/Quora 上高 upvote 但没人答好答案的问题
+→ 论坛里大家想要但还不存在的产品
+→ 哪家竞品刚涨价(借机反向定位)
+
+━━━ 输出格式 ━━━
+
+严格按这个结构返回:
+
+## Weekly Research Report — [日期]
+
+### 本周竞品 Top 3 动作
+| 竞品 | 做了什么 | 为什么重要 | 推荐行动 |
+
+### 客户抱怨 Top 5(按频率)
+| 抱怨 | 频率 | 引发的机会 |
+
+### 机会 Top 3
+| 机会 | 证据 | 投入 | 收入潜力 | 推荐行动 |
+
+### 一个反共识观察
+[你找到的、跟赛道常识相反的东西]
+
+保存完整报告到:~/company/state/research-[YYYY-MM-DD].md
+更新 ~/company/memory/lessons.md,记录关键发现。
+</div>
+    </div>
+        <p>你每个周一都会拿到一份战略报告。</p>
+        <p>不是信息,是决策。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-04.jpg" alt="Research 部门 · 每周一自动产出战略报告">
+          <p class="inline-image-caption">原文配图 · Research 部门 · 每周一自动产出战略报告 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DEPARTMENT 2 · MARKETING</div>
+          <h2 class="cap-title-en">Department 2 — Marketing</h2>
+          <div class="cap-title-cn">部门 2 · 营销</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p><strong>Part A · X 平台的病毒式发布工程</strong></p>
+        <p>病毒式传播不是运气。</p>
+        <p>它是一套可复制的科学,95% 可以自动化。</p>
+        <p>X 算法的真相是这样的:</p>
+        <p>每条推文先投到一个小样本里测。</p>
+        <p>算法精确测量三件事:→ 用户停没停下滑?→ 他们有没有读到结尾?→ 他们有没有评论?</p>
+        <p>三件都过 → 推文进更大的池子 → 再过 → 解锁分发。</p>
+        <p>任何一件没过 → 推文 20 分钟内死亡,内容好不好都不重要。</p>
+        <p>这意味着每条推文在发布前必须经过工程化处理。</p>
+        <p>复制这条,每次发布前跑一次:</p>
+    <div class="prompt-card" data-card id="prompt-06">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">06</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Viral Engineering (X)</span>
+            <span class="prompt-name-cn">X 病毒式发布工程</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">I'm about to publish this post on X. Run the full viral engineering audit.
+
+MY POST:
+[paste your draft here]
+
+MY AUDIENCE: [describe your audience — e.g., indie hackers, developers, founders]
+
+━━━ STEP 1: HOOK ANALYSIS ━━━
+
+Score the current first line 1-10 for scroll-stopping power.
+What emotion does it trigger? (curiosity / fear / desire / surprise / anger)
+What is the implied promise? Will the post deliver on it?
+
+Rewrite the hook 5 different ways:
+Version 1: Curiosity hook
+Version 2: Fear/pain hook
+Version 3: Desire/aspiration hook
+Version 4: Surprise/counterintuitive hook
+Version 5: Bold claim hook
+
+Score each 1-10. Recommend the strongest.
+
+━━━ STEP 2: ALGORITHM TEST ━━━
+
+Run the 4-criteria check:
+□ Bold claim bigger than the product? [Yes/No — if No, suggest improvement]
+□ Dopamine delivered in first 2 lines? [Yes/No — if No, rewrite opening]
+□ Any context gaps where reader might get lost? [List them]
+□ Strongest outcome front-loaded? [Yes/No — if No, reorder]
+
+Predicted reader behavior: Scroll past / Like / Comment / Repost
+What would make them repost instead of just like?
+
+━━━ STEP 3: COMMENT ENGINEERING ━━━
+
+Write the 5 most likely first comments this post will get.
+For each comment, write my ideal reply that:
+- Adds new information not in the original post
+- Extends the conversation
+- Is under 100 words
+
+Write 3 quote tweet angles for accounts in adjacent niches.
+
+━━━ STEP 4: FIRST HOUR PLAN ━━━
+
+The algorithm weights the first 60 minutes heavily.
+Pre-write:
+1. My reply to my own post (adds the one key insight I didn't include)
+2. A follow-up post to schedule 90 minutes after this one
+3. The one sub-reddit or community where I should cross-post this today
+
+━━━ STEP 5: FINAL CALL ━━━
+Verdict: Publish as-is / Minor edits / Major rewrite needed
+If edits: show me the improved version ready to copy-paste.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>我马上要在 X 上发这条。跑完整的病毒工程审计。
+
+我的贴文:
+[把你的草稿贴这里]
+
+我的受众:[描述你的受众 — 例:独立开发者 / 工程师 / 创始人]
+
+━━━ STEP 1 · 钩子分析 ━━━
+
+给当前第一行打 1-10 分,看它能不能让人停下来。
+它触发什么情绪?(好奇 / 恐惧 / 欲望 / 惊讶 / 愤怒)
+它暗示的承诺是什么?这篇能兑现吗?
+
+把钩子重写 5 个版本:
+版本 1:好奇钩
+版本 2:恐惧/痛点钩
+版本 3:欲望/渴望钩
+版本 4:惊喜/反常识钩
+版本 5:大胆主张钩
+
+每个打 1-10 分。推荐最强那个。
+
+━━━ STEP 2 · 算法测试 ━━━
+
+跑 4 项检查:
+□ 大胆主张盖过产品本身了吗?[Yes/No — 如果 No,建议怎么改]
+□ 前 2 行给到多巴胺了吗?[Yes/No — 如果 No,重写开头]
+□ 有没有上下文缺口会让读者迷路?[列出来]
+□ 最强结果放最前面了吗?[Yes/No — 如果 No,重新排序]
+
+预测读者行为:划过 / 点赞 / 评论 / 转发
+怎么才能从点赞升级到转发?
+
+━━━ STEP 3 · 评论工程 ━━━
+
+写出这条贴最可能引来的前 5 条评论。
+对每条评论,写出我的理想回复:
+- 加上原贴没提到的新信息
+- 延伸对话
+- 不超过 100 字
+
+为相邻赛道的账号写 3 个 quote tweet 角度。
+
+━━━ STEP 4 · 首发一小时计划 ━━━
+
+算法对前 60 分钟权重很大。
+预先写好:
+1. 我自己贴下的回复(加一个原贴没放进去的关键洞察)
+2. 90 分钟后发的跟进贴
+3. 今天该去 cross-post 的一个 sub-reddit 或社区
+
+━━━ STEP 5 · 最终裁定 ━━━
+结论:原样发 / 小改 / 大改
+如果要改:直接给我改好的版本,copy-paste 可用。
+</div>
+    </div>
+        <p>发完之后 — 60 分钟内保持在线。要做这些:</p>
+        <p>每一条评论都要用新信息回复。</p>
+        <p>永远不要只回「说得好!」— 要加东西。</p>
+        <p>60 分钟后走开。剩下的算法会搞定。</p>
+        <p><strong>Part B · SEO 内容工厂</strong></p>
+        <p>复制这条,每个目标关键词都用:</p>
+    <div class="prompt-card" data-card id="prompt-07">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">07</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">SEO Content Director</span>
+            <span class="prompt-name-cn">SEO 内容总监</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">You are my SEO Content Director.
+
+Read ~/company/strategy.md and ~/company/customers.md first.
+
+Target keyword: [exact keyword]
+My domain authority is approximately: [low/medium/high or DA score if known]
+
+━━━ STEP 1: COMPETITOR ANALYSIS ━━━
+
+Search Google for this exact keyword.
+Analyze the top 5 ranking pages:
+
+For each page:
+- Main angle and thesis
+- Subheadings (H2s and H3s)
+- Questions they answered
+- Topics they covered well
+- Topics they missed or covered poorly
+- Approximate word count
+- Type of content (list / guide / comparison / case study)
+
+━━━ STEP 2: WINNING BRIEF ━━━
+
+Create a superior article brief:
+- Our angle: [more specific / more contrarian / more practical]
+- Must cover: [all topics competitors covered]
+- Must also cover: [3+ topics competitors missed]
+- Semantic keywords to include: [related terms Google expects]
+- Ideal structure: [outline with all H2s and H3s]
+- Target word count: [X words]
+
+━━━ STEP 3: WRITE THE ARTICLE ━━━
+
+Write the full article following the brief.
+Tone: [direct and conversational — no corporate speak, no filler sentences]
+Format: Introduction (hook + promise) → sections → conclusion with CTA
+
+Rules:
+- Every sentence must earn its place. Delete anything that doesn't add value.
+- Use short paragraphs (1-3 sentences max)
+- Real examples over generic statements
+- If you're unsure of a fact, write [VERIFY: claim] instead of guessing
+
+━━━ STEP 4: METADATA ━━━
+
+Title tag: [60 chars max, primary keyword first, benefit clear]
+Meta description: [155 chars max, keyword + specific benefit + CTA]
+H1: [optimized for search intent]
+URL slug: [short, keyword-rich, no stop words]
+Internal linking suggestions: [3 pages on my site this should link to]
+
+Save article to: ~/company/content/[slug].md
+Log to: ~/company/state/seo-tracker.md
+Format: [Keyword] | [Target URL] | [Status: Draft/Published] | [Date]</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>你是我的 SEO 内容总监。
+
+先读 ~/company/strategy.md 和 ~/company/customers.md。
+
+目标关键词:[精确关键词]
+我的域名权重大约:[低/中/高 或 已知 DA 分]
+
+━━━ STEP 1 · 竞品分析 ━━━
+
+Google 搜这个精确关键词。
+分析排名前 5 的页面:
+
+每个页面:
+- 主张和角度
+- 子标题(H2 / H3)
+- 他们答了哪些问题
+- 哪些话题覆盖得好
+- 哪些话题漏了或写得差
+- 大概字数
+- 内容类型(list / guide / comparison / case study)
+
+━━━ STEP 2 · 胜出方案 ━━━
+
+做出更优的写作 brief:
+- 我们的角度:[更具体 / 更反共识 / 更实战]
+- 必须覆盖:[竞品都覆盖的话题]
+- 还要覆盖:[竞品漏掉的 3+ 个话题]
+- 必须包含的语义关键词:[Google 期望的相关词]
+- 理想结构:[列出所有 H2/H3 的大纲]
+- 目标字数:[X 字]
+
+━━━ STEP 3 · 写文章 ━━━
+
+按 brief 写出完整文章。
+语气:[直接、口语 — 不要公司腔,不要凑字数]
+格式:开头(钩子 + 承诺)→ 章节 → 结尾带 CTA
+
+规则:
+- 每句话都要有用,没价值的删
+- 短段落(每段 1-3 句)
+- 用真实例子,不用空话
+- 不确定的事实写 [VERIFY: claim],不要瞎编
+
+━━━ STEP 4 · 元数据 ━━━
+
+Title tag:[60 字内,主关键词前置,说清好处]
+Meta description:[155 字内,关键词 + 具体好处 + CTA]
+H1:[针对搜索意图优化]
+URL slug:[短、含关键词、不要停用词]
+内链建议:[站内 3 个该链接到的页面]
+
+保存文章到:~/company/content/[slug].md
+记到:~/company/state/seo-tracker.md
+格式:[关键词] | [目标 URL] | [状态:草稿/已发] | [日期]
+</div>
+    </div>
+        <p><strong>Part C · 全自动 Newsletter</strong></p>
+    <div class="prompt-card" data-card id="prompt-08">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">08</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Newsletter Director</span>
+            <span class="prompt-name-cn">Newsletter 总监</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">You are my Newsletter Director.
+
+Every Sunday at 6pm, run the weekly newsletter workflow:
+
+━━━ RESEARCH PHASE ━━━
+
+Search for the most important developments this week in [your niche]:
+→ 3 industry news items (filter: actually matters, not just announcements)
+→ 2 interesting threads or debates from X/LinkedIn
+→ 1 contrarian take or counterintuitive finding
+→ 1 tool or resource worth sharing
+
+For each item: one sentence on why it matters to my audience.
+
+━━━ WRITING PHASE ━━━
+
+Write the newsletter:
+Subject line options: 3 versions (curiosity / benefit / contrarian)
+Preview text: [under 90 chars, completes the subject line story]
+
+Structure:
+- Opening hook (1 paragraph — the most interesting thing this week)
+- Main section 1: [item 1 + why it matters + one action they can take]
+- Main section 2: [item 2 + angle]
+- Quick hits: [3 bullet items in under 150 words total]
+- One question for readers to reply to (drives engagement)
+- Sign-off
+
+Rules:
+- Under 600 words total
+- Every section earns its place
+- Sound like a smart friend, not a publication
+
+━━━ DISTRIBUTION ━━━
+
+Write the 3 social posts to promote this issue:
+- X post (hook + key insight + link)
+- LinkedIn post (slightly more formal, different angle)
+- Short teaser for stories/reels
+
+Save newsletter to: ~/company/content/newsletter-[YYYY-MM-DD].md</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>你是我的邮件列表总监。
+
+每个周日晚上 6 点,跑每周 newsletter 工作流:
+
+━━━ 研究阶段 ━━━
+
+在你的赛道搜本周最重要的进展:[你的赛道]:
+→ 3 条行业新闻(筛选标准:真的重要,不只是公告)
+→ 2 条 X/LinkedIn 上有意思的讨论或辩论
+→ 1 个反共识观点或反直觉发现
+→ 1 个值得分享的工具或资源
+
+每条配一句:为什么它对你的受众重要。
+
+━━━ 写作阶段 ━━━
+
+写出 newsletter:
+主题行选 3 个版本(好奇 / 利益 / 反共识)
+预览文字:[&lt; 90 字,把主题行没说完的补完]
+
+结构:
+- 开场钩(1 段 — 本周最有趣的事)
+- 主章节 1:[item 1 + 为何重要 + 他们能做的一个动作]
+- 主章节 2:[item 2 + 角度]
+- 速览:[3 条 bullet,总计 &lt; 150 字]
+- 留给读者回复的一个问题(拉互动)
+- 签名
+
+规则:
+- 全文 &lt; 600 字
+- 每段都要有用
+- 像一个聪明的朋友在说话,不像媒体
+
+━━━ 分发 ━━━
+
+为这期写 3 条社交推广:
+- X 贴(钩子 + 关键洞察 + 链接)
+- LinkedIn 贴(稍正式,不同角度)
+- Stories / Reels 用的短视频预告
+
+保存 newsletter 到:~/company/content/newsletter-[YYYY-MM-DD].md
+</div>
+    </div>
+        <p>同理,Fable 也能用来自动化 TikTok、Facebook、Instagram、LinkedIn。问它就行。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-05.jpg" alt="Marketing · X 算法三件事 + SEO + Newsletter 三线并行">
+          <p class="inline-image-caption">原文配图 · Marketing · X 算法三件事 + SEO + Newsletter 三线并行 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DEPARTMENT 3 · SALES</div>
+          <h2 class="cap-title-en">Department 3 — Sales</h2>
+          <div class="cap-title-cn">部门 3 · 销售</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>大多数创始人以为销售就是 cold email。</p>
+        <p>Cold email 只占销售的 5%。</p>
+        <p>复制完整机器:</p>
+    <div class="prompt-card" data-card id="prompt-09">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">09</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Sales Director</span>
+            <span class="prompt-name-cn">销售总监</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">You are my Sales Director.
+
+Read ~/company/customers.md and ~/company/strategy.md first.
+
+My product: [what you sell in one sentence]
+My ICP: [ideal customer — exact title, company size, industry, pain]
+My price: [what you charge]
+My best proof point: [strongest result or customer name]
+
+For each prospect I give you, run the full sequence:
+
+━━━ STEP 1: PROSPECT RESEARCH ━━━
+
+Research this prospect fully:
+Company: [size, funding stage, recent news, tech stack if relevant]
+Person: [role, how long in position, what they post about, mutual connections]
+Pain signals: [job postings that reveal problems, support reviews, product complaints]
+Trigger: [what just changed at their company that makes them a buyer NOW]
+
+Rate their fit: A (close now) / B (nurture) / C (not our ICP)
+If C: do not proceed. Flag for me.
+
+━━━ STEP 2: EMAIL OUTREACH ━━━
+
+Write a cold email using this exact structure:
+Line 1: One specific observation about them or their company [NOT generic]
+Line 2: The exact pain this creates for someone in their role
+Line 3: What we do about it in one sentence
+Line 4: One proof point — customer name or specific number
+Line 5: One soft CTA — a question that invites a reply, not a meeting request
+
+Rules:
+- Under 100 words total
+- No "I hope this email finds you well"
+- No "revolutionary" or "game-changing" or "excited to share"
+- Subject line: under 6 words, specific to them
+
+━━━ STEP 3: LINKEDIN SEQUENCE ━━━
+
+Connection request (under 300 chars):
+[Specific reason for connecting — shared interest, their content, mutual connection]
+
+DM 1 (after connecting — add value, zero pitch):
+[Share something genuinely useful related to their pain — article, framework, observation]
+
+DM 2 (5 days no response — different angle):
+[New insight or social proof. Still no hard pitch.]
+
+DM 3 (10 days no response — soft close):
+["Worth a quick chat or not your priority right now — either way no worries."]
+
+━━━ STEP 4: FOLLOW-UP LOGIC ━━━
+
+If no email open in 3 days: resend with different subject, same body
+If opened but no reply in 5 days: send follow-up with different angle
+If replied "not now": schedule check-in for exactly 90 days, note the trigger to reference then
+If interested but stalled: send one piece of social proof per week for 3 weeks
+
+━━━ STEP 5: CRM UPDATE ━━━
+
+Log to ~/company/state/pipeline.md:
+| Name | Company | Stage | Email sent | LinkedIn status | Last touch | Next action | Date |
+
+After processing 10 prospects, show me:
+- How many are A, B, C tier
+- Total pipeline value if all A-tier close
+- Recommended priority order for follow-ups</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>你是我的销售总监。
+
+先读 ~/company/customers.md 和 ~/company/strategy.md。
+
+我的产品:[一句话描述你卖什么]
+我的 ICP:[理想客户 — 精确岗位 / 公司规模 / 行业 / 痛点]
+我的定价:[你收多少]
+我最强的证据点:[最有力的客户结果或客户名]
+
+每个我给你的 prospect,跑完整序列:
+
+━━━ STEP 1 · Prospect 调研 ━━━
+
+彻底调研这个 prospect:
+公司:[规模 / 融资阶段 / 最近新闻 / 用的技术栈]
+个人:[岗位 / 在位时间 / 他们贴什么 / 共同联系人]
+痛点信号:[招聘信息暴露的问题 / 客户评价里的吐槽 / 产品投诉]
+触发点:[他们公司最近发生了什么变化,让他们现在必须买]
+
+打分:A(立刻成交) / B(培育) / C(不是我们的 ICP)
+如果是 C:不往下走。标记给我。
+
+━━━ STEP 2 · 邮件触达 ━━━
+
+按这个结构写 cold email:
+第 1 行:一条对他们或他们公司的具体观察[不要泛泛而谈]
+第 2 行:这种岗位的人会因此产生的具体痛点
+第 3 行:我们做什么的,一句话说清
+第 4 行:一个证据点 — 客户名或具体数字
+第 5 行:一个软 CTA — 一个能邀回复的问题,不是约会议
+
+规则:
+- 全文 &lt; 100 字
+- 不要 "I hope this email finds you well"
+- 不要 "revolutionary" / "game-changing" / "excited to share"
+- 主题行:&lt; 6 个字,具体到他们
+
+━━━ STEP 3 · LinkedIn 序列 ━━━
+
+加好友请求(&lt; 300 字):
+[加好友的具体理由 — 共同兴趣 / 他们的内容 / 共同联系人]
+
+DM 1(加好友后 — 给价值,零推销):
+[分享跟他们痛点真正相关的有用东西 — 文章 / 框架 / 观察]
+
+DM 2(5 天没回 — 换角度):
+[新洞察或社会证明。仍然不要硬推销。]
+
+DM 3(10 天没回 — 软收尾):
+["值得聊 10 分钟?或者不是你的优先项 — 没关系。"]
+
+━━━ STEP 4 · 跟进逻辑 ━━━
+
+3 天没开邮件:换主题重发,正文不变
+开了但 5 天没回:换角度发跟进
+回 "现在不是时候":90 天后复查,记下要回看的触发点
+感兴趣但卡住:每周发一条社会证明,发 3 周
+
+━━━ STEP 5 · CRM 更新 ━━━
+
+记到 ~/company/state/pipeline.md:
+| 名字 | 公司 | 阶段 | 邮件已发 | LinkedIn 状态 | 上次触达 | 下一步 | 日期 |
+
+跑完 10 个 prospect 后,给我看:
+- A、B、C 各多少
+- 如果所有 A 成交,管道总价值
+- 推荐的跟进优先级
+</div>
+    </div>
+        <p><strong>AI 通话层 — 在上面叠加这一层</strong></p>
+        <p>把 Bland.ai / Vapi / Retell 接到你的 prospect 列表(最近 X 也出了 AI Voice SDK)</p>
+        <p>48 小时内没开邮件的 prospect,都会接到一个电话。</p>
+        <p>AI agent:→ 用客户公司名打招呼 → 提一下你研究出来的具体痛点 → 约 10 分钟,不是卖 → 直接通过 Cal.com 或 Calendly 写入你的日历 → 自动更新 CRM,记录通话结果</p>
+        <p>配置一次。 它会边睡边跑。</p>
+        <p>每天早上你的日历都多了几个新会议。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-06.jpg" alt="Sales · Cold email + LinkedIn + AI 通话 + CRM 完整漏斗">
+          <p class="inline-image-caption">原文配图 · Sales · Cold email + LinkedIn + AI 通话 + CRM 完整漏斗 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DEPARTMENT 4 · ENGINEERING</div>
+          <h2 class="cap-title-en">Department 4 — Engineering</h2>
+          <div class="cap-title-cn">部门 4 · 工程</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>这是「一人公司」真正变得不公平的地方。</p>
+        <p>Stripe 把自己的 Ruby 代码库交给 Fable 5。5000 万行。完整迁移。</p>
+        <p>正常情况下一整个团队要两个月。</p>
+        <p>Fable 一天搞定。</p>
+        <p>但对 solo founder 来说,日常工程不是大迁移。</p>
+        <p>是 bug、feature、PR、test。</p>
+        <p>真正杀死大多数 solo founder 的不是缺工程能力。</p>
+        <p>是 bug 上线了却没人发现。</p>
+        <p>付款流程跑挂了。API 静默失败。边界输入 crash。</p>
+        <p>你周一才会知道,那时候客户已经在骂了。</p>
+        <p>下面这套方法能彻底解决。</p>
+        <p><strong>Layer 1 · Fable 当你的工程团队</strong></p>
+    <div class="prompt-card" data-card id="prompt-10">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">10</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Engineering Director</span>
+            <span class="prompt-name-cn">工程总监</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">You are my Engineering Director.
+
+Read ~/company/products.md and ~/company/strategy.md first.
+
+For every feature request or bug report, run the full engineering workflow:
+
+━━━ STEP 1: PRD ━━━
+
+Write a complete Product Requirements Document:
+- Problem: what breaks or what's missing, and for who
+- Success criteria: how will we know this worked? (measurable)
+- User flow: step-by-step what the user does
+- Technical requirements: what the code must do
+- Edge cases: what can go wrong, what inputs might break this
+- Out of scope: what we are explicitly NOT building in this version
+
+━━━ STEP 2: ARCHITECTURE ━━━
+
+Design the implementation before writing code:
+- What existing files change and how
+- What new files need to be created
+- What tests need to be written
+- Any new dependencies (and whether they're justified)
+- Potential performance impacts
+- Any security considerations
+
+━━━ STEP 3: BUILD ━━━
+
+Write the code following the architecture.
+After writing each function, verify it satisfies its PRD requirement.
+Write tests alongside the code — not after.
+If you hit uncertainty: write a comment [VERIFY: assumption] instead of guessing.
+
+━━━ STEP 4: SELF-REVIEW BEFORE HANDING TO ME ━━━
+
+Run this checklist before delivering:
+□ Does it satisfy every PRD requirement? (check each one)
+□ Are all edge cases handled?
+□ Is there a test for every critical path?
+□ Are there any obvious security issues?
+□ Is the code readable without comments?
+□ What is the most likely way this could fail in production?
+
+If you find a problem: fix it before delivering to me.
+
+━━━ STEP 5: PR DESCRIPTION ━━━
+
+Write a pull request description with:
+- What this does and why (2 sentences)
+- How to test it manually
+- What automated tests cover it
+- Any follow-up work this creates
+- Risk level: Low / Medium / High
+
+━━━ ESCALATION RULES ━━━
+
+Come to me ONLY for:
+→ Irreversible actions (database migrations, deletes, API breaking changes)
+→ Security decisions
+→ Architecture choices that affect the roadmap
+
+Otherwise: run until done. Report back with the PR.
+Log lessons to ~/company/memory/engineering.md</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>你是我的工程总监。
+
+先读 ~/company/products.md 和 ~/company/strategy.md。
+
+每个 feature 请求或 bug 报告,跑完整工程流程:
+
+━━━ STEP 1 · PRD ━━━
+
+写出完整的产品需求文档:
+- 问题:什么坏了或缺什么,影响了谁
+- 成功标准:怎么算这个做成了(可衡量)
+- 用户流程:用户一步步怎么做
+- 技术要求:代码必须做什么
+- 边界情况:什么会出错,什么输入会让它崩
+- 范围外:这个版本明确不做什么
+
+━━━ STEP 2 · 架构 ━━━
+
+写代码前先设计:
+- 哪些已有文件要改、怎么改
+- 哪些新文件要新建
+- 要写哪些测试
+- 有没有新依赖(有没有必要)
+- 潜在的性能影响
+- 安全考量
+
+━━━ STEP 3 · 实现 ━━━
+
+按架构写代码。
+每个函数写完后,验证它满足 PRD 的对应要求。
+测试跟代码同时写 — 不是之后。
+不确定就写注释 [VERIFY: 假设],不要瞎猜。
+
+━━━ STEP 4 · 交给我之前的自检 ━━━
+
+交付前跑这个清单:
+□ 每条 PRD 要求都满足了吗?(逐条核对)
+□ 边界情况都处理了吗?
+□ 每个关键路径都有测试吗?
+□ 有没有明显的安全问题?
+□ 不加注释能读懂吗?
+□ 上线后最可能失败的方式是什么?
+
+发现问题:自己改完再交给我。
+
+━━━ STEP 5 · PR 描述 ━━━
+
+写一份 PR description:
+- 这个 PR 做什么、为什么(2 句)
+- 怎么手动测
+- 哪些自动化测试覆盖
+- 这个 PR 带来的后续工作
+- 风险等级:低 / 中 / 高
+
+━━━ 升级规则 ━━━
+
+只在以下情况来找我:
+→ 不可逆操作(数据库迁移 / 删除 / 破坏性 API 变更)
+→ 安全决策
+→ 影响 roadmap 的架构选择
+
+否则:跑到完。带着 PR 回来汇报。
+把教训写到 ~/company/memory/engineering.md
+</div>
+    </div>
+        <p><strong>Layer 2 · Entelligence — bug 在你发现之前就被修掉</strong></p>
+        <p>这是大多数 solo founder 没有的部分。这是有没有区别:晚上睡得安不安,凌晨两点 Slack 是不是叫。</p>
+        <p>没有它的问题是这样的:</p>
+        <p>一个 PR 上线。它包含的模式跟 6 个月前一次 incident 一模一样。</p>
+        <p>没人发现,因为没人记得。</p>
+        <p>bug 周五打到 production。</p>
+        <p>你周一从愤怒的客户那里才知道。</p>
+        <p>Entelligence 是一个 production reliability 引擎,接你的整套栈 — GitHub、Sentry、PagerDuty、Linear、Datadog — 它会建一份 codebase 历史上每次 incident 的记忆。</p>
+        <p>每个 PR 都会自动对照那份 incident 历史被 review。</p>
+        <p>如果一次改动匹配了过去引发过事故的模式,Entelligence 会标出来,直接引那次 incident 的记录。</p>
+        <p>它会引那次 incident。它会显示那次怎么修的。它会防止重蹈覆辙。</p>
+        <div class="cap-callout" data-lang="en">PR #4821 adds a fetch() call with no timeout.
+
+Entelligence review comment:
+"This pattern matches Incident #2847 (SEV-1, payment timeout).
+The original incident took 4 hours to resolve.
+This fetch() has no timeout and no connection-pool metrics —
+the same gap that caused the cascade.
+
+Suggested fix:
+response = await fetch('/api/charge', {
+  timeout: 5000,
+  signal: AbortSignal.timeout(5000),
+});
+"</div>
+        <div class="cap-callout" data-lang="cn" hidden>PR #4821 加了一个 fetch() 调用,没有 timeout。
+
+Entelligence 的 review 评语:
+
+"这个 pattern 命中 Incident #2847(SEV-1,支付超时)。
+原 incident 当时花了 4 小时才解决。
+那次修法:在 fetch 上加 500ms timeout + retry-with-backoff。
+建议你在这次 PR 上加同样的保护。"
+
+—— 不是普通代码 review 会告诉你的事
+</div>
+        <p>它引用 incident。它显示修复。它阻止重复。</p>
+        <p>数据来自 100 万+ PR、2400+ 家公司:</p>
+        <p>→ AI 编程的每一美元里有 $0.44 拿去修 bug
+→ $0.27 拿去返工
+→ 只有 $0.18 真的到 production</p>
+        <p>用了 Entelligence 的团队把这个数字从 $0.18 提到了 $0.41 到 production。</p>
+        <p>43% 的 incident 自动解决。每个季度拦下 61 个反复出现的 bug。</p>
+        <p>对一人公司来说:你扛不住周五晚上的 production 宕机。</p>
+        <p>Entelligence 就是那个永不睡觉、记得每次 incident、review 每个 PR 的资深工程师。</p>
+        <p><strong>20 分钟接好 Entelligence:</strong></p>
+    <div class="prompt-card" data-card id="prompt-11">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">11</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Entelligence Setup</span>
+            <span class="prompt-name-cn">Entelligence 接入</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Step 1: Go to entelligence.ai → Sign up free
+
+Step 2: Connect your stack:
+→ GitHub or GitLab (PR review — takes 5 minutes)
+→ Sentry / PagerDuty / Datadog (incident history — takes 10 minutes)
+→ Linear or Jira (ticket tracking — optional)
+
+Step 3: Let Entelligence index your incident history
+(20-30 minutes for existing repos. Runs in background.)
+
+Step 4: Add to your Fable engineering prompt:
+"Note: Entelligence will review every PR against our incident history.
+When writing code, flag anything that:
+- Makes external calls without timeouts
+- Modifies shared state without proper locking
+- Changes authentication or payment paths
+- Skips error handling on critical paths
+These are our highest-risk incident patterns."
+
+Step 5: When any incident fires, run this Fable prompt:
+"Entelligence detected this incident: [paste alert]
+Investigate the root cause.
+Generate a fix with tests.
+Write the lesson to ~/company/memory/engineering.md in this format:
+Incident: [description]
+Root cause: [what actually broke]
+Fix applied: [what changed]
+Prevention: [how to detect this pattern in future PRs]"</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>第 1 步:打开 entelligence.ai → 免费注册
+
+第 2 步:接入你的栈:
+→ GitHub 或 GitLab(PR review — 5 分钟搞定)
+→ Sentry / PagerDuty / Datadog(incident 历史 — 10 分钟)
+→ Linear 或 Jira(工单跟踪 — 可选)
+
+第 3 步:让 Entelligence 索引你的 incident 历史
+(已有 repo 跑 20-30 分钟,后台跑。)
+
+第 4 步:加到你的 Fable 工程 prompt 里:
+"注意:Entelligence 会按我们的 incident 历史 review 每个 PR。
+写代码时,标记任何这些:
+- 外部调用没加 timeout
+- 改了共享状态没加锁
+- 改了认证或支付路径
+- 关键路径漏了错误处理
+这些是我们风险最高的 incident pattern。"
+
+第 5 步:incident 触发时,跑这条 Fable prompt:
+"Entelligence 触发了这次 incident:[贴 alert]
+查根因。
+生成带测试的修复。
+按下面格式把教训写到 ~/company/memory/engineering.md:
+Incident:[描述]
+Root cause:[真正断在哪]
+Fix applied:[改了什么]
+Prevention:[未来 PR 怎么识别这个 pattern]"
+</div>
+    </div>
+        <p><strong>Bug 全自动生命周期:</strong></p>
+    <div class="prompt-card" data-card id="prompt-12">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">12</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Bug Lifecycle on Autopilot</span>
+            <span class="prompt-name-cn">Bug 全自动生命周期</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Production alert fires (Sentry / PagerDuty)
+         ↓
+Entelligence detects the anomaly in spans/logs/metrics
+         ↓
+Spawns parallel diagnosis agents
+         ↓
+Fable investigates root cause against codebase
+         ↓
+Fable writes the fix + tests
+         ↓
+Entelligence verifies fix against full incident history
+         ↓
+PR created automatically with full context
+         ↓
+You review and approve — 5 minutes ← only step requiring you
+         ↓
+Fix deployed and verified in production
+         ↓
+Incident closed. Lesson written to memory.
+         ↓
+Same pattern automatically blocked in all future PRs</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>Production alert 触发(Sentry / PagerDuty)
+         ↓
+Entelligence 在 spans/logs/metrics 里发现异常
+         ↓
+并行派出多个诊断 agent
+         ↓
+Fable 拿着 codebase 查根因
+         ↓
+Fable 写出修复 + 测试
+         ↓
+Entelligence 拿完整 incident 历史验证这个修复
+         ↓
+带完整上下文的 PR 自动创建
+         ↓
+你 review 并批准 — 5 分钟 ← 唯一需要你参与的一步
+         ↓
+修复部署到 production 并验证
+         ↓
+Incident 关闭。教训写进 memory。
+         ↓
+同样的 pattern 自动拦截所有未来的 PR
+</div>
+    </div>
+        <p>你再也不会半夜被 broken production 叫醒。</p>
+        <p>你再也不会付两次钱修同一个 bug。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-07.jpg" alt="Engineering · Fable + Entelligence 把 incident 拦在周五前">
+          <p class="inline-image-caption">原文配图 · Engineering · Fable + Entelligence 把 incident 拦在周五前 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DEPARTMENT 5 · SUPPORT</div>
+          <h2 class="cap-title-en">Department 5 — Support</h2>
+          <div class="cap-title-cn">部门 5 · 客服</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>客服是 solo founder 悄悄失血的地方。</p>
+        <p>工单堆积。客户流失。没人注意到,直到收入下降。</p>
+    <div class="prompt-card" data-card id="prompt-13">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">13</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Support Director</span>
+            <span class="prompt-name-cn">客服总监</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">You are my Support Director.
+
+Read ~/company/products.md and ~/company/customers.md first.
+
+For every incoming support ticket, run this workflow:
+
+━━━ STEP 1: TRIAGE ━━━
+
+Classify the ticket:
+- Type: Bug / Feature request / How-to question / Billing / Complaint / Praise
+- Urgency: Critical (blocks usage) / High (frustrates significantly) / Low
+- Sentiment score: 1-5 (1=very angry, 5=happy)
+- Churn risk: High / Medium / Low
+
+If churn risk is HIGH: do NOT process normally. Escalate immediately to me with:
+[Customer name] | [Plan] | [MRR] | [Their complaint] | [Suggested response]
+
+━━━ STEP 2: DRAFT RESPONSE ━━━
+
+Write a response that:
+- Opens by acknowledging their specific issue (not "I understand your frustration")
+- Answers the question completely and practically
+- If it's a bug: gives a workaround now + honest timeline if possible
+- If it's a feature request: thanks them genuinely + adds to feature tracker
+- Ends with one question to confirm we resolved it
+
+Rules:
+- Sound like a human, not a help desk
+- Under 150 words unless technical depth is genuinely needed
+- Never use: "per my last email" / "as mentioned" / "I understand your frustration"
+
+━━━ STEP 3: KNOWLEDGE BASE UPDATE ━━━
+
+After drafting:
+- Is this question asked more than once per month? Yes/No
+- If yes: write an FAQ entry → save to ~/company/docs/faq.md
+- Did the product confuse them? Yes/No
+- If yes: note the UX issue → save to ~/company/state/ux-issues.md
+
+━━━ STEP 4: WEEKLY CHURN SCAN ━━━
+
+Every Friday, scan ~/company/state/support-tickets.md from the past 14 days.
+
+Flag any customer who:
+→ Submitted 2+ tickets in 2 weeks
+→ Used words: disappointed, frustrated, cancel, refund, switching, considering
+→ Had a ticket unresolved for more than 48 hours
+→ Downgraded their plan
+
+Output:
+| Customer | Plan | MRR at risk | Complaint pattern | Recommended action |
+Sort by MRR at risk, highest first.
+
+I will personally contact everyone on this list today.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>你是我的客服总监。
+
+先读 ~/company/products.md 和 ~/company/customers.md。
+
+每进来一张客服工单,跑这个流程:
+
+━━━ STEP 1 · 分诊 ━━━
+
+给工单分类:
+- 类型:Bug / 功能请求 / 怎么用的问题 / 账单 / 投诉 / 表扬
+- 紧急度:Critical(用不了) / High(明显影响体验) / Low
+- 情绪分:1-5(1 = 非常生气,5 = 高兴)
+- 流失风险:高 / 中 / 低
+
+如果流失风险 HIGH:不要走正常流程。立刻升级给我,带上:
+[客户名] | [套餐] | [MRR] | [他们投诉] | [建议回复]
+
+━━━ STEP 2 · 起草回复 ━━━
+
+回复要:
+- 开篇承认他们的具体问题(不要 "I understand your frustration")
+- 完整、实用地回答问题
+- 如果是 bug:给当前 workaround + 如果能说,给个诚实的时间表
+- 如果是功能请求:真诚感谢 + 加进 feature tracker
+- 结尾用一个确认问题解决了的问题
+
+规则:
+- 像人,不像客服台
+- &lt; 150 字,除非真的需要技术深度
+- 永远不要用:"per my last email" / "as mentioned" / "I understand your frustration"
+
+━━━ STEP 3 · 更新知识库 ━━━
+
+起草完之后:
+- 这个问题一个月被问过 1 次以上吗?是 / 否
+- 如果是:写一条 FAQ → 存到 ~/company/docs/faq.md
+- 产品让他们困惑了吗?是 / 否
+- 如果是:记一条 UX 问题 → 存到 ~/company/state/ux-issues.md
+
+━━━ STEP 4 · 每周流失扫描 ━━━
+
+每个周五,扫 ~/company/state/support-tickets.md 过去 14 天的。
+
+标记任何客户,如果他:
+→ 2 周内提了 2+ 工单
+→ 用过:失望 / frustrated / cancel / refund / switching / considering
+→ 有工单 48 小时没解决
+→ 降级了套餐
+
+输出:
+| 客户 | 套餐 | 风险 MRR | 投诉模式 | 推荐行动 |
+按风险 MRR 排序,最高的在前。
+
+我会亲自联系这份名单上的每个人。
+</div>
+    </div>
+        <p>流失预警扫描是那笔能回本的关键。</p>
+        <p>大多数公司都是在客户取消之后才知道要流失了。</p>
+        <p>你的公司会比它早三周知道。</p>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DEPARTMENT 6 · OPERATIONS</div>
+          <h2 class="cap-title-en">Department 6 — Operations</h2>
+          <div class="cap-title-cn">部门 6 · 运营</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>最被低估的部门。杠杆最高。</p>
+        <p>每日 9 点简报 — 每天早上自动跑:</p>
+    <div class="prompt-card" data-card id="prompt-14">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">14</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Daily Briefing</span>
+            <span class="prompt-name-cn">每日 9 点简报</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">/loop every day at 9am →
+
+You are my Executive Assistant.
+
+Read:
+- ~/company/state/projects.md
+- ~/company/state/pipeline.md
+- ~/company/state/support-tickets.md
+- ~/company/memory/lessons.md (last 7 days only)
+
+Generate my daily briefing:
+
+━━━ TODAY'S BRIEFING — [Date] ━━━
+
+### 🚨 Needs attention today (time-sensitive, cannot wait)
+[2-3 items max. If nothing: say "Nothing critical today."]
+
+### 💰 Pipeline status
+[Deals in each stage. Any that went cold or moved forward. Revenue at risk.]
+
+### 🎧 Support
+[Open tickets: count by urgency. Any churn risks from yesterday.]
+
+### ⚡ Top 3 priorities for today
+[Ranked by impact × urgency. Not just what's loudest.]
+
+### 💡 One lesson from the past 7 days
+[The single most relevant insight from ~/company/memory/lessons.md]
+
+Keep the entire briefing under 300 words.
+I read this in 2 minutes and know exactly what to do.
+SOP generator — captures every process automatically:
+Every time I describe a process to you, do the following:
+
+1. Document it as a Standard Operating Procedure
+2. Save to ~/company/sops/[process-name].md
+3. Use this format:
+
+# [Process Name]
+What this does: [one sentence]
+When to run: [trigger or schedule]
+Who runs it: [Fable / Me / Both]
+
+## Steps
+1.
+2.
+3.
+...
+
+## Success looks like
+[How to know it worked]
+
+## Common mistakes
+[What goes wrong and how to avoid it]
+
+## Automation opportunity
+[Any step that could be fully automated — flag it]
+
+After documenting: tell me which steps I could eliminate entirely
+by connecting this to another system or agent.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>/loop every day at 9am →
+
+你是我的执行助理。
+
+读:
+- ~/company/state/projects.md
+- ~/company/state/pipeline.md
+- ~/company/state/support-tickets.md
+- ~/company/memory/lessons.md(只看最近 7 天)
+
+生成我的每日简报:
+
+━━━ TODAY'S BRIEFING — [日期] ━━━
+
+### 🚨 今天需要注意(时效性强,不能等)
+[最多 2-3 条。没有就说 "Nothing critical today."]
+
+### 💰 管道状态
+[每个阶段的交易。哪些变冷,哪些推进。有风险的收入。]
+
+### 🎧 客服
+[未关工单:按紧急度计数。昨天的流失风险。]
+
+### ⚡ 今天的 Top 3 优先级
+[按 影响力 × 紧急度 排序。不是谁声音大排谁。]
+
+### 💡 过去 7 天的一条教训
+[~/company/memory/lessons.md 里最相关的一条洞察]
+
+整份简报 &lt; 300 字。
+我两分钟看完就知道今天要做什么。
+
+SOP 生成器 — 自动捕获每个流程:
+每次我向你描述一个流程,你做以下事:
+
+1. 把它写成标准操作流程
+2. 保存到 ~/company/sops/[process-name].md
+3. 用这个格式:
+
+# [流程名]
+这做什么:[一句]
+什么时候跑:[触发条件或时间表]
+谁跑:[Fable / 我 / 一起]
+
+## 步骤
+1.
+2.
+3.
+...
+
+## 成功长什么样
+[怎么算做成了]
+
+## 常见错误
+[什么会出错,怎么避开]
+
+## 自动化机会
+[哪些步骤可以完全自动化 — 标出来]
+
+记录完之后:告诉我哪几步可以彻底砍掉
+通过把这个流程接到另一个系统或 agent。
+</div>
+    </div>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-08.jpg" alt="Operations · 每日 9 点简报让你用 2 分钟知道今天做什么">
+          <p class="inline-image-caption">原文配图 · Operations · 每日 9 点简报让你用 2 分钟知道今天做什么 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">COMPOUND LAYERS</div>
+          <h2 class="cap-title-en">2 layers that make this compound</h2>
+          <div class="cap-title-cn">让系统叠加的 2 个层</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p><strong>Verification layer(验证层)</strong></p>
+        <p>大多数人搭的流程是:Task → Output → Done</p>
+        <p>你搭的是:Task → Output → Verify → Fix → Done</p>
+        <p>在每个部门的 prompt 里都加上这条:</p>
+    <div class="prompt-card" data-card id="prompt-15">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">15</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Verification Self-Review</span>
+            <span class="prompt-name-cn">验证层 自检清单</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">After completing this task, self-review your output:
+
+1. Does it directly address what was asked?
+2. What's missing that would make this more useful?
+3. What assumption did I make that might be wrong?
+4. What's the most likely failure mode in practice?
+
+If you find a problem: fix it before delivering.
+If uncertain: flag with [VERIFY] so I know to check it.
+Do not deliver work you know has gaps.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>完成这个任务后,自检一遍你的输出:
+
+1. 它是不是直接回答了被问的事?
+2. 缺了什么会让它更有用?
+3. 我做了哪个假设可能是错的?
+4. 实际场景下最可能的失败模式是什么?
+
+如果发现问题:自己改完再交付。
+不确定:标 [VERIFY] 让我知道要查。
+不要交付你自己知道有缺口的东西。
+</div>
+    </div>
+        <p><strong>Memory layer(记忆层)— 真正的护城河</strong></p>
+        <p>不是你的 prompts。不是你的 tools。是你的 memory。</p>
+        <p>每个部门都已经写到 ~/company/memory/。</p>
+        <p>一次性加上这条元指令:</p>
+    <div class="prompt-card" data-card id="prompt-16">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">16</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Memory Consolidation</span>
+            <span class="prompt-name-cn">记忆层 周合并</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Every Sunday at 7pm, run the weekly memory consolidation:
+
+Read all files in ~/company/memory/ from the past 7 days.
+
+Generate a consolidated weekly report:
+- Top 3 things that worked across all departments
+- Top 3 things that failed and why
+- One system-level improvement to make next week
+- Any pattern emerging across multiple departments
+
+Save to ~/company/memory/weekly-[YYYY-MM-DD].md
+
+Then: suggest the one workflow that would give me the highest
+leverage improvement based on this week's lessons.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>每个周日晚 7 点,跑每周 memory 合并:
+
+读 ~/company/memory/ 里过去 7 天的所有文件。
+
+生成一份合并的周报:
+- 所有部门 Top 3 有效的事
+- Top 3 失败的事和原因
+- 下周要做的 1 个系统级改进
+- 跨部门浮现出的任何 pattern
+
+保存到 ~/company/memory/weekly-[YYYY-MM-DD].md
+
+然后:基于本周的教训,推荐一个杠杆最高的 workflow 改进。
+</div>
+    </div>
+        <p>系统每周都在变聪明,你不需要额外做什么。</p>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PROMPTING RULES</div>
+          <h2 class="cap-title-en">5 Fable prompting rules that change everything</h2>
+          <div class="cap-title-cn">5 条 Fable 提示词规则</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>大多数人用 Fable 像用 ChatGPT。</p>
+        <p>这就是大多数人结果平庸的原因。</p>
+        <p><strong>Rule 1 · 让投入匹配任务</strong></p>
+        <p>→ Low/medium:快速回答、改写、简单查询
+→ High:任何重要的事都用这个档位
+→ Xhigh:最难的题、复杂构建、质量不可谈
+→ /loop:你再也不想手动启动的循环流程</p>
+        <p><strong>Rule 2 · 告诉它为什么,不只是做什么</strong></p>
+        <div class="cap-callout" data-lang="en">❌ "Write a cold email to this prospect"
+
+✅ "I'm doing outreach for [product] targeting [role] at [company type].
+They have [specific pain]. The goal is a reply, not a booked meeting.
+Write a cold email: specific observation → pain → solution → proof → soft CTA.
+Under 100 words. No corporate language."</div>
+        <div class="cap-callout" data-lang="cn" hidden>❌ "Write a cold email to this prospect"
+
+✅ "我在做 [产品] 的外联,目标受众是 [公司类型] 的 [岗位]。
+他们有 [具体痛点]。
+目标是拿到回复,不是约会议。
+写一封 cold email:具体观察 → 痛点 → 解决方案 → 证据 → 软 CTA。
+100 字以内。不要公司腔。"
+</div>
+        <p><strong>Rule 3 · 短胜过长</strong></p>
+        <p>过度 prompting 会限制 Fable。</p>
+        <p>给它目标和约束,让它自己决定方法。</p>
+        <p>如果你写 500 字的 prompt 处理 50 字就能搞定的事,500 字版本通常更差。</p>
+        <p><strong>Rule 4 · 明确设好 checkpoint</strong></p>
+    <div class="prompt-card" data-card id="prompt-17">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">17</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Rule 4 — Checkpoint Discipline</span>
+            <span class="prompt-name-cn">规则 4 — 检查点纪律</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">"Pause for me only when:
+→ The next action is irreversible
+→ You hit a blocker you cannot resolve
+→ You need information only I have
+
+Otherwise: keep going. Report back when complete."</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>"只在以下情况暂停找我:
+
+→ 下一步是不可逆的
+→ 你卡在一个你解不开的 blocker
+→ 你需要只有我才有的信息
+
+否则:继续跑。完成了汇报。"
+</div>
+    </div>
+        <p>没有这条:Fable 动不动就问你。有了这条:它直接跑。</p>
+        <p><strong>Rule 5 · 一切循环的事都用 /loop</strong></p>
+    <div class="prompt-card" data-card id="prompt-18">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">18</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Rule 5 — /loop Everything Recurring</span>
+            <span class="prompt-name-cn">规则 5 — 循环一切</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">/loop every Monday at 8am → run research department workflow
+/loop every day at 9am → generate daily briefing
+/loop every Friday at 5pm → run churn prevention scan
+/loop every Sunday at 7pm → run memory consolidation</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>/loop every Monday at 8am → 跑 research department workflow
+/loop every day at 9am → 生成 daily briefing
+/loop every Friday at 5pm → 跑 churn prevention scan
+/loop every Sunday at 7pm → 跑 memory consolidation
+</div>
+    </div>
+        <p>设一次。永远在跑。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-02-one-person-company-claude-fable-5/x-09.jpg" alt="5 条规则 · 短胜过长、checkpoint、/loop 是杠杆最高的">
+          <p class="inline-image-caption">原文配图 · 5 条规则 · 短胜过长、checkpoint、/loop 是杠杆最高的 · Rahul (@sairahul1) · 2026/07/02</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-11">
+      <div class="cap-head">
+        <div class="cap-num">11</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">ROLL OUT</div>
+          <h2 class="cap-title-en">The implementation order</h2>
+          <div class="cap-title-cn">实施顺序(6 阶段)</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>不要六个部门同时搭。</p>
+        <p>按这个顺序搭。每一层解锁下一层。</p>
+        <p>Week 1 — Foundation(2 小时)建公司大脑目录,填好 5 个模板。所有其他东西都从这里读起。少了这一步,其他一切都不正常。</p>
+        <p>Week 2 — Research 部门(1 小时接入)复制 Research Director prompt,手动跑第一轮每周研究。周一:你拿到第一份战略报告。</p>
+        <p>Week 3 — Marketing:X 病毒式传播(1 小时接入)复制 pre-launch engineering prompt,接下来 3 条推文发布前都跑一次。每条发布后保持 60 分钟在线。</p>
+        <p>Week 4 — Engineering layers(2 小时)把 Entelligence 接上 GitHub + Sentry(20 分钟)。复制 Engineering Director prompt。第一个 PR 会自动对照 incident 历史被 review。</p>
+        <p>Month 2 — Sales machine复制 Sales Director prompt。跑前 20 个 prospect。给没开邮件的 prospect 接 AI 通话层。</p>
+        <p>Month 3 — Support + Ops复制 Support Director prompt。设置每日简报 /loop。设置每周流失预警扫描。</p>
+        <p>Month 6 — Full system每个部门都按 schedule 自动跑,不需要你启动。记忆每周叠加。你设计,Fable 执行。</p>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-12">
+      <div class="cap-head">
+        <div class="cap-num">12</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">MONTH 6 SNAPSHOT</div>
+          <h2 class="cap-title-en">What month 6 looks like</h2>
+          <div class="cap-title-cn">6 个月后的样子</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>周一上午 9 点。你打开电脑。</p>
+        <p><strong>简报已经备好:</strong></p>
+        <p>→ Research 报告已归档 — 3 个机会,2 个竞品动作
+→ 3 篇 SEO 文章在你睡觉时已发布
+→ 200 封外联邮件已发,4 个合格会议已预约
+→ 12 个客服工单已分诊,2 个升级给你
+→ 2 个 PR 被 Entelligence review — 0 个 incident pattern 命中,准备批准
+→ Newsletter 已起草,等你发送
+→ 1 个流失风险客户已标记,附带建议行动</p>
+        <p><strong>你今天的工作:</strong></p>
+        <p>→ Review 2 个 PR:20 分钟
+→ 批准 newsletter:5 分钟
+→ 4 个销售电话:2 小时
+→ 给流失风险客户打电话:30 分钟</p>
+        <p>总计:3 小时高判断力工作。</p>
+        <p>其他一切都在你没动的情况下跑完了。</p>
+        <p>瓶颈不再是 production。</p>
+        <p>瓶颈变成了判断。</p>
+        <p>而判断恰恰是创始人创造最大价值的地方。</p>
+        <p>未来十年里赢的公司,不会有最好的 prompts。</p>
+        <p>它们会有最好的操作系统。</p>
+        <p>Claude Fable 5 是第一个能跑操作系统的模型。</p>
+      </div>
+    </section>
+
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>How To Build a One-Person Company With Claude Fable 5</em><br>
+          作者:Rahul (@sairahul1,verified) · 124,994 followers · 发布于 2026/07/02 · 129.1K 浏览<br>
+          原文链接:<a href="https://x.com/sairahul1/status/2072608877242118351" target="_blank" rel="noopener">https://x.com/sairahul1/status/2072608877242118351</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/sairahul1" target="_blank" rel="noopener">https://x.com/sairahul1</a>
+        </li>
+        <li>
+          <strong>AUTHOR · PROJECTS</strong>
+          <a href="http://nichetraffickit.com" target="_blank" rel="noopener">nichetraffickit.com</a> · AI 流量工具<br>
+          <a href="http://theaibuilders.co" target="_blank" rel="noopener">theaibuilders.co</a> · AI Builders 社区
+        </li>
+        <li>
+          <strong>TOOLS MENTIONED</strong>
+          <a href="https://claude.ai" target="_blank" rel="noopener">Claude Fable 5</a> · Anthropic 推出的最强公开模型<br>
+          <a href="https://entelligence.ai" target="_blank" rel="noopener">Entelligence</a> · PR 自动 review + incident 预防<br>
+          Bland.ai / Vapi / Retell · AI 通话 agent<br>
+          Cal.com / Calendly · 日历预约<br>
+          GitHub / Sentry / PagerDuty / Linear / Datadog · 接入栈
+        </li>
+        <li>
+          <strong>NOTE ON INLINE IMAGES</strong>
+          原文 8 张 inline 配图为 X 草稿私有资源(mediaCategory: DraftTweetImage),公开 CDN 不可访问。本文只保留可公开下载的封面图(cover.jpg)。正文以原文 markdown 文本 + prompt card 呈现。
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本,按中文阅读习惯意译。所有 prompt 模板保留英文原貌,便于直接复制使用;中文版 head 名字为意译。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">建议:不要六个部门同时搭。从 Step 0 开始,先建好公司大脑(2 小时),然后按 Week 1 → Month 6 的顺序逐层解锁。prompt 不是越通用越好用 —— 替换每个方括号里的占位符(产品 / ICP / niche / 痛点),让 prompt 真正适配你的业务,Fable 的输出才会真正帮你省时间。</p>
+    </section>
+    <section class="closing">
+      <p class="closing-text">The bottleneck is no longer production.<br>The bottleneck is now <strong>judgment</strong>.</p>
+      <p class="closing-text" style="font-size:18px;color:var(--text-secondary);font-style:italic;font-family:Noto Serif SC, serif;">未来十年赢的公司,不会有最好的 prompts。<br>它们会有最好的<strong>操作系统</strong>。</p>
+      <p class="closing-caption">— Rahul · on Claude Fable 5 and the one-person company</p>
+    </section>
+    <footer class="article-footer">
+      <p>本文为解读版本 · 原文所有 prompt 模板均保留英文原貌</p>
+      <p class="credit">朱有以 · 为 AI 发电 · 2026/07</p>
+    </footer>
+  </main>
+  <button class="floating-nav-toggle" id="navToggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item"><span class="nav-item-num">01</span><span class="nav-item-stack"><span class="nav-item-en">The old model vs the new model</span><span class="nav-item-cn">新旧模式对比</span></span></a>
+      <a href="#cap-02" class="nav-item"><span class="nav-item-num">02</span><span class="nav-item-stack"><span class="nav-item-en">Step 0 — Build the company brain first</span><span class="nav-item-cn">Step 0 · 公司大脑</span></span></a>
+      <a href="#cap-03" class="nav-item"><span class="nav-item-num">03</span><span class="nav-item-stack"><span class="nav-item-en">Department 1 — Research</span><span class="nav-item-cn">部门 1 · 研究</span></span></a>
+      <a href="#cap-04" class="nav-item"><span class="nav-item-num">04</span><span class="nav-item-stack"><span class="nav-item-en">Department 2 — Marketing</span><span class="nav-item-cn">部门 2 · 营销</span></span></a>
+      <a href="#cap-05" class="nav-item"><span class="nav-item-num">05</span><span class="nav-item-stack"><span class="nav-item-en">Department 3 — Sales</span><span class="nav-item-cn">部门 3 · 销售</span></span></a>
+      <a href="#cap-06" class="nav-item"><span class="nav-item-num">06</span><span class="nav-item-stack"><span class="nav-item-en">Department 4 — Engineering</span><span class="nav-item-cn">部门 4 · 工程</span></span></a>
+      <a href="#cap-07" class="nav-item"><span class="nav-item-num">07</span><span class="nav-item-stack"><span class="nav-item-en">Department 5 — Support</span><span class="nav-item-cn">部门 5 · 客服</span></span></a>
+      <a href="#cap-08" class="nav-item"><span class="nav-item-num">08</span><span class="nav-item-stack"><span class="nav-item-en">Department 6 — Operations</span><span class="nav-item-cn">部门 6 · 运营</span></span></a>
+      <a href="#cap-09" class="nav-item"><span class="nav-item-num">09</span><span class="nav-item-stack"><span class="nav-item-en">2 layers that make this compound</span><span class="nav-item-cn">2 个叠加层</span></span></a>
+      <a href="#cap-10" class="nav-item"><span class="nav-item-num">10</span><span class="nav-item-stack"><span class="nav-item-en">5 Fable prompting rules</span><span class="nav-item-cn">5 条提示词规则</span></span></a>
+      <a href="#cap-11" class="nav-item"><span class="nav-item-num">11</span><span class="nav-item-stack"><span class="nav-item-en">The implementation order</span><span class="nav-item-cn">实施顺序</span></span></a>
+      <a href="#cap-12" class="nav-item"><span class="nav-item-num">12</span><span class="nav-item-stack"><span class="nav-item-en">What month 6 looks like</span><span class="nav-item-cn">6 个月后的样子</span></span></a>
+    </div>
+  </nav>
+  <script>
+    // ===== Floating Nav Toggle =====
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    if (navToggle && navPanel) {
+      navToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+      document.addEventListener('click', (e) => {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+      navPanel.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => navPanel.classList.remove('active'));
+      });
+    }
+
+    // ===== Prompt Card: EN/CN toggle + Copy =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) body.removeAttribute('hidden');
+            else body.setAttribute('hidden', '');
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector('.prompt-card-body[data-lang="' + activeLang + '"]');
+      const content = body.textContent;
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else fallbackCopy(content, showCopied);
+    }
+
+    function fallbackCopy(content, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = content;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+</body>
+</html>
