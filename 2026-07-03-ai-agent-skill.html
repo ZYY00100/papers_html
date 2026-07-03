@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent 的 SKILL 编写指南 · X 长文完整中文解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* CODE BLOCK (浅色背景，区别于 06-30 的暗色 prompt-card) */
+    .code-block {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      padding: 18px 22px;
+      margin: 20px 0;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--text-primary);
+    }
+
+    /* IMAGE GRID (single image wrapper) */
+    .cap-image {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      margin: 28px 0;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-image:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-image img { display: block; width: 100%; height: auto; }
+    .cap-image figcaption {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cap-image figcaption strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* REFERENCES — 引用与原文出处 */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-prompt pre { font-size: 11.5px; }
+      .code-block { font-size: 12px; padding: 14px 16px; }
+      .spectrum-row { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">AGENT · SKILL.MD</div>
+      <h1 class="article-title">Agent 的<span class="highlight">SKILL</span>编写指南</h1>
+      <p class="article-subtitle">How to Create the Right Skill for Your AI Agent · X 长文完整中文解读</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 @free_ai_guides · 36K 浏览 · 281 收藏</span>
+        <span class="byline-sep">·</span>
+        <span>2026/07/03</span>
+      </div>
+      <p class="article-desc">@free_ai_guides 2026/06/29 的 X 长文 "How to Create the Right Skill for Your AI Agent" 36K 浏览、281 次收藏。原文讲透为什么 agent 真正需要的不是更多 prompt，而是 <strong>SKILL.md</strong> —— 一个可复用、跨平台、按需加载的工作流文件。本文按 10 章完整翻译：cap 01-02 讲 skill 是什么 + SKILL.md 长什么样（cap 02 含 folder 结构 + YAML 头两个代码块）；cap 03-04 讲三层加载 + Prompt/Config/Skill 三角对比 + push vs pull；cap 05-09 按 4 种失败模式各占一章讲痛点 + 对应 skill 修法（cap 08 含 1 个 Code Review Checklist 代码块）；cap 10 讲安全（341 恶意 skill + Snyk 36% 投毒率 + Audit-Before-Adopt）+ 你会得到什么。6 张原文配图、3 段代码、4 种 skill 完整保留。</p>
+    </section>
+
+    <!-- COVER -->
+    <section class="cover-frame">
+      <img src="images/2026-07-03-ai-agent-skill/cover.jpg" alt="How to Create the Right Skill for Your AI Agent · 原文封面">
+      <p class="cover-caption">free_ai_guides · How to Create the Right Skill for Your AI Agent · 2026/06/29 · <a href="https://x.com/free_ai_guides/status/2071666929451094227" target="_blank" rel="noopener">原 X 文章链接</a></p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">你的 AI agent 不需要再多一个 prompt。</p>
+      <p class="intro-lead">它需要的是 <strong>skill</strong>。</p>
+
+      <p class="intro-statement">Prompt 是一次性指令。你打出来，agent 照做，下一会话就消失了。每次都从零开始。</p>
+      <p class="intro-statement">Skill 是项目里可复用工作流文件。你写一次，agent 每次跑都加载，按同样定义好的流程执行。</p>
+
+      <p class="intro-statement" style="color: var(--accent-red); font-weight: 500;">数字说话：SkillsBench（首个同行评议的 agent skill 基准，2026-02 发布，84 个 task × 11 个 domain）发现，经过策划的 skill 把 agent 平均通过率拉高 <strong>16.2 个百分点</strong>。让 agent 自己写自己的 skill——零提升。</p>
+
+      <p class="intro-statement">SKILL.md 格式本身已经不是单一厂商特性。Anthropic 2025-12 在 agentskills.io 把 Agent Skills 规范作为开源标准发布。3 个月内，OpenAI Codex、Google Gemini CLI、GitHub Copilot、Cursor、VS Code 以及几十款其他工具全部采用同一格式。</p>
+
+      <p class="intro-statement">到 2026 年中，超过 <strong>40 款产品</strong>支持 SKILL.md 标准。写一次，跨每个主流 coding agent 直接用。</p>
+
+      <p class="intro-statement">这篇文讲透：skill 是什么、怎么从 0 写一个、怎么避开社区共享 skill 里的安全陷阱、开始写之后你日常工作会变什么。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Your AI agent doesn't need another prompt<span class="arrow">·</span>It needs a <span class="arrow">skill</span></div>
+      <div class="pull-quote-caption">free_ai_guides · How to Create the Right Skill for Your AI Agent · X 2026/06/29</div>
+    </section>
+
+    <!-- 01 -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">Your AI agent doesn't need another prompt. It needs a skill.</h2>
+          <div class="cap-title-cn">agent 需要的是 skill，不是 prompt</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>prompt 是一次性指令。"Review this code for bugs." —— 输完就消失，下一会话没了。</p>
+
+        <p>skill 是项目里的可复用工作流文件。你写一次。agent 每次跑同一类任务都加载它，按定义好的流程执行。</p>
+
+        <p>数字支撑：SkillsBench（首个同行评议的 agent skill 基准，2026-02 发布，84 task × 11 domain）发现，<strong>经过策划的 skill 把 agent 平均通过率拉高 16.2 个百分点</strong>。让 agent 自生成的 skill —— 零稳定提升。</p>
+
+        <p>skill 的质量是变量。agent 越强，知道怎么写好 skill 的人，比每天在聊天框里敲指令然后指望运气好的人，拉得越远。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-03-ai-agent-skill/x-01.jpg" alt="SKILL.md 文件夹结构 · 原文配图">
+          <figcaption><strong>SKILL.MD = A FOLDER + A FILE</strong>A skill is a folder. Inside it: SKILL.md (YAML header + Markdown body) — the only required component. Everything else (scripts / references / assets) loads only when the agent needs it.</figcaption>
+        </figure>
+
+        <p>SKILL.md 格式本身已经不是单一厂商特性。Anthropic 2025-12 在 agentskills.io 把 Agent Skills 规范作为<strong>开源标准</strong>发布。3 个月内，OpenAI Codex、Google Gemini CLI、GitHub Copilot、Cursor、VS Code 以及几十款其他工具全部采用同一格式。</p>
+
+        <p>到 2026 年中，超过 <strong>40 款产品</strong>支持 SKILL.md 标准。写一次，跨每个主流 coding agent 直接用，不用改。</p>
+
+        <p>本文涵盖：skill 是什么、怎么从 0 写一个、怎么避开社区共享 skill 里的安全陷阱、开始写之后你日常工作会变什么。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>A prompt is a one-time instruction. You type it, the agent follows it, and by the next session, the entire conversation is gone. You start from zero every time. A skill is a reusable workflow file that sits in your project. You write it once. The agent loads it every time the task comes up and follows the same defined process, on repeat.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            你的 CLAUDE.md / AGENTS.md 是<strong>配置</strong>（每会话必加载），SKILL.md 是<strong>工具</strong>（按需加载）。把"每次都要 agent 做的标准动作"做成 skill，比如"code review 前 grill 30 个问题"、"先跑测试再改代码"、"按 CONTEXT.md 命名"——写到 SKILL.md 里，agent 在对应场景自动调用。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">SKILL.md is a folder + a file</h2>
+          <div class="cap-title-cn">SKILL.md 长什么样 — 文件夹 + YAML 头 + Markdown 正文</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>一个 skill 就是一个<strong>文件夹</strong>。里面放一个叫 <code>SKILL.md</code> 的文件。这个文件分两部分：</p>
+
+        <ul class="cap-features">
+          <li>一段简短的<strong>YAML 头</strong>（skill 名 + 描述）</li>
+          <li>一段<strong>Markdown 正文</strong>（agent 实际要按什么流程执行的指令）</li>
+        </ul>
+
+        <pre class="code-block">my-skill/
+├── SKILL.md          # Required: metadata + instructions
+├── scripts/          # Optional: executable code
+├── references/       # Optional: documentation
+└── assets/           # Optional: templates, resources</pre>
+
+        <p><code>SKILL.md</code> 是<strong>唯一</strong>必需组件。其他都是可选的，agent 真的需要时才加载。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 18px; color: var(--text-primary); margin: 28px 0 12px; letter-spacing: 0.04em;">The Header (YAML Frontmatter)</h3>
+
+        <p>每个 <code>SKILL.md</code> 开头是 <code>---</code> 包起来的 YAML 块。两个字段是必需的：<code>name</code> 和 <code>description</code>。</p>
+
+        <pre class="code-block">---
+name: code-review-checklist
+description: &gt;
+  Run a structured code review on the current changeset.
+  Trigger when reviewing PRs or before merging any branch.
+  Do not use for architecture-level reviews. Use the
+  architecture skill instead.
+---</pre>
+
+        <p><code>description</code> 字段是整个 skill 里<strong>最重要的一段文字</strong>。agent 读它来判断要不要为当前任务加载这个 skill。</p>
+
+        <p><strong>关键词和触发条件前置。</strong>明确说明 skill 什么情况下<strong>不要</strong>触发。模糊的描述会导致误匹配，浪费 context，把 agent 搞糊涂。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 18px; color: var(--text-primary); margin: 28px 0 12px; letter-spacing: 0.04em;">The Body (Markdown Instructions)</h3>
+
+        <p>头下面，写 agent 要遵循的工作流。纯 Markdown。不用特殊语法。</p>
+
+        <pre class="code-block"># Code Review Checklist
+
+When reviewing a changeset:
+
+1. Read the diff in full before commenting.
+2. Check for test coverage on every new function.
+3. Flag any function longer than 40 lines.
+4. Verify naming follows CONTEXT.md conventions.
+5. If a module's public interface changed, confirm
+   the changelog entry exists.
+6. Summarize findings in a structured comment:
+   pass/fail per check, with line references.</pre>
+
+        <p>这就是一个完整 skill —— 一个文件，六步。agent 现在每次 code review 都会跑这个 checklist，跨你用的每个兼容工具。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>The SKILL.md file is the only required component. Everything else is optional and loads only when the agent needs it.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            写 description 时把自己当 agent：<strong>"这个 skill 在什么 trigger 词下应该被加载"</strong>。比如 code-review-checklist → 触发词：review、PR、merge 前、code review。description 里把这些 trigger 词都明确写出来。模糊描述 = 永远不加载 或 永远乱加载。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">How skills load — progressive disclosure</h2>
+          <div class="cap-title-cn">三层加载 — name → instructions → references</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>你的 agent <strong>不会</strong>在每个 session 开始时读每一个已安装的 skill。那样会塞满 context window，让它变笨。</p>
+
+        <p>Skill 按三层加载：</p>
+
+        <p><strong>Tier 1: 只有 name 和 description。</strong>Session 开始时，agent 只读每个已安装 skill 的 name 和一行 description。这每个 skill 花 <strong>30-50 token</strong>。够它知道有什么 skill 可用，不烧 context。</p>
+
+        <p><strong>Tier 2: 完整指令。</strong>当 agent 判断某个 skill 跟当前任务相关时，它把 <code>SKILL.md</code> 完整正文拉进 context。现在它有完整的工作流了。</p>
+
+        <p><strong>Tier 3: 引用文件。</strong>如果指令引用了外部文件（脚本 / 模板 / 文档），agent <strong>只在它跑到那一步时</strong>才加载它们。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-03-ai-agent-skill/x-02.jpg" alt="三层加载 · 原文配图">
+          <figcaption><strong>PROGRESSIVE DISCLOSURE</strong>Tier 1: name + description (30-50 tokens per skill, always loaded) → Tier 2: full SKILL.md body (loaded when task matches) → Tier 3: scripts / references / assets (loaded only when the specific step needs them).</figcaption>
+        </figure>
+
+        <p>三层系统就是你装几十个 skill 也不会让 agent 变慢的原因。agent 只在需要时加载它需要的最小集合。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>Your agent doesn't read every installed skill at the start of every session. That would flood its context window and make it dumber. Instead, skills load in three tiers.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            写 skill description 时<strong>控制字数</strong>。Tier 1 是常驻 context 的，30-50 token / skill。装 20 个 skill 就是 600-1000 token 常驻——不能更多。把 trigger 词写清楚就够了，不要在 description 里写完整流程。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">Skill vs. Prompt vs. Config File</h2>
+          <div class="cap-title-cn">Prompt / Config / Skill 三角 + push vs pull</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这三者经常被搞混。区分很简单。</p>
+
+        <p><strong>Prompt</strong> 是你打到聊天框里的一次性指令。"Review this code for bugs." Session 结束它就消失。</p>
+
+        <p><strong>Config file</strong>（比如 <code>CLAUDE.md</code> / <code>AGENTS.md</code> / <code>.cursorrules</code>）是<strong>每个 session 开始都 push 给 agent 的</strong>一套指令。"Always use TypeScript. Follow our naming conventions. Never push to main."</p>
+
+        <p>这些是 always-on 规则，作用于 agent 做的所有事。</p>
+
+        <p><strong>Skill</strong> 介于两者之间。它不是 always-on（那样浪费 context），也不是一次性（那样浪费你写它的功夫）。它在任务匹配时<strong>按需拉进来</strong>。</p>
+
+        <p>agent 读 description 然后决定："这个 task 配那个 skill。" 然后加载完整指令，按定义好的工作流跑。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-03-ai-agent-skill/x-03.jpg" alt="Prompt / Config / Skill 三角 · 原文配图">
+          <figcaption><strong>PUSH VS PULL</strong>Config = push (always loaded every session) — Prompt = one-shot (gone after session) — Skill = pull (loaded on demand when task matches). This three-way distinction is the structural difference.</figcaption>
+        </figure>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 18px; color: var(--text-primary); margin: 28px 0 12px; letter-spacing: 0.04em;">Two Types of Skills</h3>
+
+        <p><strong>User-invoked skill</strong> 是你自己触发的。你敲 <code>/grill-me</code> 或 <code>/tdd</code>，agent 开始跑工作流。这些是用于<strong>编排</strong>，在定义好的时刻启动定义好的流程。</p>
+
+        <p><strong>Model-invoked skill</strong> 是 agent 自己在任务匹配时拉进来的。你不用敲命令。agent 读 skill 的 description，识别到匹配，拉进来用。这些是用于<strong>纪律</strong>，嵌入不用问就自动触发的好习惯。</p>
+
+        <p>两种类型用同一个 <code>SKILL.md</code> 格式。区别在<strong>怎么触发</strong>，不在怎么写。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 18px; color: var(--text-primary); margin: 28px 0 12px; letter-spacing: 0.04em;">Cross-Platform by Default</h3>
+
+        <p>在 Agent Skills 标准出现之前，每个工具都有自己的定制格式。Cursor 用 <code>.cursorrules</code>。Claude Code 用 <code>/commands</code>。Copilot 用 instruction files。</p>
+
+        <p>你换工具，定制就不过去。</p>
+
+        <p><strong>SKILL.md 开源标准改了这一点。</strong>一个为 Claude Code 写的 skill，不用改就能在 Codex、Gemini CLI、Cursor、Copilot、VS Code 里跑。兼容工具的清单现在超过 <strong>40 款</strong>，从 terminal agent 到完整 IDE 到云端自主系统。</p>
+
+        <p>你写一次。它到处跑。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>The technical term for this difference is push vs. pull. Config files push instructions to the agent whether it needs them or not. Skills let the agent pull instructions when it recognizes the right moment.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            <strong>CLAUDE.md 放原则</strong>（永远遵循的规则，< 100 条）。<strong>SKILL.md 放流程</strong>（特定任务触发的标准动作）。两者比例建议 1:5 到 1:10。原则越少越精确，skill 越多越能复用。Claude Code / Cursor / Codex 三边工具共用同一套 skill 库，写一次零迁移成本。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">Start with the problem, not the tool</h2>
+          <div class="cap-title-cn">找痛点 — 4 种失败模式 + 对应 skill</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>别坐下来"写一个 skill"。坐下来修一个<strong>失败模式</strong>。</p>
+
+        <p>AI agent 失败的方式是可预测的。每个跟 coding agent 待过一个月以上的开发者都撞过同样的四个问题。搞清楚哪个<strong>最花你时间</strong>，就告诉你先写哪个 skill。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-03-ai-agent-skill/x-04.jpg" alt="4 种失败模式 · 原文配图">
+          <figcaption><strong>FOUR FAILURE MODES</strong>1 · Agent 不做你要它做的（misalignment）— 2 · Agent 太啰嗦（vocabulary drift）— 3 · 代码跑不通（no feedback loop）— 4 · Codebase 变烂泥（shallow modules / entropy）。每个都有对应的 skill 修法。</figcaption>
+        </figure>
+
+        <p>下面 4 章（cap 06-09）按 4 种失败模式各占一章，每章讲：失败是什么样的 + 根因 + 修法 skill。挑最花你时间的那种，本周先写一个对应 skill。</p>
+
+        <ul class="cap-features">
+          <li><strong>失败模式 1</strong> —— Agent 没做你要它做的（cap 06）→ 修法：<code>grilling</code> skill</li>
+          <li><strong>失败模式 2</strong> —— Agent 太啰嗦（cap 07）→ 修法：<code>shared language</code> skill</li>
+          <li><strong>失败模式 3</strong> —— 代码跑不通（cap 08）→ 修法：<code>TDD</code> skill</li>
+          <li><strong>失败模式 4</strong> —— Codebase 变烂泥（cap 09）→ 修法：<code>architecture</code> skill</li>
+        </ul>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>AI agents fail in predictable ways. Every developer who has spent a month with a coding agent has run into the same four problems. Understanding which one is costing you the most tells you which skill to build first.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            翻开你这周跟 agent 的对话记录（Claude Code 的 transcript / Cursor 的 chat log / Codex 的 history），数一数：重复 prompt 几次、agent 跑偏几次、code 报错几次、<strong>哪种最多</strong>。最多的那种就是你的 failure mode，对应 skill 就是先写的。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">FAILURE MODE 1</div>
+          <h2 class="cap-title-en">The agent didn't do what you wanted</h2>
+          <div class="cap-title-cn">失败模式 1 — 方向错了 → grilling skill</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这是最常见的那种。你描述想要什么。agent 接收任务开始写。你回头看，发现它理解的东西<strong>跟你的意思不一样</strong>。</p>
+
+        <p>根因是<strong>misalignment</strong>。你和 agent 在动手前没达成对问题的共同理解。</p>
+
+        <p>Frederick P. Brooks 在 <em>The Design of Design</em> 里把这点叫"design tree"。每个设计都有必须在动手前解决的决策分支。跳过这些分支，你就是在假设上盖楼。</p>
+
+        <p>修法是一个 <strong>grilling skill</strong>。一个告诉 agent 的 skill："<strong>动手写代码前，先 interview 我。每个决策分支的细节问题挨个问。走完 design tree 的每个分支。我们俩都同意要建什么之前，别停。</strong>"</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-03-ai-agent-skill/x-05.jpg" alt="Grilling skill interview 流程 · 原文配图">
+          <figcaption><strong>GRILLING = 16-50 QUESTIONS BEFORE CODE</strong>Most popular version of this pattern is only three sentences long. Runs in Claude Code, Codex, Gemini CLI. Users report sessions of 16 to 50 questions before the agent starts coding. Sounds slow — but one-shot success rate is far higher.</figcaption>
+        </figure>
+
+        <p>这个 pattern 最流行的版本只有<strong>三句话</strong>。在 Claude Code、Codex、Gemini CLI 都能跑。用户报告 16-50 个问题之后 agent 才开始写代码。</p>
+
+        <p>听起来慢。但一次到位的成功率远高于另一种方式 —— 先开始写，搞砸了再来修 misalignment。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>The root cause is misalignment. You and the agent didn't reach a shared understanding of the problem before jumping to code. The fix is a grilling skill. A skill that tells the agent: "Before you write any code, interview me. Ask me detailed questions about every aspect of this plan. Walk down each branch of the decision tree. Don't stop until we both agree on what we're building."</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            把最火的那三句 grilling skill 装上。Claude Code 的 <code>/grill-me</code> 或同等 skill —— 任何写代码的任务前自动触发。比"你懂我意思吧"靠谱 10 倍，省下"哦不对，我想要的是 X"的来回 3-5 轮。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">FAILURE MODE 2</div>
+          <h2 class="cap-title-en">The agent is way too verbose</h2>
+          <div class="cap-title-cn">失败模式 2 — 废话太多 → shared language skill</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Agent 落到你项目里，临时摸清本地的术语。你的代码库把某东西叫 "materialization cascade"，但 agent 不知道这个词，于是它写 "the process by which a lesson inside a section of a course is made real, given a spot in the file system."</p>
+
+        <p>2 词概念，24 个词。</p>
+
+        <p>这问题是复利型的。每 session，agent 从零重新发现你的词汇。它烧 token，重述上次已经想清楚的东西，长篇描述挤掉有用的工作。</p>
+
+        <p>修法是一个 <strong>shared language skill</strong>。一个维护你项目<strong>词汇表</strong>文件（通常叫 <code>CONTEXT.md</code>）的 skill。Agent 在每 session 开始时读它。</p>
+
+        <p>变量、函数、文件名都一致。Agent 思考花的 token 变少，因为它拿到的是更紧的语言。</p>
+
+        <p>Eric Evans 2003 年在 <em>Domain-Driven Design</em> 里把这个叫 "ubiquitous language"。这个概念比 AI agent 老得多。Skill 只是把它自动化了。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>Agents get dropped into your project and figure out the local jargon as they go. Your codebase calls something a "materialization cascade," but the agent doesn't know that term, so it writes "the process by which a lesson inside a section of a course is made real, given a spot in the file system." That's 24 words for a 2-word concept.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            建一个 <code>CONTEXT.md</code>：项目核心术语 + 缩写 + 内部黑话 + 1 句解释。Claude Code / Cursor / Codex 在每 session 开始读一次。Agent 不再每次重新发明轮子。一个 5-10 KB 的 CONTEXT.md 能省每周几小时 token + 输出更精炼。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">FAILURE MODE 3</div>
+          <h2 class="cap-title-en">The code doesn't work</h2>
+          <div class="cap-title-cn">失败模式 3 — 代码跑不通 → TDD skill</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>你的 agent 写出看起来合理但运行时挂的代码。它对自己输出能不能跑没有反馈。没有 test、没有 type check、没有浏览器可以看一眼，agent 就是<strong>蒙眼写代码</strong>。</p>
+
+        <p>修法是一个 <strong>feedback loop skill</strong>。最有效的版本是 TDD（test-driven development）skill，强制 red-green-refactor 循环：agent 先写一个失败的 test，再写最小代码让 test 过，再清理。</p>
+
+        <p><strong>Test 必须在实现开始前就失败。</strong>这是结构性 gate，不是建议。</p>
+
+        <p>为什么这重要？因为 agent 倾向于先写代码再补 test。那就失去了 TDD 的意义。</p>
+
+        <p>一个写好的 TDD skill 通过把序列变成<strong>不可绕过</strong>来防住这点：先 red，再 green，再 refactor。Skill 把 nudge 变成 rule。</p>
+
+        <figure class="cap-image">
+          <img src="images/2026-07-03-ai-agent-skill/x-06.jpg" alt="TDD red-green-refactor 循环 · 原文配图">
+          <figcaption><strong>RED → GREEN → REFACTOR</strong>Test must fail before implementation begins. Agent writes a failing test, then writes the minimum code to pass, then cleans up. Sequence is non-negotiable — the skill turns a nudge into a rule.</figcaption>
+        </figure>
+
+        <p>一个写好的 TDD skill 通过把序列变成<strong>不可绕过</strong>来防住这点：先 red，再 green，再 refactor。Skill 把 nudge 变成 rule —— agent 不会"忘了"先写 test，因为它加载 skill 时第一步就是"先写一个 failing test，run，确认它 fail"。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>Your agent writes code that looks reasonable but breaks at runtime. It had no feedback on whether its output runs. Without a test, a type check, or a browser to look at, the agent is coding blind. The fix is a feedback loop skill. The most effective version is a TDD (test-driven development) skill that enforces a red-green-refactor cycle: the agent writes a failing test first, then writes the minimum code to make it pass, then cleans up.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            在项目根放 <code>SKILL.md</code>，触发词：implement / add feature / fix bug / refactor。Body 写明：<strong>先写 test，确认 test 失败，再写实现，再让 test 过，再 refactor。跳过任何一步，停下回报。</strong>Claude Code 配这个 skill，PR 通过率立刻拉一档。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">FAILURE MODE 4</div>
+          <h2 class="cap-title-en">The codebase turns to mud</h2>
+          <div class="cap-title-cn">失败模式 4 — 代码变烂泥 → architecture skill + 短 + stateless</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>AI agent 加速了 coding 速度。这是卖点。但它也加速了<strong>软件熵</strong>。</p>
+
+        <p>每次改动没考虑代码库整体结构就引入小不一致。这些会复利。几周无人监督的 AI 生成代码后，你的项目变成一个脆弱、细小、互相纠缠的文件堆，没有人 —— 人类或 agent —— 能推理出整体。</p>
+
+        <p>John Ousterhout 在 <em>A Philosophy of Software Design</em> 里把这点描述成 deep module 和 shallow module 的区别。Deep module 简单接口藏着大量功能。Shallow module 是几乎什么内容都不包的薄皮。</p>
+
+        <p>Agent 倾向于产生 shallow module，因为它们容易生成。但 shallow code base 难测、难改、难让其他 agent 工作。</p>
+
+        <p>修法是一个 <strong>architecture skill</strong>，定期扫你的代码库，找能让 module 加深的地方：理解一个概念要跳多少个文件？纯函数被抽出来只是为了好测，真 bug 藏在它们被怎么调用的地方？紧耦合的 module 是不是跨边界漏抽象？</p>
+
+        <p>每周跑一次这样的 skill，让代码库对人类和 agent 都保持健康。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 18px; color: var(--text-primary); margin: 28px 0 12px; letter-spacing: 0.04em;">Keep It Short</h3>
+
+        <p>GitHub 上最火 skill 仓库里影响最大的那个 skill 只有<strong>三句话</strong>。它告诉 agent：interview 用户关于 plan 的事；走 design tree 的每个分支；在问用户前先在代码库里找答案。</p>
+
+        <p>那三句话被装过 <strong>250,000 次以上</strong>。</p>
+
+        <p>Skill 不需要长。它需要在对的瞬间选对词。</p>
+
+        <p>如果你发现自己写的 skill 超 2 页，你大概率在把两个 skill 合成一个。拆开。一个 skill，一份活。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 18px; color: var(--text-primary); margin: 28px 0 12px; letter-spacing: 0.04em;">Start Stateless, Go Stateful Later</h3>
+
+        <p>Stateless skill 不在 session 之间存任何东西。它跑，做完活，不留痕迹。</p>
+
+        <p>每次调用都从新开始。你的第一个 skill 应该是 stateless 的，因为出错的地方更少。</p>
+
+        <p>Stateful skill 把文件存到磁盘（词汇表 / 进度追踪 / context 文档），跨 session 保留。这些更强，但也更复杂。</p>
+
+        <p>前面讲的 shared language skill 就是 stateful 的，因为它维护 <code>CONTEXT.md</code>。一个教学 skill 可以是 stateful 的，因为它要追踪学员学到哪了。</p>
+
+        <p>先写 stateless skill。当你已经感受到每次 session 都从零开始的限制时，再加 state。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>AI agents accelerate coding speed. That's the selling point. But they also accelerate software entropy. The fix is an architecture skill that scans the codebase on a regular schedule and looks for places to deepen modules.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            <strong>第一版 skill 一定写 stateless</strong>（30 行以内、3-6 步 checklist）。先验证它真的解决问题再加 state。Stateful skill 加 feature 容易，去 feature 难 —— 早期过度工程化是 skill 库膨胀的最大来源。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 10</div>
+          <h2 class="cap-title-en">Don't download poison + what changes</h2>
+          <div class="cap-title-cn">警惕毒 skill + 你会得到什么 + 从这里开始</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 20px; color: var(--text-primary); margin: 24px 0 12px; letter-spacing: 0.04em;">Don't Download Poison</h3>
+
+        <p>社区 hub（SkillsMP 等）上索引的公开 skill 超过 <strong>190 万</strong>，从世界各地 GitHub 仓库里抓出来。大部分没问题。有些不是。</p>
+
+        <p>2026-02，<a href="https://prplbx.com" target="_blank" rel="noopener">prplbx.com</a> 的安全研究员识别出公开目录里 <strong>341 个恶意 skill</strong>。这些 skill 含隐藏 payload：数据外泄、凭证窃取、prompt injection 把 agent 重定向到执行未授权命令。Snyk 后续审计（"ToxicSkills" 报告）测了更广的样本，发现 <strong>36%</strong> 的 skill 存在 prompt injection 漏洞。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 20px; color: var(--text-primary); margin: 24px 0 12px; letter-spacing: 0.04em;">Quality Is Not Guaranteed Either</h3>
+
+        <p>安全之外，还有质量问题。SkillsBench 团队在选策划 skill 之前审过 <strong>47,150+</strong> 公开 skill。大部分公开 skill 不及格：描述模糊会触发错任务、指令太通用产不出稳定输出、工作流结构不清。</p>
+
+        <p>SkillsBench 对比过用策划 skill vs 用自生成 skill 的 agent 表现 —— 那些尝试自己写自己的 skill 的模型<strong>零稳定提升</strong>。Skill 的质量比"有没有 skill"重要得多。</p>
+
+        <p>一份策划好、结构清晰的 skill 和一份从社区目录里抓的随机 skill 之间的差距，是"训练过的流程"和"瞎猜"的差距。如果你打算用社区 skill，从有明确安装数和活跃维护者的老牌源里挑。或自己写。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 20px; color: var(--text-primary); margin: 24px 0 12px; letter-spacing: 0.04em;">The Audit-Before-Adopt Rule</h3>
+
+        <p>装任何社区 skill 之前：</p>
+
+        <ul class="cap-features">
+          <li>读完整个 <code>SKILL.md</code>。别只盯着 name 和 description。</li>
+          <li>如果存在，打开 <code>scripts/</code> 文件夹。读每个文件。如果一个脚本从网上下载东西或访问环境变量，你得知道为什么。</li>
+          <li>看发布者是谁。一个只有 1 个 repo、0 follower 的匿名 GitHub 账号和有多年公开作品的老牌开发者，是完全不同的风险画像。</li>
+          <li>先在可丢弃的项目上测。永远别把没测过的 skill 直接装到生产代码库。</li>
+        </ul>
+
+        <p>这跟给 npm 包或 VS Code extension 用的卫生习惯一样。Skill 是在你的 agent 里跑的代码。相应地对待它。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 20px; color: var(--text-primary); margin: 24px 0 12px; letter-spacing: 0.04em;">What Changes When You Build Skills</h3>
+
+        <p>刚开始这个 shift 感觉很小。你写一个 <code>SKILL.md</code>，装上，agent 跑一个它以前跳过的 checklist。有用。但真正的力量在复利。</p>
+
+        <p><strong>你不再重复自己。</strong></p>
+
+        <p>在有 skill 之前，每 session 都从你重新解释偏好开始。"Use TypeScript. Follow our naming conventions. Write tests first. Don't use any-types."</p>
+
+        <p>有了 skill，那些指令活在文件里。你写一次，agent 每次拉进来用。每 session 的第一条消息可以就是任务本身，不再是 setup ritual。</p>
+
+        <p><strong>你的 agent 变得可预测。</strong></p>
+
+        <p>没 skill 的 agent 是个能即兴的演员。它能处理大多数任务，但每 session 的做法都不一样。</p>
+
+        <p>有时先写 test，有时不写。有时问澄清问题，有时直接开始建。</p>
+
+        <p>有 skill 的 agent 跑定义好的流程。TDD skill 保证 test 在 code 之前。Grilling skill 保证实现前先对齐。Architecture skill 保证代码库不腐烂。你不再指望 agent 做对选择，你<strong>知道</strong>它会跟好流程。</p>
+
+        <p><strong>你的工具变得可互换。</strong></p>
+
+        <p>因为 skill 跟着开源 SKILL.md 标准走，你换 agent 时工作流跟着走。从 Claude Code 切到 Codex，或在 Cursor 之外加 Gemini CLI，skill 跟着来。</p>
+
+        <p>你的流程是<strong>可移植</strong>的。你写好 skill 的投资不管最后用哪个工具都回本。</p>
+
+        <p><strong>你开始把你的工作方式编码化。</strong></p>
+
+        <p>这是更深的 shift。Skill 不只是给 agent 的指令。它是你怎么想一个任务的<strong>形式化版本</strong>。</p>
+
+        <p>写 skill 这个动作强迫你把流程说清楚：按什么步骤？什么顺序？决策点在哪？</p>
+
+        <p>多数工程师把这种知识当直觉。把它写成 skill，让它能传给 agent，传给同事，传给你未来的自己。</p>
+
+        <h3 style="font-family: 'Noto Serif SC', serif; font-size: 20px; color: var(--text-primary); margin: 24px 0 12px; letter-spacing: 0.04em;">Start Here</h3>
+
+        <p>挑那个最花你时间的 failure mode。写一个 <code>SKILL.md</code> 对付它。控制在 30 行以内。装上。跑一周。然后写下一个。</p>
+
+        <p>把 AI agent 当聊天框的人，会每天早上重复贴同样指令。把 AI agent 当有编码流程的团队成员的人，会 session 接着 session、skill 接着 skill<strong>复利</strong>他们的生产力。</p>
+
+        <p>Skill 跨工具可移植，跨工作流可组合，而且它们随时间复利。这就是"用 AI"和"用 AI 造东西"的区别。</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>原话</strong>The people who treat AI agents as chat windows will keep pasting the same instructions every morning. The people who treat them as team members with an encoded process will compound their productivity, session after session, skill after skill. Skills are portable across tools, composable across workflows, and they compound over time. That's the difference between using AI and building with it.</div></div>
+
+        <div class="cap-example">
+          <div class="cap-example-label">重度使用者怎么用</div>
+          <div class="cap-example-text">
+            <strong>本周一动作</strong>：挑最花你时间的 failure mode → 写一个 30 行以内的 stateless SKILL.md → 装到 Claude Code / Cursor / Codex → 跑一周 → 决定保留 / 改 / 拆 / 弃。一个月后你有 4 个真用得上的 skill，半年后你的 agent 跟别人不一样。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE CLOSING -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Skills are portable across tools, composable across workflows<span class="arrow">·</span>and they <span class="arrow">compound</span> over time</div>
+      <div class="pull-quote-caption">free_ai_guides · How to Create the Right Skill for Your AI Agent · X 2026/06/29</div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>How to Create the Right Skill for Your AI Agent</em><br>
+          发布账号：@free_ai_guides · 实际作者：@alex_prompter · <em>Free AI Guides, shared daily</em><br>
+          发布：2026/06/29 18:47 UTC · X 平台 · 36,116 浏览 · 281 收藏<br>
+          原文链接：<a href="https://x.com/free_ai_guides/status/2071666929451094227" target="_blank" rel="noopener">https://x.com/free_ai_guides/status/2071666929451094227</a>
+        </li>
+        <li>
+          <strong>AGENT SKILLS SPECIFICATION</strong>
+          Anthropic 2025-12 在 agentskills.io 把 Agent Skills 规范作为开源标准发布<br>
+          链接：<a href="https://agentskills.io" target="_blank" rel="noopener">https://agentskills.io</a>
+        </li>
+        <li>
+          <strong>SKILL.MD FORMAT REFERENCE</strong>
+          <em>Official SKILL.md format reference and examples</em><br>
+          链接：<a href="https://github.com/agentskills/agentskills" target="_blank" rel="noopener">https://github.com/agentskills/agentskills</a>
+        </li>
+        <li>
+          <strong>SKILLSBENCH RESEARCH PAPER</strong>
+          <em>SkillsBench — first peer-reviewed agent skill benchmark (84 tasks, 11 domains, 16.2pp improvement)</em><br>
+          链接：<a href="https://arxiv.org/abs/2602.12670" target="_blank" rel="noopener">https://arxiv.org/abs/2602.12670</a>
+        </li>
+        <li>
+          <strong>SECURITY AUDIT — TOXIC SKILLS</strong>
+          <em>341 malicious skills identified by prplbx.com · 36% prompt injection rate per Snyk "ToxicSkills" report</em><br>
+          链接：<a href="https://prplbx.com" target="_blank" rel="noopener">https://prplbx.com</a> · Snyk "ToxicSkills 2026" 报告
+        </li>
+        <li>
+          <strong>COMMUNITY SKILLS HUB</strong>
+          <em>Browse community skills (1.9M+ indexed)</em><br>
+          链接：<a href="https://skills.sh" target="_blank" rel="noopener">https://skills.sh</a>
+        </li>
+        <li>
+          <strong>ACCOUNT · X</strong>
+          @free_ai_guides · 10,085 followers · "Account by: @alex_prompter"<br>
+          链接：<a href="https://x.com/free_ai_guides" target="_blank" rel="noopener">https://x.com/free_ai_guides</a>
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文中所有英文段落、代码、配图均保留原貌；中文部分为意译，便于理解。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">10 章完整翻译 · 6 张原文配图 · 3 段代码（YAML 头 / folder 结构 / Code Review Checklist）· 4 种 failure mode + 4 个对应 skill · 警惕毒 skill + 你会得到什么 + 从这里开始。SKILL.md 开源标准完整覆盖。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">Your AI agent doesn't need another prompt. <strong>It needs a skill.</strong></p>
+      <p class="closing-text">Skills are portable across tools, composable across workflows, <strong>and they compound over time.</strong></p>
+      <p class="closing-caption">读完了。下一步：挑最花你时间的 failure mode，本周写一个 30 行以内的 SKILL.md。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">10 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Agent needs skill, not prompt</span>
+          <span class="nav-item-cn">不是 prompt，是 skill</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">SKILL.md = folder + file</span>
+          <span class="nav-item-cn">SKILL.md 长什么样</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Progressive disclosure</span>
+          <span class="nav-item-cn">三层加载</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Skill vs Prompt vs Config</span>
+          <span class="nav-item-cn">三角对比 + push vs pull</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Start with the problem</span>
+          <span class="nav-item-cn">4 种失败模式总览</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Failure 1: misalignment</span>
+          <span class="nav-item-cn">方向错了 → grilling</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Failure 2: too verbose</span>
+          <span class="nav-item-cn">废话太多 → shared lang</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Failure 3: code broken</span>
+          <span class="nav-item-cn">代码跑不通 → TDD</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Failure 4: codebase mud</span>
+          <span class="nav-item-cn">代码变烂泥 → architecture</span>
+        </span>
+      </a>
+      <a href="#cap-10" class="nav-item">
+        <span class="nav-item-num">10</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Don't poison + start here</span>
+          <span class="nav-item-cn">警惕毒 skill + 开始</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
