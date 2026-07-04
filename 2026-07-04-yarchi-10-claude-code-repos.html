@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10 个让 Claude Code 真正发挥 10x 能力的开源仓库（完整指南） · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(30px, 4.5vw, 44px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+    .article-title .highlight { color: var(--accent-red); }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(17px, 2.4vw, 20px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 680px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 640px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+    .cover-caption a {
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .cover-caption a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 16px;
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+    .intro-list {
+      list-style: none;
+      margin: 18px 0 18px;
+      padding: 0;
+      counter-reset: intro-step;
+    }
+    .intro-list li {
+      position: relative;
+      padding: 8px 0 8px 36px;
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      counter-increment: intro-step;
+    }
+    .intro-list li::before {
+      content: counter(intro-step);
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0;
+    }
+    .intro-note {
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+    }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(24px, 3.8vw, 34px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 760px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; min-width: 0; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+    .cap-repo-link {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--accent-gold-dim);
+      margin-top: 8px;
+      display: inline-block;
+      word-break: break-all;
+    }
+    .cap-repo-link a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .cap-repo-link a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+
+    .star-callout {
+      display: inline-block;
+      margin: 4px 0 18px;
+      padding: 6px 14px;
+      background: rgba(201, 169, 98, 0.12);
+      border: 1px solid rgba(201, 169, 98, 0.3);
+      border-radius: 999px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--accent-gold-dim);
+    }
+
+    .cap-commands {
+      margin: 20px 0;
+      padding: 0;
+      list-style: none;
+    }
+    .cap-commands li {
+      position: relative;
+      padding: 12px 0 12px 24px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-commands li:last-child { border-bottom: none; }
+    .cap-commands li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 22px;
+      width: 10px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-commands code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13.5px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+
+    .cap-callout {
+      margin: 22px 0 8px;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+    }
+    .cap-callout strong { color: var(--text-primary); font-weight: 600; }
+
+    /* CODE BLOCK (浅色背景) */
+    .code-block {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      padding: 18px 22px;
+      margin: 20px 0;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--text-primary);
+    }
+    .code-block-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 8px;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 320px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 24px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .code-block { font-size: 12px; padding: 14px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">CLAUDE CODE · OPEN SOURCE</div>
+      <h1 class="article-title">10 个让 Claude Code 真正发挥 <span class="highlight">10x</span> 能力的开源仓库（完整指南）</h1>
+      <p class="article-subtitle">10 Open-Source Repos That Quietly Make Claude Code 10x Better · X 长文完整中文解读</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Yarchi (@undefinedKi) · 2.9M 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/07/04</span>
+      </div>
+      <p class="article-desc">Yarchi 2026/06/27 的 X 长文，原文 2.9M 浏览。他跑了几个月，挑出 10 个真正让 Claude Code 脱胎换骨的开源仓库 — skill / harness / memory / agent team / security / video / research / personal agent。本文按原文顺序逐节翻译：开篇 3 段铺垫 + GitHub 入门科普 + 10 仓库（每个含 star 数 + 出品人 + 安装命令 + 常用命令 + 风险提示）+ The Bottom Line 收尾。1 张原文封面 + 15 段原始 CLI 命令完整保留。</p>
+    </section>
+
+    <!-- COVER -->
+    <section class="cover-frame">
+      <img src="images/2026-07-04-yarchi-10-claude-code-repos/cover.jpg" alt="10 Open-Source Repos That Quietly Make Claude Code 10x Better · 原文封面">
+      <p class="cover-caption">Yarchi · 10 Open-Source Repos That Quietly Make Claude Code 10x Better · 2026/06/27 · <a href="https://x.com/undefinedKi/status/2070852381164630023" target="_blank" rel="noopener">原 X 文章链接</a></p>
+    </section>
+
+    <!-- INTRO 1 — 开篇铺垫 -->
+    <section class="article-intro">
+      <p class="intro-lead">Claude Code 已经是市面上最能干的 coding agent。<strong>它能规划、能写、能 debug、能发布。</strong></p>
+
+      <p class="intro-lead">但有一件事几乎没人告诉你：如果你跑的是原版开箱即用的 Claude Code，你只用了它大概 <strong>20%</strong> 的能力。</p>
+
+      <p class="intro-statement">剩下那 80% 在开源仓库里。Skills、harness、memory layer、agent team —— 都是每天用 Claude Code、用到受不了它的局限之后做出来的东西。装上之后，一个 agent 就能记住你的 codebase、能 review 自己的工作、能像一支完整的团队那样交付。</p>
+
+      <p class="intro-statement">但现在被吹爆的那些 repo 大多数是噪音。被刷上去的 star 数、花哨的 landing page、只是把 context 撑爆、让 Claude 变慢的 skill。装错一套，你的 setup 不是变好，是变差。</p>
+
+      <p class="intro-statement">所以我把它们翻了一遍。看了真实的 GitHub 数据，读了文档，测试了 setup，记下了每个仓库是谁做的、为什么火起来。最后剩下 10 个真正值得花时间的。</p>
+
+      <p class="intro-statement">每个仓库我会讲它是什么、适合谁、怎么用。我们开始。</p>
+    </section>
+
+    <!-- INTRO 2 — GitHub 入门科普 -->
+    <section class="article-intro">
+      <p class="intro-kicker">首先 · 给不熟 GitHub 的同学（懂 GitHub 的可跳过）</p>
+      <p class="intro-statement">GitHub 基本就是全世界最大的开源代码图书馆。人们把工具放在上面，免费给任何人下载和使用。一个 <strong>repo</strong>（repository = 仓库）就是一个项目的文件夹，里面有代码、有说明文档、什么都有。<strong>Stars</strong> 就像点赞：star 越多，说明越多人觉得它有用。我说一个 repo 有 20 万 star，是个很强的信号，说明它是真东西。</p>
+
+      <p class="intro-statement">这里几乎每个 repo 在 Claude Code 里的工作方式都一样。套路是：</p>
+
+      <ol class="intro-list">
+        <li>打开 Claude Code，命令行或 Claude app（Code tab）都行。</li>
+        <li>二选一装上：要么从 repo 的 README（首页）复制一行安装命令；要么直接把 repo 链接丢给 Claude Code，说「帮我装这个 repo」，Claude 自己读说明书自己装。</li>
+        <li>装完就完事了。新 skill / 工具马上能用。用斜杠命令（比如 <code>/review</code>）调用，或者直接用中文问 Claude。</li>
+      </ol>
+
+      <div class="intro-note">大多数这些不需要写代码。能复制粘贴就能跑。下面每个我会给具体命令。</div>
+    </section>
+
+    <!-- PULL QUOTE 1 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Pick one<span class="arrow">·</span>not ten<span class="arrow">·</span>Popularity isn't safety</div>
+      <div class="pull-quote-caption">Yarchi · The Bottom Line · X 2026/06/27</div>
+    </section>
+
+    <!-- 01 — ECC -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 01</div>
+          <h2 class="cap-title-en">ECC (Everything Claude Code)</h2>
+          <div class="cap-title-cn">"开箱即用" 之外的 Claude Code 全套配置</div>
+          <div class="cap-repo-link"><a href="https://github.com/affaan-m/everything-claude-code" target="_blank" rel="noopener">github.com/affaan-m/everything-claude-code</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">~210,000+ stars</span>
+        <p>从这里开始，因为这一个仓库掀起了整个 "config as a product" 的浪潮。</p>
+
+        <p>如果你用过 Claude Code，你一定见过：它写出有 bug 的代码，说"修好了"但其实没修，5 分钟前告诉它的事转头就忘，每次新对话从零开始。不是你用错了，那是 coding agent 没规则时的样子。</p>
+
+        <p>ECC 就是修这个的。一个独立开发者 Affaan Mustafa 拿 Claude Code 在 Anthropic hackathon 里 8 小时做出一个完整产品，然后把打磨了 10 个月的整套 setup 开源了出来。直接冲到 20 万+ star，GitHub 上最被 star 的 AI 仓库之一。</p>
+
+        <p>装上之后，它在后台默默让 Claude 真的守规矩：写测试再声称成功，别假装检查通过，别提交坏掉的代码，跨会话记住你的项目。装一次，之后每个会话都更利索，少操很多心。</p>
+
+        <p>打开 Claude Code，跑：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · 通过 marketplace 装 plugin</div>/plugin marketplace add https://github.com/affaan-m/ECC
+/plugin install ecc@ecc</div>
+
+        <p>装完之后你正常用，大部分自动跑起来。但有几个命令你日常会用得到：</p>
+
+        <ul class="cap-commands">
+          <li><code>/ecc:plan "add user login with Google"</code> 在 Claude 写一行代码前先规划整个功能，避免你拿到 200 行不是你想要的东西。</li>
+          <li><code>npx ecc-agentshield scan</code> 检查你项目里的安全漏洞；<code>npx ecc-agentshield scan --fix</code> 自动修掉安全的那些。</li>
+          <li><code>/analyze-repo</code> 把 Claude 丢进一个陌生的 codebase，给你一张清晰的全景图，继承别人项目时特别好用。</li>
+          <li><code>/instinct-status</code> 展示 ECC 从你过往会话里学到的东西。用得越久，它越贴近你的工作方式。</li>
+        </ul>
+
+        <p>剩下的，比如强制写测试、存 context、拦下坏掉的 commit —— 装上就自动跑了。</p>
+      </div>
+    </section>
+
+    <!-- 02 — GStack -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 02</div>
+          <h2 class="cap-title-en">GStack</h2>
+          <div class="cap-title-cn">一个 agent 顶一整个创业公司</div>
+          <div class="cap-repo-link"><a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">github.com/garrytan/gstack</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">115,000+ stars</span>
+        <p>这一个来自 Garry Tan，Y Combinator（Coinbase / Airbnb / Stripe 背后的加速器）的 CEO。他写代码 20 年了，把现在用的 Claude Code setup 开源了出来 —— 用这个他一边兼职跑 YC，一边在职业生涯里产出最多的代码。</p>
+
+        <p>ECC 让 Claude 有纪律，GStack 给它一整支团队。它把一个 agent 变成一个虚拟创业公司：一个 CEO 在你写错方向之前先怼你，一个工程经理规划架构，一个设计师拦截丑陋的 AI 输出，一个 reviewer 找生产环境 bug，一个 QA lead 开真浏览器点你的应用，一个 release engineer 把它发出去。你像 CEO 一样驱动它，盯大决定，让剩下的自动跑。</p>
+
+        <p>适合独立开发者和小团队 —— 想要真正工程组织那种严谨，但不想真雇一堆人。如果你在发真产品，不只是玩，这个 workflow 是给你的。</p>
+
+        <p>打开 Claude Code，跑：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · git clone 到 ~/.claude/skills/</div>git clone --single-branch --depth 1 https://github.com/garrytan/gstack.git ~/.claude/skills/gstack &amp;&amp; cd ~/.claude/skills/gstack &amp;&amp; ./setup</div>
+
+        <p>然后你按 sprint 推，一步步跑命令。最常用的几个（一共 23 个）：</p>
+
+        <ul class="cap-commands">
+          <li><code>/office-hours</code> 问你 6 个尖锐问题，在错误想法成型前先掐死。</li>
+          <li><code>/plan-eng-review</code> 动手前先把架构规划好。</li>
+          <li><code>/review</code> 扫描 Claude 写的代码，找出真实的生产 bug 并修掉。</li>
+          <li><code>/qa</code> 开真浏览器像用户那样测你的 app，然后把回归测试写好，让 bug 再也不回来。</li>
+          <li><code>/ship</code> 带完整测试审计把它发出去。每步喂下一步，所以从 idea 到 shipped 不像平时那么乱。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 03 — Matt Pocock skills -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 03</div>
+          <h2 class="cap-title-en">Matt Pocock skills</h2>
+          <div class="cap-title-cn">给真工程师的 skill，不是 vibe coding</div>
+          <div class="cap-repo-link"><a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener">github.com/mattpocock/skills</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">145,000+ stars</span>
+        <p>Matt Pocock 是个有名的 TypeScript 教育者（他做了 Total TypeScript，newsletter 教大约 6 万开发者）。他把自己每天真实工程里用的 skill 直接开源了出来。这个 repo 几乎全靠口碑传播 —— 开发者告诉开发者 —— 一路冲到 14.5 万 star，说明它戳中了真实的痛点。</p>
+
+        <p>他的整个卖点就在 tagline 里："skills for real engineers, not vibe coding"。GStack 给 Claude 一支团队，这些 skill 给它纪律。它们没让模型变聪明，只是让它别那么莽。最狠的那一点：Claude 很喜欢自己脑补你想要什么，结果做出一个不是你想要的东西。他的 skill 强迫 Claude 别瞎猜，先问尖锐的问题，把测试写对，别让代码在 agent 飞速干活的时候烂成没法维护的泥。</p>
+
+        <p>给那种从"给我搞个 quick app"毕业、开始维护真实软件的人 —— 尤其 TypeScript / JavaScript 圈子。如果你看过 Claude 自信地做出一个你没要的东西，这就是解药。</p>
+
+        <p>打开 Claude Code，跑：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · 通过 npx skills</div>npx skills@latest add mattpocock/skills</div>
+
+        <p>按提示挑你想要的 skill，记得选上 <code>/setup-matt-pocock-skills</code>，它会针对你的项目配置一切。</p>
+
+        <p>然后按需调用它们。最有用的几个（一共大约 17 个）：</p>
+
+        <ul class="cap-commands">
+          <li><code>/grill-me</code> 在写一行代码前审问你到底想要什么 —— 免得你最后拿到一个错的 feature。</li>
+          <li><code>/tdd</code> 强制正经的 test-first 开发，别让 Claude 不检查就声称代码能跑。</li>
+          <li><code>/improve-codebase-architecture</code> 救一个已经变得难改的乱项目，Matt 建议每隔几天跑一次防烂。</li>
+          <li><code>/diagnosing-bugs</code> 跑一个正经的 debug 循环，不瞎猜。</li>
+        </ul>
+
+        <div class="cap-callout"><strong>一个提醒：</strong>这些偏 TypeScript / JavaScript 习惯。如果你栈不一样，还是有收获，但有些 skill 会比其他更贴。</div>
+      </div>
+    </section>
+
+    <!-- 04 — Graphify -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 04</div>
+          <h2 class="cap-title-en">Graphify</h2>
+          <div class="cap-title-cn">把整个 codebase 变成可查询的知识图谱</div>
+          <div class="cap-repo-link"><a href="https://github.com/safishamsi/graphify" target="_blank" rel="noopener">github.com/safishamsi/graphify</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">70,000+ stars</span>
+        <p>还记得前面那个问题吗：Claude Code 跨会话忘光一切，每次都重新读一遍你整个项目才能搞清楚怎么回事。一个中等大小的 codebase 每次烧掉几万 token，还没等你问问题呢。每一个会话都这样，又慢又贵。</p>
+
+        <p>graphify 正好修这个。它把任何文件夹、代码、文档、甚至 PDF 和图片变成一个可查询的知识图谱 —— 一张结构化的图，把所有东西怎么连在一起的画清楚。Claude 不再重新读每个文件，直接查图拿答案。在项目自己的 benchmark 上，这意味着每次查询从 123,000 token 降到大约 1,700 token —— 大约 <strong>71x</strong> 的降幅。它是今年增长最快的 repo 之一，Andrej Karpathy（OpenAI 联合创始人）发了他自己的 knowledge-base 工作流之后 48 小时直接爆火。（如果你看过我们之前拆 Karpathy 第二大脑搭建的那篇，这就是干活的工具。）</p>
+
+        <p>给那些在真实 codebase 上工作、烦透了又慢又贵的会话的人，或者想让 Claude 真懂你项目是怎么连在一起的、不再一个个文件瞎猜的人。</p>
+
+        <p>安装 —— 先在 terminal 跑：</p>
+
+        <div class="code-block"><div class="code-block-label">STEP 1 · 装 CLI（注意两个 y）</div>uv tool install graphifyy</div>
+
+        <p>（对，两个 y，这个是官方的）。然后把它注册到你的 agent：</p>
+
+        <div class="code-block"><div class="code-block-label">STEP 2 · 注册到 agent</div>graphify install</div>
+
+        <p>然后在 Claude Code 里跑 <code>/graphify .</code> 一次，给你的项目建图。第一次慢，之后只更新有变的地方。从那儿开始正常问：</p>
+
+        <ul class="cap-commands">
+          <li><code>/graphify query "how does login work?"</code> —— Claude 从图里拿答案，不再读每个文件。</li>
+          <li><code>/graphify --update</code> 你的文档变了之后刷新它。</li>
+        </ul>
+
+        <p>你甚至可以把图 commit 到 git，让你整个团队的 Claude 一开始就认识 codebase。</p>
+
+        <div class="cap-callout"><strong>注意：</strong>71x 这个数字是某个特定项目的最佳情况。你能省多少取决于 codebase 多大。小项目的话，Claude 配普通搜索可能就一样便宜。graphify 真正发挥威力是在大型、复杂、每天跑很多次的 codebase 上。</div>
+      </div>
+    </section>
+
+    <!-- 05 — GBrain -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 05</div>
+          <h2 class="cap-title-en">GBrain</h2>
+          <div class="cap-title-cn">整个工作生涯的记忆系统</div>
+          <div class="cap-repo-link"><a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">github.com/garrytan/gbrain</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">24,000+ stars</span>
+        <p>这是 Garry Tan（YC 那个 CEO）的第二个，也是 memory 问题的深水区版本。graphify 给 Claude 你代码的记忆，GBrain 给它你<strong>整个工作生涯</strong>的记忆：人、公司、会议、邮件、决定、想法。它不是个 side project —— 是 Garry 真在用的、生产环境的大脑，装着 14.6 万+ 页面、2.4 万+ 人、5000+ 公司，几打自动化 job 在他睡觉的时候更新它。</p>
+
+        <p>神奇的地方是它不只是扔给你匹配的页面，而是综合出答案。问"明天跟 Alice 开会前我需要知道什么？"，它给你的是写好的散文：她做什么、上次你们什么时候聊的、之间还有什么没关掉的、全部带引用。它建一张自连通的图，谁认识谁、谁做过什么，所以它能浮出普通搜索会漏掉的关联。</p>
+
+        <p>给创始人、投资人、operator，以及工作靠关系和 context 撑起来的人 —— 不只是代码。如果你走进一个会议，对着一个你发过 50 次邮件的人脑袋一片空白，这就是专门给那个场景做的。</p>
+
+        <p>把它接到 Claude Code 当 memory layer。最快试的方式是本地版 —— 没账号、没 server、大约 30 秒就好。在 terminal 里：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · 本地版（最简单起步）</div>git clone https://github.com/garrytan/gbrain.git &amp;&amp; cd gbrain
+bun install &amp;&amp; bun link
+gbrain init</div>
+
+        <p>这就给你机器上装了一个本地脑。然后喂它点笔记，问它点东西：</p>
+
+        <div class="code-block"><div class="code-block-label">USAGE · 喂笔记 + 查询</div>gbrain import ~/notes/
+gbrain query "what themes show up across my notes?"</div>
+
+        <p>要把 Claude Code 也接上，让你的 agent 直接用，跑：</p>
+
+        <div class="code-block"><div class="code-block-label">MCP · 把 GBrain 接进 Claude Code</div>claude mcp add gbrain -- gbrain serve</div>
+
+        <p>然后用普通中文跟它聊就行。指给它一个文件夹 —— 笔记、会议记录、邮件都行 —— 然后问"谁在 Acme AI 工作？"或者"Bob 这个季度投了什么？"，它从所有它消化过的东西里给你带引用的答案。之后可以接上 Gmail、Google Calendar、会议记录，让它自动往里填。</p>
+
+        <div class="cap-callout"><strong>一个真提醒：</strong>上面那个本地版是容易上手的入口。Garry 自己跑的那套完整版 —— 带自动更新 job 和 team brain —— 意味着要搭一个真数据库（Supabase）、更多 API key、后台 job，如果你全上还有真实的月度成本。Garry 自己都在文档里开玩笑说完整版"too complicated for a normal person"。所以从本地版开始，先感觉一下，真的爱上了再升级完整栈。</div>
+
+        <div class="cap-callout"><strong>两个安装坑（项目自己标的）：</strong>别用 <code>bun install -g github:garrytan/gbrain</code>，也别用 <code>npm install -g gbrain</code>（有个假包抢注了这个名字）。用上面那个 git clone 路径。</div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 中间过渡 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Most of the repos getting hyped right now are noise<span class="arrow">·</span><span class="arrow">Popularity isn't safety</span></div>
+      <div class="pull-quote-caption">Yarchi · 10 Open-Source Repos · X 2026/06/27</div>
+    </section>
+
+    <!-- 06 — SkillSpector -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 06</div>
+          <h2 class="cap-title-en">SkillSpector</h2>
+          <div class="cap-title-cn">装之前先扫一遍 · NVIDIA 出品的 skill 安全审计</div>
+          <div class="cap-repo-link"><a href="https://github.com/NVIDIA/SkillSpector" target="_blank" rel="noopener">github.com/NVIDIA/SkillSpector</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">5,500+ stars</span>
+        <p>你装到 Claude Code 的每一个 skill 跑起来都有你文件的真权限、有网络的真权限、有环境变量的真权限，从"装上"到"在你机器上跑起来"基本没什么安全关卡。一项对 42,447 个真实 skill 的研究发现 <strong>26%</strong> 含漏洞，<strong>5%</strong> 显示明显的恶意意图。这不是个小误差。</p>
+
+        <p>SkillSpector 是 NVIDIA 做出来开源的，就是门口那个保安。装之前先指给它，它扫那些危险的东西：隐藏指令、prompt injection、数据外传、可疑代码、悄悄要一大堆不该要的权限。你拿到一个 0-100 的安全分，和一个清楚的"该装还是别装"。</p>
+
+        <p>给所有要装 skill 的人 —— 看完这篇之后就是你。尤其在你从什么随机 GitHub repo 或不认识的 marketplace 装任何东西之前，特别值得跑一遍。</p>
+
+        <p>装它：打开 Claude Code，直接说：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · 让 Claude 帮你装</div>Install SkillSpector from https://github.com/NVIDIA/skillspector and use it to scan this skill before I add it</div>
+
+        <p>Claude 帮你跑。它底层是个命令行工具，但你自己不用碰 terminal —— Claude Code 处理命令。</p>
+
+        <p>然后每当你打算装一个新 skill，先让 Claude 扫一遍。指给它一个 GitHub repo、一个文件夹、单个文件都行，它几秒给你一个风险报告：0-100 的分、发现了什么、该不该信。让这变成习惯 —— <strong>先扫再装</strong>。这是这份清单上最便宜的保险，也是大多数人等到出事才会去做的那一件。</p>
+
+        <p>你想自己在 terminal 里跑也行，手动命令是：</p>
+
+        <div class="code-block"><div class="code-block-label">MANUAL · 自己跑</div>uv tool install git+https://github.com/NVIDIA/skillspector.git
+skillspector scan https://github.com/some-author/some-skill</div>
+      </div>
+    </section>
+
+    <!-- 07 — Cybersecurity Skills -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 07</div>
+          <h2 class="cap-title-en">Anthropic-Cybersecurity-Skills</h2>
+          <div class="cap-title-cn">817 个结构化网络安全 skill</div>
+          <div class="cap-repo-link"><a href="https://github.com/mukul975/Anthropic-Cybersecurity-Skills" target="_blank" rel="noopener">github.com/mukul975/Anthropic-Cybersecurity-Skills</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">4,000+ stars</span>
+        <p>还是安全，但角度反过来。上一条是检查 skill 安不安全。这一条让 Claude 自己变成安全专家。一个 <strong>817 个结构化网络安全 skill 的库</strong> —— 从恶意软件分析、威胁狩猎、到云端泄露和事件响应 —— 每一条都是按真实行业框架（MITRE ATT&CK、NIST 等）映射的、分步骤的 playbook。</p>
+
+        <p>思路很简单：一个初级安全分析师知道在可疑文件上跑哪个工具、哪条规则能抓住特定攻击、怎么跨云厂商 scope 一次泄露。你的 AI agent 不知道 —— 直到你给它这些 skill。装上之后，你把一个安全问题丢给 Claude，它不瞎猜，开始按专家流程走。</p>
+
+        <p>给想给自己 app 加固的开发者、安全爱好者，以及对防御好奇的人。不需要是安全专家 —— skill 带着专家能力，你只负责把 Claude 指向问题。</p>
+
+        <p>打开 Claude Code 跑：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · 通过 npx skills</div>npx skills add mukul975/Anthropic-Cybersecurity-Skills</div>
+
+        <p>然后用普通中文问 Claude 安全问题，它会调对的 playbook。"Review my web app for the OWASP Top 10 vulnerabilities" 让它按通用漏洞清单审计你的代码。"Walk me through investigating this suspicious login activity" 给你真实的事件响应流程，不是不着边际的建议。<strong>小贴士</strong>：别一次全装 817 条，按你真需要的 domain 装（比如云安全、代码审计），别把 Claude 的 context 撑爆。</p>
+      </div>
+    </section>
+
+    <!-- 08 — OpenMontage -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 08</div>
+          <h2 class="cap-title-en">OpenMontage</h2>
+          <div class="cap-title-cn">让你的 AI agent 变成完整视频工作室</div>
+          <div class="cap-repo-link"><a href="https://github.com/calesthio/OpenMontage" target="_blank" rel="noopener">github.com/calesthio/OpenMontage</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">18,000+ stars</span>
+        <p>时间走出代码，因为 Claude Code 不只是给软件用的。OpenMontage 把你的 AI agent 变成一个完整的视频制作工作室。你用自然语言描述想要的视频，agent 把整个流程干了：调研主题、写脚本、生成或找视觉素材、加旁白和音乐、剪时间线、渲染成 MP4。它最近刚冲到 GitHub trending 第一名，名副其实。</p>
+
+        <p>看选哪种模式：要么是 AI 生成的片段（如果你接入 Veo / Runway 这种模型）、要么是真实档案素材拼接进时间线、要么是生成的图片动效剪成精致的成片。它有 <strong>12 条不同的制作流水线</strong>：电影预告、动画解说、talking-head 主持人视频、真实素材纪录片（从 NASA、Archive.org 这些开放档案拉真实片段）、等等。你甚至可以丢给它一个你喜欢的 YouTube 视频说"给我做一个类似的，但主题换成我的"，它从参考做计划。</p>
+
+        <p>给创作者、营销人、教育者、以及任何想要视频但不想学剪辑软件、不想订 5 个独立 AI 订阅的人。按项目自己的例子，一个 60 秒旁白动画短片 API 成本可以就一美元多，而且有完全免费的路径用本地模型和免费 stock footage。</p>
+
+        <p>装之前，机器上需要几样东西：Python 3.10+、Node.js 18+、FFmpeg（视频工具）。然后打开 Claude Code 跑：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · git clone + make setup</div>git clone https://github.com/calesthio/OpenMontage.git
+cd OpenMontage
+make setup</div>
+
+        <p>装好之后，在 Claude Code 里打开这个项目，用自然语言描述你想要什么：</p>
+
+        <div class="code-block"><div class="code-block-label">EXAMPLE · 动画解说</div>Make a 60-second animated explainer about how neural networks learn</div>
+
+        <p>或者走真实素材纪录片路径：</p>
+
+        <div class="code-block"><div class="code-block-label">EXAMPLE · 真实素材纪录片</div>Make a 75-second documentary montage about city life in the rain. Use real footage only, no narration.</div>
+
+        <p>agent 调研你的主题、写脚本并配音、找免版权音乐、烧字幕、渲染最终视频。它在花任何钱之前先给你一份计划和成本估算，跑自己的质量检查再把成片交给你。你也可以贴个 YouTube 或 TikTok 链接说"做一个类似的，但主题换成我的"。</p>
+
+        <div class="cap-callout"><strong>提醒：</strong>免费路径给你的是精致的动画视频（带旁白和字幕的动态视觉），不是好莱坞级的拍摄素材。想要 AI 生成的动态片段，你得接入付费模型。不管怎样，这是清单上最重资源的一个 —— 先拿一个 30-60 秒的短片试水，再上大的。</div>
+      </div>
+    </section>
+
+    <!-- 09 — DeerFlow -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 09</div>
+          <h2 class="cap-title-en">DeerFlow</h2>
+          <div class="cap-title-cn">ByteDance 出品 · 长周期复杂任务的多 agent 编排</div>
+          <div class="cap-repo-link"><a href="https://github.com/bytedance/deer-flow" target="_blank" rel="noopener">github.com/bytedance/deer-flow</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">74,000+ stars</span>
+        <p>这一个来自 ByteDance，TikTok 背后的公司，也是清单上最重的家伙。DeerFlow 是给那些本来要花你几小时甚至几天、真正长且复杂的任务做的。你扔给它一个大活儿，比如"调研 2026 年 AI 创业公司 top 10，给我做一个 presentation" —— 它不会被噎住 —— 一个 lead agent 把任务拆开，并行拉起一支 sub-agent 团队（一个爬数据、一个做分析、一个做图表），最后全拼回去。</p>
+
+        <p>跟普通 chatbot 的区别是，它真在沙箱环境里干活 —— 不只是描述它会做什么。它跑代码、建文件、生成 dashboard 和 slide deck、生产最终交付物。它有自己的 memory、自己的文件系统、可以跑很久不丢线索。刚发布的时候，<strong>24 小时冲到 GitHub trending 第一</strong>。</p>
+
+        <p>给那些真有大型多步骤任务的人：深度研究报告、数据流水线、建 dashboard、自动化整条内容工作流。"给我写个函数"这种小活儿用不上它，它闪光的时候是任务大到你想委派出去自己走开。</p>
+
+        <p>打开 Claude Code 跑：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · git clone + make setup</div>git clone https://github.com/bytedance/deer-flow.git
+cd deer-flow
+make setup</div>
+
+        <p>这会启动一个配置向导设你的 API key 和偏好。然后启动它（Docker 是推荐方式）：</p>
+
+        <div class="code-block"><div class="code-block-label">START · 用 Docker 起一个完整 agent 界面</div>make docker-start</div>
+
+        <p>它在你的浏览器里开一个完整的 agent 界面。你甚至可以把它接到 Telegram 或 Slack，从手机上甩任务。</p>
+
+        <div class="cap-callout"><strong>两个真话。</strong>第一，它是 model-agnostic（Claude、GPT、Gemini 都能用），但它是清单上最重的基建，确实要 Docker 和一些真机器资源，所以瞄准的是更技术的用户。第二，因为它是个 ByteDance 项目，跑代码、抓数据，有些人或公司会想在做严肃活儿之前评估一下安全和来源国问题。代码是开放的（MIT）可审计的，只是进去的时候心里有数。</div>
+      </div>
+    </section>
+
+    <!-- 10 — OpenClaw -->
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">REPO 10</div>
+          <h2 class="cap-title-en">OpenClaw</h2>
+          <div class="cap-title-cn">把 AI agent 从终端拉进你日常用的 app</div>
+          <div class="cap-repo-link"><a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">github.com/openclaw/openclaw</a></div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <span class="star-callout">250,000+ stars</span>
+        <p>最大的留到最后。OpenClaw 是 GitHub 历史上增长最快的开源项目。一个叫 Peter Steinberger 的奥地利开发者第一个版本花了大约一个小时做完当个人实验，几个月之内冲过 React，成为整个 GitHub 上 star 最多的真软件。OpenAI 因为它直接把他招了过去。</p>
+
+        <p>清单上其他所有都活在你的 coding tool 里。OpenClaw 把 AI agent 从终端拉出来，塞进你已经用的 app：WhatsApp、Telegram、Slack、Discord、iMessage、还有几十个。它本地跑在你自己的机器上，24/7 在线，所以你能像跟朋友发消息一样从手机上跟你的 AI 助手聊 —— 它真干活：管理你的日历、处理邮件、跑调研、控制工具，全在你自己的设备上，用你自己的数据。这是"这一切要去向哪"的那个选择：不是一个 coding 帮手，而是一个住在你生活里的个人 agent。</p>
+
+        <p>给那些想要真正 24/7、完全自己掌控的个人助手的人 —— 不是那种把每个字都记下来的云服务。如果你想过能在你离开电脑的时候发个消息让 AI 帮你处理点事，这就是。</p>
+
+        <p>在 terminal 装：</p>
+
+        <div class="code-block"><div class="code-block-label">INSTALL · npm 全局装 + onboard</div>npm install -g openclaw@latest
+openclaw onboard --install-daemon</div>
+
+        <p>引导向导带你连接你的 messaging app 和 AI 模型（带自己的 Claude 或 OpenAI key）。一旦跑起来了，你在任何接好的 app 上发消息就行 —— "summarize my unread emails and draft replies"、"remind me to call the dentist at 3pm" —— 它在后台干。</p>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 收尾 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">Pick one<span class="arrow">·</span>not ten<span class="arrow">·</span>Whatever you add<span class="arrow">·</span>scan it first</div>
+      <div class="pull-quote-caption">Yarchi · The Bottom Line · X 2026/06/27</div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>10 Open-Source Repos That Quietly Make Claude Code 10x Better (Full Guide)</em><br>
+          作者：Yarchi (@undefinedKi) · "AI & tech researcher | Building cool stuff | Sharing everything I learn"<br>
+          发布：2026/06/27 12:50 UTC · X 平台 · 2.9M 浏览<br>
+          原文链接：<a href="https://x.com/undefinedKi/status/2070852381164630023" target="_blank" rel="noopener">https://x.com/undefinedKi/status/2070852381164630023</a>
+        </li>
+        <li>
+          <strong>REPO 01 · ECC</strong>
+          <em>Everything Claude Code — affaan-m</em><br>
+          链接：<a href="https://github.com/affaan-m/everything-claude-code" target="_blank" rel="noopener">https://github.com/affaan-m/everything-claude-code</a>
+        </li>
+        <li>
+          <strong>REPO 02 · GStack</strong>
+          <em>Garry Tan (YC CEO) — garrytan</em><br>
+          链接：<a href="https://github.com/garrytan/gstack" target="_blank" rel="noopener">https://github.com/garrytan/gstack</a>
+        </li>
+        <li>
+          <strong>REPO 03 · Matt Pocock skills</strong>
+          <em>TypeScript educator · mattpocock</em><br>
+          链接：<a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener">https://github.com/mattpocock/skills</a>
+        </li>
+        <li>
+          <strong>REPO 04 · Graphify</strong>
+          <em>Knowledge graph layer — safishamsi</em><br>
+          链接：<a href="https://github.com/safishamsi/graphify" target="_blank" rel="noopener">https://github.com/safishamsi/graphify</a>
+        </li>
+        <li>
+          <strong>REPO 05 · GBrain</strong>
+          <em>Personal life memory system — garrytan</em><br>
+          链接：<a href="https://github.com/garrytan/gbrain" target="_blank" rel="noopener">https://github.com/garrytan/gbrain</a>
+        </li>
+        <li>
+          <strong>REPO 06 · SkillSpector</strong>
+          <em>Skill security scanner — NVIDIA</em><br>
+          链接：<a href="https://github.com/NVIDIA/SkillSpector" target="_blank" rel="noopener">https://github.com/NVIDIA/SkillSpector</a>
+        </li>
+        <li>
+          <strong>REPO 07 · Anthropic-Cybersecurity-Skills</strong>
+          <em>817 structured cybersecurity skills — mukul975</em><br>
+          链接：<a href="https://github.com/mukul975/Anthropic-Cybersecurity-Skills" target="_blank" rel="noopener">https://github.com/mukul975/Anthropic-Cybersecurity-Skills</a>
+        </li>
+        <li>
+          <strong>REPO 08 · OpenMontage</strong>
+          <em>Video production studio — calesthio</em><br>
+          链接：<a href="https://github.com/calesthio/OpenMontage" target="_blank" rel="noopener">https://github.com/calesthio/OpenMontage</a>
+        </li>
+        <li>
+          <strong>REPO 09 · DeerFlow</strong>
+          <em>Multi-agent research framework — bytedance</em><br>
+          链接：<a href="https://github.com/bytedance/deer-flow" target="_blank" rel="noopener">https://github.com/bytedance/deer-flow</a>
+        </li>
+        <li>
+          <strong>REPO 10 · OpenClaw</strong>
+          <em>Personal AI agent in messaging apps — openclaw</em><br>
+          链接：<a href="https://github.com/openclaw/openclaw" target="_blank" rel="noopener">https://github.com/openclaw/openclaw</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          Yarchi (@undefinedKi) · 9,897 followers · 10,950 likes · 451 posts<br>
+          链接：<a href="https://x.com/undefinedKi" target="_blank" rel="noopener">https://x.com/undefinedKi</a>
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文 10 节 + 1 张封面 + 15 段 CLI 命令完整保留；中文部分为意译，便于理解。CLI 命令、repo 名、handle、star 数全部保持英文原貌，不可译。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">10 个仓库完整翻译 · 1 张原文封面 · 15 段原始 CLI 命令原样保留 · star 数 / 出品人 / 风险提示全部就位 · The Bottom Line 收尾（先挑一个，别全装；扫描先于安装）。从 ECC 起步，或从跟你问题最对的那个起步——一周一个，节奏比全装重得多。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">That's the 10. <strong>Quick recap: don't install all of them at once.</strong></p>
+      <p class="closing-text">Pick the one that matches your actual problem<span class="arrow">·</span>install it<span class="arrow">·</span>use it for a week.</p>
+      <p class="closing-caption">读完了。下一步：先选一个跟你问题最贴的，一周后再回来挑下一个。Ciao, @undefinedKi</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">10 个仓库</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">ECC</span>
+          <span class="nav-item-cn">全套 Claude Code 配置</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">GStack</span>
+          <span class="nav-item-cn">一个 agent 顶一队</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Matt Pocock skills</span>
+          <span class="nav-item-cn">给真工程师的 skill</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Graphify</span>
+          <span class="nav-item-cn">Codebase 知识图谱</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">GBrain</span>
+          <span class="nav-item-cn">整个工作生涯的记忆</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">SkillSpector</span>
+          <span class="nav-item-cn">装之前先扫一遍</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Cybersecurity Skills</span>
+          <span class="nav-item-cn">817 个安全 skill</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">OpenMontage</span>
+          <span class="nav-item-cn">完整视频工作室</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">DeerFlow</span>
+          <span class="nav-item-cn">ByteDance 多 agent</span>
+        </span>
+      </a>
+      <a href="#cap-10" class="nav-item">
+        <span class="nav-item-num">10</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">OpenClaw</span>
+          <span class="nav-item-cn">个人 agent 装进日常 app</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
