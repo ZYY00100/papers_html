@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Field Guide to Fable · 寻找你的未知 · Thariq 解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-top: 16px;
+      text-transform: uppercase;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.4vw, 21px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(24px, 4vw, 32px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pull-quote-text .arrow { color: var(--accent-red); font-weight: 600; font-family: 'Rajdhani', sans-serif; margin: 0 8px; }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .capability:hover {
+      border-color: rgba(201, 169, 98, 0.15);
+    }
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 6px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 3.5vw, 32px);
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(15px, 2vw, 17px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body ul { margin: 18px 0 24px 0; padding-left: 24px; }
+    .cap-body ul li { margin-bottom: 10px; line-height: 1.85; color: var(--text-secondary); }
+    .cap-body ul li:last-child { margin-bottom: 0; }
+    .cap-body ul li strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      background: var(--bg-secondary);
+      padding: 1px 6px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    /* PROMPT CARDS */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin: 28px 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .prompt-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-card-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-red);
+      flex-shrink: 0;
+    }
+    .prompt-card-tag .prompt-num {
+      color: var(--accent-gold);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .prompt-name-en {
+      color: #e8e8ea;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', 'Rajdhani', sans-serif;
+      color: #8a8a8e;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* INLINE IMAGE */
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img {
+      display: block;
+      width: 100%;
+      max-width: 880px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .inline-image img:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .inline-image-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 64px 0 32px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .references-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3vw, 26px);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .references-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px 0;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .references-list em {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-style: italic;
+      color: var(--text-primary);
+    }
+    .references-list a {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .references-list a:hover { color: var(--accent-red); }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+    }
+
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+  <main class="container">
+    <section class="article-hero">
+      <div class="article-category">AI WORKFLOW · CLAUDE FABLE 5</div>
+      <h1 class="article-title">A Field Guide to Fable</h1>
+      <p class="article-subtitle">寻找你的未知 · Claude Code 工程师 Thariq 的 8 个实战技巧</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Thariq (@trq212) · 3.3M 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/07/03</span>
+      </div>
+      <p class="article-desc">Thariq 在 Claude Code 团队做的一个核心论断:Fable 5 的工作质量被「澄清 unknowns 的能力」卡住。本文翻译 + 拆解他在 pre / during / post 三个阶段的 8 个技巧,11 个示例 prompts 全部双语,可直接复制使用。</p>
+    </section>
+    <section class="cover-frame">
+      <img src="images/2026-07-08-thariq-fable-unknowns/cover.jpg" alt="A Field Guide to Fable: Finding Your Unknowns">
+      <p class="cover-caption">原文封面 · A Field Guide to Fable · Thariq (@trq212) · 2026/07/03</p>
+    </section>
+    <section class="article-intro">
+      <p class="intro-lead">用 Claude Fable 5 一直在重学一条古老的教训:图不是领地。</p>
+      <p class="intro-lead">图(work 的规划)就是我给 Claude 的 prompts、skills、context。
+领地(work 必须真正发生的地方)就是 codebase、真实世界、它的实际约束。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-08-thariq-fable-unknowns/x-01.jpg" alt="Map 与 Territory — Claude 工作的 unknown 来源">
+          <p class="inline-image-caption">原文配图 · Map 与 Territory — Claude 工作的 unknown 来源 · Thariq (@trq212) · 2026/07/03</p>
+        </div>
+
+      <p class="intro-lead">图和领地的差距就是我说的 unknowns。Claude 撞到 unknown 的时候,它就要凭「它猜我想怎样」去拍板。
+做的工作越多,Claude 可能撞上的 unknowns 越多。</p>
+      <p class="intro-lead"><strong>Fable 是我遇到的第一个模型,工作质量被我「能否澄清 unknowns」的能力卡住上限。</strong></p>
+      <p class="intro-lead">重要的是,只往前规划不一定够。你可能在实现深处才发现 unknowns,也可能你的 unknowns 会指出「你其实应该用完全不同的方式解这道题」。</p>
+      <p class="intro-lead">我跟 Fable 工作是个反复的过程 —— 在实现前、实现中、实现后去发现我的 unknowns。</p>
+      <p class="intro-lead">我做过一些找 unknowns 的示例 artifact 放在 [linked](参考),但记得回头来建立直觉 —— 该在什么时候用哪种技巧。</p>
+    </section>
+    <section class="pull-quote">
+      <div class="pull-quote-text">The map is not the territory<span class="arrow">·</span>The difference is what I call unknowns</div>
+      <div class="pull-quote-caption">Thariq · on Claude Fable 5</div>
+    </section>
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRELUDE · 自我盘点</div>
+          <h2 class="cap-title-en">Knowing your unknowns</h2>
+          <div class="cap-title-cn">认识你的 unknowns</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>你的 unknowns 是什么?我带着一个问题去找 Claude 时,会从 4 个维度拆开:</p>
+        <ul>
+          <li>Known Knowns: This is essentially what is in my prompt. What do I tell the agent that I want?</li>
+          <li>Known Unknowns: What haven't I figured out yet, but I’m aware that I haven’t?</li>
+          <li>Unknown Knowns: What's so obvious I’d never write it down, but would recognize it if I saw it?</li>
+          <li>Unknown Unknowns: What haven't I considered at all? What knowledge am I not aware of? Do I know how good something can be?</li>
+        </ul>
+        <div class="inline-image">
+          <img src="images/2026-07-08-thariq-fable-unknowns/x-02.jpg" alt="4 种 unknowns · 找盲区的来源">
+          <p class="inline-image-caption">原文配图 · 4 种 unknowns · 找盲区的来源 · Thariq (@trq212) · 2026/07/03</p>
+        </div>
+
+        <p>最厉害的 agentic 程序员是那种 unknowns 比较少的人。看 Boris 或 Jarred prompt 我就知道,他们对自己想要什么在细节层面都非常清楚 —— 他们和 codebase、模型行为都在 deep sync。</p>
+        <p>但他们也会预设有 unknowns。在某种意义上,「减少和规划好你的 unknowns」就是 agentic coding 的真功夫。还好这是可以练出来的 —— 用 Claude 一起做就能练。</p>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">GUIDING PRINCIPLE · 引导 Claude 也帮自己</div>
+          <h2 class="cap-title-en">Help Claude help you</h2>
+          <div class="cap-title-cn">让 Claude 帮你 — 先帮自己</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <div class="inline-image">
+          <img src="images/2026-07-08-thariq-fable-unknowns/x-03.jpg" alt="Instructing Claude · 特异性 vs 模糊性的平衡">
+          <p class="inline-image-caption">原文配图 · Instructing Claude · 特异性 vs 模糊性的平衡 · Thariq (@trq212) · 2026/07/03</p>
+        </div>
+
+        <p>指挥 Claude 是个很精妙的平衡。说太具体,Claude 会死跟你的指令走,哪怕更应该 pivot。说太模糊,Claude 就会按行业最佳实践的常规去选 —— 可能根本不适合你这道题。</p>
+        <p>如果你不把 unknowns 算进来,两边都会失败。你不知道路上哪里有坑、哪里是坦途,但你还是希望 Claude 能转弯。</p>
+        <p>Claude 能帮你更快发现 unknowns。它能极快地翻你的 codebase 和互联网,也比你在大多数话题上懂得更多。它也能更快地从失败里迭代。</p>
+        <p>这个过程最重要的是:告诉 Claude 你的起点。比如,告诉它你在思考的哪一步;把你对这个问题的经验、对 codebase 的经验披露出来;让它跟你像 thought partner 那样一起做。</p>
+        <p>我之前写过用 HTML 跟 Claude 工作 —— 这种情况下,HTML artifact 几乎都是最好的可视化和表达方式。</p>
+        <p>下面这篇文章会展开我用的一些 pattern,来找出这些 unknowns。我不会每次都全用,但作为一组可用的技巧值得备着。</p>
+        <div class="inline-image">
+          <img src="images/2026-07-08-thariq-fable-unknowns/x-04.jpg" alt="Patterns in this article · 8 技巧全景">
+          <p class="inline-image-caption">原文配图 · Patterns in this article · 8 技巧全景 · Thariq (@trq212) · 2026/07/03</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-stage">
+      <div class="cap-head">
+        <div class="cap-num">·</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STAGE</div>
+          <h2 class="cap-title-en"># Pre-implementation</h2>
+          <div class="cap-title-cn">实现前</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRE · 找盲区</div>
+          <h2 class="cap-title-en">Blind Spot Pass</h2>
+          <div class="cap-title-cn">先清盲区</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>开始一项工作时,你能做的最有价值的事之一就是理解自己的盲区。比如,你要在 codebase 一个新部分写 feature,或者让 Claude 帮你做你不熟的事(比如迭代一版设计) —— 你很可能会有一堆 unknown unknowns。</p>
+        <p>你可能不知道该问什么问题、不知道什么是「好」、不知道历史上做过什么、也不知道有什么坑要避。</p>
+        <p>要破这个局,你可以让 Claude 帮你找你的 unknown unknowns 再讲给你听。我喜欢直接用「blindspot pass」和「unknown unknowns」这两个原话。把你是谁、你知道什么 context 也给它通常很重要:</p>
+    <div class="prompt-card" data-card id="prompt-01">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">01</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Blind Spot Pass</span>
+            <span class="prompt-name-cn">挖掘未知</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">I'm working on adding a new auth provider but I know nothing about the auth modules in this codebase. Can you do a blindspot pass to help me figure out my relevant unknown unknowns and help me prompt you better.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>我正在给这个 codebase 加一个新的 auth provider,但我对这里的 auth 模块一无所知。能不能帮我跑一遍 blindspot pass,把我相关的 unknown unknowns 挖出来,这样我能 prompt 得更准。</div>
+    </div>
+    <div class="prompt-card" data-card id="prompt-02">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">02</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Blind Spot Pass · Color</span>
+            <span class="prompt-name-cn">挖掘未知 · 调色</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">I don't know what color grading is but I need to grade this video. Can you teach me to understand my unknown unknowns about color grading, so that I can prompt better?</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>我不懂 color grading,但我需要给这个视频调色。能不能教我理解一下我在 color grading 这块的 unknown unknowns,这样我能 prompt 得更准?</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRE · 头脑风暴</div>
+          <h2 class="cap-title-en">Brainstorms and prototypes</h2>
+          <div class="cap-title-cn">头脑风暴 + 原型</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>我做事的时候,经常会带一堆 unknown knowns —— 只有亲眼看到才能说清楚的判断标准。这种时候我喜欢让 Claude 跟我一起 brainstorm 和做 prototype。</p>
+        <p>在 prototype 阶段尽早把 unknown knowns 抓出来、说出来,价值很大 —— 因为到实现时才发现,代价相对会很高。feature 或 spec 里的微小改动会引起实现侧的剧烈差异,而你的 agent 也更难回滚以前的改动。</p>
+        <p>比如,你可能只是想看看一个按钮加到 frame 上是啥样子 —— 不用接后端路由,也不用在前端维护新状态。</p>
+        <p>视觉设计对我来说是个很难说清但看到就知道的事。这种情况下,我会让它对一个 artifact 给几个不同的设计方向。</p>
+        <p>我几乎每次写代码的开头都先跑一次探索或 brainstorm 阶段。这帮我带着 intent 出发,定义项目的 scope。Claude 经常能发现我自己可能漏掉的高价值路径,有时候也会一叶障目不见泰山。Brainstorm 能防止我设的 scope 太窄或太宽。</p>
+    <div class="prompt-card" data-card id="prompt-03">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">03</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Brainstorm · 4 Directions</span>
+            <span class="prompt-name-cn">头脑风暴 · 4 个方向</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">I want a dashboard for this data but I have no visual taste and don't know what's possible. Make me an HTML page with 4 wildly different design directions so I can react to them.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>我想给这批数据做个 dashboard,但我没有视觉审美,也不知道能做啥。给我生成一个 HTML 页面,放 4 个完全不同的设计方向,让我能直接对比反应。</div>
+    </div>
+    <div class="prompt-card" data-card id="prompt-04">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">04</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Prototype · Toolbar</span>
+            <span class="prompt-name-cn">原型 · 工具栏</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Before wiring anything up, make a single HTML file mocking the new editor toolbar with fake data. I want to react to the layout before you touch the real app.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>先别接任何东西。先用 fake data 做一个单 HTML 文件,模拟新的 editor toolbar。我想在动手真实 app 之前,先对版式有反应。</div>
+    </div>
+    <div class="prompt-card" data-card id="prompt-05">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">05</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Brainstorm · 10 Levers</span>
+            <span class="prompt-name-cn">头脑风暴 · 10 个抓手</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Here's my rough problem: users churn after onboarding. Search the codebase and brainstorm 10 places we could intervene, from cheapest to most ambitious. I'll tell you which ones resonate.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>我的粗略问题是:用户在 onboarding 之后会流失。去翻 codebase,头脑风暴一下我们能从哪里插手,给 10 个点,从最便宜的排到最大胆的。我来挑哪些共鸣。</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRE · 反向提问</div>
+          <h2 class="cap-title-en">Interviews</h2>
+          <div class="cap-title-cn">让 Claude 反问你</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>我做完一轮 brainstorm,大概率还有 unknowns 没消。</p>
+        <p>这种时候,我会让 Claude 来 interview 我,把所有 unknowns / 含糊的地方问出来。让 Claude interview 你时,尽量把问题的 context 给它,引导它去问对问题。举几个例子:</p>
+    <div class="prompt-card" data-card id="prompt-06">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">06</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Interview · Architecture</span>
+            <span class="prompt-name-cn">提问 · 架构级</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Interview me one question at a time about anything ambiguous, prioritize questions where my answer would change the architecture.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>一次问我一个问题,针对所有含糊不清的地方。优先问那些「我的回答会影响架构」的问题。</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRE · 用代码当 reference</div>
+          <h2 class="cap-title-en">References</h2>
+          <div class="cap-title-cn">用源代码当 reference</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>有时候你没办法详细描述你想啥。比如,你可能没有对应语言去描述,或者事情太复杂,描述起来要花很久。</p>
+        <p>这种情况下,最好的答案是 reference。哪怕你可以拿 diagrams、文档、图,最佳 reference 还是源代码。</p>
+        <p>如果你有个库正好按你想要的方式实现了某件事,或者你很喜欢某个设计组件,直接指给 Fable 看那个文件夹,告诉它找什么 —— 哪怕语言不同也无所谓。</p>
+        <p>这也是 Claude Design 的工作方式。你不用手头准备好一个文件(尽管也可以)。你可以指向一个你喜欢网站上的 module,它会读到底层代码,而不只是截图。这样对 markup、结构、组件真实怎么搭起来都更详尽。</p>
+    <div class="prompt-card" data-card id="prompt-07">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">07</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Reference · Reimplement</span>
+            <span class="prompt-name-cn">参考 · 复刻语义</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">This Rust crate in vendor/rate-limiter implements the exact backoff behavior I want. Read it and reimplement the same semantics in our TypeScript API client.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>vendor/rate-limiter 里这个 Rust crate 的 backoff 行为正是我想要的。去读它,然后在我们的 TypeScript API client 里重新实现同样的语义。</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRE · 写 plan</div>
+          <h2 class="cap-title-en">Implementation Plans</h2>
+          <div class="cap-title-cn">写 plan 再动手</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>等我自觉得准备好开工,我倾向于让 Claude 给我整理一份 implementation plan,让我来 review。plan 聚焦在最可能改动的部分 —— 比如 review 数据模型、type interface、UX flow。这样能让 Claude 提前把我可能要改的地方挑出来。</p>
+    <div class="prompt-card" data-card id="prompt-08">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">08</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Plan · Tweakable First</span>
+            <span class="prompt-name-cn">计划 · 放可能改的</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Write an implementation plan in HTML, but lead with the decisions I'm most likely to tweak with: data model changes, new type interfaces, and anything user-facing. Bury the mechanical refactoring at the bottom, I trust you on that part.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>用 HTML 写一份 implementation plan。开头先列我最可能改的决策:数据模型变更、新的 type interface、所有用户能看到的东西。重型的机械式重构压在最底下,那块我信你。</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-stage">
+      <div class="cap-head">
+        <div class="cap-num">·</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STAGE</div>
+          <h2 class="cap-title-en">During implementation</h2>
+          <div class="cap-title-cn">实现中</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DURING · 决策日志</div>
+          <h2 class="cap-title-en">Implementation notes</h2>
+          <div class="cap-title-cn">Implementation notes · 决策日志</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>我对 plan 满意之后,我开新 session,把任何 artifact 都接到 prompt 里。比如我可能会把 spec 和 prototype 都接进去,让 agent 去实现。</p>
+        <p>但真相是:不管你事前做了多少规划,implementation 时总有 unknown unknowns 埋伏着。agent 可能因为代码里撞到的 edge case,而不得不换条路。</p>
+        <p>我会让 Claude Code 维护一份临时的 `implementation-notes.md`(或 .html)文件,把它做过的决策记下来,这样我们下次就能从中学到东西。</p>
+    <div class="prompt-card" data-card id="prompt-09">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">09</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Notes · Deviations</span>
+            <span class="prompt-name-cn">记录 · 偏离日志</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Keep an implementation-notes.md file. If you hit an edge case that forces you to deviate from the plan, pick the conservative option, log it under 'Deviations', and keep going.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>维护一份 implementation-notes.md。如果你碰到一个边缘情况必须偏离计划,就选保守的那个,记在 'Deviations' 这一节下面,然后继续。</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-stage">
+      <div class="cap-head">
+        <div class="cap-num">·</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STAGE</div>
+          <h2 class="cap-title-en">Post implementation</h2>
+          <div class="cap-title-cn">实现后</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">POST · 汇报拿 buy-in</div>
+          <h2 class="cap-title-en">Pitches and explainers</h2>
+          <div class="cap-title-cn">汇报文档 · 拿到 buy-in</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <div class="inline-image">
+          <img src="images/2026-07-08-thariq-fable-unknowns/x-05.jpg" alt="Pitches and explainers · 拿到 buy-in 的关键">
+          <p class="inline-image-caption">原文配图 · Pitches and explainers · 拿到 buy-in 的关键 · Thariq (@trq212) · 2026/07/03</p>
+        </div>
+
+        <p>发货里最重要的一步之一是争取 buy-in 和批准。</p>
+        <ul>
+          <li>Accelerate understanding when reviewers start with the same unknowns you did</li>
+          <li>Accelerate approvals when experts want to see you accounted for the unknowns and common failure points they would have anticipated</li>
+        </ul>
+    <div class="prompt-card" data-card id="prompt-10">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">10</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Pitch · Single Doc</span>
+            <span class="prompt-name-cn">汇报 · 一份文档</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">Package the prototype, the spec, and the implementation notes into a single doc I can drop in Slack to get buy-in. Lead with the demo GIF.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>把 prototype、spec 和 implementation notes 打包成一份文档,让我能直接丢进 Slack 要 buy-in。开头先放 demo GIF。</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">POST · 自我测验</div>
+          <h2 class="cap-title-en">Quizzes</h2>
+          <div class="cap-title-cn">完事后 Claude 来 quiz 你</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>一个长 session 之后,Claude 可能完成的事比我以为的要多。读 code diff 只能让我对发生了什么有个浅理解,因为很多行为会依赖已经存在的 code path。</p>
+        <p>给 Claude 一堆 context,让它 quiz 我,能让我真搞清楚发生了什么。我合并之前必须通过那份 quiz。</p>
+    <div class="prompt-card" data-card id="prompt-11">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">11</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">Quiz · Understanding</span>
+            <span class="prompt-name-cn">小测 · 真的理解</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">I want to make sure I understand everything that's happened in this change. Give me a HTML report on the changes for me to read and understand with context, intuition, what was done, etc. and a quiz at the bottom on the changes that I must pass.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>我要确认自己完全理解这次变更发生了什么。给我一份 HTML 报告,讲清楚这次改动 — 包括上下文、直觉、做了啥 — 末尾再加一个小测验,我得过才行。</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-11">
+      <div class="cap-head">
+        <div class="cap-num">11</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">POST · 案例 · Fable 发布视频</div>
+          <h2 class="cap-title-en">How this comes together: launching Fable</h2>
+          <div class="cap-title-cn">串起来 · Fable 发布视频</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>Fable 的发布视频全程是 Claude Code 剪的。这对我来说是个完全陌生的领域,我远说不上是专家。</p>
+        <p>我从已知的开始。我了解 Claude 能用代码剪视频、做转写,但我不确定它够不够准。我让 Claude 给我讲一下 Whisper 这类转写是怎么工作的,我能不能用 ffmpeg 精准剪掉“嗯”或长停顿。</p>
+        <p>我希望 Claude 能做一个跟我的讲话节奏同步的 UI,但不确定它做不做得来,所以我让它用 Remotion + 转写一起做个 prototype 视频,先验证一下可行性。</p>
+        <p>最后,视频看起来有点暗,我心里知道这是 color grading 的锅,但我其实不懂 color grading。我想让 Claude 一次给我出几个变种让我挑,但我意识到,我连 color grading「好」长啥样都不知道。所以反过来,我让 Claude 教我 color grading 的未知,帮我发现 unknowns。</p>
+        <p>You can watch a more in-depth explanation on that here.</p>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-12">
+      <div class="cap-head">
+        <div class="cap-num">12</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">WRAP UP · 收尾</div>
+          <h2 class="cap-title-en">Matching the Map and Territory</h2>
+          <div class="cap-title-cn">图与领地的对齐</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>模型越强,你用对方法能做到的就越多。如果一个长 horizon 任务被搞砸了,大概率是你需要花更多时间定义你的 unknowns,或者写一份允许 Claude 在 unknowns 里自由发挥的 implementation plan。</p>
+        <p>每一次 explainer、brainstorm、interview、prototype、reference,都是一种便宜的方式 —— 在它变得贵起来之前,知道原来自己不知道什么。</p>
+        <p>所以,下一次要开新项目时,让 Claude 帮你找 unknowns。</p>
+      </div>
+    </section>
+
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>A Field Guide to Fable: Finding Your Unknowns</em><br>
+          作者:Thariq (@trq212) · Claude Code @ Anthropic · 发布于 2026/07/03 · 3.3M 浏览<br>
+          原文推文链接:<a href="https://x.com/trq212/status/2073100352921215386" target="_blank" rel="noopener">https://x.com/trq212/status/2073100352921215386</a><br>
+          原文文章链接:<a href="https://x.com/i/article/2073090223194755072" target="_blank" rel="noopener">https://x.com/i/article/2073090223194755072</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/trq212" target="_blank" rel="noopener">https://x.com/trq212</a>
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本,按中文阅读习惯意译。原文中所有 11 个 example prompt 均保留英文原貌,便于直接复制使用;中文版为意译。如需引用请以原文为准。
+        </li>
+      </ul>
+    </section>
+    <section class="closing">
+      <p class="closing-text">So start your next project by asking Claude to help you find <strong>your unknowns</strong>.</p>
+      <p class="closing-caption">— Thariq · on Claude Fable 5 and the map vs the territory</p>
+    </section>
+    <footer class="article-footer">
+      <p>本文为解读版本 · 原文所有 example prompt 均保留英文原貌</p>
+      <p class="credit">朱有以 · 为 AI 发电 · 2026/07</p>
+    </footer>
+  </main>
+  <button class="floating-nav-toggle" id="navToggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item"><span class="nav-item-num">01</span><span class="nav-item-stack"><span class="nav-item-en">Knowing your unknowns</span><span class="nav-item-cn">认识你的 unknowns</span></span></a>
+      <a href="#cap-02" class="nav-item"><span class="nav-item-num">02</span><span class="nav-item-stack"><span class="nav-item-en">Help Claude help you</span><span class="nav-item-cn">让 Claude 帮你 — 先帮自己</span></span></a>
+      <a href="#cap-stage" class="nav-item"><span class="nav-item-num">·</span><span class="nav-item-stack"><span class="nav-item-en">Pre-implementation</span><span class="nav-item-cn">实现前</span></span></a>
+      <a href="#cap-03" class="nav-item"><span class="nav-item-num">03</span><span class="nav-item-stack"><span class="nav-item-en">Blind Spot Pass</span><span class="nav-item-cn">先清盲区</span></span></a>
+      <a href="#cap-04" class="nav-item"><span class="nav-item-num">04</span><span class="nav-item-stack"><span class="nav-item-en">Brainstorms and prototypes</span><span class="nav-item-cn">头脑风暴 + 原型</span></span></a>
+      <a href="#cap-05" class="nav-item"><span class="nav-item-num">05</span><span class="nav-item-stack"><span class="nav-item-en">Interviews</span><span class="nav-item-cn">让 Claude 反问你</span></span></a>
+      <a href="#cap-06" class="nav-item"><span class="nav-item-num">06</span><span class="nav-item-stack"><span class="nav-item-en">References</span><span class="nav-item-cn">用源代码当 reference</span></span></a>
+      <a href="#cap-07" class="nav-item"><span class="nav-item-num">07</span><span class="nav-item-stack"><span class="nav-item-en">Implementation Plans</span><span class="nav-item-cn">写 plan 再动手</span></span></a>
+      <a href="#cap-stage" class="nav-item"><span class="nav-item-num">·</span><span class="nav-item-stack"><span class="nav-item-en">During implementation</span><span class="nav-item-cn">实现中</span></span></a>
+      <a href="#cap-08" class="nav-item"><span class="nav-item-num">08</span><span class="nav-item-stack"><span class="nav-item-en">Implementation notes</span><span class="nav-item-cn">决策日志</span></span></a>
+      <a href="#cap-stage" class="nav-item"><span class="nav-item-num">·</span><span class="nav-item-stack"><span class="nav-item-en">Post implementation</span><span class="nav-item-cn">实现后</span></span></a>
+      <a href="#cap-09" class="nav-item"><span class="nav-item-num">09</span><span class="nav-item-stack"><span class="nav-item-en">Pitches and explainers</span><span class="nav-item-cn">汇报拿 buy-in</span></span></a>
+      <a href="#cap-10" class="nav-item"><span class="nav-item-num">10</span><span class="nav-item-stack"><span class="nav-item-en">Quizzes</span><span class="nav-item-cn">自我测验</span></span></a>
+      <a href="#cap-11" class="nav-item"><span class="nav-item-num">11</span><span class="nav-item-stack"><span class="nav-item-en">How this comes together · launching Fable</span><span class="nav-item-cn">案例 · Fable 发布视频</span></span></a>
+      <a href="#cap-12" class="nav-item"><span class="nav-item-num">12</span><span class="nav-item-stack"><span class="nav-item-en">Matching the Map and Territory</span><span class="nav-item-cn">图与领地的对齐</span></span></a>
+    </div>
+  </nav>
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    if (navToggle && navPanel) {
+      navToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+      document.addEventListener('click', (e) => {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+      navPanel.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => navPanel.classList.remove('active'));
+      });
+    }
+
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) body.removeAttribute('hidden');
+            else body.setAttribute('hidden', '');
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector('.prompt-card-body[data-lang="' + activeLang + '"]');
+      const content = body.textContent;
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else fallbackCopy(content, showCopied);
+    }
+
+    function fallbackCopy(content, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = content;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.removeChild(ta);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+</body>
+</html>
