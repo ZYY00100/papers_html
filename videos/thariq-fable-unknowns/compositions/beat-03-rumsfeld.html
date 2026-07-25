@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-CN" data-composition-id="beat-03-rumsfeld" data-width="1920" data-height="1080" data-start="0" data-duration="18">
+<!--
+  BEAT 3 — 4 UNKNOWNS / RUMSFELD (0:28–0:46) — KEY VISUAL
+  Sub-composition loaded via data-composition-src.
+  Duration: 18s. The most information-dense moment of the entire video.
+  Visual identity: Rumsfeld 2×2 matrix as 4 cards + center red dot + red border highlight on UU.
+  Transition OUT (velocity-matched rightward blur) is handled by the framework.
+-->
+<template id="beat-03-rumsfeld-template">
+  <div data-composition-id="beat-03-rumsfeld" data-start="0" data-duration="18" data-width="1920" data-height="1080">
+
+    <!-- BG: canvas + grid -->
+    <div class="canvas"></div>
+
+    <!-- MG: title block (top) -->
+    <div class="title-block">
+      <div class="numeral-row">
+        <span class="numeral">03</span>
+        <span class="section-kicker">FRAMEWORK &nbsp;&middot;&nbsp; RUMSFELD MATRIX</span>
+      </div>
+      <h2 class="h2-en">Knowing your unknowns</h2>
+      <p class="h2-cn">把未知分成四类 — 越往右下越危险</p>
+    </div>
+
+    <!-- FG: 2×2 matrix + center red dot -->
+    <div class="matrix-wrap">
+      <div class="matrix">
+
+        <!-- Center red dot (between all 4 cards) -->
+        <div class="center-dot"></div>
+
+        <!-- Card 1: top-left — Known Knowns -->
+        <div class="mcard" id="b3-card-1">
+          <div class="mcard-top">
+            <span class="mcard-en">Known Knowns</span>
+            <span class="mcard-cn">已知</span>
+          </div>
+          <p class="mcard-desc">在 prompt 里说清楚的事</p>
+        </div>
+
+        <!-- Card 2: top-right — Known Unknowns -->
+        <div class="mcard" id="b3-card-2">
+          <div class="mcard-top">
+            <span class="mcard-en">Known Unknowns</span>
+            <span class="mcard-cn">已知的未知</span>
+          </div>
+          <p class="mcard-desc">知道没想清楚的</p>
+        </div>
+
+        <!-- Card 3: bottom-left — Unknown Knowns -->
+        <div class="mcard" id="b3-card-3">
+          <div class="mcard-top">
+            <span class="mcard-en">Unknown Knowns</span>
+            <span class="mcard-cn">默会的知识</span>
+          </div>
+          <p class="mcard-desc">太显然没写下来的</p>
+        </div>
+
+        <!-- Card 4: bottom-right — Unknown Unknowns (HIGHLIGHT) -->
+        <div class="mcard mcard-highlight" id="b3-card-4">
+          <div class="mcard-top">
+            <span class="mcard-en">Unknown Unknowns</span>
+            <span class="mcard-cn">未知的未知</span>
+          </div>
+          <p class="mcard-desc">根本没想到的</p>
+          <span class="highlight-badge">焦点</span>
+        </div>
+
+      </div>
+    </div>
+
+    <style>
+
+@font-face { font-family: 'Cormorant Garamond'; src: local('Cormorant Garamond'), local('CormorantGaramond-Regular'); }
+@font-face { font-family: 'Noto Serif SC'; src: local('Noto Serif SC'), local('NotoSerifSC-Regular'); }
+@font-face { font-family: 'PingFang SC'; src: local('PingFang SC'), local('PingFangSC-Regular'); }
+@font-face { font-family: 'Songti SC'; src: local('Songti SC'), local('SongtiSC-Regular'); }
+@font-face { font-family: 'Rajdhani'; src: local('Rajdhani'), local('Rajdhani-Regular'); }
+
+      [data-composition-id="beat-03-rumsfeld"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background-color: #F5F5F7;
+        background-image:
+          repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px),
+          repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px);
+        display: flex;
+        flex-direction: column;
+        padding: 100px 160px 80px;
+        box-sizing: border-box;
+        overflow: hidden;
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        color: #1D1D1F;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Title block */
+      [data-composition-id="beat-03-rumsfeld"] .title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 60px;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .numeral-row {
+        display: flex;
+        align-items: baseline;
+        gap: 24px;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .numeral {
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 56px;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        color: #C9A962;
+        font-variant-numeric: tabular-nums;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .section-kicker {
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 11px;
+        line-height: 1;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        color: #8A8A8E;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .h2-en {
+        font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+        font-weight: 500;
+        font-size: 44px;
+        line-height: 1.2;
+        letter-spacing: -0.4px;
+        color: #1D1D1F;
+        margin: 0;
+        font-style: italic;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .h2-cn {
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        font-weight: 300;
+        font-size: 22px;
+        line-height: 1.5;
+        letter-spacing: 0.44px;
+        color: #4A4A4F;
+        margin: 0;
+      }
+
+      /* Matrix wrap: flex-center the 2×2 grid */
+      [data-composition-id="beat-03-rumsfeld"] .matrix-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .matrix {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, 440px);
+        grid-template-rows: repeat(2, 260px);
+        gap: 36px;
+      }
+
+      /* Matrix card */
+      [data-composition-id="beat-03-rumsfeld"] .mcard {
+        position: relative;
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 36px 40px;
+        box-sizing: border-box;
+        box-shadow:
+          0 1px 3px rgba(0,0,0,0.06),
+          0 4px 16px rgba(0,0,0,0.04);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .mcard-top {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .mcard-en {
+        font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+        font-weight: 500;
+        font-size: 32px;
+        line-height: 1.2;
+        letter-spacing: -0.3px;
+        color: #1D1D1F;
+        font-style: italic;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .mcard-cn {
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 1.4;
+        letter-spacing: 0.36px;
+        color: #4A4A4F;
+      }
+      [data-composition-id="beat-03-rumsfeld"] .mcard-desc {
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        font-weight: 300;
+        font-size: 16px;
+        line-height: 1.5;
+        letter-spacing: 0.32px;
+        color: #8A8A8E;
+        margin: 0;
+      }
+
+      /* Highlight on Unknown Unknowns */
+      [data-composition-id="beat-03-rumsfeld"] .mcard-highlight {
+        border: 2.5px solid #C8161D;
+        box-shadow:
+          0 1px 3px rgba(200, 22, 29, 0.15),
+          0 4px 24px rgba(200, 22, 29, 0.12),
+          0 0 0 4px rgba(200, 22, 29, 0.06);
+      }
+      [data-composition-id="beat-03-rumsfeld"] .highlight-badge {
+        position: absolute;
+        top: -14px;
+        right: 24px;
+        background: #C8161D;
+        color: #FFFFFF;
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        padding: 5px 12px;
+        border-radius: 3px;
+        line-height: 1;
+      }
+
+      /* Center red dot — sits visually at the intersection of the 4 cards */
+      [data-composition-id="beat-03-rumsfeld"] .center-dot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 18px;
+        height: 18px;
+        background: #C8161D;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        box-shadow:
+          0 0 0 6px rgba(200, 22, 29, 0.12),
+          0 0 0 14px rgba(200, 22, 29, 0.06);
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      const tl = gsap.timeline({ paused: true });
+
+      // 1. Gold section numeral "03" — fade + tiny rise, 0.0–0.4s
+      tl.fromTo(
+        '[data-composition-id="beat-03-rumsfeld"] .numeral',
+        { opacity: 0, y: -8 },
+        { opacity: 1, y: 0, duration: 0.4, ease: 'sine.out' },
+        0.15,
+      );
+
+      // 2. Section kicker — fade
+      tl.fromTo(
+        '[data-composition-id="beat-03-rumsfeld"] .section-kicker',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: 'sine.out' },
+        0.4,
+      );
+
+      // 3. English H2 — fade + slide up, 0.3–1.0s
+      tl.fromTo(
+        '[data-composition-id="beat-03-rumsfeld"] .h2-en',
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+        0.5,
+      );
+
+      // 4. Chinese subhead — fade only, 0.8–1.4s
+      tl.fromTo(
+        '[data-composition-id="beat-03-rumsfeld"] .h2-cn',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, ease: 'expo.out' },
+        0.8,
+      );
+
+      // 5. Four cards stagger in (left-to-right, top-to-bottom)
+      //    Each card: scale 0.92→1, opacity 0→1, 0.5s power2.out
+      tl.fromTo(
+        '#b3-card-1',
+        { opacity: 0, scale: 0.92 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' },
+        1.6,
+      );
+      tl.fromTo(
+        '#b3-card-2',
+        { opacity: 0, scale: 0.92 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' },
+        1.78,
+      );
+      tl.fromTo(
+        '#b3-card-3',
+        { opacity: 0, scale: 0.92 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' },
+        1.96,
+      );
+      tl.fromTo(
+        '#b3-card-4',
+        { opacity: 0, scale: 0.92 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'power2.out' },
+        2.14,
+      );
+
+      // 6. Center red dot — scale 0→1, 2.6s, 0.4s back.out
+      tl.fromTo(
+        '[data-composition-id="beat-03-rumsfeld"] .center-dot',
+        { opacity: 0, scale: 0 },
+        { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out' },
+        2.8,
+      );
+
+      // 7. Highlight ring on Card 4 (UU) — already in CSS, animate the badge
+      tl.fromTo(
+        '.highlight-badge',
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out' },
+        3.4,
+      );
+
+      // 8. Subtle pulse on the highlight border to draw attention (no exit, no position change)
+      tl.fromTo(
+        '#b3-card-4',
+        { boxShadow: '0 1px 3px rgba(200, 22, 29, 0.15), 0 4px 24px rgba(200, 22, 29, 0.12), 0 0 0 4px rgba(200, 22, 29, 0.06)' },
+        { boxShadow: '0 1px 3px rgba(200, 22, 29, 0.25), 0 4px 32px rgba(200, 22, 29, 0.2), 0 0 0 8px rgba(200, 22, 29, 0.12)', duration: 1.5, ease: 'sine.inOut', yoyo: true, repeat: 3 },
+        4.5,
+      );
+
+      // Hold 6.0–18.0s — no exit tweens (framework handles transition).
+      window.__timelines['beat-03-rumsfeld'] = tl;
+    </script>
+  </div>
+</template>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN" data-composition-id="beat-12-pitch-quiz" data-width="1920" data-height="1080" data-start="0" data-duration="14">
+<!-- BEAT 12 — PITCH + QUIZ (2:24–2:38) — POST-IMPL with 2 horizontal cards -->
+<template id="beat-12-pitch-quiz-template">
+  <div data-composition-id="beat-12-pitch-quiz" data-start="0" data-duration="14" data-width="1920" data-height="1080">
+    <div class="canvas"></div>
+    <div class="title-block">
+      <div class="numeral-row"><span class="numeral">12 / POST-IMPL</span></div>
+      <h2 class="h2-en">Pitches &amp; Quizzes</h2>
+      <p class="h2-cn">实施后：推介 + 自测 — 两件事</p>
+    </div>
+    <div class="two-cards">
+      <div class="prompt-card" id="b12-card-1">
+        <div class="prompt-label">
+          <span class="prompt-label-en">01 PITCHES</span>
+          <span class="prompt-label-cn">推介稿 · 拿 buy-in</span>
+        </div>
+        <div class="prompt-text">
+          <p>"Package the prototype, the spec, and the implementation notes into a <strong>single doc I can drop in Slack</strong> to get buy-in. Lead with the demo GIF."</p>
+        </div>
+        <div class="prompt-foot">
+          <span class="prompt-foot-label">GOAL</span>
+          <span class="prompt-foot-text">让 reviewer 站在你的起点</span>
+        </div>
+      </div>
+      <div class="prompt-card" id="b12-card-2">
+        <div class="prompt-label">
+          <span class="prompt-label-en">02 QUIZZES</span>
+          <span class="prompt-label-cn">自测 · 必须满分才 merge</span>
+        </div>
+        <div class="prompt-text">
+          <p>"I want to make sure I understand everything that's happened in this change. Give me a <strong>HTML report + a quiz at the bottom</strong> on the changes that I must pass."</p>
+        </div>
+        <div class="prompt-foot">
+          <span class="prompt-foot-label">RULE</span>
+          <span class="prompt-foot-text">读 diff ≠ 真懂 — 让自己被考</span>
+        </div>
+      </div>
+    </div>
+    <style>
+
+@font-face { font-family: 'Cormorant Garamond'; src: local('Cormorant Garamond'), local('CormorantGaramond-Regular'); }
+@font-face { font-family: 'Noto Serif SC'; src: local('Noto Serif SC'), local('NotoSerifSC-Regular'); }
+@font-face { font-family: 'PingFang SC'; src: local('PingFang SC'), local('PingFangSC-Regular'); }
+@font-face { font-family: 'Songti SC'; src: local('Songti SC'), local('SongtiSC-Regular'); }
+@font-face { font-family: 'Rajdhani'; src: local('Rajdhani'), local('Rajdhani-Regular'); }
+@font-face { font-family: 'JetBrains Mono'; src: local('JetBrains Mono'), local('JetBrainsMono-Regular'); }
+
+      [data-composition-id="beat-12-pitch-quiz"] {
+        position: relative; width: 1920px; height: 1080px; overflow: hidden;
+        background-color: #F5F5F7;
+        background-image: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px);
+        display: flex; flex-direction: column; padding: 100px 160px 80px; box-sizing: border-box;
+        font-family: 'Noto Serif SC', 'PingFang SC', serif; color: #1D1D1F;
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      }
+      [data-composition-id="beat-12-pitch-quiz"] .title-block { display: flex; flex-direction: column; gap: 12px; margin-bottom: 50px; align-items: center; text-align: center; }
+      [data-composition-id="beat-12-pitch-quiz"] .numeral-row { display: flex; align-items: baseline; gap: 16px; justify-content: center; }
+      [data-composition-id="beat-12-pitch-quiz"] .numeral { font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 600; font-size: 16px; line-height: 1; letter-spacing: 2.2px; text-transform: uppercase; color: #C9A962; }
+      [data-composition-id="beat-12-pitch-quiz"] .h2-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-weight: 500; font-size: 56px; line-height: 1.2; letter-spacing: -0.5px; color: #1D1D1F; margin: 0; font-style: italic; }
+      [data-composition-id="beat-12-pitch-quiz"] .h2-cn { font-family: 'Noto Serif SC', 'PingFang SC', serif; font-weight: 300; font-size: 22px; line-height: 1.5; letter-spacing: 0.44px; color: #4A4A4F; margin: 0; }
+      [data-composition-id="beat-12-pitch-quiz"] .two-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; align-items: center; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-card { background: #0E0E10; border-radius: 10px; padding: 32px 36px; box-sizing: border-box; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.18); display: flex; flex-direction: column; gap: 20px; height: 100%; max-height: 560px; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-label { display: flex; align-items: baseline; gap: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(232, 232, 234, 0.12); }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-label-en { font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase; color: #C9A962; line-height: 1; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-label-cn { font-family: 'Noto Serif SC', 'PingFang SC', serif; font-weight: 300; font-size: 13px; letter-spacing: 0.26px; color: #8A8A8E; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-text { font-family: 'JetBrains Mono', 'Menlo', monospace; font-weight: 400; font-size: 14px; line-height: 1.65; letter-spacing: 0; color: #E8E8EA; flex: 1; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-text p { margin: 0; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-text strong { color: #C9A962; font-weight: 500; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-foot { display: flex; align-items: baseline; gap: 12px; padding-top: 14px; border-top: 1px solid rgba(232, 232, 234, 0.12); }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-foot-label { font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 600; font-size: 10px; letter-spacing: 2.2px; text-transform: uppercase; color: #8A8A8E; line-height: 1; }
+      [data-composition-id="beat-12-pitch-quiz"] .prompt-foot-text { font-family: 'Noto Serif SC', 'PingFang SC', serif; font-weight: 300; font-size: 13px; letter-spacing: 0.26px; color: #8A8A8E; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo('[data-composition-id="beat-12-pitch-quiz"] .numeral', { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.4, ease: 'sine.out' }, 0.15);
+      tl.fromTo('[data-composition-id="beat-12-pitch-quiz"] .h2-en', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.4);
+      tl.fromTo('[data-composition-id="beat-12-pitch-quiz"] .h2-cn', { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'expo.out' }, 0.8);
+      tl.fromTo('#b12-card-1', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 1.6);
+      tl.fromTo('#b12-card-2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 1.85);
+      window.__timelines['beat-12-pitch-quiz'] = tl;
+    </script>
+  </div>
+</template>
+</html>

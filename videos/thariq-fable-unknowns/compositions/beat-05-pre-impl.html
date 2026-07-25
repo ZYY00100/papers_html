@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN" data-composition-id="beat-05-pre-impl" data-width="1920" data-height="1080" data-start="0" data-duration="8">
+<!--
+  BEAT 5 — PRE-IMPL 章扉 (0:56–1:04)
+  Sub-composition. 8s. Chapter title card with 5 chip preview.
+-->
+<template id="beat-05-pre-impl-template">
+  <div data-composition-id="beat-05-pre-impl" data-start="0" data-duration="8" data-width="1920" data-height="1080">
+    <div class="canvas"></div>
+
+    <div class="title-block">
+      <div class="numeral-row">
+        <span class="numeral">05</span>
+        <span class="section-kicker">PRE-IMPLEMENTATION &nbsp;&middot;&nbsp; 5 TOOLS</span>
+      </div>
+      <h2 class="h2-en">5 工具 · 实施前</h2>
+      <p class="h2-cn">在写第一行代码前 — 先把 unknowns 摊开</p>
+    </div>
+
+    <div class="chip-row">
+      <div class="chip" id="b5-chip-1">
+        <span class="chip-num">01</span>
+        <span class="chip-en">BLIND SPOT</span>
+      </div>
+      <div class="chip" id="b5-chip-2">
+        <span class="chip-num">02</span>
+        <span class="chip-en">BRAINSTORM</span>
+      </div>
+      <div class="chip" id="b5-chip-3">
+        <span class="chip-num">03</span>
+        <span class="chip-en">INTERVIEW</span>
+      </div>
+      <div class="chip" id="b5-chip-4">
+        <span class="chip-num">04</span>
+        <span class="chip-en">REFERENCES</span>
+      </div>
+      <div class="chip" id="b5-chip-5">
+        <span class="chip-num">05</span>
+        <span class="chip-en">IMPL PLAN</span>
+      </div>
+    </div>
+
+    <style>
+
+@font-face { font-family: 'Cormorant Garamond'; src: local('Cormorant Garamond'), local('CormorantGaramond-Regular'); }
+@font-face { font-family: 'Noto Serif SC'; src: local('Noto Serif SC'), local('NotoSerifSC-Regular'); }
+@font-face { font-family: 'PingFang SC'; src: local('PingFang SC'), local('PingFangSC-Regular'); }
+@font-face { font-family: 'Songti SC'; src: local('Songti SC'), local('SongtiSC-Regular'); }
+@font-face { font-family: 'Rajdhani'; src: local('Rajdhani'), local('Rajdhani-Regular'); }
+
+      [data-composition-id="beat-05-pre-impl"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background-color: #F5F5F7;
+        background-image:
+          repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px),
+          repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px);
+        display: flex;
+        flex-direction: column;
+        padding: 100px 160px 80px;
+        box-sizing: border-box;
+        overflow: hidden;
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        color: #1D1D1F;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      [data-composition-id="beat-05-pre-impl"] .title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 100px;
+        align-items: center;
+        text-align: center;
+      }
+      [data-composition-id="beat-05-pre-impl"] .numeral-row {
+        display: flex;
+        align-items: baseline;
+        gap: 24px;
+        justify-content: center;
+      }
+      [data-composition-id="beat-05-pre-impl"] .numeral {
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 56px;
+        line-height: 1;
+        color: #C9A962;
+        font-variant-numeric: tabular-nums;
+      }
+      [data-composition-id="beat-05-pre-impl"] .section-kicker {
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        color: #8A8A8E;
+      }
+      [data-composition-id="beat-05-pre-impl"] .h2-en {
+        font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+        font-weight: 500;
+        font-size: 64px;
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+        color: #1D1D1F;
+        margin: 0;
+      }
+      [data-composition-id="beat-05-pre-impl"] .h2-cn {
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        font-weight: 300;
+        font-size: 22px;
+        line-height: 1.5;
+        letter-spacing: 0.44px;
+        color: #4A4A4F;
+        margin: 0;
+      }
+
+      [data-composition-id="beat-05-pre-impl"] .chip-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 28px;
+        flex-wrap: wrap;
+      }
+      [data-composition-id="beat-05-pre-impl"] .chip {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 20px 32px;
+        background: #FFFFFF;
+        border: 1px solid #E5E5E8;
+        border-radius: 8px;
+        box-shadow:
+          0 1px 3px rgba(0,0,0,0.04),
+          0 4px 12px rgba(0,0,0,0.04);
+      }
+      [data-composition-id="beat-05-pre-impl"] .chip-num {
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        color: #C9A962;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      [data-composition-id="beat-05-pre-impl"] .chip-en {
+        font-family: 'Rajdhani', 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 2.2px;
+        text-transform: uppercase;
+        color: #1D1D1F;
+        line-height: 1;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(
+        '[data-composition-id="beat-05-pre-impl"] .numeral',
+        { opacity: 0, y: -8 },
+        { opacity: 1, y: 0, duration: 0.4, ease: 'sine.out' },
+        0.1,
+      );
+      tl.fromTo(
+        '[data-composition-id="beat-05-pre-impl"] .section-kicker',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.4, ease: 'sine.out' },
+        0.3,
+      );
+      tl.fromTo(
+        '[data-composition-id="beat-05-pre-impl"] .h2-en',
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' },
+        0.4,
+      );
+      tl.fromTo(
+        '[data-composition-id="beat-05-pre-impl"] .h2-cn',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.5, ease: 'expo.out' },
+        0.7,
+      );
+
+      // 5 chips stagger in
+      const chips = gsap.utils.toArray('[data-composition-id="beat-05-pre-impl"] .chip');
+      chips.forEach((chip, i) => {
+        tl.fromTo(
+          chip,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+          1.4 + i * 0.15,
+        );
+      });
+
+      window.__timelines['beat-05-pre-impl'] = tl;
+    </script>
+  </div>
+</template>
+</html>

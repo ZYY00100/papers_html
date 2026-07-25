@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN" data-composition-id="beat-13-fable-cta" data-width="1920" data-height="1080" data-start="0" data-duration="22">
+<!--
+  BEAT 13 — FABLE + CTA (2:38–3:00) — 22s closing
+  4-step vertical timeline + final gold sentence
+  ALLOWED: this is the final scene, can fade elements out
+-->
+<template id="beat-13-fable-cta-template">
+  <div data-composition-id="beat-13-fable-cta" data-start="0" data-duration="22" data-width="1920" data-height="1080">
+    <div class="canvas"></div>
+
+    <!-- Title block (top) -->
+    <div class="title-block">
+      <div class="numeral-row">
+        <span class="numeral">13 / CASE STUDY</span>
+        <span class="section-kicker">HOW IT COMES TOGETHER &nbsp;&middot;&nbsp; LAUNCHING FABLE</span>
+      </div>
+      <h2 class="h2-en">How this comes together</h2>
+      <p class="h2-cn">实战：Fable 启动视频 — 4 步搞定</p>
+    </div>
+
+    <!-- 4-step timeline (left half) -->
+    <div class="timeline-wrap">
+      <div class="timeline">
+        <div class="tl-line" id="b13-tl-line"></div>
+        <div class="step" id="b13-step-1">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-num">01</div>
+            <div class="step-en">Whisper transcript + how it works</div>
+            <div class="step-cn">Thariq 让 Claude 讲解 Whisper 转录原理</div>
+          </div>
+        </div>
+        <div class="step" id="b13-step-2">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-num">02</div>
+            <div class="step-en">Remotion prototype</div>
+            <div class="step-cn">用 Remotion + 转录做 prototype 视频</div>
+          </div>
+        </div>
+        <div class="step" id="b13-step-3">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-num">03</div>
+            <div class="step-en">ffmpeg cut ums &amp; pauses</div>
+            <div class="step-cn">用 ffmpeg 剪 ums 和大段停顿</div>
+          </div>
+        </div>
+        <div class="step step-highlight" id="b13-step-4">
+          <div class="step-dot step-dot-hl"></div>
+          <div class="step-content">
+            <div class="step-num">04</div>
+            <div class="step-en">Color grading — let Claude teach you</div>
+            <div class="step-cn">不知道 color grading — 先让 Claude 教你</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final gold sentence (centered, full width) -->
+    <div class="cta-sentence" id="b13-cta">
+      <div class="cta-line-1">所以让你的下一个项目</div>
+      <div class="cta-line-2">从 <em>找 unknowns</em> 开始</div>
+    </div>
+
+    <style>
+
+@font-face { font-family: 'Cormorant Garamond'; src: local('Cormorant Garamond'), local('CormorantGaramond-Regular'); }
+@font-face { font-family: 'Noto Serif SC'; src: local('Noto Serif SC'), local('NotoSerifSC-Regular'); }
+@font-face { font-family: 'PingFang SC'; src: local('PingFang SC'), local('PingFangSC-Regular'); }
+@font-face { font-family: 'Songti SC'; src: local('Songti SC'), local('SongtiSC-Regular'); }
+@font-face { font-family: 'Rajdhani'; src: local('Rajdhani'), local('Rajdhani-Regular'); }
+
+      [data-composition-id="beat-13-fable-cta"] {
+        position: relative; width: 1920px; height: 1080px; overflow: hidden;
+        background-color: #F5F5F7;
+        background-image: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.024) 79px, rgba(0,0,0,0.024) 80px);
+        display: flex; flex-direction: column; padding: 80px 160px 80px; box-sizing: border-box;
+        font-family: 'Noto Serif SC', 'PingFang SC', serif; color: #1D1D1F;
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      }
+      [data-composition-id="beat-13-fable-cta"] .title-block { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+      [data-composition-id="beat-13-fable-cta"] .numeral-row { display: flex; align-items: baseline; gap: 20px; }
+      [data-composition-id="beat-13-fable-cta"] .numeral { font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 600; font-size: 18px; line-height: 1; letter-spacing: 2.2px; text-transform: uppercase; color: #C9A962; }
+      [data-composition-id="beat-13-fable-cta"] .section-kicker { font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 600; font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase; color: #8A8A8E; }
+      [data-composition-id="beat-13-fable-cta"] .h2-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-weight: 500; font-size: 40px; line-height: 1.2; letter-spacing: -0.4px; color: #1D1D1F; margin: 0; font-style: italic; }
+      [data-composition-id="beat-13-fable-cta"] .h2-cn { font-family: 'Noto Serif SC', 'PingFang SC', serif; font-weight: 300; font-size: 20px; line-height: 1.5; letter-spacing: 0.4px; color: #4A4A4F; margin: 0; }
+
+      /* Timeline (left half) */
+      [data-composition-id="beat-13-fable-cta"] .timeline-wrap { position: relative; flex: 1; }
+      [data-composition-id="beat-13-fable-cta"] .timeline { position: relative; display: flex; flex-direction: column; gap: 36px; padding: 30px 0 0 80px; }
+      [data-composition-id="beat-13-fable-cta"] .tl-line { position: absolute; left: 84px; top: 50px; bottom: 50px; width: 1px; background: #E5E5E8; }
+      [data-composition-id="beat-13-fable-cta"] .step { display: flex; align-items: flex-start; gap: 32px; position: relative; }
+      [data-composition-id="beat-13-fable-cta"] .step-dot { width: 16px; height: 16px; background: #FFFFFF; border: 2px solid #1D1D1F; border-radius: 50%; flex-shrink: 0; margin-top: 6px; position: relative; z-index: 2; }
+      [data-composition-id="beat-13-fable-cta"] .step-dot-hl { background: #C8161D; border-color: #C8161D; box-shadow: 0 0 0 4px rgba(200, 22, 29, 0.15); }
+      [data-composition-id="beat-13-fable-cta"] .step-content { display: flex; flex-direction: column; gap: 6px; }
+      [data-composition-id="beat-13-fable-cta"] .step-num { font-family: 'Rajdhani', 'Inter', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1.5px; color: #C9A962; line-height: 1; }
+      [data-composition-id="beat-13-fable-cta"] .step-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-weight: 500; font-size: 24px; line-height: 1.3; color: #1D1D1F; letter-spacing: -0.2px; }
+      [data-composition-id="beat-13-fable-cta"] .step-cn { font-family: 'Noto Serif SC', 'PingFang SC', serif; font-weight: 300; font-size: 16px; line-height: 1.5; color: #4A4A4F; }
+      [data-composition-id="beat-13-fable-cta"] .step-highlight .step-en { color: #C8161D; font-weight: 600; }
+      [data-composition-id="beat-13-fable-cta"] .step-highlight .step-cn { color: #C8161D; }
+
+      /* Final CTA sentence (overlaid on top of timeline after fade-out) */
+      [data-composition-id="beat-13-fable-cta"] .cta-sentence {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        text-align: center;
+        opacity: 0;
+      }
+      [data-composition-id="beat-13-fable-cta"] .cta-line-1 {
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        font-weight: 300;
+        font-size: 36px;
+        color: #4A4A4F;
+        letter-spacing: 0.04em;
+      }
+      [data-composition-id="beat-13-fable-cta"] .cta-line-2 {
+        font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+        font-weight: 500;
+        font-style: italic;
+        font-size: 84px;
+        color: #C9A962;
+        letter-spacing: -0.6px;
+        line-height: 1;
+      }
+      [data-composition-id="beat-13-fable-cta"] .cta-line-2 em {
+        font-style: italic;
+        color: #1D1D1F;
+        font-family: 'Noto Serif SC', 'PingFang SC', serif;
+        font-weight: 400;
+        font-size: 72px;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 1. Numeral + section kicker
+      tl.fromTo('[data-composition-id="beat-13-fable-cta"] .numeral', { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.4, ease: 'sine.out' }, 0.15);
+      tl.fromTo('[data-composition-id="beat-13-fable-cta"] .section-kicker', { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'sine.out' }, 0.4);
+      tl.fromTo('[data-composition-id="beat-13-fable-cta"] .h2-en', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 0.5);
+      tl.fromTo('[data-composition-id="beat-13-fable-cta"] .h2-cn', { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'expo.out' }, 0.8);
+
+      // 2. Timeline vertical line grows
+      tl.fromTo('#b13-tl-line', { scaleY: 0 }, { scaleY: 1, duration: 1.5, ease: 'power2.out', transformOrigin: 'top center' }, 1.4);
+
+      // 3. 4 steps stagger in
+      const steps = gsap.utils.toArray('[data-composition-id="beat-13-fable-cta"] .step');
+      steps.forEach((s, i) => {
+        tl.fromTo(s, { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.6, ease: 'power2.out' }, 1.6 + i * 0.4);
+      });
+
+      // 4. At 12s — timeline fades out (FINAL SCENE EXCEPTION — fade is allowed)
+      tl.to('[data-composition-id="beat-13-fable-cta"] .timeline-wrap', { opacity: 0, duration: 0.8, ease: 'sine.in' }, 12.0);
+      tl.to('[data-composition-id="beat-13-fable-cta"] .title-block', { opacity: 0, duration: 0.8, ease: 'sine.in' }, 12.0);
+
+      // 5. Final CTA sentence appears
+      tl.fromTo('#b13-cta', { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }, 12.5);
+
+      // 6. Hold + final fade to canvas
+      tl.to('#b13-cta', { opacity: 0, duration: 1.5, ease: 'sine.in' }, 20.5);
+
+      window.__timelines['beat-13-fable-cta'] = tl;
+    </script>
+  </div>
+</template>
+</html>

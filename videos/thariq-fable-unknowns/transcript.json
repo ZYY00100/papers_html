@@ -1,0 +1,21 @@
+{
+  "duration": 180.24,
+  "language": "zh-CN",
+  "voice": "Eddy (macOS native)",
+  "source": "say -v Eddy -r 50 + atempo 0.806",
+  "beats": [
+    { "id": "01", "start": 0, "end": 14, "text": "Claude Fable 的工程师 Thariq，最近写了一篇非常重要的方法论文章。文章的核心观点，地图不是疆域，意思就是 — 你给 Claude 的东西，和真实发生的事，是两回事。" },
+    { "id": "02", "start": 14, "end": 28, "text": "我们说 地图，指的是你给 Claude 的 prompt，你的 skill 文件，你的 context。所有这些，是你交给 Claude 的输入。而 疆域，是代码库本身，是真实世界的运行规则，是实际的约束。地图和疆域之间的差距 — 就是 unknowns。" },
+    { "id": "03", "start": 28, "end": 46, "text": "Unknowns 分成四类。这是 Donald Rumsfeld 提出的框架。Known Knowns，是已经在 prompt 里说清楚的事 — 你告诉 agent 你想要什么。Known Unknowns，是你知道没想清楚的事。Unknown Knowns，是那些太显然以至于你不会写下来，但看到就知道的事。Unknown Unknowns，是那些你完全没考虑过的 — 你根本不知道 好的东西长什么样。" },
+    { "id": "04", "start": 46, "end": 56, "text": "指令，本身是个微妙的平衡。如果太具体，Claude 就会机械地跟着你的指令走，即使应该 pivot 也不变。如果太模糊，Claude 就会套用所谓的行业最佳实践，做出一堆你其实不想要的假设。两种极端都会失败。" },
+    { "id": "05", "start": 56, "end": 64, "text": "实施前，有 5 个具体的工具。让你在写第一行代码前，先把 unknowns 摊开。" },
+    { "id": "06", "start": 64, "end": 78, "text": "第一个工具，Blind Spot Pass — 盲点扫描。当你开始接触新 codebase，或者做不熟悉的领域，让 Claude 帮你找 unknown unknowns。直接告诉它 — 帮我做一次 blindspot pass。" },
+    { "id": "07", "start": 78, "end": 92, "text": "第二个工具，Brainstorms and Prototypes — 脑暴和原型。当你不确定自己想要什么时，让 Claude 给你 4 个截然不同的方向，而不是一个确定的方案。视觉设计这种东西，文字说不清，但看到就知道。让 Claude 把 4 个方向做成 HTML，你来反应。" },
+    { "id": "08", "start": 92, "end": 104, "text": "第三个工具，Interviews — 让 Claude 反过来采访你。一次只问一个问题，专挑那些你的答案会改变架构的问题。" },
+    { "id": "09", "start": 104, "end": 118, "text": "第四个工具，References — 参考物。当你说不出想要什么，最好的 reference 是源代码。指给 Claude 一个目录，告诉他看什么。即使是不同语言也行 — Claude Design 会读底层代码，不只是截图。" },
+    { "id": "10", "start": 118, "end": 132, "text": "第五个工具，Implementation Plans — 实施计划。准备动手前，让 Claude 写一份实施计划给你 review。把数据模型、type 接口、UX 流程这些最可能改的部分放前面，机械重构放底部，信任它做。" },
+    { "id": "11", "start": 132, "end": 144, "text": "实施中，永远会有 unknown unknowns 浮出来。让 Claude 维护一份 implementation-notes.md，记下它做的决定 — 哪些是为了应对 edge case 偏离了原计划。这样下次复盘时，你们都能学到东西。" },
+    { "id": "12", "start": 144, "end": 158, "text": "实施完，做两件事。第一，Pitches — 推介稿。打包 prototype、spec、实施笔记，丢到 Slack 拿 buy-in。让 reviewer 从和你一样的 unknowns 起步。第二，Quizzes — 自测。让 Claude 出题考你，读 HTML report 之后做 quiz。必须满分通过才 merge。光读 diff 不等于真懂 — 让 Claude 把你教会。" },
+    { "id": "13", "start": 158, "end": 180, "text": "Fable 启动视频，完全由 Claude Code 剪辑。这是 Thariq 自己不熟悉的领域。他不知道 color grading 是什么。原本想 Claude 给几个版本让他挑，但意识到他不知道 好的 color grading 长什么样。改成让 Claude 先教他 color grading，然后才动手。模型越强，clarify unknowns 的能力就越是瓶颈。每个 explainer、每个 brainstorm、每个 interview、每个 prototype、每个 reference — 都是便宜地发现你不知道什么的方式。所以 — 让你的下一个项目，从找 unknowns 开始。" }
+  ]
+}
