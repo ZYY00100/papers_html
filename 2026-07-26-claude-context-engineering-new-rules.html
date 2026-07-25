@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude 5 时代的新规则 · Thariq @ Anthropic · 285.8 万浏览 · 朱有以解读</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg-primary); color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px;
+      line-height: 1.8; min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px);
+      pointer-events: none; z-index: 0;
+    }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; white-space: nowrap; }
+    .article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 620px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+    .cover-frame { padding: 64px 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); }
+    .cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-family: 'Noto Serif SC', serif; font-size: clamp(18px, 2.4vw, 21px); font-weight: 400; color: var(--text-primary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+    .capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body ul { margin: 18px 0 24px 0; padding-left: 24px; }
+    .cap-body ul li { margin-bottom: 10px; line-height: 1.85; color: var(--text-secondary); }
+    .cap-body ul li:last-child { margin-bottom: 0; }
+    .cap-body ol { margin: 18px 0 24px 0; padding-left: 24px; }
+    .cap-body ol li { margin-bottom: 10px; line-height: 1.85; color: var(--text-secondary); }
+    .cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .then-now-pair { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 24px 28px; margin: 24px 0; }
+    .then-now-pair .then, .then-now-pair .now { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+    .then-now-pair .then { color: var(--text-muted); }
+    .then-now-pair .now  { color: var(--accent-red); }
+    .then-now-pair .then strong, .then-now-pair .now strong { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 18px; font-weight: 500; letter-spacing: 0; text-transform: none; margin-left: 8px; }
+    .then-now-pair blockquote { background: var(--bg-code); color: #e8e8ea; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.65; padding: 18px 22px; border-radius: 4px; margin: 16px 0 8px; border: 1px solid rgba(255,255,255,0.05); }
+    .then-now-pair blockquote .old { color: #8a8a8e; }
+    .then-now-pair blockquote .new { color: #c9a962; }
+    .then-now-pair blockquote .label { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; opacity: 0.7; display: block; margin-bottom: 8px; }
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+    .references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+    .references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+    .references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+    .references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+    .references-list a { color: var(--text-primary); word-break: break-all; }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+    .closing { padding: 64px 0; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); margin-bottom: 12px; letter-spacing: 0; }
+    .closing-text strong { font-weight: 600; color: var(--accent-red); }
+    .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
+    .article-footer { padding: 32px 0 64px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px; }
+    .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 8px; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 200; }
+    .floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+    .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 70vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+    .floating-nav-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-panel-header { padding: 16px 20px 8px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); }
+    .nav-panel-content { padding: 8px 0; }
+    .nav-article { display: block; padding: 12px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; }
+    .nav-article:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+    .nav-article-date { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+    .nav-article-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 4px; }
+    .nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+    .nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+    .nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+    .nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+    @media (max-width: 768px) {
+      .article-title { white-space: normal; font-size: 28px; }
+      .article-subtitle { font-size: 17px; }
+      .cap-head { gap: 16px; }
+      .cap-num { font-size: 40px; }
+    }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="article-hero">
+      <div class="container">
+        <div class="article-category">CONTEXT ENGINEERING · ANTHROPIC OFFICIAL</div>
+        <h1 class="article-title">Claude 5 时代的新规则</h1>
+        <p class="article-subtitle">The new rules of context engineering for Claude 5 models</p>
+        <div class="article-byline">
+          <span class="byline-author">朱有以</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">Thariq (@trq212) · 285.8 万浏览</span>
+          <span class="byline-sep">·</span>
+          <span>2026/07/24</span>
+        </div>
+        <p class="article-desc">Anthropic 把 Claude Code 的 system prompt 删了 80% 还能跑——Claude 5 自己会用判断力了。下面是 6 条 Then/Now 转向 + 4 类上下文怎么改 + 一条命令自动化。</p>
+      </div>
+    </section>
+
+    <section class="cover-frame">
+      <div class="container">
+        <img src="images/2026-07-26-claude-context-engineering-new-rules/cover.jpg" alt="The new rules of context engineering for Claude 5 models">
+        <p class="cover-caption">THARIQ · @TRQ212 · 2026/07/24</p>
+      </div>
+    </section>
+
+    <section class="article-intro">
+      <div class="container">
+        <p class="intro-lead">我之前写过怎么给 Claude 5 这一代新模型写 prompt、怎么跟它迭代式地弄清你要建什么。</p>
+        <p class="intro-lead">但当你给 Claude 发一条消息时，prompt 只是它拿到的 context 里的一小块。大部分 context 是从 system prompt、Skills、CLAUDE.md、memory 和其他来源拼起来的。我们管这叫 <strong>context engineering</strong>，它对 Claude Code 的产出、或你自己搭 agent 的产出影响巨大。</p>
+        <p class="intro-lead">和 prompt 不一样，context 是跨很多请求通用的，所以不能写得太具体。怎么给 Claude 写这些通用 prompt 和指引——尤其当你不知道用户会发什么 prompt 时——是个难题。</p>
+        <p class="intro-lead">随着 Claude 自身能力的进化，这件事出奇地难。最近我们注意到，给最新一代 Claude 模型写 prompt 的方式有一次大跳变。我们<strong>删掉了 Claude Code 的 system prompt 里超过 80% 的内容</strong>，给 Claude Opus 5 和 Claude Fable 5 这种模型用，在我们 coding 评测上没有任何可观测的下降。</p>
+        <p class="intro-lead">下面是我们给这一代新模型写 prompt 学到的东西，以及你可以怎么用它来更新你自己的 context engineering。我们把这些最佳实践放进了 <code>claude doctor</code>：在 Claude Code 里用 <code>/doctor</code> 命令，让它帮你重新审视自己的 skills 和 CLAUDE.md 文件。</p>
+      </div>
+    </section>
+
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text">We removed over 80% of Claude Code's system prompt for models like Claude Opus 5 and Claude Fable 5 with <strong>no measurable loss</strong> on our coding evaluations.</p>
+        <p class="pull-quote-caption">— THARIQ · CLAUDE CODE @ ANTHROPIC</p>
+      </div>
+    </section>
+
+    <!-- ============ Cap 01: Unhobbling Claude ============ -->
+    <section class="capability" id="cap-01">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">01</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">UNHOBBLING</div>
+            <h2 class="cap-title-en">Unhobbling Claude</h2>
+            <div class="cap-title-cn">让 Claude 自己会用判断力</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">约束本来是为防最坏情况，但 Claude 5 自己能判断——过度约束反而让它在互相矛盾的指令里绕弯路。</span>
+        </div>
+        <div class="cap-body">
+          <p>总体上，我们发现我们一直在过度约束 Claude Code——system prompt 里是这样，CLAUDE.md 和 skills 里也是这样。</p>
+          <p>比如，回头看我们自己内部用 Claude Code 的 transcript 时，我们会在同一个请求里看到好几条互相矛盾的信息——比如「文档该留就留」和「不准加注释」——system prompt、skills、用户请求自己撞到一起去了。</p>
+          <div class="inline-image">
+          <img src="images/2026-07-26-claude-context-engineering-new-rules/x-01.jpg" alt="Unhobbling Claude · transcript 里互相矛盾的指令">
+          <p class="inline-image-caption">原文配图 · Thariq (@trq212) · 2026/07/24</p>
+        </div>
+          <p>一般情况下，Claude 能推断用户意图、给出正确答案，但 Claude 必须在这些重叠又互相矛盾的信息里更仔细地思考，才能决定怎么做。</p>
+          <p>这些约束当初是为了避免最坏情况，但现在我们发现可以删掉一大堆，让模型用上下文和判断力自己处理。</p>
+          <p>另外，Claude Code 现在工具也多了很多。以前 Claude 把 CLAUDE.md 当作 memory、information 和 guidance 的来源。现在我们有 memory、artifacts 和 skills，Claude 可以用它们造出新的方式来跨 session 加载和共享 context。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Cap 02: Then & Now ============ -->
+    <section class="capability" id="cap-02">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">02</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">THEN & NOW</div>
+            <h2 class="cap-title-en">Then and Now · 6 myth busted</h2>
+            <div class="cap-title-cn">六条 context engineering 的 myth——旧规则全该被拆</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">过去这些看起来稳的 context engineering 最佳实践，到了 Claude 5 时代全都站不住脚。下面 6 对对照，原文逐条翻译。</span>
+        </div>
+        <div class="cap-body">
+          <p>过去有不少 context engineering 的最佳实践，其实已经变成了 myth。包括：</p>
+
+          <div class="then-now-pair">
+            <div class="principle-box" style="margin-bottom: 18px; border-left-color: var(--accent-red);">
+              <span class="principle-box-label" style="color: var(--accent-red);">PAIR 01 · MYTH</span>
+              <span class="principle-box-text">规则 ≠ 安全，规则 = 矛盾。约束本来是为防最坏情况，但 Claude 5 自己能判断。</span>
+            </div>
+            <div class="then">THEN <strong>给 Claude 立规矩</strong></div>
+            <div class="now">NOW <strong>让 Claude 用判断力</strong></div>
+            <div class="inline-image">
+          <img src="images/2026-07-26-claude-context-engineering-new-rules/x-02.jpg" alt="旧 system prompt 原文 · 'default to writing no comments...'">
+          <p class="inline-image-caption">原文配图 · Thariq (@trq212) · 2026/07/24</p>
+        </div>
+          <p>Claude Code 刚上的时候，我们需要确保 Claude 不会撞上最坏情况，比如删文件。这意味着我们会给出特别强的指引，哪怕它并不总是对的。比如，system prompt 里我们以前是这样写的：</p>
+            <blockquote><span class="label">OLD SYSTEM PROMPT</span><span class="old">在代码里：默认不写注释。绝不写多段 docstring 或多行注释块——一行短注释封顶。除非用户要求，否则不创建规划、决策或分析文档——从对话上下文里工作，不要走中间文件。</span></blockquote>
+            <p>但对某一类 prompt 来说，这种指引就是错的。比如文档这块，用户可能有他自己的偏好，或者一段特别复杂的代码里某处就是需要多行注释。</p>
+            <p>即使这样，过去没有这些护栏，老模型写出来的注释在很多情况下是错的，我们只能接受这个 tradeoff。但新模型判断力更好，没有明确规则也能把这些决定处理得很漂亮。</p>
+            <blockquote><span class="label">NEW SYSTEM PROMPT</span><span class="new">新 system prompt 里我们写的是：写代码要读起来像周围的代码——匹配它的注释密度、命名风格和习惯。</span></blockquote>
+          </div>
+
+          <div class="then-now-pair">
+            <div class="principle-box" style="margin-bottom: 18px; border-left-color: var(--accent-red);">
+              <span class="principle-box-label" style="color: var(--accent-red);">PAIR 02 · MYTH</span>
+              <span class="principle-box-text">例子 ≠ 教学，例子 = 限缩。一个好枚举、好命名就是最好的教学。</span>
+            </div>
+            <div class="then">THEN <strong>给 Claude 看例子</strong></div>
+            <div class="now">NOW <strong>设计接口</strong></div>
+            <p>工具使用的头号规则是给 Claude 看怎么用这些工具。到了最新一代模型，我们发现给例子反而把 Claude 困在了一小块探索空间里。</p>
+            <div class="inline-image">
+          <img src="images/2026-07-26-claude-context-engineering-new-rules/x-03.jpg" alt="Then: Give Claude examples · design interface">
+          <p class="inline-image-caption">原文配图 · Thariq (@trq212) · 2026/07/24</p>
+        </div>
+            <p>比起给例子，多想想你的工具、scripts、files 的设计——Claude 拿到哪些参数、它们可以多有表现力？</p>
+            <p>比如 Todo 工具的例子，光把 status 列成 pending / in_progress / completed 三种枚举，就已经在暗示 Claude 怎么用。"同时只保留一个 in_progress"这条指引本身就划出了我们想要的行为。</p>
+          </div>
+
+          <div class="then-now-pair">
+            <div class="principle-box" style="margin-bottom: 18px; border-left-color: var(--accent-red);">
+              <span class="principle-box-label" style="color: var(--accent-red);">PAIR 03 · MYTH</span>
+              <span class="principle-box-text">全放最前 ≠ 完整，progressive disclosure 把对的 context 在对的时间喂给它。</span>
+            </div>
+            <div class="then">THEN <strong>一股脑塞在最前面</strong></div>
+            <div class="now">NOW <strong>用 progressive disclosure</strong></div>
+            <p>Claude Code 当时只做 coding，system prompt 里塞了一大堆 code review 和 verification 的细节。这些信息不总是需要，但需要的时候就是决定性的。</p>
+            <p>后来，Claude Code 在 progressive disclosure 上变得很在行——在对的时机加载对的 context。比如我们把 verification 和 code review 移到了它们自己的 skills 里，Claude Code 可以按需调用。</p>
+            <p>但 progressive disclosure 不只是 skills，工具也用。我们有些工具是 "deferred loading"——agent 必须先用 ToolSearch 搜到完整定义才能用。这让我们能放更多工具（比如 Task 工具），用到之前都不占 context。</p>
+            <p>同一套思路也能套到你自己 CLAUDE.md 和 Skill.md 上。一个常见的 myth 是：你想把每一条可能用到的最佳实践都堆成一份中央仓库，因为 Claude 不会自己找。不如考虑做成一个文件树，需要时再加载。</p>
+          </div>
+
+          <div class="then-now-pair">
+            <div class="principle-box" style="margin-bottom: 18px; border-left-color: var(--accent-red);">
+              <span class="principle-box-label" style="color: var(--accent-red);">PAIR 04 · MYTH</span>
+              <span class="principle-box-text">重复 ≠ 强调，重复 = 噪音。工具用法写在工具描述里、别写在 system prompt 里。</span>
+            </div>
+            <div class="then">THEN <strong>重复自己</strong></div>
+            <div class="now">NOW <strong>工具描述要简单</strong></div>
+            <p>早一代的 Claude 模型有时需要重复指引，或者比起开头的指引更听结尾的。这意味着 system prompt 里有时候会同时出现工具的引用和工具描述里的指引。</p>
+            <p>我们发现可以删掉这些重复，把"怎么用工具"放进工具描述里，不要写在 system prompt 里。</p>
+          </div>
+
+          <div class="then-now-pair">
+            <div class="principle-box" style="margin-bottom: 18px; border-left-color: var(--accent-red);">
+              <span class="principle-box-label" style="color: var(--accent-red);">PAIR 05 · MYTH</span>
+              <span class="principle-box-text">写进 CLAUDE.md ≠ 持久，Claude 现在会自动记住对的工作。</span>
+            </div>
+            <div class="then">THEN <strong>把 memory 写进 CLAUDE.md</strong></div>
+            <div class="now">NOW <strong>让 memory 自动来</strong></div>
+            <p>我们以前鼓励用户把东西存进 Claude 的 memory，用 # 热键自动写到 CLAUDE.md。现在 Claude 会自动存跟它的工作、跟你有关的 memory。</p>
+          </div>
+
+          <div class="then-now-pair">
+            <div class="principle-box" style="margin-bottom: 18px; border-left-color: var(--accent-red);">
+              <span class="principle-box-label" style="color: var(--accent-red);">PAIR 06 · MYTH</span>
+              <span class="principle-box-text">markdown spec ≠ 充分，HTML artifacts / 代码 references / rubrics 让 Claude 干得更深。</span>
+            </div>
+            <div class="then">THEN <strong>简单的 spec</strong></div>
+            <div class="now">NOW <strong>丰富的 references</strong></div>
+            <p>在 plan mode 里，Claude Code 重度依赖 markdown 文件做计划。把这些文件存成 plans 让 Claude 在需要时能回头看。另一个类似的最佳实践是把 specs 存进 codebase，让 Claude 在跨较长项目时能查。</p>
+            <p>但我们发现 Claude 能处理越来越复杂的 references 了。不再是简单的 markdown 文件，Claude 可以引用我们新 artifacts 功能生成的 HTML artifacts。</p>
+            <p>你也可以用代码形式给 Claude references。一份 spec 也可以是一个详细的测试套件，或者另一个 codebase 里 Claude 可以搬运的函数。</p>
+            <p>Rubrics 是另一种形式的 references。Rubrics 让 Claude 试着去验证你在某个领域里的品味（比如好的 API 设计长什么样），用 dynamic workflow 起一批带 rubric 的 verifier agents。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Cap 03: Applying ============ -->
+    <section class="capability" id="cap-03">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">03</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">APPLYING</div>
+            <h2 class="cap-title-en">Applying this to your context</h2>
+            <div class="cap-title-cn">四类上下文怎么改——System Prompt / CLAUDE.md / Skills / References</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">把这些串到一起——你的 context 究竟怎么组装？按上下文四类分别说。</span>
+        </div>
+        <div class="cap-body">
+          <p>把这些串到一起，当你组装自己的 context 时，长什么样？</p>
+          <div class="inline-image">
+          <img src="images/2026-07-26-claude-context-engineering-new-rules/x-04.jpg" alt="Applying this to your context">
+          <p class="inline-image-caption">原文配图 · Thariq (@trq212) · 2026/07/24</p>
+        </div>
+
+          <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 8px; letter-spacing: 0.01em;">System Prompt</h3>
+          <div class="principle-box" style="margin-bottom: 16px;">
+            <span class="principle-box-label">PRINCIPLE</span>
+            <span class="principle-box-text">system prompt 是产品定义，搭自己的 agent harness 时这是最该花时间的地方。</span>
+          </div>
+          <p>system prompt 紧紧绑在产品 context 上。它告诉 Claude 它在哪个产品里工作、在做什么。对 Claude Code，你基本不会去改它；但如果你在搭自己的 agent harness，这里就是你应该花大量时间的地方。</p>
+
+          <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 8px; letter-spacing: 0.01em;">CLAUDE.md</h3>
+          <div class="principle-box" style="margin-bottom: 16px;">
+            <span class="principle-box-label">PRINCIPLE</span>
+            <span class="principle-box-text">CLAUDE.md 要轻量——token 花在 gotchas 上，而不是显而易见的描述。</span>
+          </div>
+          <p>保持 CLAUDE.md 轻量、简短描述你这个 repo 是干嘛的，但把大部分 token 花在 codebase 里的 gotchas 上。比如，你可能把所有 type 都组织在一个大文件里、别处不放。不要去说那些"看一眼文件系统或 repo 就能知道的"的显而易见的事。</p>
+          <p>更详细的指引用 progressive disclosure：比如你对"怎么验证你的工作"有几条独特的指引，就做一个 verification skill，再从 CLAUDE.md 引用它。</p>
+
+          <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 8px; letter-spacing: 0.01em;">Skills</h3>
+          <div class="principle-box" style="margin-bottom: 16px;">
+            <span class="principle-box-label">PRINCIPLE</span>
+            <span class="principle-box-text">Skills 是轻量指南，编码属于你的 opinion / knowledge / best practices。</span>
+          </div>
+          <p>把 skills 想成轻量指南，让 Claude 在需要时能找到信息。除非在特别关键的区域，否则不要把它们做得过度约束。</p>
+          <p>对于长的 skills，尽量用 progressive disclosure——拆成多个文件，分开存放。</p>
+          <p>最好的 skills 编码的是特别属于你、你的团队或你产品的 opinion、knowledge 或 best practices。</p>
+
+          <h3 style="font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 22px; font-weight: 500; color: var(--text-primary); margin: 32px 0 8px; letter-spacing: 0.01em;">References</h3>
+          <div class="principle-box" style="margin-bottom: 16px;">
+            <span class="principle-box-label">PRINCIPLE</span>
+            <span class="principle-box-text">References 用 @ 提代码或 mockup，比描述或截图更有效。</span>
+          </div>
+          <p>你可以用 @ 提文件把它们作为 references 加进来。References 让 Claude 能查到当前计划的深度信息。</p>
+          <p>这可以是 spec 文件、mockup，甚至是整个 codebase。一般来说你应该优先选代码形式的文件，因为它用 Claude 非常熟悉的语言、给出清晰高保真的指令。比如，一份设计的 HTML mockup 通常比"描述这个设计"或"截图"产生更好的结果。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Cap 04: Try simplifying ============ -->
+    <section class="capability" id="cap-04">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">04</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">SIMPLIFY</div>
+            <h2 class="cap-title-en">Try simplifying</h2>
+            <div class="cap-title-cn">让 Claude 自己来审视——/doctor 命令一键瘦身</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">跨 system prompt、skills、CLAUDE.md，你大概率也该做一次简化。新命令 <code>claude doctor</code> 会自动帮你做这件事。</span>
+        </div>
+        <div class="cap-body">
+          <p>跨你的 system prompt、skills 和 CLAUDE.md，你可能需要像我们一样做一次简化。我们上线了一个新命令 <code>claude doctor</code>，它会自动帮你做这件事。关于给更高级模型写 prompt 的更多细节，可以看看我们的 Fable field guide。</p>
+          <p style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-subtle);"><strong style="color: var(--accent-red); font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase;">FIRST MOVE · 第一步</strong></p>
+          <p>今晚就把 <code>/doctor</code> 跑一遍——让它自动审视你现在的 CLAUDE.md / Skills / system prompt，把过度约束的部分圈出来。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="references">
+      <div class="container">
+        <p class="references-kicker">SOURCES & CREDITS</p>
+        <h2 class="references-title">引用与原文出处</h2>
+        <ul class="references-list">
+          <li>
+            <strong>ORIGINAL ARTICLE</strong>
+            <em>The new rules of context engineering for Claude 5 models</em><br>
+            作者：Thariq (@trq212) · 发布于 2026/07/24 · 2,857,807 浏览 · 12,776 赞 · 1,404 转推 · 26,345 收藏 · 335 回复<br>
+            推文链接：<a href="https://x.com/trq212/status/2080710971228918066" target="_blank" rel="noopener">https://x.com/trq212/status/2080710971228918066</a><br>
+            文章链接：<a href="https://x.com/i/article/2080703729385512960" target="_blank" rel="noopener">https://x.com/i/article/2080703729385512960</a>
+          </li>
+          <li>
+            <strong>AUTHOR · X</strong>
+            <a href="https://x.com/trq212" target="_blank" rel="noopener">https://x.com/trq212</a>
+          </li>
+          <li>
+            <strong>AUTHOR · WEBSITE</strong>
+            <a href="http://thariq.io" target="_blank" rel="noopener">thariq.io</a> — Thariq 个人站
+          </li>
+          <li>
+            <strong>RELATED · FABLE FIELD GUIDE</strong>
+            <a href="https://claude.com/blog/a-field-guide-to-claude-fable-finding-your-unknowns" target="_blank" rel="noopener">https://claude.com/blog/a-field-guide-to-claude-fable-finding-your-unknowns</a> — 关于给更高级模型写 prompt 的更多细节
+          </li>
+          <li>
+            <strong>RELATED · EFFECTIVE CONTEXT ENGINEERING</strong>
+            <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents</a> — Anthropic 之前的 context engineering 博客（本文算续篇）
+          </li>
+          <li>
+            <strong>INTERPRETATION</strong>
+            本文为完整翻译版本，按原文 intro + Unhobbling Claude + Then/Now 6 对 + Applying 4 类 + Try simplifying 的顺序逐节整理。6 对 Then/Now 每条都附原文旧规则 / 新规则的对照。所有 4 张内嵌配图完整保留并按位置插入。如需引用请以原文为准。
+          </li>
+        </ul>
+        <p class="references-note">最反直觉的一条——你堆得越多的规矩、越长的 CLAUDE.md、越详细的 system prompt，反而越容易拖累 Claude 5。先删一刀试试，再跑一遍你的评测。</p>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="container">
+        <p class="closing-text">Claude 5 自己会用判断力——</p>
+        <p class="closing-text"><strong>你不需要替它把每条路都画死。</strong></p>
+        <p class="closing-caption">— Thariq · The new rules of context engineering for Claude 5 models</p>
+      </div>
+    </section>
+
+    <footer class="article-footer">
+      <div class="container">
+        <p>本文为完整翻译版本 · 6 对 Then/Now 每条金句框为译者提炼 · 4 张原文配图按位置完整保留</p>
+        <p class="credit">朱有以 · 为 AI 发电 · 2026/07</p>
+      </div>
+    </footer>
+  </main>
+
+  <button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">本文章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-section">
+        <div class="nav-section-kicker">01 · UNHOBBLING</div>
+        <div class="nav-section-title">Unhobbling Claude</div>
+      </a>
+      <a href="#cap-02" class="nav-section">
+        <div class="nav-section-kicker">02 · THEN & NOW</div>
+        <div class="nav-section-title">六条 myth 被拆</div>
+      </a>
+      <a href="#cap-03" class="nav-section">
+        <div class="nav-section-kicker">03 · APPLYING</div>
+        <div class="nav-section-title">四类上下文怎么改</div>
+      </a>
+      <a href="#cap-04" class="nav-section">
+        <div class="nav-section-kicker">04 · SIMPLIFY</div>
+        <div class="nav-section-title">Try simplifying · /doctor</div>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+      if (!navToggle || !navPanel) return;
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('open');
+      });
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('open');
+        }
+      });
+      navPanel.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() { navPanel.classList.remove('open'); });
+      });
+    })();
+  </script>
+</body>
+</html>
