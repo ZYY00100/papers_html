@@ -153,8 +153,8 @@
 <body>
   <header class="site-header">
     <div class="container">
-      <a href="../index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
-      <a href="../index.html" class="back-link">← 返回文章列表</a>
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
     </div>
   </header>
   <main class="container">
@@ -173,7 +173,7 @@
     </section>
 
     <section class="cover-frame">
-      <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/cover.jpg" alt="Graph Engineering with Claude cover">
+      <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/cover.jpg" alt="Graph Engineering with Claude cover">
       <p class="cover-caption">原文封面 · Graph Engineering with Claude · 0xCodez (@0xCodez) · 2026/07/20</p>
     </section>
 
@@ -207,7 +207,7 @@
         <p>但工作本身——什么先跑、什么能同时跑、什么必须等其他都跑完——<strong>这种形状，是一张图</strong>。节点做活，边搬结果。</p>
         <p>Claude Code 把搭这种图的工具直接做出来了：dynamic workflows。Claude 写一份普通的 JavaScript 编排脚本，然后拉起一支配合的 subagent 队伍去执行——而协调本身不花一个 model token，因为它是代码，不是对话。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-01.jpg" alt="原文配图 · Graph intro">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-01.jpg" alt="原文配图 · Graph intro">
           <p class="inline-image-caption">原文配图 · Graph 引入 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
@@ -233,7 +233,7 @@
         <p>这是两个断开的节点，被一段线性脚本硬连在一起。<strong>只有当数据真的流过一条边时，那条边才存在。</strong></p>
         <p>养成一个习惯：你 agent 里每出现一个「然后」，就问一句——下一步读不读上一步的输出？不读，那就没边，等就是白等。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-02.png" alt="原文配图 · Nodes and edges">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-02.png" alt="原文配图 · Nodes and edges">
           <p class="inline-image-caption">原文配图 · 节点与边 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-01">
@@ -288,7 +288,7 @@ for the rest of this course.</pre>
         <p>graph 工程的第一个真功夫，是把链条重画。拿出你的线性 agent，对每一根箭头问 Step 1 那个问题。</p>
         <p>大多数链里有两三根箭头根本不搬数据——它们只是你打字时碰巧排的顺序。砍掉这几根箭头，链条立刻塌成一个更宽的形状：几个互相独立的节点可以同时跑，把结果喂给一个需要全集的节点。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-03.png" alt="原文配图 · Linear vs graph">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-03.png" alt="原文配图 · Linear vs graph">
           <p class="inline-image-caption">原文配图 · 线性 vs 图 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
@@ -313,7 +313,7 @@ for the rest of this course.</pre>
         <p>在 workflow 里，这份合同是用 schema 强制执行的。当你给 Claude 一个 agent() 调用并附上 JSON schema，Claude 派生出的 subagent 必须返回校验过的结构化数据——校验发生在 tool-call 层，不匹配 Claude 会重试，而不是甩给你一段要靠祈祷解析的自由文本。</p>
         <p><strong>这就是「一个 Claude 能接进图里的节点」和「只有人能读懂输出的节点」之间的差别。</strong></p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-04.jpg" alt="原文配图 · Node contract">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-04.jpg" alt="原文配图 · Node contract">
           <p class="inline-image-caption">原文配图 · 节点合同 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-02">
@@ -393,7 +393,7 @@ const result = await agent(source.prompt, {
         <p>实操里，边就藏在普通 JavaScript 里。fan-out 和综合之间的 reduce 步——摊平、去重、过滤——就是代码在操作你那些节点返回的形状。</p>
         <p><strong>不需要 agent。graph 思维里一个安静的胜场：人们用 model token 烧出来的好多事，其实就是一条边，而边是免费的。</strong></p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-05.png" alt="原文配图 · Edge contract">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-05.png" alt="原文配图 · Edge contract">
           <p class="inline-image-caption">原文配图 · 边合同 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-03">
@@ -450,7 +450,7 @@ graph paying rent on its own wiring.</pre>
         <p>扇出发生在 Claude 写的代码里，不在模型对话里。Claude 自己的上下文一次不会塞 9 个来源——每个 subagent 各自背一份，只有最终答案回来。</p>
         <p>这就是为什么 Claude 能把一个 workflow 扩到几十甚至几百个 subagent 而不会淹死整次会话。编排层零 token，因为它不是 Claude 又一轮思考。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-06.jpg" alt="原文配图 · Fan out">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-06.jpg" alt="原文配图 · Fan out">
           <p class="inline-image-caption">原文配图 · 扇出 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-04">
@@ -525,7 +525,7 @@ const collected = raw.filter(Boolean);  // 过滤掉 null（失败的 agent 会�
         <p>让图跑得快的规则：<strong>只在某个阶段真的需要所有先前结果合在一起时，才用 barrier</strong>。跨来源去重？用 barrier——对。只摊平一个列表？那是边，内联做。</p>
         <p>有个简单粗暴的嗅探测试：你写的是 parallel → transform → parallel，如果中间那段 transform 没有跨项依赖，那你应该直接用 pipeline 把 barrier 整个跳过。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-07.jpg" alt="原文配图 · Fan in barrier">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-07.jpg" alt="原文配图 · Fan in barrier">
           <p class="inline-image-caption">原文配图 · 扇入 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-05">
@@ -591,7 +591,7 @@ const curated = await agent(
         <p>这个典型形态有个值得记住的名字：<strong>fan out → reduce → synthesize</strong>。扇出去拿广度，用普通代码 reduce 把它压紧，最后让一个 agent 来 synthesize 写答案。</p>
         <p>一旦你能看见钻石，你就不会再问「怎么让我的 agent 多干几步」，你会开始问「拆在哪、合在哪」——这才是真正能扩展的问题。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-08.png" alt="原文配图 · Diamond pattern">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-08.png" alt="原文配图 · Diamond pattern">
           <p class="inline-image-caption">原文配图 · 钻石模式 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
@@ -616,7 +616,7 @@ const curated = await agent(
         <p>这是确定性从限制变成特性的地方。router 的判断可以由 Claude 驱动（一个 subagent 做分类），但路由是 Claude 写的代码——所以同一份分类，每次都按同一条路走。</p>
         <p>你在节点拿到 Claude 的判断，在边上拿到脚本的可靠。不会有「Claude 决定跳过审计」这种意外——因为跳过要写进图里才能发生，而它没写。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-09.png" alt="原文配图 · Router">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-09.png" alt="原文配图 · Router">
           <p class="inline-image-caption">原文配图 · 运行时路由 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-06">
@@ -700,7 +700,7 @@ if (severity === 'high') {
         </ul>
         <p>这正是某团队把 Bun 运行时移植过去时用的那个模式——把对抗式 code review 烤进了循环里。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-10.png" alt="原文配图 · Verifier">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-10.png" alt="原文配图 · Verifier">
           <p class="inline-image-caption">原文配图 · 验证器 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
@@ -726,7 +726,7 @@ if (severity === 'high') {
         <p>更隐蔽的失败是节点互相踩脚。agent 并行写文件时，它们会撞车。</p>
         <p>解法是隔离：worktree——每个 agent 跑在它自己的 git worktree 里，在沙箱里干活，干净地合并。只有当节点真的并行写时才用——这是那道需要它的拓扑的安全带，不是每轮都交的税。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-11.png" alt="原文配图 · Isolate">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-11.png" alt="原文配图 · Isolate">
           <p class="inline-image-caption">原文配图 · 节点隔离 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
@@ -751,7 +751,7 @@ if (severity === 'high') {
         <p>能收敛的形态叫 loop-until-dry：一直派生 finder，直到连续 K 轮没新东西浮出来，然后停。让它成或败的那一个细节——也是几乎所有人第一次都栽的那个——是<strong>你拿什么去重</strong>。</p>
         <p>对所有见过的去重，而不是对确认过的去重。否则被拒的发现每轮都会重新出现，循环永远跑不干，你就造了一台专门付费去重新发现同一条死胡同的机器。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-12.png" alt="原文配图 · Cycle loop">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-12.png" alt="原文配图 · Cycle loop">
           <p class="inline-image-caption">原文配图 · 循环收敛 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-07">
@@ -843,7 +843,7 @@ while (dry < 2) {  // 连续 2 轮没有新发现就停
         <p>在 workflow 里，每个 Claude 派生的 subagent 默认继承你这次会话的模型——所以默认情况下，一次大跑全程按你这一档收费。agent() 调用上的 model 选项告诉 Claude 把那个节点路由到别处。</p>
         <p><strong>大跑之前先 /model 看一下，然后让 Claude 把 fan-out 里那些重复的节点降到便宜模型，把 merge 节点留在顶上。这根杠杆能把一张费 token 的图变成省 token 的图，形状不用动。</strong></p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-13.jpg" alt="原文配图 · Tier models">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-13.jpg" alt="原文配图 · Tier models">
           <p class="inline-image-caption">原文配图 · 模型分档 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
@@ -867,7 +867,7 @@ while (dry < 2) {  // 连续 2 轮没有新发现就停
         <p>一个 pipeline() 把每条数据独立地流过所有阶段，没有 barrier——A 已经在第 3 阶段的时候 B 还在第 1 阶段。快的活先完，不会被慢的堵在后面。</p>
         <p><strong>默认用 pipeline。只有当某阶段真的需要把前面所有结果凑一起时才上 barrier——跨集合去重、对整批做早退、把 prompt 拿来跟「别的发现」比。</strong>「代码更干净」「阶段感更分明」不算理由，barrier 的延迟是真金白银的浪费。分开 ≠ 同步。</p>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-14.png" alt="原文配图 · Topology">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-14.png" alt="原文配图 · Topology">
           <p class="inline-image-caption">原文配图 · 拓扑与延迟 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
@@ -896,7 +896,7 @@ while (dry < 2) {  // 连续 2 轮没有新发现就停
           <li>打开 ultracode，Claude 会给会话里每一件正经事规划一个 workflow。跑得好的时候，按 s 把那份脚本存进 .claude/workflows/——版本可控、按名字可重跑，任何 clone 这个 repo 的人都能 launch 它。</li>
         </ul>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-15.jpg" alt="原文配图 · Self-routing">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-15.jpg" alt="原文配图 · Self-routing">
           <p class="inline-image-caption">原文配图 · 让 Claude 自己画图 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
         <div class="prompt-card" data-card id="prompt-08">
@@ -964,7 +964,7 @@ session stays responsive — keep working while the fleet runs</pre>
           <li><strong>未知规模的发现。</strong>你不知道有几个 bug。Claude 并行跑 finder，把每个新发现对所有见过的去重，验证活下来的，循环到连续两轮空才停。</li>
         </ul>
         <div class="inline-image">
-          <img src="../images/2026-07-25-0xcodez-graph-engineering-14-steps/x-16.png" alt="原文配图 · Six graphs">
+          <img src="images/2026-07-25-0xcodez-graph-engineering-14-steps/x-16.png" alt="原文配图 · Six graphs">
           <p class="inline-image-caption">原文配图 · 6 个 graph 实战 · 0xCodez (@0xCodez) · 2026/07/20</p>
         </div>
       </div>
