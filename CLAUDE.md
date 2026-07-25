@@ -8,25 +8,15 @@
 
 ```
 papers_html/                    ← 唯一 git 仓库
-├── index.html                  ← 文章列表首页（仓库根）
-├── articles/                   ← 所有解读文章 HTML（必放在此）
-│   ├── 2026-05-25-ai-20-concepts.html
-│   ├── 2026-05-23-claude-cowork-templates.html
-│   ├── 2026-05-22-claude-guide.html
-│   ├── 2026-05-22-ai-platforms-guide.html
-│   └── ...                       ← 后续文章全部放这里
-├── images/<YYYY-MM-DD-slug>/   ← 原文配图（独立子文件夹）
-├── videos/                     ← 视频素材
+├── index.html                  ← 文章列表首页
+├── 2026-05-25-ai-20-concepts.html
+├── 2026-05-23-claude-cowork-templates.html
+├── 2026-05-22-claude-guide.html
+├── 2026-05-22-ai-platforms-guide.html
 ├── *.md                        ← md 源稿（备份/草稿）
 ├── create-docx.js              ← docx 生成脚本
 └── CLAUDE.md                   ← 本规范文档
 ```
-
-**重要约定**
-- 所有文章 HTML 必须在 `articles/` 子目录下，文件名 `YYYY-MM-DD-<主题>.html`
-- 文章页内引用：`images/...` → `../images/...`、`href="index.html"` → `href="../index.html"`
-- `index.html` 留在仓库根（GitHub Pages 入口）
-- `index.html` 里所有文章卡片 / 悬浮导航的 href 都用 `articles/<slug>.html`
 
 ### 部署原理
 
@@ -54,8 +44,8 @@ papers_html/                    ← 唯一 git 仓库
 
 ### 标准发布流程（每次发新文章）
 
-1. **生成 HTML** — 文件名格式：`YYYY-MM-DD-<主题>.html`，**输出到 `articles/` 子目录**（不是仓库根）
-2. **更新 index.html** — 在 `.article-list` 里加一个 `.article-card`（href 用 `articles/<slug>.html`），在悬浮导航里加一个 `.nav-article`（href 同上）
+1. **生成 HTML** — 文件名格式：`YYYY-MM-DD-<主题>.html`
+2. **更新 index.html** — 在 `.article-list` 里加一个 `.article-card`，在悬浮导航里加一个 `.nav-article`
 3. **推送部署**
    ```bash
    git add .

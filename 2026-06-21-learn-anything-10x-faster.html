@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learn Anything 10x Faster · Claude 6 个学习 prompt 串成 4 阶段系统 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* PROMPT CARD — 套 30-system-prompts 模板（暗色卡片 + head 头 + EN/中文 toggle + Copy） */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 6px;
+      border: 1px solid #1f1f23;
+      overflow: hidden;
+      margin: 28px 0 12px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.3);
+    }
+    .prompt-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #1f1f23;
+      background: #0a0a0c;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+      min-width: 32px;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .prompt-name-en {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #e8e8ea;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #8a8a8e;
+      letter-spacing: 0.04em;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* REFERENCES — 引用与原文出处 */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* IMAGE GRID (single image wrapper) */
+    .cap-image {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      margin: 28px 0;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-image:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-image img { display: block; width: 100%; height: auto; }
+    .cap-image figcaption {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cap-image figcaption strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* 层级图（spectrum 4 阶） */
+    .spectrum-stack {
+      list-style: none;
+      margin: 24px 0;
+      padding: 0;
+    }
+    .spectrum-row {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      margin-bottom: 8px;
+      border-radius: 4px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .spectrum-row:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-red);
+    }
+    .spectrum-level {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 64px;
+      padding-top: 2px;
+    }
+    .spectrum-text {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .spectrum-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-prompt pre { font-size: 11.5px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+      .spectrum-row { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">AI LEARNING · PROMPT SYSTEM</div>
+      <h1 class="article-title">Learn Anything 10x Faster</h1>
+      <p class="article-subtitle">Claude 6 个学习 prompt 串成 4 阶段系统 · 中英切换 + 一键复制</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Rahul (@sairahul1) · 157K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/21</span>
+      </div>
+      <p class="article-desc">Rahul 那条 157K 浏览 X 长文。学习新技能最常见的失败模式不是 AI 不行——是你在「随机提问、随机回答、感觉在学、一周后忘光」。本文拆解 6 个 prompt，把 Claude 变成你的私人导师、出题官、资源策展人、学伴，串成 Path → Test → Compress → Feedback 4 阶段闭环。每张 prompt 卡片支持中英文切换 + 一键复制。</p>
+    </section>
+
+    <!-- COVER IMAGE -->
+    <section class="cover-frame">
+      <img src="images/2026-06-21-learn-cover.jpg" alt="Learn Anything 10x Faster cover">
+      <p class="cover-caption">Rahul · How To Learn Anything 10x Faster Using Claude · 2026/06/20</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">学任何新东西，今天是<strong>既容易又混乱</strong>的。容易——因为 AI 几秒能解释任何事；混乱——因为多数人就是「随机提问、随机回答、感觉在学」，一周后什么都没留下。</p>
+      <p class="intro-lead">问题不在 AI，<strong>在你的用法。</strong>Rahul 那条 157K 浏览 X 长文给了 6 个 prompt，把 Claude 变成你的私人导师、出题官、资源策展人、学伴。不是为了拿答案，是为了<strong>真的学会</strong>。</p>
+      <p class="intro-statement">本文按 8 个章节展开：先讲为什么随机 prompt 永远学不会（cap 01），然后逐个拆解 6 个 prompt——Learning Ladder / 20 Hours / Quiz Me / Cheat Sheet / Signal in Noise / Feynman Loop（cap 02-07），再讲怎么把它们串成 4 阶段闭环系统（cap 08）。每张 prompt 卡片可中英切换 + 一键复制。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">AI doesn't make you a better learner by giving better answers<span class="arrow">·</span>it makes you a better learner when you force it to test you, compress for you, and correct you.</div>
+      <div class="pull-quote-caption">Rahul · on the difference between asking and learning</div>
+    </section>
+
+    <!-- 01 WHY RANDOM PROMPTING DOESN'T WORK -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">Why random prompting doesn't work</h2>
+          <div class="cap-title-cn">为什么随机提问永远学不会</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>你问 Claude「解释一下量子计算」。</p>
+        <p>它给你一个不错的答案。</p>
+        <p>你觉得自己聪明了 10 分钟。</p>
+        <p><strong>然后什么都没留下。</strong>因为没有结构、没有测试、没有重复、没有反馈循环。</p>
+        <p>真正的学习需要 4 件事，AI 对话里通常都跳过了：</p>
+        <ul class="cap-features">
+          <li><strong>Path（路径）</strong> —— 你知道按什么顺序学什么</li>
+          <li><strong>Test（测试）</strong> —— 你发现自己实际不知道什么</li>
+          <li><strong>Compression（压缩）</strong> —— 用前能快速复习</li>
+          <li><strong>Feedback loop（反馈循环）</strong> —— 漏洞立刻被抓到并修复</li>
+        </ul>
+        <p>下面 6 个 prompt，每个对应其中一个。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-01.jpg" alt="Why random prompting doesn't work">
+          <figcaption><strong>学习的 4 件事</strong>Path · Test · Compression · Feedback Loop</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 02 PROMPT 1: BUILD A LEARNING LADDER -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">Prompt 1 · Build a Learning Ladder</h2>
+          <div class="cap-title-cn">学习阶梯：5 阶难度定位你现在的位置</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>多数人学不会，是因为<strong>基础还没打牢就冲高级材料</strong>。</p>
+        <p>这个 prompt 把任何主题拆成 <strong>5 个清晰的难度阶梯</strong>，从完全新手到自信实践者，每阶都有里程碑和自测题。你永远清楚自己站在哪。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-02.jpg" alt="Learning Ladder prompt screenshot">
+          <figcaption><strong>PROMPT 1</strong>5 阶难度定位 · 每阶有里程碑和自测</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-01">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">01</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Build a Learning Ladder</span>
+                <span class="prompt-name-cn">学习阶梯</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want to learn [topic] step by step, without skipping important foundations.
+
+Act like an expert teacher and skill coach. Break [topic] into 5 clear difficulty levels, from complete beginner to confident practitioner.
+
+For each level, include:
+
+1. Level name
+2. What I should understand at this stage
+3. What mastery looks like at this level
+4. The most important concepts or skills to focus on
+5. One milestone that proves I am ready to move forward
+6. One hands-on exercise or mini-project
+7. Common mistakes learners make at this level
+8. A simple self-check question before moving to the next level
+
+Structure the levels like this:
+- Level 1: Complete Beginner
+- Level 2: Basic Understanding
+- Level 3: Practical User
+- Level 4: Problem Solver
+- Level 5: Confident Practitioner
+
+Keep the explanation practical, beginner-friendly, and focused on real progress.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我想一步一步学 [主题]，不跳过重要的基础。
+
+请你扮演一位专家老师和技能教练。把 [主题] 拆成 5 个清晰的难度等级，从完全新手到能自信实践的人。
+
+每个等级包含：
+
+1. 等级名称
+2. 这个阶段我应该理解什么
+3. 这个等级的「掌握」长什么样
+4. 最应该专注的重要概念或技能
+5. 一个能证明我可以进入下一阶的里程碑
+6. 一个动手练手或小项目
+7. 这个等级学习者常犯的错误
+8. 进入下一阶前的一道简单自测题
+
+结构按：
+- Level 1: 完全新手
+- Level 2: 基础理解
+- Level 3: 实践使用者
+- Level 4: 问题解决者
+- Level 5: 自信实践者
+
+讲解要实用、对新手友好、聚焦真实进步。</div>
+        </div>
+        <p><strong>你会得到什么：</strong>一张从「完全不会」到「能上手用」的 5 阶地图。每阶都有自测题，挡住了你跳过基础的可能。</p>
+      </div>
+    </section>
+
+    <!-- 03 PROMPT 2: LEARN ANYTHING IN 20 HOURS -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">Prompt 2 · Learn Anything in 20 Hours</h2>
+          <div class="cap-title-cn">20 小时学会：把 80/20 法则拆成 10 节课</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>多数主题都有一小撮核心想法，<strong>懂了它们就解锁了整个领域</strong>。</p>
+        <p>这个 prompt 先找出那 20% 的核心，再把它们变成 <strong>10 节课、每节 2 小时</strong>的学习计划——每节都有练习、资源、复习题。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-03.jpg" alt="20 Hours prompt screenshot">
+          <figcaption><strong>PROMPT 2</strong>80/20 核心 20% → 10 节课学习计划</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-02">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">02</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Learn Anything in 20 Hours</span>
+                <span class="prompt-name-cn">20 小时学会</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want to learn [topic] in 20 focused hours.
+
+Act like an expert teacher and learning strategist. Your job is to help me learn the most useful parts first, not everything.
+
+Please do the following:
+
+1. Identify the 20% of concepts, skills, or principles that will give me 80% of the real-world results.
+2. Explain why these core areas matter and how they connect to practical use.
+3. Create a 10-session learning plan, with each session lasting 2 hours.
+4. For every session, include:
+   - Main learning goal
+   - Key concepts to study
+   - One practical exercise or mini-project
+   - One recommended resource, preferably free or beginner-friendly
+   - Expected outcome after completing the session
+5. At the end of each session, give me 5 review questions to test my understanding.
+6. After the full plan, suggest one final project that proves I understand the topic well enough to use it in real life.
+
+Keep the plan beginner-friendly, practical, and focused on fast progress.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我想在 20 个专注的小时内学会 [主题]。
+
+请你扮演一位专家老师和学习策略师。你的任务是帮我先学最有用的部分，不是所有内容。
+
+请按以下步骤：
+
+1. 找出能给我 80% 真实结果的 20% 概念、技能或原则。
+2. 解释这些核心为什么重要，以及它们如何连接到实际使用。
+3. 制定一个 10 节课的学习计划，每节 2 小时。
+4. 每节课包含：
+   - 主要学习目标
+   - 关键概念
+   - 一个动手练习或小项目
+   - 一个推荐资源（最好是免费或新手友好）
+   - 完成后预期达到的结果
+5. 每节课结束时，给我 5 道复习题检验理解。
+6. 整个计划结束后，建议一个最终项目，证明我理解得足够深、能在真实场景里用。
+
+整个计划要对新手友好、实用、聚焦快速进步。</div>
+        </div>
+        <p><strong>你会得到什么：</strong>一份 20 小时冲刺计划——每节 2 小时、共 10 节，知道每节学什么、练什么、用什么资源、复习什么。</p>
+      </div>
+    </section>
+
+    <!-- 04 PROMPT 3: QUIZ ME UNTIL I BREAK -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">Prompt 3 · Quiz Me Until I Break</h2>
+          <div class="cap-title-cn">考到崩溃：找出你不知道的那条边界</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>被动阅读让人<strong>觉得在学</strong>。主动回忆才能看到真相。</p>
+        <p>这个 prompt 把 Claude 变成一个严格的考官——一次问一道题、每次打分、找出你具体的漏洞、只重讲你没答对的部分，难度逐步递增。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-04.jpg" alt="Quiz Me Until I Break screenshot">
+          <figcaption><strong>PROMPT 3</strong>10 道题逐级加码 · 找出真实漏洞</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-03">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">03</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Quiz Me Until I Break</span>
+                <span class="prompt-name-cn">考到崩溃</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I just studied [topic], and I want to test how well I really understand it.
+
+Act like a strict but helpful examiner. Your job is to find the edge of my understanding through active recall.
+
+Start by asking me 10 questions, one at a time.
+
+Rules:
+
+1. Make the questions progressively harder:
+   - Questions 1-3: beginner level
+   - Questions 4-6: intermediate level
+   - Questions 7-8: advanced level
+   - Questions 9-10: expert level
+
+2. Ask only one question at a time and wait for my answer.
+
+3. After each answer, do four things:
+   - Grade my answer out of 10
+   - Tell me what I got right
+   - Identify the exact gap, mistake, or weak point
+   - Re-explain only the part I missed in simple language
+
+4. If my answer is weak, ask one follow-up question before moving on.
+
+5. If I answer well, increase the difficulty slightly.
+
+6. At the end, give me:
+   - My final score
+   - My strongest areas
+   - My weakest areas
+   - A short revision plan
+   - 5 final challenge questions to master the topic
+
+Do not give me all answers at once. Make this feel like a real learning interview.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我刚学了 [主题]，我想测一下我到底理解到什么程度。
+
+请你扮演一个严格但有帮助的考官。你的任务是通过主动回忆找出我理解的边界。
+
+先问我 10 道题，一次一道。
+
+规则：
+
+1. 题目难度递增：
+   - 第 1-3 题：新手难度
+   - 第 4-6 题：中级
+   - 第 7-8 题：高级
+   - 第 9-10 题：专家级
+
+2. 一次只问一道，等我回答。
+
+3. 每次回答后做四件事：
+   - 给我的回答打 0-10 分
+   - 告诉我答对的部分
+   - 找出具体的漏洞、错误或薄弱点
+   - 只用简单语言重讲我漏掉的部分
+
+4. 如果答得弱，先追问一道再往下。
+
+5. 如果答得好，难度稍微升一点。
+
+6. 全部结束时，给我：
+   - 最终分数
+   - 我最强的部分
+   - 我最弱的部分
+   - 一份简短复习计划
+   - 5 道终极挑战题，让我彻底掌握主题
+
+不要一次把答案全给我。要像一场真实的学习面试。</div>
+        </div>
+        <p><strong>你会得到什么：</strong>10 道逐级加码的题，每道都打分、找漏洞、重讲。最后给你弱点清单 + 5 道终极挑战。</p>
+      </div>
+    </section>
+
+    <!-- 05 PROMPT 4: CREATE A ONE-PAGE CHEAT SHEET -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">Prompt 4 · Create a One-Page Cheat Sheet</h2>
+          <div class="cap-title-cn">一页速查表：5 分钟复习整个主题</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>大脑对<strong>结构</strong>的记忆比对段落强得多。</p>
+        <p>这个 prompt 把任何主题压缩成<strong>一页可以 5 分钟扫完的速查表</strong>——定义、规则、示例、常见坑、速测题，全部用项目符号排好。考试前、会议前、面试前、真正要用前——看一眼就够了。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-05.jpg" alt="Cheat Sheet prompt screenshot">
+          <figcaption><strong>PROMPT 4</strong>一页式速查 · 5 分钟内可看完</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-04">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">04</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">One-Page Cheat Sheet</span>
+                <span class="prompt-name-cn">一页速查表</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want a one-page cheat sheet for [topic].
+
+Act like an expert teacher who can simplify complex ideas into a fast review sheet.
+
+Create a cheat sheet that I can review in 5 minutes before I need to use the topic.
+
+Please include:
+
+1. A short definition of the topic in simple language.
+2. The most important concepts, rules, formulas, or steps.
+3. Clear bullet points instead of long paragraphs.
+4. A simple labeled diagram, flowchart, table, or mental model if it helps explain the topic.
+5. 3-5 concrete examples that show how the topic works in real life.
+6. Common mistakes or confusing parts I should avoid.
+7. A quick "Before You Use This" checklist.
+8. 5 rapid-fire questions to test my memory.
+
+Keep it practical, visual, beginner-friendly, and easy to scan.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我要一张 [主题] 的一页速查表。
+
+请你扮演一位能把复杂想法简化成速查表的专家老师。
+
+做出一张我在需要用到这个主题之前 5 分钟能扫完的速查表。
+
+请包含：
+
+1. 主题的简短定义，用简单语言。
+2. 最重要的概念、规则、公式或步骤。
+3. 用清晰的项目符号，不要长段落。
+4. 如果有帮助，加一个简单带标签的图、流程图、表格或心智模型。
+5. 3-5 个真实场景的具体例子。
+6. 我应该避免的常见错误或易混淆点。
+7. 一个「使用前」的快速清单。
+8. 5 道速测题检验记忆。
+
+要实用、视觉化、对新手友好、容易扫读。</div>
+        </div>
+        <p><strong>你会得到什么：</strong>一张 5 分钟可扫完的一页表——考试前看一眼、面试前看一眼、真正要用前看一眼，胜过翻书 1 小时。</p>
+      </div>
+    </section>
+
+    <!-- 06 PROMPT 5: FIND THE SIGNAL IN THE NOISE -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 06</div>
+          <h2 class="cap-title-en">Prompt 5 · Find the Signal in the Noise</h2>
+          <div class="cap-title-cn">从噪音里挑资源：5 个够了，别再收藏</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>每个主题都有成千上万的资源。<strong>多数人浪费时间在收藏，不在学习。</strong></p>
+        <p>这个 prompt 找出<strong>杠杆最高的 5 个</strong>——书、视频、课程、社群——排好优先级，再用这 5 个资源给你拼一个 7 天学习路径。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-06.jpg" alt="Signal in Noise prompt screenshot">
+          <figcaption><strong>PROMPT 5</strong>5 个精选资源 + 7 天路径</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-05">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">05</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Find the Signal in the Noise</span>
+                <span class="prompt-name-cn">挑资源 · 拒绝噪音</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want to learn [topic] fast, but I do not want to waste time on low-quality resources.
+
+Act like an expert learning curator. Find the 5 highest-leverage resources for learning [topic].
+
+The resources can include books, videos, courses, websites, newsletters, communities, or experts to follow.
+
+For each resource, include:
+
+1. Resource name
+2. Type of resource
+3. Why it is worth my time
+4. What specific part of [topic] it helps me learn
+5. Best learner type for this resource
+6. Difficulty level: beginner, intermediate, or advanced
+7. How I should use it effectively
+8. One warning about what not to waste time on
+
+After the list, rank the resources in the best order to use them.
+
+Then give me a simple 7-day learning path using only these resources.
+
+Focus on quality, clarity, and practical usefulness. I want the signal, not the noise.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我想快速学 [主题]，但我不想在低质量资源上浪费时间。
+
+请你扮演一位专家学习策展人。找出学 [主题] 时杠杆最高的 5 个资源。
+
+资源类型可以包括书、视频、课程、网站、newsletter、社群、值得关注的专家。
+
+每个资源包含：
+
+1. 资源名称
+2. 资源类型
+3. 为什么值得花时间
+4. 它帮我学 [主题] 的哪部分
+5. 这个资源适合哪类学习者
+6. 难度等级：新手、中级、高级
+7. 我应该怎么用最有效
+8. 一个「不要浪费时间在什么上」的提醒
+
+列完后，按推荐使用顺序排个名。
+
+再用这 5 个资源给我一个简单的 7 天学习路径。
+
+聚焦质量、清晰度、实用性。我要的是信号，不是噪音。</div>
+        </div>
+        <p><strong>你会得到什么：</strong>5 个精选资源（按使用顺序排好）+ 一份 7 天学习路径。不再收藏 100 个资源然后一个都不打开。</p>
+      </div>
+    </section>
+
+    <!-- 07 PROMPT 6: USE THE FEYNMAN LOOP -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 07</div>
+          <h2 class="cap-title-en">Prompt 6 · Use the Feynman Loop</h2>
+          <div class="cap-title-cn">费曼循环：说不简单，就是没真懂</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>费曼方法几乎能<strong>瞬间暴露假懂</strong>。</p>
+        <p>Claude 用 12 岁小孩都能懂的话讲给你听，你用自己的话讲回去，Claude 找出每一个漏洞、只重讲你漏的部分——循环重复，直到你的解释干净准确。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-07.jpg" alt="Feynman Loop prompt screenshot">
+          <figcaption><strong>PROMPT 6</strong>12 岁语言讲解 → 你复述 → 找出漏洞 → 重讲 → 循环</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-06">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">06</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Use the Feynman Loop</span>
+                <span class="prompt-name-cn">费曼循环</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want to understand [topic] deeply using the Feynman learning method.
+
+Act like a patient teacher. First, explain [topic] to me in simple language, as if I am 12 years old.
+
+Use:
+- simple words
+- real-life examples
+- analogies
+- no unnecessary jargon
+- short explanations
+
+After explaining, ask me to explain the topic back in my own words.
+
+Then review my explanation and do the following:
+
+1. Identify what I explained correctly.
+2. Find every gap, mistake, confusion, or missing idea.
+3. Re-teach only the parts I got wrong or missed.
+4. Ask me to explain it again in a cleaner way.
+5. Repeat this loop until my explanation is simple, accurate, and complete.
+
+Rules:
+- Do not move forward until my explanation is clear.
+- Do not overload me with extra theory.
+- Correct me gently but clearly.
+- Use examples whenever I am confused.
+- At the end, give me a final clean explanation of [topic] that I can save as notes.
+
+Make this feel like an interactive learning conversation, not a lecture.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我想用费曼学习法深入理解 [主题]。
+
+请你扮演一位耐心的老师。首先，用简单的语言给我解释 [主题]，就像我 12 岁一样。
+
+要求：
+- 用简单的词
+- 真实生活的例子
+- 类比
+- 不用不必要的术语
+- 解释要短
+
+讲完后，让我用自己的话把主题讲回来。
+
+然后看我的解释，做以下事情：
+
+1. 找出我讲对的部分。
+2. 找出每一个漏洞、错误、混淆或缺失的想法。
+3. 只重讲我讲错或漏掉的部分。
+4. 让我用更清楚的方式再讲一遍。
+5. 重复这个循环，直到我的解释简单、准确、完整。
+
+规则：
+- 我的解释不清楚前不要往前走。
+- 不要给我塞额外理论。
+- 纠正时要温柔但清楚。
+- 我困惑时多用例子。
+- 最后给我一份 [主题] 的干净最终版解释，能存成笔记。
+
+要像一场互动的学习对话，不像讲座。</div>
+        </div>
+        <p><strong>你会得到什么：</strong>一个把你讲的内容<strong>反复检查</strong>的对话循环，直到你能用大白话讲清楚。最后一份干净版本可存为笔记。</p>
+      </div>
+    </section>
+
+    <!-- 08 HOW TO CHAIN THESE TOGETHER -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 08</div>
+          <h2 class="cap-title-en">How to chain these together</h2>
+          <div class="cap-title-cn">怎么串起来：6 个 prompt 是一套学习系统</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这 6 个 prompt 不是 6 个独立技巧。<strong>它们是一个学习系统的不同阶段。</strong></p>
+        <ul class="cap-features">
+          <li><strong>先跑 Learning Ladder</strong> — 看整张地图，知道自己站在哪、要往哪走</li>
+          <li><strong>用 20 Hours</strong> — 找到值得先攻的核心 20%</li>
+          <li><strong>每学完一节就跑 Quiz Me</strong> — 找出真实漏洞</li>
+          <li><strong>学完用 Cheat Sheet 压缩</strong> — 5 分钟可复习的速查表</li>
+          <li><strong>开课前跑 Signal in Noise</strong> — 一次性挑出 5 个资源，别再收藏第 6 个</li>
+          <li><strong>哪里还虚就跑 Feynman Loop</strong> — 用大白话讲出来才算真懂</li>
+        </ul>
+        <p>Path → Test → Compress → Repeat.<br><strong>这就是整个系统。</strong></p>
+        <p>多数 AI 学习对话只是「给答案没结构」。这套系统强制带进真实学习必需的 4 件事：</p>
+        <ul class="cap-features">
+          <li><strong>Path</strong> — 你永远不迷路，下一步学什么很清楚</li>
+          <li><strong>Test</strong> — 在考试、面试、真实项目让你付出代价之前就知道自己哪里不会</li>
+          <li><strong>Compression</strong> — 复习只要 5 分钟，不用重新读一遍</li>
+          <li><strong>Feedback loop</strong> — 漏洞立刻被抓到并修复，而不是悄悄堆积</li>
+        </ul>
+        <figure class="cap-image">
+          <img src="images/2026-06-21-learn-08.jpg" alt="How to chain these together">
+          <figcaption><strong>4 阶段闭环</strong>Path → Test → Compress → Feedback</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>How To Learn Anything 10x Faster Using Claude</em><br>
+          作者：Rahul (@sairahul1) · 发布于 2026/06/20 · 157K 浏览<br>
+          原文链接：<a href="https://x.com/sairahul1/status/2068250224532050089" target="_blank" rel="noopener">https://x.com/sairahul1/status/2068250224532050089</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/sairahul1" target="_blank" rel="noopener">https://x.com/sairahul1</a>
+        </li>
+        <li>
+          <strong>AUTHOR · WEBSITE</strong>
+          <a href="http://nichetraffickit.com" target="_blank" rel="noopener">nichetraffickit.com</a> — Founder of NicheTrafficKit
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文中 6 个 prompt 模板均保留英文原貌；中文版为意译，便于理解。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">这 6 个 prompt 不是用来收藏的——是用来<strong>用的</strong>。挑一个你最近想学的技能，把 [topic] 换成它，按 Path → Test → Compress → Feedback 跑一遍。一周后回头看，多数人收藏了一堆资源但什么都没学，你已经跑完了一个完整的闭环。</p>
+    </section>
+
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">Path<span class="arrow">·</span>Test<span class="arrow">·</span>Compress<span class="arrow">·</span>Repeat. That's the entire system.</p>
+      <p class="closing-caption">读完了。下一步：挑一个你最近想学的技能，把 [topic] 换成它，粘 Prompt 1。一周后你会比多数人扎实得多。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">8 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Why random fails</span>
+          <span class="nav-item-cn">为什么学不会</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Learning Ladder</span>
+          <span class="nav-item-cn">学习阶梯</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">20 Hours</span>
+          <span class="nav-item-cn">20 小时学会</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Quiz Me</span>
+          <span class="nav-item-cn">考到崩溃</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Cheat Sheet</span>
+          <span class="nav-item-cn">一页速查表</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Signal in Noise</span>
+          <span class="nav-item-cn">挑资源</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Feynman Loop</span>
+          <span class="nav-item-cn">费曼循环</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Chain together</span>
+          <span class="nav-item-cn">串成系统</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // ===== Prompt Card: EN/CN toggle + Copy =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) {
+              body.removeAttribute('hidden');
+            } else {
+              body.setAttribute('hidden', '');
+            }
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector(`.prompt-card-body[data-lang="${activeLang}"]`);
+      const content = body.textContent;
+
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else {
+        fallbackCopy(content, showCopied);
+      }
+    }
+
+    function fallbackCopy(content, cb) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(textarea);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>

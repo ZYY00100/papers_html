@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何用 Claude 搭一支 AI Agent 团队 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #d2d2d7;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 80px 0 56px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(30px, 4.5vw, 42px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+    .article-title .highlight { color: #C8161D; }
+
+    .article-subtitle {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 600px;
+      margin: 4px auto 28px;
+      letter-spacing: 0.04em;
+    }
+
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep    { color: var(--border-subtle); }
+
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 560px;
+      margin: 24px auto 0;
+    }
+
+    @media (max-width: 768px) {
+      .article-title { white-space: normal; font-size: 26px; }
+      .article-category::before, .article-category::after { width: 40px; }
+    }
+
+    /* INTRO / LEAD */
+    .article-intro {
+      padding: 56px 0 56px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.8vw, 22px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .intro-lead strong {
+      color: var(--accent-red);
+      font-weight: 600;
+    }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      text-align: left;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 300;
+      line-height: 1.45;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 600;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 8px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* SECTION */
+    .section { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .section:last-of-type { border-bottom: none; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .section-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 48px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.02em;
+    }
+    .section-title-group { flex: 1; }
+    .section-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .section-range {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .section-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .section-body p { margin-bottom: 18px; }
+    .section-body p:last-child { margin-bottom: 0; }
+    .section-body strong { color: var(--text-primary); font-weight: 600; }
+
+    /* FLOW DIAGRAM (5-agent team) */
+    .flow-diagram {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      padding: 36px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      margin: 32px 0;
+    }
+    .flow-node {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 110px;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      text-align: center;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .flow-node:hover {
+      transform: scale(1.012);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+      background-color: var(--bg-secondary);
+    }
+    .flow-node-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--accent-gold-dim);
+    }
+    .flow-node-name {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .flow-arrow {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 20px;
+      color: var(--accent-red);
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+    @media (max-width: 640px) {
+      .flow-diagram { padding: 24px 14px; gap: 10px; }
+      .flow-node { min-width: 92px; padding: 10px 12px; }
+      .flow-node-name { font-size: 12px; }
+    }
+
+    /* ROLE CARDS (5 specialist roles) */
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .role-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 22px 26px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .role-card:hover {
+      transform: scale(1.012);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .role-card-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .role-card-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--accent-red);
+      flex-shrink: 0;
+    }
+    .role-card-title-group { flex: 1; }
+    .role-card-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .role-card-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+    .role-card-desc {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* PROMPT CARDS */
+    .prompt-cards-intro {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 32px;
+    }
+
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+
+    .prompt-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-card-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-red);
+      flex-shrink: 0;
+    }
+    .prompt-card-tag .prompt-num {
+      color: var(--accent-gold);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .prompt-name-en {
+      color: #e8e8ea;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', 'Rajdhani', sans-serif;
+      color: #8a8a8e;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* DECISION TREE */
+    .decision-tree {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 32px;
+    }
+    .decision-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 24px 28px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .decision-card:hover {
+      transform: scale(1.012);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .decision-card-when {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .decision-card-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .decision-card-desc {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 64px 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .references-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .references-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
+    }
+    .references-list li {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      margin-bottom: 16px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .references-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--accent-gold-dim);
+    }
+    .references-list strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .references-list em {
+      font-style: italic;
+      color: var(--text-primary);
+    }
+    .references-list a {
+      color: var(--accent-red);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      text-decoration: underline;
+    }
+    .references-note {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 0 6px 6px 0;
+    }
+    .references-note strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 64px 0 48px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 32px;
+    }
+    .closing-text strong {
+      color: var(--accent-red);
+      font-weight: 600;
+    }
+    .closing-cta {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 320px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 100px); }
+    .nav-category {
+      padding: 12px 18px 6px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .nav-category:first-child { border-top: none; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 20px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-size: 11.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 56px 0 40px; }
+      .section { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .references { padding: 48px 0; }
+      .section-num { font-size: 36px; }
+      .section-title { font-size: 22px; }
+      .prompt-card-head {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .prompt-card-tag {
+        flex: 1 0 100%;
+        order: 1;
+      }
+      .prompt-card-actions {
+        order: 2;
+        margin-left: auto;
+      }
+      .prompt-card-body { padding: 18px 16px; font-size: 12px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">AGENTS · KHAIRALLAH</div>
+      <h1 class="article-title">如何用 Claude 搭一支 AI Agent 团队</h1>
+      <p class="article-subtitle">5 个 specialist 顺序串成内容流水线：从研究到审稿，一气呵成</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Khairallah AL-Awady (@eng_khairallah1) · 361.8K 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/19</span>
+      </div>
+      <p class="article-desc">Khairallah 那条 36.2 万浏览的 X 长文。多数人把 Claude 当聊天框——一次问一件事。少数人用 Claude 搭一整支 agent 团队，分别负责调研、分析、写作、代码、审稿。本文讲透 5 个 specialist agent 的角色边界、怎么在 Claude Projects 里搭起来，并附 5 张对应角色、复制即用的 System Prompt 卡片。</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">把 Claude 当聊天框用，等于把一辆 F1 赛车当买菜车开——<strong>它能跑，但你浪费了 90% 的能力</strong>。</p>
+      <p class="intro-lead">多数人开 Claude 是一次问一件事：先让它查资料、再写提纲、再改稿、再做总结。每一轮都要重新告诉它「你是谁、你要按什么规则输出」。</p>
+      <p class="intro-statement">Khairallah 提的核心思路很简单：把这套流程拆成 5 个 specialist agent——一个负责研究、一个负责分析、一个负责写作、一个负责代码、一个负责审稿——每个 agent 都有自己的 system prompt、独立 context、专属任务。前一个 agent 的输出直接传给下一个。</p>
+      <p class="intro-statement">这样做的结果是：你不用每次重新教 Claude。它从「通用聊天」变成「自带 SOP 的团队」。Khairallah 在 6/19 那条 361.8K 浏览的 X 长文里把整套流程拆得清清楚楚——本文把方法论 + 5 张对应角色的 system prompt 卡片一次给齐。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">多数人让 Claude <span class="arrow">→</span> 一次回答一个问题<br>少数人让 Claude <span class="arrow">→</span> 跑一整支 agent 团队</div>
+      <div class="pull-quote-caption">Most people are using Claude to answer one question at a time. A small group are using Claude to run an entire team of agents.</div>
+    </section>
+
+    <!-- SECTION 01: FRAMEWORK -->
+    <section class="section" id="framework">
+      <div class="section-head">
+        <div class="section-num">01</div>
+        <div class="section-title-group">
+          <div class="section-kicker">FRAMEWORK</div>
+          <h2 class="section-title">5 个 specialist agent 的顺序架构</h2>
+          <div class="section-range">RESEARCH → ANALYSIS → WRITING → CODE → REVIEW</div>
+        </div>
+      </div>
+      <p class="section-body">Khairallah 的核心框架是 5 个 agent 按顺序串联，前一个的输出传给下一个。每个 agent 有独立的 system prompt、独立的 context，互不干扰。</p>
+      <p class="section-body">这套设计解决两个问题：</p>
+      <p class="section-body"><strong>上下文压缩</strong>——单 agent 模式下，研究和写作混在一个 context 里，agent 会逐渐「忘记」早期指令；拆成独立 agent 后，每个 agent 只关心自己那段对话。</p>
+      <p class="section-body"><strong>专业精度</strong>——一个 system prompt 同时定义「研究员」和「写手」会导致 prompt 互相稀释。每个 agent 只负责一件事，prompt 更精，结果更准。</p>
+
+      <div class="flow-diagram">
+        <div class="flow-node">
+          <div class="flow-node-num">AGENT 01</div>
+          <div class="flow-node-name">Researcher<br><span style="font-size:11px;color:var(--text-muted)">研究员</span></div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-num">AGENT 02</div>
+          <div class="flow-node-name">Analyst<br><span style="font-size:11px;color:var(--text-muted)">分析师</span></div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-num">AGENT 03</div>
+          <div class="flow-node-name">Writer<br><span style="font-size:11px;color:var(--text-muted)">写作</span></div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-num">AGENT 04</div>
+          <div class="flow-node-name">Coder<br><span style="font-size:11px;color:var(--text-muted)">代码</span></div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <div class="flow-node-num">AGENT 05</div>
+          <div class="flow-node-name">Reviewer<br><span style="font-size:11px;color:var(--text-muted)">审稿</span></div>
+        </div>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">AGENT 01</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Researcher</div>
+              <div class="role-card-title-cn">调研员 · 找资料、给方向</div>
+            </div>
+          </div>
+          <div class="role-card-desc">拿到一个主题，产出一份完整研究简报：执行摘要 + 核心发现 + 反主流观点 + 知识空白 + 行动建议。每条发现带具体来源或数据点，数据不足直说「数据不足」，不瞎猜。</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">AGENT 02</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Analyst</div>
+              <div class="role-card-title-cn">分析师 · 拆数据、找规律</div>
+            </div>
+          </div>
+          <div class="role-card-desc">吃研究员给的一手材料，找趋势、标异常、找相关性、给 3 个最可执行的洞察。用大白话讲，用具体数字（不用「营收上升了」，用「Q1 到 Q3 营收增长 23%」）。</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">AGENT 03</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Writer</div>
+              <div class="role-card-title-cn">写作 · 出成稿</div>
+            </div>
+          </div>
+          <div class="role-card-desc">基于分析结果写一篇 2500 字的成稿。段落不超过 3 句、每个章节核心断言加粗、用具体数字、开头用对比句式（「多数人做 X，一小撮人做 Y」）、结尾用「most people will X / the ones who Y」格式的 CTA。</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">AGENT 04</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Coder</div>
+              <div class="role-card-title-cn">代码 · 落实现</div>
+            </div>
+          </div>
+          <div class="role-card-desc">把写作里提到的概念、API、自动化脚本、工程实现写成可跑的代码。只改坏的，不重写整个文件；按严重度排优先级，安全第一；写好的地方也要提一句。</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">AGENT 05</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Reviewer</div>
+              <div class="role-card-title-cn">审稿 · 磨刀</div>
+            </div>
+          </div>
+          <div class="role-card-desc">不留情面的毒舌编辑。砍掉所有不带新信息的句子；把「这能省时间」换成「这能每周省 3 小时」；杀水词（「值得注意的是」「为了」「由于」）；不改作者语气，只把它磨利。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02: HOW TO BUILD -->
+    <section class="section" id="how-to-build">
+      <div class="section-head">
+        <div class="section-num">02</div>
+        <div class="section-title-group">
+          <div class="section-kicker">HOW TO BUILD</div>
+          <h2 class="section-title">4 步搭起你的 agent 团队</h2>
+          <div class="section-range">CLAUDE PROJECTS + COWORK · ZERO CODE</div>
+        </div>
+      </div>
+      <p class="section-body">Khairallah 的方法走的是 Claude Projects + Claude Cowork 这条零代码路径。不需要写 API、不需要装 LangChain、不需要部署服务器。</p>
+
+      <div class="role-grid">
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">STEP 01</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Open Claude Projects</div>
+              <div class="role-card-title-cn">为每个 agent 建一个 Project</div>
+            </div>
+          </div>
+          <div class="role-card-desc">打开 Claude → Projects → Create Project → 命名（如「Article Researcher」「Article Writer」「Code Reviewer」）。每个 agent 一个独立 Project，互不干扰。</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">STEP 02</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Paste the system prompt</div>
+              <div class="role-card-title-cn">把角色 prompt 贴进 Project 系统指令</div>
+            </div>
+          </div>
+          <div class="role-card-desc">把第 03 节那 5 张 prompt 卡片里对应角色的 prompt 复制下来，粘到 Project 的「Project Instructions」里。这是 agent 的「员工手册」——身份、规则、输出格式全部固化。</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">STEP 03</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Chain via Cowork</div>
+              <div class="role-card-title-cn">用 Cowork 把 5 个 Project 串起来</div>
+            </div>
+          </div>
+          <div class="role-card-desc">Claude Cowork 是 Anthropic 的多 agent 协作工具——把 5 个 Project 配置成 chain，前一个 agent 的输出自动传给下一个。你不需要手动复制粘贴。</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-head">
+            <span class="role-card-num">STEP 04</span>
+            <div class="role-card-title-group">
+              <div class="role-card-title-en">Iterate one rule at a time</div>
+              <div class="role-card-title-cn">一周迭代一次规则</div>
+            </div>
+          </div>
+          <div class="role-card-desc">实际跑一周，看哪个 agent 出来效果最差，单独调整那一个的 prompt。加新约束、砍掉无效规则，一个月定型。每个 agent 都只关心一件事，调起来比「一锅炖」的 prompt 快 10 倍。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03: 5 PROMPTS TO COPY -->
+    <section class="section" id="prompts">
+      <div class="section-head">
+        <div class="section-num">03</div>
+        <div class="section-title-group">
+          <div class="section-kicker">5 PROMPTS TO COPY</div>
+          <h2 class="section-title">5 张对应角色的 System Prompt</h2>
+          <div class="section-range">直接复制，贴进 Claude Project</div>
+        </div>
+      </div>
+      <p class="prompt-cards-intro">这 5 张卡片的 prompt 来自 Khairallah 同作者 6/8 那条 33.2 万浏览的「30 个复制即用的 System Prompt」长文——他是把同一个 prompt 体系反复用了 4 周才沉淀下来。每个对应一个 agent 角色，按顺序串联就是一支完整的内容生产团队。</p>
+      <p class="prompt-cards-intro">英文是 Khairallah 原文原版，中文是按中文对话习惯重写的版本（不是直译，去机翻味）。两者都可以直接复制粘贴使用。</p>
+
+      <!-- AGENT 01: RESEARCHER -->
+      <div class="prompt-card" data-card id="agent-01">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">01</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">The Deep Researcher</span>
+              <span class="prompt-name-cn">深度研究员 · 对应 AGENT 01</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a senior research analyst. When I give you a topic, produce a comprehensive research brief.
+
+Structure:
+1. Executive Summary (3 sentences max)
+2. Key Findings (top 5, with specific data points)
+3. Contrarian Viewpoints (what the mainstream narrative gets wrong)
+4. Knowledge Gaps (what we do not know yet)
+5. Recommended Actions (what to do with this information)
+
+Rules:
+- Every finding must cite a specific source or data point.
+- If data is insufficient, say "insufficient data" instead of speculating.
+- Prioritize recency. Recent sources first.
+- Flag any finding where sources conflict.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一位资深研究分析师。我给你一个主题，你产出一份完整的研究简报。
+
+结构：
+1. 执行摘要（最多 3 句）
+2. 核心发现（前 5 条，每条带具体数据点）
+3. 反主流观点（主流叙事错在哪里）
+4. 知识空白（还有什么是我们不知道的）
+5. 行动建议（拿这份信息去做什么）
+
+规则：
+- 每条发现必须引用具体来源或数据点。
+- 数据不足就说「数据不足」，不要瞎猜。
+- 时效性优先。新来源排前面。
+- 凡是来源之间打架的发现，标出来。</div>
+      </div>
+
+      <!-- AGENT 02: ANALYST -->
+      <div class="prompt-card" data-card id="agent-02">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">02</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">The Data Analyzer</span>
+              <span class="prompt-name-cn">数据分析师 · 对应 AGENT 02</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a data analyst. When I give you a dataset:
+1. Summarize what the data contains (columns, rows, timeframe)
+2. Identify the top 3 trends
+3. Flag any anomalies or outliers
+4. Find correlations between variables
+5. Present the 3 most actionable insights
+
+Rules:
+- Present findings in plain English. No jargon.
+- Use specific numbers. "Revenue increased 23% from Q1 to Q3" not "Revenue went up."
+- If the data is insufficient for a conclusion, say so.
+- Suggest what additional data would strengthen the analysis.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一位数据分析师。我给你一份数据集：
+1. 简述这份数据包含什么（列、行数、时间跨度）
+2. 找出前 3 个趋势
+3. 标出异常和离群点
+4. 找变量之间的相关性
+5. 给出 3 个最可执行的洞察
+
+规则：
+- 用大白话讲。不用术语。
+- 用具体数字。「Q1 到 Q3 营收增长 23%」而不是「营收上升了」。
+- 数据不足以下结论时，直说。
+- 建议还需要哪些数据能让分析更扎实。</div>
+      </div>
+
+      <!-- AGENT 03: WRITER -->
+      <div class="prompt-card" data-card id="agent-03">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">03</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">The Viral Article Writer</span>
+              <span class="prompt-name-cn">爆款文章写手 · 对应 AGENT 03</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a viral content writer specializing in AI and technology. Your audience is 200,000+ followers on X who are learning to use AI tools for the first time.
+
+Rules:
+- Short paragraphs. Maximum 3 sentences each.
+- Bold the key claim in every section.
+- Use specific numbers. Never say "many" or "some."
+- Open every piece with a contrast: "Most people do X. A small group does Y."
+- End with italic + bold italic CTA using "most people will X / the ones who Y" format
+- No em dashes. No filler. No generic advice.
+
+When I give you a topic, produce a complete 2500-word article ready to publish.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一位专攻 AI 和科技领域的爆款内容写手。读者是 X 平台上 20 万+、第一次认真学 AI 工具的跟随者。
+
+规则：
+- 段落要短。每段最多 3 句。
+- 每个章节的核心断言加粗。
+- 用具体数字。永远别说「很多」「一些」。
+- 开头用对比句式：「多数人做 X。一小撮人做 Y。」
+- 结尾用「斜体 + 加粗斜体」的 CTA，套「most people will X / the ones who Y」格式
+- 不用长破折号。不写废话。不给通用建议。
+
+我给你一个主题，你就直接产出一篇 2500 字、可发布的完整文章。</div>
+      </div>
+
+      <!-- AGENT 04: CODER -->
+      <div class="prompt-card" data-card id="agent-04">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">04</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">The Code Reviewer</span>
+              <span class="prompt-name-cn">Code Review 审查员 · 对应 AGENT 04</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a senior engineer reviewing code. When I paste code:
+1. Security issues (Critical/High/Medium/Low)
+2. Logic errors and edge cases
+3. Performance issues
+4. Readability and maintainability
+5. Specific fix for each issue (show corrected code)
+
+Rules:
+- Every issue must include the exact line and a corrected version.
+- Prioritize by severity. Security first.
+- Note anything that works well. Good code deserves recognition too.
+- Do not rewrite the entire file. Fix only what is broken.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一位做 Code Review 的资深工程师。我贴代码，你做：
+1. 安全问题（Critical / High / Medium / Low）
+2. 逻辑错误和边界情况
+3. 性能问题
+4. 可读性和可维护性
+5. 每个问题的具体修复（贴出改后代码）
+
+规则：
+- 每个问题必须给精确行号 + 改后版本。
+- 按严重度排序。安全第一。
+- 写得好的地方也要提一句。好代码值得被看见。
+- 不重写整个文件。只改坏的。</div>
+      </div>
+
+      <!-- AGENT 05: REVIEWER -->
+      <div class="prompt-card" data-card id="agent-05">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">05</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">The Editing Assassin</span>
+              <span class="prompt-name-cn">毒舌编辑 · 对应 AGENT 05</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">You are a ruthless editor. Your job is to make writing shorter, sharper, and more impactful.
+
+Rules:
+- Cut any sentence that does not add new information.
+- Replace vague claims with specific ones. "This saves time" becomes "This saves 3 hours per week."
+- Kill filler phrases: "It is important to note that", "In order to", "Due to the fact that."
+- Replace passive voice with active voice.
+- If a paragraph has more than 3 sentences, split it or cut the weakest sentence.
+- Never change the author's voice or meaning. Only sharpen it.
+
+When I paste text, return the edited version. Then list every change you made and why.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>你是一个不留情面的编辑。任务是让文字更短、更锋利、更有力。
+
+规则：
+- 砍掉所有不带新信息的句子。
+- 把模糊断言换成具体断言。「这能省时间」→「这能每周省 3 小时」。
+- 杀掉水词：「值得注意的是」「为了」「由于」「其实」。
+- 把被动语态换成主动。
+- 一个段落超过 3 句，要么拆开，要么砍掉最弱那句。
+- 不改作者的语气和本意，只把它磨利。
+
+我贴文字，你返回改后的版本。再列出你做的每处改动和原因。</div>
+      </div>
+    </section>
+
+    <!-- SECTION 04: WHEN TO USE -->
+    <section class="section" id="decision-tree">
+      <div class="section-head">
+        <div class="section-num">04</div>
+        <div class="section-title-group">
+          <div class="section-kicker">DECISION TREE</div>
+          <h2 class="section-title">什么时候用 single agent，什么时候上 team</h2>
+          <div class="section-range">别为团队而团队</div>
+        </div>
+      </div>
+      <p class="section-body">不是所有任务都值得搭团队。Khairallah 没明说，但从他举的例子反推，团队架构的触发条件是：</p>
+
+      <div class="decision-tree">
+        <div class="decision-card">
+          <div class="decision-card-when">CASE 01</div>
+          <div class="decision-card-title">用 single chat 就够</div>
+          <div class="decision-card-desc">一次性问答、单段对话能搞定的任务——查一个事实、改一段文案、回一封邮件、生成一个 outline。不要为搭团队而搭团队，这种任务 single chat 反而更快、更省 token。</div>
+        </div>
+        <div class="decision-card">
+          <div class="decision-card-when">CASE 02</div>
+          <div class="decision-card-title">用 2-3 个 Project 协作</div>
+          <div class="decision-card-desc">任务需要切换不同的「角色」但深度不算深——比如「先研究再写」。Khairallah 推荐用 2-3 个独立 Project 手动串，先适应「上下文压缩」的概念，再上 5 个 agent。</div>
+        </div>
+        <div class="decision-card">
+          <div class="decision-card-when">CASE 03</div>
+          <div class="decision-card-title">用 5 个 specialist team</div>
+          <div class="decision-card-desc">需要批量化、重复跑、要稳定输出的内容流水线——比如每周要稳定产 5-10 篇长文的团队。搭一次，跑一年，每次新主题只需改 Research Brief 输入，5 个 agent 自动运转。</div>
+        </div>
+        <div class="decision-card">
+          <div class="decision-card-when">CASE 04</div>
+          <div class="decision-card-title">team size 的上限</div>
+          <div class="decision-card-desc">Khairallah 自己用的最大配置是 5 agent，超过 5 个就开始出现「协调成本大于收益」的情况——chain 越长、出错环节越多、人审的负担越重。少而精永远赢过多而散。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references" id="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>How to Build Your First Team of AI Agents Using Claude (Full Course)</em><br>
+          作者：Khairallah AL-Awady (@eng_khairallah1) · 发布于 2026/06/19 · 361.8K 浏览<br>
+          原文推文：<a href="https://x.com/eng_khairallah1/status/2067888525953958155?s=20" target="_blank" rel="noopener">https://x.com/eng_khairallah1/status/2067888525953958155?s=20</a><br>
+          X Article：<a href="https://x.com/i/article/2067698009132146688" target="_blank" rel="noopener">https://x.com/i/article/2067698009132146688</a>
+        </li>
+        <li>
+          <strong>SISTER ARTICLE · 30 SYSTEM PROMPTS</strong>
+          <em>30 个复制即用的 System Prompt：让 Claude 一次变成你想要的任何专家</em><br>
+          作者：Khairallah AL-Awady · 发布于 2026/06/08 · 33.2 万浏览<br>
+          本文 5 张「AGENT 01-05」卡片的 System Prompt 模板都来自这篇姊妹长文——他把同一套 prompt 体系打磨了 4 周。<br>
+          站内已有完整解读版：<a href="2026-06-08-30-system-prompts-khairallah.html" target="_blank" rel="noopener">2026-06-08-30-system-prompts-khairallah.html</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/eng_khairallah1" target="_blank" rel="noopener">https://x.com/eng_khairallah1</a> — 长期输出 Claude / System Prompt / AI Agent 实战内容
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文是 6/19 这篇 X 长文的中文解读版。Khairallah 在原文里给出的完整 agent 协作流程（Project 配置、Cowork 串联、迭代节奏）以原文为准——本文侧重讲清 5 个 specialist 的角色边界 + 提供对应 prompt。所有 5 张卡片的 System Prompt 模板均为 Khairallah 公开过的版本，按中文阅读习惯重新排版。
+        </li>
+      </ul>
+      <p class="references-note"><strong>使用建议</strong>：不要 5 个 agent 一次全搭。先挑 2-3 个跟你日常工作最贴合的（多数人最常用的是 Researcher + Writer + Reviewer 这条链），跑一周看效果，再决定要不要补 Analyst 和 Coder。每个 agent 的 prompt 也要按你的实际工作流迭代——Khairallah 自己也是打磨了一个月才定型。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">多数人会读到这里 <span class="arrow" style="color:var(--accent-red);font-family:'Rajdhani',sans-serif;font-weight:600">→</span> 关掉页面<br>少数人会 <strong>今天就建第一个 Project</strong>，下周跑完整套</p>
+      <p class="closing-cta">This is what separates the 99% from the 1%.</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">本文目录</div>
+    <div class="nav-panel-content">
+      <div class="nav-category">FRAMEWORK</div>
+      <a href="#framework" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">5-agent Framework</span>
+          <span class="nav-item-cn">5 个 specialist 顺序架构</span>
+        </span>
+      </a>
+
+      <div class="nav-category">HOW TO BUILD</div>
+      <a href="#how-to-build" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">4 Steps to Build</span>
+          <span class="nav-item-cn">4 步搭起 agent 团队</span>
+        </span>
+      </a>
+
+      <div class="nav-category">5 PROMPTS TO COPY</div>
+      <a href="#agent-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Deep Researcher</span>
+          <span class="nav-item-cn">深度研究员 · 调研员</span>
+        </span>
+      </a>
+      <a href="#agent-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Data Analyzer</span>
+          <span class="nav-item-cn">数据分析师 · 拆数据</span>
+        </span>
+      </a>
+      <a href="#agent-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Viral Article Writer</span>
+          <span class="nav-item-cn">爆款文章写手 · 出成稿</span>
+        </span>
+      </a>
+      <a href="#agent-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Code Reviewer</span>
+          <span class="nav-item-cn">Code Review 审查员 · 落实现</span>
+        </span>
+      </a>
+      <a href="#agent-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">The Editing Assassin</span>
+          <span class="nav-item-cn">毒舌编辑 · 磨刀</span>
+        </span>
+      </a>
+
+      <div class="nav-category">DECISION TREE</div>
+      <a href="#decision-tree" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">When to Use Team</span>
+          <span class="nav-item-cn">什么时候用 single / 什么时候上 team</span>
+        </span>
+      </a>
+
+      <div class="nav-category">SOURCES</div>
+      <a href="#references" class="nav-item">
+        <span class="nav-item-num">→</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">References & Credits</span>
+          <span class="nav-item-cn">引用与原文出处</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // Floating nav toggle
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => navPanel.classList.toggle('active'));
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => navPanel.classList.remove('active'));
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+
+    // Lang toggle (EN / 中文) on prompt cards
+    document.querySelectorAll('.prompt-card').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === target));
+          bodies.forEach(b => b.hidden = b.dataset.lang !== target);
+        });
+      });
+    });
+
+    // Copy button
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const card = btn.closest('.prompt-card');
+        const activeBody = card.querySelector('.prompt-card-body:not([hidden])');
+        if (!activeBody) return;
+        const text = activeBody.textContent.trim();
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch (err) {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAI 官方 Prompting 指南：四要素框架 + 13 个复制即用 prompt · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-muted: #aeaeb2;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #d2d2d7;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 80px 0 56px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before {
+      content: '';
+      width: 28px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(30px, 4.5vw, 42px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(20px, 3vw, 24px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      max-width: 600px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.01em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline span { color: var(--border-subtle); }
+    .article-byline .byline-author {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: var(--accent-gold-dim);
+    }
+    .article-byline .byline-source {
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: 0.05em;
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      max-width: 560px;
+      margin: 24px auto 0;
+    }
+
+    /* INTRO / LEAD */
+    .article-intro {
+      padding: 56px 0 56px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.8vw, 22px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .intro-lead strong {
+      color: var(--accent-red);
+      font-weight: 600;
+    }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      text-align: left;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 600;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 8px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* SECTION */
+    .section { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .section:last-of-type { border-bottom: none; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .section-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 48px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.02em;
+    }
+    .section-title-group { flex: 1; }
+    .section-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 6px;
+    }
+    .section-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .section-range {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .section-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .section-body p { margin-bottom: 18px; }
+    .section-body p:last-child { margin-bottom: 0; }
+    .section-body strong { color: var(--text-primary); font-weight: 600; }
+
+    /* PROMPT CARDS */
+    .prompt-cards-intro {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 32px;
+    }
+    .prompt-cards-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+    }
+    .prompt-cards-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .prompt-cards-legend .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      box-shadow: 0 0 8px var(--accent-red);
+    }
+
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+
+    .prompt-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-card-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-red);
+      flex-shrink: 0;
+    }
+    .prompt-card-tag .prompt-num {
+      color: var(--accent-gold);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .prompt-name-en {
+      color: #e8e8ea;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', 'Rajdhani', sans-serif;
+      color: #8a8a8e;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* HOW TO USE */
+    .how-to-use {
+      padding: 64px 0;
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .how-to-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .how-to-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 24px 28px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .how-to-step:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .how-to-step-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .how-to-step-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .how-to-step-desc {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 64px 0 48px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 32px;
+    }
+    .closing-text strong {
+      color: var(--accent-red);
+      font-weight: 600;
+    }
+    .closing-cta {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 100px); }
+    .nav-category {
+      padding: 12px 18px 6px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .nav-category:first-child { border-top: none; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 20px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-size: 11.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 56px 0 40px; }
+      .section { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .how-to-use { padding: 48px 0; }
+      .section-num { font-size: 36px; }
+      .section-title { font-size: 22px; }
+      .prompt-card-head {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .prompt-card-tag {
+        flex: 1 0 100%;
+        order: 1;
+      }
+      .prompt-card-actions {
+        order: 2;
+        margin-left: auto;
+      }
+      .prompt-card-body { padding: 18px 16px; font-size: 12px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+    }
+
+    /* ===== Article-specific additions ===== */
+    .toc-mini {
+      max-width: 680px;
+      margin: 32px auto 0;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+    }
+    .toc-mini-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      color: var(--accent-gold);
+      margin-bottom: 10px;
+    }
+    .toc-mini-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      font-size: 14px;
+    }
+    .toc-mini-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 10px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    .toc-mini-links a:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-gold);
+      background: rgba(201, 169, 98, 0.06);
+    }
+    .hero-cover {
+      max-width: 560px;
+      margin: 32px auto 0;
+    }
+    .hero-cover img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+      box-shadow: var(--shadow-hover);
+    }
+    .framework-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 24px 0 8px;
+    }
+    @media (max-width: 600px) {
+      .framework-grid { grid-template-columns: 1fr; }
+    }
+    .framework-card {
+      padding: 22px 22px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .framework-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .framework-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--accent-gold);
+      margin-bottom: 4px;
+    }
+    .framework-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+    .framework-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .framework-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+    .openai-quote {
+      margin: 20px 0;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.85;
+    }
+    .openai-quote strong {
+      color: var(--accent-gold-dim);
+    }
+    .quote-block {
+      margin: 18px 0;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+    }
+    .quote-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      color: var(--text-primary);
+      font-style: italic;
+    }
+    .quote-cn {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+    .inline-figure {
+      margin: 32px 0;
+      text-align: center;
+    }
+    .voice-dict-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 600px) {
+      .voice-dict-pair { grid-template-columns: 1fr; }
+    }
+    .voice-dict-pair img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+    }
+    .inline-figure figcaption {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+    .section-h3 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 32px 0 12px;
+      letter-spacing: 0.02em;
+    }
+    .section-h4 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--accent-gold);
+      margin: 28px 0 10px;
+      text-transform: uppercase;
+    }
+    .prose {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--text-primary);
+      margin: 12px 0;
+    }
+    .prose code {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      padding: 2px 6px;
+      background: var(--bg-code);
+      color: #f5f5f7;
+      border-radius: 3px;
+    }
+    .prose-list {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      line-height: 1.9;
+      color: var(--text-primary);
+      margin: 12px 0 12px 22px;
+      padding-left: 8px;
+    }
+    .prose-list li { margin: 6px 0; }
+    .prose-list strong {
+      color: var(--accent-gold-dim);
+      font-weight: 600;
+    }
+    .takeaway-box {
+      margin: 28px 0;
+      padding: 32px 28px;
+      background: var(--bg-code);
+      border-radius: 8px;
+      text-align: center;
+    }
+    .takeaway-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: #f5f5f7;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+    }
+    .takeaway-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      color: var(--accent-gold);
+      font-style: italic;
+      margin-top: 12px;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 64px 0 32px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .references-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3vw, 26px);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .references-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px 0;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .references-list em {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-style: italic;
+      color: var(--text-primary);
+    }
+    .references-list a {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .references-list a:hover { color: var(--accent-red); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">AI PROMPT · OFFICIAL GUIDE</div>
+      <h1 class="article-title">OpenAI 官方 Prompting 指南</h1>
+      <p class="article-subtitle">四要素框架 + 13 个复制即用 prompt</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span>·</span>
+        <span class="byline-source">原文 learn.chatgpt.com/docs/prompting</span>
+        <span>·</span>
+        <span>2026/07/12</span>
+      </div>
+      <p class="article-desc">OpenAI 这次没讲 prompt 技巧，讲的是「怎么管理 prompt 的边界」——Goal + Context + Output + Boundaries 四要素框架，ChatGPT / Work / Codex 三个产品通用。原文 13 个例子全部做成双语卡片（中英切换 + 一键复制），按场景穿插在正文里。</p>
+      <div class="hero-cover">
+        <img src="./images/2026-07-12-chatgpt-prompting-guide/cover.svg" alt="OpenAI Prompting Guide 四要素框架封面" />
+      </div>
+    </section>
+
+    <!-- TOC -->
+    <section class="toc-mini">
+      <div class="toc-mini-title">本文目录</div>
+      <div class="toc-mini-links">
+        <a href="#sec-intro">引子</a>
+        <a href="#sec-framework">四要素框架</a>
+        <a href="#sec-action">让结果能用</a>
+        <a href="#sec-followup">进阶：多轮对话</a>
+        <a href="#sec-products">跨产品落地</a>
+        <a href="#sec-takeaway">我的解读</a>
+      </div>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro" id="sec-intro">
+      <p class="intro-lead">2026 年，OpenAI 自己出了一份 <strong>Prompting 官方指南</strong>。</p>
+      <p class="intro-lead">但这次，OpenAI 没讲 prompt 技巧——它讲的是<strong>四要素框架</strong>。</p>
+      <p class="intro-statement">读完之后你会发现：所谓"好的 prompt"，本质上就是把这四件事说清楚——Goal、Context、Output、Boundaries。剩下的 follow-up、迭代、跨产品（Chat/Work/Codex）落地，都是这个框架的延伸。</p>
+      <p class="intro-statement">下面我把这份指南翻译、拆解、再加上我自己的解读。13 个官方示例全部做成双语卡片——EN 是 OpenAI 原文，CN 是按中文工作场景重写的中文意译（不直译，去机翻味），两者都能直接复制粘贴。</p>
+
+      <figure class="inline-figure voice-dict-figure">
+        <div class="voice-dict-pair">
+          <img src="./images/2026-07-12-chatgpt-prompting-guide/voice-dictation-light.webp" alt="ChatGPT 桌面端语音输入指示器 - 浅色主题" />
+          <img src="./images/2026-07-12-chatgpt-prompting-guide/voice-dictation-dark.webp" alt="ChatGPT 桌面端语音输入指示器 - 深色主题" />
+        </div>
+        <figcaption>OpenAI 也在推动更自然的输入方式——桌面端 Ctrl+M 可以语音输入，写 prompt 不一定要打字。</figcaption>
+      </figure>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">好的 prompt = <span class="arrow">→</span> 四件事说清楚</div>
+      <div class="pull-quote-caption">Goal · Context · Output · Boundaries — OpenAI 官方框架</div>
+    </section>
+
+    <!-- SECTION 1: 四要素框架 -->
+    <section class="section" id="sec-framework">
+      <div class="section-head">
+        <div class="section-num">01</div>
+        <div class="section-title-group">
+          <div class="section-kicker">THE FOUR ELEMENTS</div>
+          <h2 class="section-title">四要素框架</h2>
+          <div class="section-range">GOAL · CONTEXT · OUTPUT · BOUNDARIES</div>
+        </div>
+      </div>
+      <p class="prompt-cards-intro">OpenAI 把所有好 prompt 的共性压成了这四个要素。不用每个 prompt 都填满，挑有用的说就行。</p>
+
+      <div class="framework-grid">
+        <div class="framework-card">
+          <div class="framework-num">01</div>
+          <div class="framework-en">Goal</div>
+          <div class="framework-cn">目标</div>
+          <div class="framework-desc">你要 ChatGPT 做什么？</div>
+        </div>
+        <div class="framework-card">
+          <div class="framework-num">02</div>
+          <div class="framework-en">Context</div>
+          <div class="framework-cn">上下文</div>
+          <div class="framework-desc">哪些信息/资料会影响结果？</div>
+        </div>
+        <div class="framework-card">
+          <div class="framework-num">03</div>
+          <div class="framework-en">Output</div>
+          <div class="framework-cn">输出</div>
+          <div class="framework-desc">要什么格式、长度、详细程度？</div>
+        </div>
+        <div class="framework-card">
+          <div class="framework-num">04</div>
+          <div class="framework-en">Boundaries</div>
+          <div class="framework-cn">边界</div>
+          <div class="framework-desc">哪些不能动？要不要先确认？</div>
+        </div>
+      </div>
+
+      <h3 class="section-h3">一句话：先说 Goal，再补 Context，再讲 Output，最后用 Boundaries 兜底</h3>
+      <p class="prose">OpenAI 的原话：</p>
+      <blockquote class="openai-quote">
+        A short prompt is often enough. For larger or more important tasks, include the parts that matter:
+        <strong>Goal</strong> — What should ChatGPT do? <strong>Context</strong> — What information or sources will help?
+        <strong>Output</strong> — What format, length, or level of detail do you need?
+        <strong>Boundaries</strong> — What must stay unchanged? What should ChatGPT avoid or check with you before it acts?
+      </blockquote>
+      <p class="prose">中文直译：短的 prompt 经常就够了。但任务大或重要时，把下面四块填上——目标、上下文、输出、边界。</p>
+
+      <h3 class="section-h3">第一个例子：用"Goal + Output"讲清楚一个概念</h3>
+      <p class="prose">这是个 Chat 场景下"解释一个概念"的 prompt。你会发现：哪怕只写了 Goal 和 Output，效果就比"跟我讲讲复利"好得多。</p>
+
+      <!-- 01 Understand a Topic -->
+      <div class="prompt-card" data-card id="prompt-01">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">01</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Understand a Topic</span>
+              <span class="prompt-name-cn">解释一个概念</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Explain how compound interest works for someone who has never invested. Use one concrete example and define any financial terms you introduce.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>用初学者能秒懂的话讲清楚「复利」是怎么回事。举一个具体的例子（房贷或者定投都行），所有金融术语都用大白话再解释一遍。</div>
+      </div>
+
+      <p class="prose">看 EN 原文——只有两句话：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Explain how compound interest works</li>
+        <li><strong>Output</strong>：for someone who has never invested · Use one concrete example · define any financial terms</li>
+      </ul>
+      <p class="prose">没有 Context（不需要文件、不需要联网），没有 Boundaries（不涉及敏感操作）。但 Goal + Output 写清楚后，结果已经好过 90% 的"跟我讲讲 X"了。</p>
+    </section>
+
+    <!-- SECTION 2: 让结果"能用" -->
+    <section class="section" id="sec-action">
+      <div class="section-head">
+        <div class="section-num">02</div>
+        <div class="section-title-group">
+          <div class="section-kicker">MAKE IT USEFUL</div>
+          <h2 class="section-title">让结果"能用"</h2>
+          <div class="section-range">DESCRIBE RESULT · ADD CONTEXT · SET BOUNDARIES</div>
+        </div>
+      </div>
+      <p class="prompt-cards-intro">四要素框架拆开看，每个要素都有具体的写法。下面是三个实战：起草一段文字、对比选项、设置边界。</p>
+
+      <h3 class="section-h3">2.1 先讲结果，再讲步骤</h3>
+      <p class="prose">OpenAI 反复强调的一点：<strong>从结果开始，而不是从步骤开始</strong>。告诉 ChatGPT 你要什么（Goal + Output），把过程留给它自己找。</p>
+
+      <!-- 02 Draft and Refine Writing -->
+      <div class="prompt-card" data-card id="prompt-02">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">02</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Draft and Refine Writing</span>
+              <span class="prompt-name-cn">起草并打磨一段文字</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Draft a friendly email declining this invitation because I will be traveling. Keep it under 120 words and leave the door open for a future event.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>帮我写一封礼貌的拒绝邮件——因为那段时间我要出差，婉拒这次的邀请。全文控制在 120 字以内，语气要友好，给对方留个台阶，下次活动还可以再约。</div>
+      </div>
+
+      <p class="prose">EN 原文结构：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Draft a friendly email declining this invitation</li>
+        <li><strong>Context</strong>：because I will be traveling（一个原因就够）</li>
+        <li><strong>Output</strong>：under 120 words · leave the door open for a future event</li>
+      </ul>
+      <p class="prose">没有列步骤（不要写"第一步问候，第二步解释，第三步结尾"），只讲结果。ChatGPT 会自己找最合适的表达方式。</p>
+
+      <h3 class="section-h3">2.2 对比 + 表格 + 推荐——把"判断"也写在 prompt 里</h3>
+      <p class="prose">要 ChatGPT 帮你做决定，不要只问"哪个好"。把判断标准也写进去——格式、权衡、推荐动作。</p>
+
+      <!-- 03 Compare Options -->
+      <div class="prompt-card" data-card id="prompt-03">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">03</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Compare Options</span>
+              <span class="prompt-name-cn">对比几个选项</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Compare these two phone plans for one person who travels internationally twice a year. Show the important differences in a table, then recommend one and explain the tradeoff.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>帮我对比这两款手机套餐——我每年出国两次。把核心差异整理成一张表格，然后给我一个推荐，再说一下为什么这个推荐不是完美的（有什么取舍）。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Compare these two phone plans</li>
+        <li><strong>Context</strong>：for one person who travels internationally twice a year</li>
+        <li><strong>Output</strong>：Show the important differences in a table · recommend one · explain the tradeoff</li>
+      </ul>
+      <p class="prose">注意 Output 的写法——不是"给我一份对比"，而是"表格 + 推荐 + 解释权衡"。你想要的"判断动作"都明示了。</p>
+
+      <h3 class="section-h3">2.3 Boundaries——最重要的、也最容易被忽略的一块</h3>
+      <p class="prose">OpenAI 对 Boundaries 的定义：<strong>边界是那几条让 ChatGPT 别做出格动作的指令</strong>。需要的时候才加，不是什么时候都要写。</p>
+      <p class="prose">原文给的四个典型 Boundary：</p>
+      <ul class="prose-list">
+        <li>Keep the approved dates and budget figures unchanged.（日期和预算不要改）</li>
+        <li>Use only the supplied sources. Flag missing information instead of guessing.（只用提供的资料，缺了标出来，不要瞎猜）</li>
+        <li>Keep recommendations within the stated budget.（推荐要在预算范围内）</li>
+        <li>Prepare the message as a draft. Don't send it.（先做草稿，别发）</li>
+      </ul>
+      <p class="prose">原则：<strong>只写那 1-2 个真重要的边界</strong>。你不需要控制 ChatGPT 的每一步。</p>
+    </section>
+
+    <!-- SECTION 3: 进阶 -->
+    <section class="section" id="sec-followup">
+      <div class="section-head">
+        <div class="section-num">03</div>
+        <div class="section-title-group">
+          <div class="section-kicker">FOLLOW-UP & STEERING</div>
+          <h2 class="section-title">进阶：多轮对话</h2>
+          <div class="section-range">FOLLOW-UP · STEER · QUEUE</div>
+        </div>
+      </div>
+      <p class="prompt-cards-intro">第一条 prompt 不用完美。先发，再根据结果改——这是 OpenAI 反复强调的迭代思路。</p>
+
+      <h3 class="section-h3">3.1 你的第一条 prompt 不用完美</h3>
+      <p class="prose">原文原话：</p>
+      <blockquote class="openai-quote">
+        Your first prompt doesn't need to be perfect. Review the result, then ask for the specific change you want.
+      </blockquote>
+      <p class="prose">中文：你第一条 prompt 不用写得完美。先发，看结果，再追问具体的修改。</p>
+      <p class="prose">一个"补一句"的范例：</p>
+
+      <div class="quote-block">
+        <div class="quote-en">"Make the opening more direct, keep the evidence, and move the recommendation above the background section."</div>
+        <div class="quote-cn">「开头再直接一点，证据保留，把推荐结论挪到背景介绍前面。」</div>
+      </div>
+
+      <p class="prose">可以加缺失的资料、纠正方向、要别的选项、调整详细程度——都不需要重头来过。</p>
+
+      <h3 class="section-h3">3.2 Steering 和 Queuing——Codex 时代的两个新动作</h3>
+      <p class="prose">当 Codex 已经在跑时，你可以再发一条消息，不用等当前任务跑完：</p>
+      <ul class="prose-list">
+        <li><strong>Steer（介入）</strong>：把消息塞进当前这轮。用来改方向、补漏、提供新信息。</li>
+        <li><strong>Queue（排队）</strong>：把消息存到下一轮。用来做"等这个跑完再做"的跟进。</li>
+      </ul>
+      <p class="prose">桌面端默认行为在 <code>Settings > General > Follow-up behavior</code> 里改。Codex CLI 里：<code>Enter</code> 介入当前轮，<code>Tab</code> 排队到下一轮。</p>
+
+      <h3 class="section-h3">3.3 一个多约束的"实战 prompt"</h3>
+      <p class="prose">下面这个例子同时塞了四要素——Goal、Context、Output、Boundaries 全都到位了。注意它是怎么处理多轮迭代的暗示："做完之前自己检查"。</p>
+
+      <!-- 04 Make a Practical Plan -->
+      <div class="prompt-card" data-card id="prompt-04">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">04</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Make a Practical Plan</span>
+              <span class="prompt-name-cn">做一份落地方案</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Plan five weekday dinners that take less than 30 minutes. Avoid peanuts, reuse ingredients across meals, and finish with one consolidated shopping list.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>帮我列 5 天的工作日晚餐方案，每道菜 30 分钟以内做完。不要花生；同一种食材尽量在多道菜里复用，别浪费；最后给我一张合并的购物清单。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Plan five weekday dinners</li>
+        <li><strong>Context</strong>：less than 30 minutes（隐含的时间约束）</li>
+        <li><strong>Output</strong>：5 道菜 + 食材步骤 + 一张合并购物清单</li>
+        <li><strong>Boundaries</strong>：Avoid peanuts（唯一明确写出的边界）</li>
+      </ul>
+      <p class="prose">"reuse ingredients across meals" 是 Output 里隐含的优化目标——它没有写成 Boundary（"必须重用"），而是作为 Output 的偏好，让 ChatGPT 自由发挥。</p>
+    </section>
+
+    <!-- SECTION 4: 跨产品落地 -->
+    <section class="section" id="sec-products">
+      <div class="section-head">
+        <div class="section-num">04</div>
+        <div class="section-title-group">
+          <div class="section-kicker">CHAT · WORK · CODEX</div>
+          <h2 class="section-title">跨产品落地</h2>
+          <div class="section-range">PROMPT 05 – 13</div>
+        </div>
+      </div>
+      <p class="prompt-cards-intro">同一套四要素框架，在 Chat、Work、Codex 三个产品上的不同写法。下面 9 个例子按场景分组。</p>
+
+      <h3 class="section-h3">4.1 Chat——轻量问答场景</h3>
+      <p class="prose">已经在前面看到 4 个 Chat 场景了：解释概念、起草文字、对比选项、做计划。它们都不需要文件、不需要工具，Goal + Output 写清楚就够。</p>
+
+      <h3 class="section-h3">4.2 Work——多源、多步骤、要交成品</h3>
+      <p class="prose">Work 适合时间长的、需要多种来源或工具、要按顺序执行的任务——比如把三份季报提炼成董事会一页纸。</p>
+
+      <h4 class="section-h4">5. 把素材变成成品文件</h4>
+
+      <!-- 05 Turn Source Material into Finished Files -->
+      <div class="prompt-card" data-card id="prompt-05">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">05</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Turn Source Material into Finished Files</span>
+              <span class="prompt-name-cn">把素材变成成品文件</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Use the attached quarterly reports to create a leadership brief and a six-slide presentation. The audience is the executive team. Lead with the three decisions they need to make, distinguish reported facts from your analysis, cite each number to its source file, and check that the brief and slides agree before you finish.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>用我附上的三份季报，做一份给董事会看的简报 + 一份 6 页 PPT。受众是高管团队。开头先讲他们必须拍板的三个决定；区分开「报告里写的事实」和「你的分析」；每个数字都标出来源文件；做完之后自己核对一遍，简报和 PPT 里的数字要对得上。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：create a leadership brief and a six-slide presentation</li>
+        <li><strong>Context</strong>：Use the attached quarterly reports · audience is the executive team</li>
+        <li><strong>Output</strong>：lead with three decisions · distinguish facts from analysis · cite numbers to source files · check that brief and slides agree</li>
+        <li><strong>Boundaries</strong>：（隐含）不能瞎编数字；要做完自己核对</li>
+      </ul>
+
+      <h4 class="section-h4">6. 调研一个决策</h4>
+
+      <!-- 06 Research a Decision -->
+      <div class="prompt-card" data-card id="prompt-06">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">06</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Research a Decision</span>
+              <span class="prompt-name-cn">调研一个决策</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Research three customer-support platforms for a 50-person company. Compare pricing, security, integrations, and migration effort using current sources. Deliver a recommendation memo with links, assumptions, and the questions we should answer before signing a contract.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>帮我们调研 3 家客服平台，公司规模 50 人。对比价格、安全性、第三方集成、迁移工作量——资料用最新的。最后交付一份推荐 memo，里面要附链接、关键假设，以及签合同之前我们必须先回答的几个问题。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Research three customer-support platforms</li>
+        <li><strong>Context</strong>：for a 50-person company · using current sources</li>
+        <li><strong>Output</strong>：Compare pricing · security · integrations · migration effort · recommendation memo with links and assumptions</li>
+        <li><strong>Boundaries</strong>：use current sources（隐含的"不要用过期资料"）</li>
+      </ul>
+
+      <h4 class="section-h4">7. 协调一次发布</h4>
+
+      <!-- 07 Coordinate a Launch -->
+      <div class="prompt-card" data-card id="prompt-07">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">07</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Coordinate a Launch</span>
+              <span class="prompt-name-cn">协调一次发布</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Create a launch plan for the attached product brief. Include the timeline, owners, dependencies, risks, announcement draft, customer FAQ, and a checklist for launch day. Flag any missing decisions before producing the final files.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>基于我附的产品 brief，给我出一份上线计划。要包含：时间表、责任人、依赖关系、风险点、上线公告草稿、用户 FAQ、上线日 checklist。如果发现还有关键决定没做，先标出来再生成最终文件。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Create a launch plan</li>
+        <li><strong>Context</strong>：attached product brief</li>
+        <li><strong>Output</strong>：timeline · owners · dependencies · risks · announcement draft · customer FAQ · checklist for launch day</li>
+        <li><strong>Boundaries</strong>：Flag any missing decisions before producing the final files</li>
+      </ul>
+
+      <h4 class="section-h4">8. 综合示例：一页纸项目状态</h4>
+      <p class="prose">这是官方给的"四要素齐全"的范例——Goal + Context + Output + Boundaries 全部明示，是整份指南最有代表性的一张卡片。</p>
+
+      <!-- 08 One-Page Project Status Update -->
+      <div class="prompt-card" data-card id="prompt-08">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">08</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">One-Page Project Status Update</span>
+              <span class="prompt-name-cn">一页纸项目状态</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Prepare a one-page project status update for Monday's leadership meeting. Use the latest project plan in Drive and relevant decisions and updates from the project's Slack channel. Lead with the decisions leadership needs to make and the next steps. Summarize progress, risks, owners, and due dates. Keep approved dates and budget figures unchanged. Flag any conflicting or missing information, and don't send or publish anything. Before you finish, check that every next step has an owner and due date.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>给我准备一份一页纸的项目状态更新，周一高管会上要用。用 Drive 里最新的项目计划 + Slack 频道里相关的决定和进展。开头先讲领导层需要拍板的决定 + 下一步动作；后面总结进度、风险点、责任人、截止日期。已经审批过的日期和预算数字不要改。如果信息冲突或缺失，直接标出来；这份只是草稿，不要发也不要发布。做完之前自己检查：每一条「下一步」都要有责任人和截止日期。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Prepare a one-page project status update for Monday's leadership meeting</li>
+        <li><strong>Context</strong>：Use the latest project plan in Drive · relevant decisions and updates from the project's Slack channel</li>
+        <li><strong>Output</strong>：Lead with the decisions · next steps · summarize progress · risks · owners · due dates</li>
+        <li><strong>Boundaries</strong>：Keep approved dates and budget figures unchanged · don't send or publish anything</li>
+        <li><strong>Final check</strong>：Before you finish, check that every next step has an owner and due date</li>
+      </ul>
+      <p class="prose">最后一句 "Before you finish, check that..." 是 OpenAI 反复用的句式——把"自检动作"写进 prompt 里，让 ChatGPT 在交活之前自己跑一遍检查。</p>
+
+      <h3 class="section-h3">4.3 Codex——开发者工作流</h3>
+      <p class="prose">Codex 的 prompt 比 Chat/Work 复杂一些：它要涉及文件路径、CLI 命令、IDE 选区、复现步骤。下面 5 个例子是开发者最常用的场景。</p>
+      <p class="prose">Codex 的 IDE 插件会自动把当前打开的文件作为上下文；CLI 里则需要用 <code>@path</code> 或者 <code>/mention</code> 显式附加文件。</p>
+
+      <h4 class="section-h4">9. 解释一段代码（IDE）</h4>
+
+      <!-- 09 Explain a Codebase -->
+      <div class="prompt-card" data-card id="prompt-09">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">09</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Explain a Codebase</span>
+              <span class="prompt-name-cn">解释一段代码</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Explain how the request flows through the selected code. Include:
+      - a short summary of the responsibilities of each module involved
+      - what data is validated and where
+      - one or two "gotchas" to watch for when changing this</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>帮我解释一下这段代码里一个请求是怎么跑起来的。
+      需要包含：
+      - 每个模块分别负责什么（简短总结）
+      - 数据在哪些地方被校验
+      - 改这段代码时要注意的 1-2 个坑</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Explain how the request flows through the selected code</li>
+        <li><strong>Context</strong>：（IDE 自动带入）选中的代码 + 当前打开的文件</li>
+        <li><strong>Output</strong>：responsibilities of each module · what data is validated and where · 1-2 "gotchas"</li>
+      </ul>
+
+      <h4 class="section-h4">10. 修一个 bug（CLI）</h4>
+      <p class="prose">这是个典型的"bug 报告模板"——复现步骤 + 约束 + 期望动作 全部写清楚。</p>
+
+      <!-- 10 Fix a Bug (CLI workflow) -->
+      <div class="prompt-card" data-card id="prompt-10">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">10</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Fix a Bug (CLI workflow)</span>
+              <span class="prompt-name-cn">修一个 bug</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Bug: Clicking "Save" on the settings screen sometimes shows "Saved" but doesn't persist the change.
+      
+      Repro:
+      1) Start the app: npm run dev
+      2) Go to /settings
+      3) Toggle "Enable alerts"
+      4) Click Save
+      5) Refresh the page: the toggle resets
+      
+      Constraints:
+      - Do not change the API shape.
+      - Keep the fix minimal and add a regression test if feasible.
+      
+      Start by reproducing the bug locally, then propose a patch and run checks.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>Bug：设置页点「保存」，有时候提示「已保存」但其实改动没生效。
+      
+      复现步骤：
+      1) 启动应用：npm run dev
+      2) 进入 /settings
+      3) 打开「Enable alerts」开关
+      4) 点 Save
+      5) 刷新页面，开关又回到关闭状态
+      
+      约束：
+      - 不要改 API 的字段结构。
+      - 改动尽量小，能加回归测试就加。
+      
+      先在本地复现一遍 bug，然后给我打个 patch，再跑一下相关检查。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Fix the bug causing "Saved" to show without persisting changes</li>
+        <li><strong>Context</strong>：完整复现步骤（npm run dev → /settings → toggle → Save → refresh）</li>
+        <li><strong>Output</strong>：Find the bug · propose a fix · tell me how to verify it</li>
+        <li><strong>Boundaries</strong>：Do not change the API shape · Keep the fix minimal · add a regression test if feasible</li>
+        <li><strong>Final check</strong>：Start by reproducing the bug locally, then propose a patch and run checks</li>
+      </ul>
+
+      <h4 class="section-h4">11. 写一个测试（IDE）</h4>
+      <p class="prose">最短的一张 Codex 卡片——但已经够用。IDE 自动带入选中的函数，Output 写明"按仓库已有约定"。</p>
+
+      <!-- 11 Write a Test -->
+      <div class="prompt-card" data-card id="prompt-11">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">11</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Write a Test</span>
+              <span class="prompt-name-cn">写一个测试</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Write a unit test for this function. Follow conventions used in other tests.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>给这个函数写一个单测。命名风格、目录结构都按仓库里已有的测试来。</div>
+      </div>
+
+      <h4 class="section-h4">12. 看截图起原型（CLI）</h4>
+      <p class="prose">Codex CLI 支持直接拖图片进终端作为输入。这个例子把"视觉要求"和"实现约束"分开写——图片管视觉，文字管技术栈。</p>
+
+      <!-- 12 Prototype from a Screenshot -->
+      <div class="prompt-card" data-card id="prompt-12">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">12</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Prototype from a Screenshot</span>
+              <span class="prompt-name-cn">看截图起原型</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Create a new dashboard based on this image.
+      
+      Constraints:
+      - Use react, vite, and tailwind. Write the code in typescript.
+      - Match spacing, typography, and layout as closely as possible.
+      
+      Outputs:
+      - A new route/page that renders the UI
+      - Any small components needed
+      - README.md with instructions to run it locally</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>根据我附的截图，做一个新的 dashboard 页面。
+      
+      约束：
+      - 用 react + vite + tailwind，代码用 TypeScript 写。
+      - 间距、字体、布局尽量贴近原图。
+      
+      交付物：
+      - 一个新的 route/page 渲染这个 UI
+      - 拆出来需要的小组件
+      - 一份 README.md，写清本地怎么跑起来</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Create a new dashboard based on this image</li>
+        <li><strong>Context</strong>：（图片提供视觉）</li>
+        <li><strong>Output</strong>：Match spacing · typography · layout as closely as possible · new route · small components · README.md with run instructions</li>
+        <li><strong>Boundaries</strong>：Use react · vite · tailwind · TypeScript</li>
+      </ul>
+      <p class="prose">图片无法表达的状态（hover、校验、键盘交互），要靠文字补——这是 OpenAI 反复强调的"视觉 ≠ 全部需求"。</p>
+
+      <h4 class="section-h4">13. 边改边看的 UI 迭代（CLI）</h4>
+      <p class="prose">Codex 的特点是能跑 dev server 然后给你实时改。每轮迭代聚焦一个小改动，不要堆需求。</p>
+
+      <!-- 13 Iterate on UI with Live Updates -->
+      <div class="prompt-card" data-card id="prompt-13">
+        <div class="prompt-card-head">
+          <span class="prompt-card-tag">
+            <span class="prompt-num">13</span>
+            <span class="prompt-name-stack">
+              <span class="prompt-name-en">Iterate on UI with Live Updates</span>
+              <span class="prompt-name-cn">边改边看的 UI 迭代</span>
+            </span>
+          </span>
+          <div class="prompt-card-actions">
+            <div class="lang-toggle">
+              <button class="lang-btn active" data-lang="en">EN</button>
+              <button class="lang-btn" data-lang="cn">中文</button>
+            </div>
+            <button class="copy-btn" data-copy-btn>Copy</button>
+          </div>
+        </div>
+        <div class="prompt-card-body" data-lang="en">Propose 2-3 styling improvements for the landing page.</div>
+        <div class="prompt-card-body" data-lang="cn" hidden>给我 2-3 个 landing page 样式优化的方向，挑你觉得最能提升质感的说。</div>
+      </div>
+
+      <p class="prose">EN 原文拆解：</p>
+      <ul class="prose-list">
+        <li><strong>Goal</strong>：Propose 2-3 styling improvements for the landing page</li>
+        <li><strong>Context</strong>：（CLI 自动看到代码）</li>
+        <li><strong>Output</strong>：3 个可选方向，让用户挑</li>
+      </ul>
+      <p class="prose">接下来的迭代都是"小步快跑"——选一个方向 → 缩小范围 → 改 → 看效果 → 再缩小。原文给了一个完整迭代节奏：</p>
+      <ol class="prose-list">
+        <li>选方向（Go with option 2）</li>
+        <li>缩小范围（only the header · make typography more editorial · increase whitespace · looks good on mobile）</li>
+        <li>下一轮（reduce visual noise · keep layout · simplify colors · remove redundant borders）</li>
+        <li>循环</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 5: 我的解读 -->
+    <section class="section" id="sec-takeaway">
+      <div class="section-head">
+        <div class="section-num">05</div>
+        <div class="section-title-group">
+          <div class="section-kicker">MY TAKE</div>
+          <h2 class="section-title">我的解读</h2>
+          <div class="section-range">WHAT THIS GUIDE IS REALLY SAYING</div>
+        </div>
+      </div>
+
+      <h3 class="section-h3">5.1 OpenAI 在引导你"管理 prompt 的边界"，而不是"写好 prompt 的技巧"</h3>
+      <p class="prose">这是这份指南最反直觉的一点。</p>
+      <p class="prose">如果你期待的是"10 个 prompt 技巧"、"高级 prompt 写法"、"few-shot 教程"——你会失望。OpenAI 这次完全没有讲这些。</p>
+      <p class="prose">它讲的是：<strong>不要试图控制 ChatGPT 的每一步</strong>。只要把四件事说清楚（Goal + Context + Output + Boundaries），剩下的过程让它自己决定。</p>
+      <p class="prose">这是一个范式转换——从"我写 prompt 技巧"到"我和 AI 协作时怎么定边界"。</p>
+
+      <h3 class="section-h3">5.2 四要素里，Boundaries 是真正的护城河</h3>
+      <p class="prose">很多人写 prompt 都堆在 Goal 和 Output 上——"给我写一篇文章，要 1000 字，要三个小标题"。但 Boundaries 才是让 AI 输出变得可用的关键。</p>
+      <p class="prose">OpenAI 给的四个典型 Boundary 都很朴素：</p>
+      <ul class="prose-list">
+        <li>日期和预算不要改</li>
+        <li>只用提供的资料，缺了标出来</li>
+        <li>推荐要在预算范围内</li>
+        <li>先做草稿，别发</li>
+      </ul>
+      <p class="prose">它们看起来都是"废话"，但每一个都是上一次"AI 帮倒忙"换来的教训。<strong>Boundaries 不是 prompt 技巧，是事故复盘</strong>。</p>
+
+      <h3 class="section-h3">5.3 "做完之前自己检查"——这句要抄下来</h3>
+      <p class="prose">整份指南里出现频率最高的一个句式是：</p>
+      <blockquote class="openai-quote">
+        Before you finish, check that every [thing] has [property].
+      </blockquote>
+      <p class="prose">翻译："做完之前自己检查一遍，每个 [东西] 都要有 [属性]。"</p>
+      <p class="prose">在 prompt 末尾加一句自检指令——比"写好一点"、"仔细一点"管用一百倍。因为它把"仔细"这个抽象词变成了具体的检查清单。</p>
+      <p class="prose">下次写 prompt 的时候，最后一句加上："Before you finish, check that..." 试试。</p>
+
+      <h3 class="section-h3">5.4 对中文用户的额外提醒</h3>
+      <p class="prose">官方例子里有几个英文习惯，放到中文场景里要替换掉：</p>
+      <ul class="prose-list">
+        <li><code>lead with X</code> → "开头先讲 X"、"把 X 放最前面"</li>
+        <li><code>flag</code> → "标出来"、"提示一下"、"提醒一句"</li>
+        <li><code>cite X to Y</code> → "标注 X 出处为 Y"</li>
+        <li><code>before you finish, check that...</code> → "做完之前检查一遍..."</li>
+      </ul>
+      <p class="prose">直接用中文 prompt 也行，但把英文短语当模板套用更稳——英文社区已经把句式打磨过了。</p>
+
+      <h3 class="section-h3">5.5 一句话带走</h3>
+      <div class="takeaway-box">
+        <p class="takeaway-text">好的 prompt = Goal + Context + Output + Boundaries 四件事说清楚。<br/>剩下交给 AI 自己找路径。</p>
+        <p class="takeaway-en">A good prompt is just four things said clearly. Leave the rest to the model.</p>
+      </div>
+
+      <p class="prose">上面 13 张卡片覆盖了 Chat / Work / Codex 三种典型场景。建议先挑 3 张你日常会用到的场景复制下来——比如"起草邮件"、"做计划"、"修 bug"——存到你的 prompt 模板库。一个月后回来补剩下的。</p>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>Prompting — Write useful prompts for Chat, ChatGPT Work, and Codex</em><br>
+          文档：OpenAI Developers（learn.chatgpt.com/docs） · 2026 年新版官方 prompting 指南<br>
+          原文链接：<a href="https://learn.chatgpt.com/docs/prompting" target="_blank" rel="noopener">https://learn.chatgpt.com/docs/prompting</a>
+        </li>
+        <li>
+          <strong>RELATED · PROMPTING GUIDE</strong>
+          <a href="https://learn.chatgpt.com/api/docs/guides/prompt-engineering" target="_blank" rel="noopener">Prompt engineering（API 端开发者向深度指南）</a><br>
+          <a href="https://learn.chatgpt.com/api/docs/guides/prompting" target="_blank" rel="noopener">Prompting overview（API 文档对应入口）</a><br>
+          <a href="https://learn.chatgpt.com/api/docs/guides/citation-formatting" target="_blank" rel="noopener">Citation formatting（引用格式化）</a><br>
+          <a href="https://learn.chatgpt.com/api/docs/guides/prompting/migrate-from-prompt-object" target="_blank" rel="noopener">Migration guide（旧 prompt object 迁移）</a>
+        </li>
+        <li>
+          <strong>RELATED · CODEX DOCS</strong>
+          <a href="https://learn.chatgpt.com/codex/prompting" target="_blank" rel="noopener">Codex · Prompting</a> · Codex 自己的 prompting 入口<br>
+          <a href="https://learn.chatgpt.com/codex/quickstart" target="_blank" rel="noopener">Codex · Quickstart</a> · Codex 快速上手<br>
+          <a href="https://learn.chatgpt.com/codex/skills-and-plugins" target="_blank" rel="noopener">Codex · Skills & Plugins</a> · Skills 与 Plugins（卡片 6/13 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/projects" target="_blank" rel="noopener">Codex · Projects</a> · 项目共享文件/源（卡片 8 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/web-search" target="_blank" rel="noopener">Codex · Web search</a> · 网页搜索（卡片 6/8 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/artifacts-viewer" target="_blank" rel="noopener">Codex · Work with files</a> · 文件审阅（卡片 5 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/image-inputs" target="_blank" rel="noopener">Codex · Image inputs</a> · 图像输入（卡片 12 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/app/settings" target="_blank" rel="noopener">Codex · App settings</a> · 个性化/Follow-up 行为设置（§3.2 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/developer-commands?surface=cli#cli-interactive-shortcuts" target="_blank" rel="noopener">Codex · CLI interactive shortcuts</a> · Enter/Tab 介入/排队（§3.2 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/sandboxing" target="_blank" rel="noopener">Codex · Sandboxing</a> · 沙箱与权限（卡片 10 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/reference/slash-commands" target="_blank" rel="noopener">Codex · Slash commands</a> · /plan /goal 等命令（卡片 9 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/third-party/github" target="_blank" rel="noopener">Codex · GitHub integration</a> · @codex review（卡片 13 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/long-running-work" target="_blank" rel="noopener">Codex · Long-running work</a> · Goal mode（卡片 9 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/automations" target="_blank" rel="noopener">Codex · Automations</a> · 周期性任务（§3.2 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/cloud/internet-access" target="_blank" rel="noopener">Codex · Cloud internet access</a> · 云端网络访问（卡片 9 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/personalize" target="_blank" rel="noopener">Codex · Personalize ChatGPT</a> · 个性化设置（§3 涉及）<br>
+          <a href="https://learn.chatgpt.com/codex/permissions" target="_blank" rel="noopener">Codex · Permission modes</a> · 权限模式
+        </li>
+        <li>
+          <strong>RELATED · OPENAI DEVELOPERS</strong>
+          <a href="https://developers.openai.com/" target="_blank" rel="noopener">https://developers.openai.com/</a> · OpenAI 开发者主站<br>
+          <a href="https://learn.chatgpt.com/docs" target="_blank" rel="noopener">https://learn.chatgpt.com/docs</a> · ChatGPT Learn 文档根目录<br>
+          <a href="https://openai.com/academy/prompting" target="_blank" rel="noopener">https://openai.com/academy/prompting</a> · OpenAI Academy "Prompting fundamentals"（三步法简版）
+        </li>
+        <li>
+          <strong>IMAGE SOURCES</strong>
+          <a href="https://learn.chatgpt.com/images/codex/app/voice-dictation-light.webp" target="_blank" rel="noopener">voice-dictation-light.webp</a> · 引子段浅色主题图<br>
+          <a href="https://learn.chatgpt.com/images/codex/app/voice-dictation-dark.webp" target="_blank" rel="noopener">voice-dictation-dark.webp</a> · 引子段深色主题图<br>
+          <em>封面图（cover.svg）为本站自绘，呼应四要素框架的视觉表达，非 OpenAI 原文素材。</em>
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为 OpenAI 官方 prompting 指南的中文解读版，按中文阅读习惯重新编排。原文中所有 13 个 example prompt 均保留英文原貌，便于直接复制使用；中文版为意译，便于理解。如需引用请以原文为准。OpenAI 原文处于持续更新状态，本文解读基于 2026/07/12 抓取版本。
+        </li>
+      </ul>
+      <p class="references-note">四要素框架（Goal + Context + Output + Boundaries）不只适用于 ChatGPT，也适用于 Work 和 Codex——这就是这份指南最值得带走的地方。挑 3 张最贴你日常场景的卡片存起来，比收藏整篇文章更实用。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+    <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">本文 13 个 Prompt</div>
+    <div class="nav-panel-content">
+      <div class="nav-category">CHAT · 4 张</div>
+      <a href="#prompt-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Understand a Topic</span>
+          <span class="nav-item-cn">解释一个概念</span>
+        </span>
+      </a>
+      <a href="#prompt-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Draft and Refine Writing</span>
+          <span class="nav-item-cn">起草并打磨一段文字</span>
+        </span>
+      </a>
+      <a href="#prompt-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Compare Options</span>
+          <span class="nav-item-cn">对比几个选项</span>
+        </span>
+      </a>
+      <a href="#prompt-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Make a Practical Plan</span>
+          <span class="nav-item-cn">做一份落地方案</span>
+        </span>
+      </a>
+      <div class="nav-category">WORK · 4 张</div>
+      <a href="#prompt-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Turn Source Material into Finished Files</span>
+          <span class="nav-item-cn">把素材变成成品文件</span>
+        </span>
+      </a>
+      <a href="#prompt-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Research a Decision</span>
+          <span class="nav-item-cn">调研一个决策</span>
+        </span>
+      </a>
+      <a href="#prompt-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Coordinate a Launch</span>
+          <span class="nav-item-cn">协调一次发布</span>
+        </span>
+      </a>
+      <a href="#prompt-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">One-Page Project Status Update</span>
+          <span class="nav-item-cn">一页纸项目状态</span>
+        </span>
+      </a>
+      <div class="nav-category">CODEX · 5 张</div>
+      <a href="#prompt-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Explain a Codebase</span>
+          <span class="nav-item-cn">解释一段代码</span>
+        </span>
+      </a>
+      <a href="#prompt-10" class="nav-item">
+        <span class="nav-item-num">10</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Fix a Bug (CLI workflow)</span>
+          <span class="nav-item-cn">修一个 bug</span>
+        </span>
+      </a>
+      <a href="#prompt-11" class="nav-item">
+        <span class="nav-item-num">11</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Write a Test</span>
+          <span class="nav-item-cn">写一个测试</span>
+        </span>
+      </a>
+      <a href="#prompt-12" class="nav-item">
+        <span class="nav-item-num">12</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Prototype from a Screenshot</span>
+          <span class="nav-item-cn">看截图起原型</span>
+        </span>
+      </a>
+      <a href="#prompt-13" class="nav-item">
+        <span class="nav-item-num">13</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Iterate on UI with Live Updates</span>
+          <span class="nav-item-cn">边改边看的 UI 迭代</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // ===== Per-card language toggle =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) {
+              body.removeAttribute('hidden');
+            } else {
+              body.setAttribute('hidden', '');
+            }
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+
+      // Default copy target = en
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    // ===== Copy current language =====
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector(`.prompt-card-body[data-lang="${activeLang}"]`);
+      const content = body.textContent;
+
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else {
+        fallbackCopy(content, showCopied);
+      }
+    }
+
+    function fallbackCopy(content, cb) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(textarea);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+
+    // ===== Floating nav =====
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>

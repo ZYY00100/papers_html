@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anthropic 官方 Prompting 101 · 40 个提示词技巧完整指南 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(28px, 4.2vw, 40px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+    }
+    .article-title .highlight { color: #C8161D; }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+    .cover-caption a {
+      color: var(--accent-gold-dim);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: color 0.2s, border-color 0.2s;
+      padding-bottom: 1px;
+    }
+    .cover-caption a:hover {
+      color: var(--accent-red);
+      border-bottom-color: var(--accent-red);
+    }
+
+    /* VIDEO FRAME — YouTube iframe */
+    .video-frame {
+      padding: 64px 0;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .youtube-embed {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--bg-code);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-subtle);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .youtube-embed:hover {
+      box-shadow: var(--shadow-hover);
+      transform: scale(1.006);
+    }
+    .youtube-embed iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .video-caption {
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+    .video-caption a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: color 0.2s, border-color 0.2s;
+      padding-bottom: 1px;
+    }
+    .video-caption a:hover {
+      color: var(--accent-gold-dim);
+      border-bottom-color: var(--accent-gold-dim);
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(24px, 3.8vw, 32px);
+      font-weight: 300;
+      line-height: 1.45;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+
+    /* 原句引用块 */
+    .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* 小技能清单 */
+    .skill-stack {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .skill-stack li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .skill-stack li:last-child { border-bottom: none; }
+    .skill-stack li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .skill-stack li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* 代码块 */
+    .code-block {
+      margin: 24px 0;
+      padding: 20px 24px;
+      background: var(--bg-code);
+      color: #e8e8ea;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre;
+      overflow-x: auto;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .code-block .c-comment { color: #6e6e73; font-style: italic; }
+    .code-block .c-key { color: #c9a962; }
+    .code-block .c-str { color: #98c379; }
+    .code-block .c-tag { color: #e06c75; }
+
+    /* 实战例子框 */
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* 表格 */
+    .mistake-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14.5px;
+      line-height: 1.7;
+    }
+    .mistake-table th, .mistake-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+    }
+    .mistake-table th {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      background: var(--bg-secondary);
+    }
+    .mistake-table td:first-child {
+      color: var(--accent-red);
+      font-weight: 500;
+      width: 40%;
+    }
+    .mistake-table td:last-child {
+      color: var(--text-secondary);
+    }
+
+    /* CHEAT SHEET */
+    .cheatsheet {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .cheatsheet-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .cheatsheet-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .cheatsheet-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 16px;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 40px;
+      line-height: 1.8;
+    }
+    .cheat-group {
+      margin: 24px 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 24px 28px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cheat-group:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cheat-group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cheat-group-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .cheat-group-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+    .cheat-group-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      margin-left: 6px;
+    }
+    .cheat-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .cheat-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 7px 0;
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .cheat-list .num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 26px;
+    }
+    .cheat-list strong { color: var(--text-primary); font-weight: 600; }
+
+    /* REFERENCES */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-title { font-size: 24px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 24px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-head { flex-direction: column; gap: 12px; }
+      .video-frame { padding: 48px 0; }
+      .code-block { font-size: 11.5px; padding: 16px 18px; }
+      .cheat-group { padding: 18px 18px; }
+      .cheatsheet-title { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">TUTORIAL · PROMPTING · 官方指南</div>
+      <h1 class="article-title">Anthropic 官方 Prompting 101<span class="highlight"> · </span>40 个提示词技巧完整指南</h1>
+      <p class="article-subtitle">24 分钟 workshop · Anthropic Applied AI 团队亲讲 · 普通 AI 使用者也能立刻用上</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Anthropic (@AnthropicAI) · YouTube 389K 观看</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/30</span>
+      </div>
+      <p class="article-desc">这是 Anthropic 官方在 2025-05-22 旧金山 <code>Code w/ Claude</code> 活动上发布的 <code>Prompting 101</code> workshop 完整中文拆解。讲者 Hannah Moran 和 Christian Ryan 是 Anthropic Applied AI 团队的工程师——也就是亲手调教 Claude 的人。24 分钟讲 40 个提示词技巧，没有注册、没有付费、没有话术。本文按视频章节逐条拆解，结尾附 40 个技巧的速查表。</p>
+    </section>
+
+    <!-- COVER -->
+    <section class="cover-frame">
+      <img src="https://img.youtube.com/vi/ysPbXH0LpIE/maxresdefault.jpg" alt="Anthropic Prompting 101 workshop 视频截图">
+      <p class="cover-caption">视频截图 · Prompting 101 · Code w/ Claude · Anthropic · 2025/05/22 · <a href="https://www.youtube.com/watch?v=ysPbXH0LpIE" target="_blank" rel="noopener">原视频链接</a></p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">你可能用过 Claude / ChatGPT 几百次了。<strong>但你大概没用过 Anthropic 工程师写提示词的方式。</strong></p>
+      <p class="intro-lead">这支 24 分钟的 workshop 是 Anthropic 官方在 <code>Code w/ Claude</code> 活动上发布的免费内容，由 Applied AI 团队的 Hannah Moran 和 Christian Ryan 主讲。他们不是营销号，不是 prompt 大师班的销售——<strong>他们是亲手把 Claude 训成现在这样的人</strong>。</p>
+      <p class="intro-statement">视频用一个真实场景贯穿：分析瑞典语车祸报告（含 Vehicle A 和 Vehicle B 的左/右栏）+ 手绘草图，让 Claude 判断责任归属。从最朴素的 prompt V1 开始迭代，到生产可用的 V5——每一步加什么、为什么加、加完跑出来什么样，全部现场演示。24 分钟讲 40 个技巧，平均每个 36 秒。</p>
+      <p class="intro-statement">本文按视频的 10 个章节逐条拆解这 40 个技巧。每章开头给视频原章节名 + 关键技巧清单，中间穿插视频原句引用和示例 prompt，结尾给"普通读者怎么用"实操建议。文末附一张 40 技巧速查表，可以当 cheat sheet 收藏。</p>
+      <p class="intro-statement">如果你只想知道一个事：<strong>提示词工程不是写魔法咒语，是写"清晰的指令 + 必要的上下文 + 合理的信息排列"</strong>。Anthropic 官方在这 24 分钟里把这件事讲透了。</p>
+    </section>
+
+    <!-- PULL QUOTE 1 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">提示词工程不是写魔法咒语<span class="arrow">·</span>是写<span class="arrow">「</span>清晰的指令 + 必要的上下文 + 合理的信息排列<span class="arrow">」</span></div>
+      <div class="pull-quote-caption">Hannah Moran &amp; Christian Ryan · Anthropic Applied AI</div>
+    </section>
+
+    <!-- 00 引子 -->
+    <section class="capability" id="cap-00">
+      <div class="cap-head">
+        <div class="cap-num">00</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">WHY THIS MATTERS</div>
+          <h2 class="cap-title-en">Why these 40 techniques are worth your time</h2>
+          <div class="cap-title-cn">为什么这 40 个值得花 24 分钟</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>市面上讲 prompt 的内容很多，<strong>大多数是别人写的关于 Claude 的事</strong>。这支视频不一样——讲的人是 Anthropic 自己人，讲的是他们每天怎么用 Claude。</p>
+        <p>这不是一家 prompt 咨询公司的"独家秘籍"，也不是某位 prompt 大师 6 个月测试总结出来的"40 个神 prompt"。<strong>这是造 Claude 的工程师演示他们怎么写 prompt</strong>。</p>
+        <p>24 分钟里塞了 40 个技巧，平均每个 36 秒。这意味着这不是入门教程——Anthropic 假设你已经用过 Claude，希望你用得更好。如果你期待"零基础入门"，前 8 分钟可能有点快。<strong>建议看两遍：第一遍看结构，第二遍看细节</strong>。</p>
+        <p>讲者全程用同一个真实场景——分析瑞典语车祸报告——把 40 个技巧串起来。这不是巧合：<strong>提示词技巧必须放在具体场景里才能讲清楚</strong>。脱离了场景，prompt 就只是空话。</p>
+        <p>Armand Ruiz（IBM AI Platform VP）在看完后的总结很到位：</p>
+        <div class="source-quote">
+          <strong>ARMAND RUIZ · 评论</strong>
+          Don't trust the model, you need to design for it. In the first version, Claude hallucinated a skiing accident. Only after adding structure did the output become reliable.
+        </div>
+        <p>这句话是整个 workshop 的精神——<strong>不要相信模型，要为它设计</strong>。Claude 默认会出错，你的任务不是"等它答对"，是"设计 prompt 让它答对的概率变高"。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            看完视频不要马上打开 Claude。打开 <strong>你最近一次让 Claude 答错的事</strong>。问自己：是 prompt 没写清楚？是上下文不够？还是没给示例？带着这个问题看视频里的对应章节，看 Anthropic 工程师怎么解决同样问题。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 Introduction -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">INTRODUCTION · 0:00</div>
+          <h2 class="cap-title-en">What prompt engineering actually is</h2>
+          <div class="cap-title-cn">提示词工程到底是什么</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>视频第 1 章只有 1 分钟多，但 Hannah 用一句话把整个 workshop 的核心定义给出来了：</p>
+        <div class="source-quote">
+          <strong>HANNAH · 原句</strong>
+          Prompt engineering is the practice of writing clear instructions for the model, giving the model the context it needs to complete the task, and thinking through how we want to arrange that information in order to get the best result.
+        </div>
+        <p>三个动作，缺一不可：</p>
+        <ul class="skill-stack">
+          <li><strong>清晰的指令</strong> —— 你要 Claude 做什么？动词明确、对象明确、约束明确。</li>
+          <li><strong>必要的上下文</strong> —— Claude 没有你的背景知识。你脑子里的"显然"，它都不知道。</li>
+          <li><strong>合理的信息排列</strong> —— 信息怎么放是有讲究的。先后顺序、静态 vs 动态分组。</li>
+        </ul>
+        <p>这个定义里有几个关键词值得拎出来：</p>
+        <ul class="skill-stack">
+          <li><strong>clear instructions</strong> —— "清晰"不是"详细"。详细但不清晰（如堆砌形容词）反而更糟。</li>
+          <li><strong>the context it needs</strong> —— 注意是"它需要的"，不是"你知道的"。该省的省。</li>
+          <li><strong>arrange that information</strong> —— "排列"是个动词。这意味着顺序很重要。</li>
+        </ul>
+        <p>Christian 紧跟着补了一句：<strong>"The best way to learn this is just to practice doing it."</strong>（学这个最好的办法就是练）。提示词工程不是看书能学明白的——你得写、改、看输出、再改。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            把这个定义抄下来贴在你 Claude Projects 的 system prompt 顶部。下次写 prompt 时过一遍：(1) 我说清楚了吗？(2) 该给的上下文给了吗？(3) 信息排列合理吗？三个都回答了再发。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Setting the stage -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">SETTING THE STAGE · 1:28</div>
+          <h2 class="cap-title-en">Why we use a real scenario</h2>
+          <div class="cap-title-cn">真实场景的价值 —— V1 的"s skiing accident"幻觉</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 2 章视频里只有 2 分钟，但这是 workshop 最关键的"心理锚点"：用真实场景，而不是 toy example。</p>
+        <p>场景设定是这样的：一家瑞典保险公司收到一份瑞典语的车祸报告单（带 Vehicle A 在左栏、Vehicle B 在右栏）+ 一张手绘草图。需要 Claude 判断责任归属。</p>
+        <p>为什么选这个场景？三个理由：</p>
+        <ul class="skill-stack">
+          <li><strong>真实业务场景</strong> —— 不是"让 Claude 写首诗"这种 toy example。是生产环境会遇到的真实任务。</li>
+          <li><strong>多模态输入</strong> —— 既有结构化表单（checkbox），又有非结构化图像（手绘草图）。考验 Claude 的视觉理解 + 语言理解。</li>
+          <li><strong>容易出错</strong> —— 瑞典语 + 车牌 + 街道名，模型很容易"幻觉"出熟悉的名字。出错点足够多，能演示怎么修。</li>
+        </ul>
+        <p>讲者当场演示了 V1 朴素 prompt 跑出来的结果——<strong>Claude 把车祸报告"读成了滑雪事故"</strong>。</p>
+        <div class="source-quote">
+          <strong>V1 · 朴素 prompt 的结果</strong>
+          Claude hallucinates a "skiing accident" because the Swedish street name rings a bell. The model is confidently wrong — and that's the danger.
+        </div>
+        <p>这个"s skiing accident"是整个 workshop 的核心隐喻。<strong>模型会自信地胡说</strong>。它不会说"我不确定"——它会编一个听起来合理的答案。你的 prompt 设计工作不是"问对问题"，是<strong>"让模型不可能编"</strong>。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            想想你自己最近一次被 Claude 误导的场景。是它"自信地错了"，还是"不知道答错了"？如果是前者——你下次需要在 prompt 里加<strong>"如果不确定，明确说我不确定"</strong>。这是 task context 里"设定回答边界"的具体应用（见第 4 章）。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Prompt structure -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PROMPT STRUCTURE · 3:57</div>
+          <h2 class="cap-title-en">The 10-step prompt anatomy</h2>
+          <div class="cap-title-cn">10 步 prompt 解剖图 —— 一个完整的 prompt 长什么样</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 3 章是整个 workshop 的骨架。Hannah 把一个完整的 prompt 拆成 <strong>10 个部分</strong>，按顺序排列：</p>
+        <pre class="code-block"><span class="c-tag">&lt;role&gt;</span>You are a claims adjuster at a Swedish insurance company.<span class="c-tag">&lt;/role&gt;</span>
+<span class="c-tag">&lt;tone&gt;</span>Be factual and confident. Do not guess.<span class="c-tag">&lt;/tone&gt;</span>
+<span class="c-tag">&lt;background&gt;</span>Below is the accident report form and the sketch.<span class="c-tag">&lt;/background&gt;</span>
+<span class="c-tag">&lt;task&gt;</span>Determine which driver is at fault based on the form and sketch.<span class="c-tag">&lt;/task&gt;</span>
+<span class="c-tag">&lt;rules&gt;</span>If you cannot determine fault confidently, say "Insufficient information".<span class="c-tag">&lt;/rules&gt;</span>
+<span class="c-tag">&lt;examples&gt;</span>
+  <span class="c-tag">&lt;example&gt;</span>
+    Input: [form + sketch where Vehicle A ran a red light]
+    Output: Vehicle A is at fault. Reason: ran red light.
+  <span class="c-tag">&lt;/example&gt;</span>
+<span class="c-tag">&lt;/examples&gt;</span>
+<span class="c-tag">&lt;conversation_history&gt;</span>[if any]<span class="c-tag">&lt;/conversation_history&gt;</span>
+<span class="c-tag">&lt;request&gt;</span>Analyze this case: [form + sketch]<span class="c-tag">&lt;/request&gt;</span>
+<span class="c-tag">&lt;thinking&gt;</span>Think step by step before answering.<span class="c-tag">&lt;/thinking&gt;</span>
+<span class="c-tag">&lt;output_format&gt;</span>Respond in XML: <span class="c-tag">&lt;verdict&gt;</span>...<span class="c-tag">&lt;/verdict&gt;</span> <span class="c-tag">&lt;reasoning&gt;</span>...<span class="c-tag">&lt;/reasoning&gt;</span><span class="c-tag">&lt;/output_format&gt;</span>
+<span class="c-tag">&lt;prefill&gt;</span>Sure, here's my analysis: <span class="c-tag">&lt;verdict&gt;</span>  <span class="c-comment"># assistant role pre-fill</span></pre>
+        <p>这 10 个部分不是死规定——根据任务可以增减。但顺序是固定的：</p>
+        <ol class="skill-stack">
+          <li><strong>角色（role / task context）</strong> —— 谁是 Claude / 它扮演什么</li>
+          <li><strong>语气（tone context）</strong> —— 声音风格</li>
+          <li><strong>背景信息（background data, documents &amp; images）</strong> —— 原始材料</li>
+          <li><strong>任务与规则（detailed task description &amp; rules）</strong> —— 做什么 / 不做什么</li>
+          <li><strong>示例（examples）</strong> —— 用 XML tag 包装的 few-shot</li>
+          <li><strong>对话历史（conversation history）</strong> —— 相关历史</li>
+          <li><strong>具体请求（immediate task / request）</strong> —— 当前问题</li>
+          <li><strong>思考（think step by step）</strong> —— 先想再答</li>
+          <li><strong>输出格式（output formatting）</strong> —— XML / JSON / Markdown</li>
+          <li><strong>预填充（prefilled response）</strong> —— 助手起始字符串</li>
+        </ol>
+        <p>关键原则：<strong>静态信息放 system prompt，动态信息放 user 消息</strong>。"你是一个保险理赔员"是每次会话都不变的，放 system prompt；"今天这份报告长这样"是每次都变的，放 user 消息。这样做的好处：</p>
+        <ul class="skill-stack">
+          <li><strong>节省成本</strong> —— system prompt 的内容会被 prompt caching 命中，每次只算一次。</li>
+          <li><strong>推理更稳</strong> —— 模型推理时优先处理 system prompt（长期上下文），再处理 user 消息（当前任务）。</li>
+          <li><strong>维护简单</strong> —— 改 system prompt 一次，所有会话生效。</li>
+        </ul>
+        <div class="source-quote">
+          <strong>HANNAH · 原句</strong>
+          The order of your prompt matters more than the words in it. Static context (role, background, rules, examples) before the dynamic request. This helps Claude reason better and cache more of the prompt.
+        </div>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            把上面 10 步结构当成 <strong>prompt 模板</strong>。你写任何 prompt 时，过一遍这 10 步。哪些需要哪些不需要就留下对应的。这样你写 prompt 的速度会变快，质量会变稳。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Task context -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">TASK CONTEXT · 5:40</div>
+          <h2 class="cap-title-en">Who Claude is and when to stay silent</h2>
+          <div class="cap-title-cn">任务上下文 —— 让 Claude 知道自己是谁、什么时候该闭嘴</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 4 章讲 prompt 的"开篇三件套"：<strong>角色（role）、语气（tone）、回答边界（when not to answer）</strong>。这三条放在一起，决定了 Claude 在整个对话里的"工作姿态"。</p>
+        <p>讲者在视频里现场把 V2 prompt 改了——加上了："This AI system assists a human claims adjuster reviewing Swedish car accident report forms."<strong>Claude 立即停止幻觉成"s skiing accident"</strong>。</p>
+        <div class="source-quote">
+          <strong>V1 → V2 · 关键变化</strong>
+          加入 task context 后，Claude 知道自己"是保险理赔员，看的是车祸报告"——瑞典街道名突然不再触发滑雪联想。Task context 是一种<strong>先验约束</strong>，让模型从一开始就在正确的语义空间里推理。
+        </div>
+        <p>具体的几个技巧：</p>
+        <ul class="skill-stack">
+          <li><strong>明确角色定位</strong> —— 不要只说"helpful assistant"。说"你是一名资深瑞典保险理赔员，专门处理车祸定责"。具体到角色、行业、专业领域。</li>
+          <li><strong>指定语气</strong> —— "factual and confident" / "warm and conversational" / "concise and direct"——明确告诉 Claude 声音长什么样。</li>
+          <li><strong>设定回答边界</strong> —— "If you are not fully confident in your assessment, do not make one." 这一条让 Claude 从"自信胡说"变成"不确定就拒答"。</li>
+          <li><strong>不要让 Claude 演你不想要的角色</strong> —— 没指定角色，Claude 会"猜你想要什么"。猜错了就翻车。</li>
+        </ul>
+        <div class="source-quote">
+          <strong>CHRISTIAN · 原句</strong>
+          Tell Claude what role it's playing, what tone it should use, and when to stay silent. Three lines, three different failure modes fixed.
+        </div>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            打开你最近用的 prompt。<strong>第一句话是不是 "You are a helpful assistant"？</strong>如果是，改掉。换成 "You are a [具体角色] helping with [具体任务]"。加一句语气 + 一句"什么时候不要答"。你会立刻看到输出变稳。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Background detail -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">BACKGROUND DETAIL · 8:47</div>
+          <h2 class="cap-title-en">Static vs dynamic, and where to put long context</h2>
+          <div class="cap-title-cn">背景细节 —— 静态 vs 动态、长文档怎么放</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 5 章是关于<strong>怎么给 Claude 喂材料</strong>。看似简单，其实有几条不显然的规则。</p>
+        <p>第一条规则——<strong>区分静态 vs 动态信息</strong>：</p>
+        <ul class="skill-stack">
+          <li><strong>静态信息</strong> —— 每次会话都不变的内容（角色、规则、风格指南、领域知识）。放 <code>system prompt</code>。</li>
+          <li><strong>动态信息</strong> —— 每次都变的内容（当前问题、当前文档、当前任务）。放 <code>user 消息</code>。</li>
+        </ul>
+        <p>为什么这样分？<strong>省钱 + 推理更稳</strong>。Anthropic 的 prompt caching 会把 system prompt 的开头部分缓存起来——static 内容越多，cache hit rate 越高，成本越低。</p>
+        <p>第二条规则——<strong>文档数据放 user 消息</strong>。但有讲究：</p>
+        <div class="source-quote">
+          <strong>ANTHROPIC DOCS · 最佳实践</strong>
+          Put longform data at the top: Place your long documents and inputs near the top of your prompt, above your query, instructions, and examples. This can significantly improve performance across all models.
+        </div>
+        <p>翻译成实际动作：</p>
+        <ul class="skill-stack">
+          <li><strong>长文档放顶部</strong> —— 20k+ tokens 时尤其重要。长文档在 prompt 顶部，query 在底部。</li>
+          <li><strong>多文档按相关性排</strong> —— 最相关的放最前面，让 Claude 优先关注。</li>
+          <li><strong>图像可以 Base64 编码</strong> —— 直接放进 user 消息的 content 数组里。Claude 能理解图像。</li>
+          <li><strong>多图像场景下 Claude 表现很好</strong> —— Opus 4.5/4.6 在多图像理解上有专门的优化。视频帧也可以拆成图传。</li>
+          <li><strong>用 XML tag 划分背景信息</strong> —— <code>&lt;document_1&gt;</code> <code>&lt;document_2&gt;</code> 让 Claude 知道哪是哪。</li>
+        </ul>
+        <pre class="code-block"><span class="c-tag">&lt;document_1&gt;</span>
+[Vehicle A 报告内容]
+<span class="c-tag">&lt;/document_1&gt;</span>
+
+<span class="c-tag">&lt;document_2&gt;</span>
+[Vehicle B 报告内容]
+<span class="c-tag">&lt;/document_2&gt;</span>
+
+<span class="c-tag">&lt;sketch&gt;</span>
+[手绘草图，Base64 编码]
+<span class="c-tag">&lt;/sketch&gt;</span></pre>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            把 Claude Projects 的 system prompt 当成"公司手册"——所有不变的内容都放进去：你的品牌声音、用户画像、领域术语表、必遵守的规则。每次新对话就只需要写 user 部分。<strong>长期下来省很多钱</strong>。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Examples -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">EXAMPLES · 12:55</div>
+          <h2 class="cap-title-en">Few-shot beats many rules</h2>
+          <div class="cap-title-cn">少样本学习 —— 几个例子胜过十页规则</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 6 章讲 <strong>few-shot prompting</strong>——给 Claude 看几个示例。Anthropic 在这件事上的判断很鲜明：</p>
+        <div class="source-quote">
+          <strong>ANTHROPIC · EFFECTIVE CONTEXT ENGINEERING</strong>
+          For an LLM, examples are the "pictures" worth a thousand words.
+        </div>
+        <p>意思很清楚：<strong>示例比规则有效得多</strong>。给 Claude 看 3 个"该怎么做"的例子，比写 10 条"必须遵守的规则"有用得多。</p>
+        <p>讲者在视频里演示了 V3 → V4 的飞跃——加了一组带 annotation 的示例（标注每个 checkbox 对应的责任判定），Claude 的输出从"60% 准确"提升到"几乎 100% 准确"。</p>
+        <p>具体的几个技巧：</p>
+        <ul class="skill-stack">
+          <li><strong>少量多样化示例</strong> —— 不要堆 50 个相似示例。3-5 个覆盖典型场景的示例胜过 50 个重复的。</li>
+          <li><strong>XML tag 包装示例</strong> —— 用 <code>&lt;example&gt;</code> 包裹输入和输出，让 Claude 清楚这是"学习样本"，不是"当前任务"。</li>
+          <li><strong>边缘案例做成带标注的示例</strong> —— 那些你"不确定 Claude 会不会懂"的边界场景，做成示例教它。不要堆进规则清单。</li>
+          <li><strong>不要堆砌所有 edge case</strong> —— 错误做法是"把所有可能出错的场景都列出来"。正确做法是<strong>挑最有代表性的几个做成示例</strong>。</li>
+          <li><strong>示例放在请求前</strong> —— 顺序很重要：示例 → 当前请求，不是反过来。Claude 先看"该怎么做"再看"这次怎么做"。</li>
+        </ul>
+        <pre class="code-block"><span class="c-tag">&lt;examples&gt;</span>
+  <span class="c-tag">&lt;example&gt;</span>
+    <span class="c-tag">&lt;input&gt;</span>Vehicle A ran red light, Vehicle B had right of way<span class="c-tag">&lt;/input&gt;</span>
+    <span class="c-tag">&lt;output&gt;</span>Vehicle A at fault<span class="c-tag">&lt;/output&gt;</span>
+  <span class="c-tag">&lt;/example&gt;</span>
+  <span class="c-tag">&lt;example&gt;</span>
+    <span class="c-tag">&lt;input&gt;</span>Both vehicles had green light; unclear who entered first<span class="c-tag">&lt;/input&gt;</span>
+    <span class="c-tag">&lt;output&gt;</span>Insufficient information<span class="c-tag">&lt;/output&gt;</span>
+  <span class="c-tag">&lt;/example&gt;</span>
+<span class="c-tag">&lt;/examples&gt;</span>
+
+<span class="c-tag">&lt;request&gt;</span>Now analyze: [current case]<span class="c-tag">&lt;/request&gt;</span></pre>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            写 prompt 时问自己：<strong>"我能不能用 3 个例子替代 10 条规则？"</strong>大多数情况答案是 yes。把规则删掉，换成示例。Claude 的输出会更稳，你也更容易维护（改示例比改规则直观）。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 Conversation history -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CONVERSATION HISTORY · 15:02</div>
+          <h2 class="cap-title-en">What to carry over, what to drop</h2>
+          <div class="cap-title-cn">对话历史 —— 多轮里传什么、不传什么</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 7 章很短，但解决一个多轮对话的核心问题：<strong>历史消息怎么传</strong>。</p>
+        <p>Claude 在多轮对话里默认能看到所有历史消息。但"能看到"不等于"该让看到"。</p>
+        <p>几个关键原则：</p>
+        <ul class="skill-stack">
+          <li><strong>传相关历史，不传全部</strong> —— 多轮应用里，把"和当前任务相关的"前几轮传进去。如果用户切换话题，开新对话。</li>
+          <li><strong>摘要历史比贴原历史省 token</strong> —— 超过 10 轮后，把早期消息摘要成 2-3 段。最近几轮保留原话。</li>
+          <li><strong>历史相关性过滤</strong> —— 工具调用返回的中间结果可以摘要；用户表达的核心意图保留原话。</li>
+        </ul>
+        <div class="source-quote">
+          <strong>CHRISTIAN · 原句</strong>
+          Don't pass everything. Pass what's relevant. Summary > raw when the conversation is long.
+        </div>
+        <p>讲者在视频里演示了一个反例：把整个对话历史传给 Claude，让它"基于之前讨论的修改方案"，结果 Claude 被早期废弃的方案干扰，输出了错误结论。<strong>历史太长不是优势，是噪声</strong>。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            在 Claude Projects 里写一个 <strong>"上下文摘要"</strong> workflow：对话超过 10 轮时，先用一条 prompt 总结"目前确定下来的事"和"待解决的事"，然后把这份摘要带进下一轮对话。这比贴原历史清晰得多。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 Task reminder & step-by-step -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">TASK REMINDER &amp; STEP-BY-STEP · 15:55</div>
+          <h2 class="cap-title-en">Recap at the end, think before answering</h2>
+          <div class="cap-title-cn">任务提醒 + 分步指令 —— 末尾 recap，先想再答</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 8 章是 workshop 最反直觉的一节。两个看似矛盾的动作：</p>
+        <p><strong>第一个动作 —— 任务末尾再 reminder 一次。</strong></p>
+        <p>Claude 的注意力在长 prompt 里会"前重后轻"。把核心规则在 prompt 末尾再讲一遍，让 Claude 在生成回答前最后看一眼。</p>
+        <div class="source-quote">
+          <strong>CHRISTIAN · 原句</strong>
+          Recap the task at the end. Don't assume Claude will remember the rules from 500 lines ago.
+        </div>
+        <p>具体做法——在 prompt 的最后部分加一段 <code>&lt;important&gt;</code> 或 <code>&lt;reminder&gt;</code>，把最重要的规则复述一遍：</p>
+        <pre class="code-block">[前面的所有内容...]
+
+<span class="c-tag">&lt;reminder&gt;</span>
+- 只输出 &lt;verdict&gt; 和 &lt;reasoning&gt; 两个 XML 标签
+- 不确定时回复 "Insufficient information"，不要瞎猜
+- 用英文回答
+<span class="c-tag">&lt;/reminder&gt;</span></pre>
+        <p><strong>第二个动作 —— Think step by step。</strong></p>
+        <p>让 Claude 在给最终答案前先"出声思考"。把思考过程和最终答案用 XML tag 分开：</p>
+        <pre class="code-block"><span class="c-tag">&lt;thinking&gt;</span>
+Let me analyze each checkbox:
+- Vehicle A checkbox "ran red light": YES
+- Vehicle B checkbox "had right of way": YES
+- So Vehicle A is at fault.
+<span class="c-tag">&lt;/thinking&gt;</span>
+
+<span class="c-tag">&lt;verdict&gt;</span>Vehicle A<span class="c-tag">&lt;/verdict&gt;</span>
+<span class="c-tag">&lt;reasoning&gt;</span>Vehicle A ran red light while Vehicle B had right of way.<span class="c-tag">&lt;/reasoning&gt;</span></pre>
+        <p>这条技巧的机制很清晰：</p>
+        <ul class="skill-stack">
+          <li><strong>末尾 reminder 抗衰减</strong> —— 长 prompt 后面 Claude 的注意力会下降，reminder 把核心规则重新激活。</li>
+          <li><strong>Think step by step 提升复杂任务准确率</strong> —— 推理前显式思考比直接答更准。CoT（Chain of Thought）的核心。</li>
+          <li><strong>用 XML tag 区分思考和答案</strong> —— <code>&lt;thinking&gt;</code> 给过程，<code>&lt;answer&gt;</code> 给结果。程序好解析，调试好看。</li>
+          <li><strong>步骤顺序符合人类推理</strong> —— 不要写"先结论再分析"。写"先分析 checkbox、再对照规则、最后给结论"——按人脑思考顺序。</li>
+        </ul>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            给任何长 prompt（超过 200 字）加一个 <code>&lt;reminder&gt;</code> 块——3-5 条最重要的规则复述。同时加 <code>&lt;thinking&gt;</code> 要求让 Claude 先思考再答。<strong>这两条加起来准确率提升 10-30%</strong>。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 Output formatting -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">OUTPUT FORMATTING · 20:05</div>
+          <h2 class="cap-title-en">Structure your output so apps can parse it</h2>
+          <div class="cap-title-cn">输出格式 —— 让程序能直接解析</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 9 章讲<strong>输出格式控制</strong>。这条对工程化使用 Claude 至关重要——你不会想每次手动从 Claude 的回复里"抠出"你想要的数据。</p>
+        <p>讲者在视频里演示了 V5——给 Claude 套上 XML 输出约束：</p>
+        <pre class="code-block"><span class="c-tag">&lt;output_format&gt;</span>
+Always respond using this exact structure:
+<span class="c-tag">&lt;verdict&gt;</span>Vehicle A or Vehicle B or "Insufficient information"<span class="c-tag">&lt;/verdict&gt;</span>
+<span class="c-tag">&lt;reasoning&gt;</span>Brief explanation based on the form and sketch.<span class="c-tag">&lt;/reasoning&gt;</span>
+<span class="c-tag">&lt;/output_format&gt;</span></pre>
+        <p>关键技巧：</p>
+        <ul class="skill-stack">
+          <li><strong>明确指定输出格式</strong> —— XML / JSON / Markdown / 表格。越具体越好。</li>
+          <li><strong>让程序能直接解析</strong> —— 输出 XML 标签包裹的数据，下游代码可以直接 parse。这是工程化 Claude 的基础。</li>
+          <li><strong>XML 嵌套表达层级</strong> —— <code>&lt;user&gt;&lt;name&gt;...&lt;/name&gt;&lt;age&gt;...&lt;/age&gt;&lt;/user&gt;</code> 比平铺 2 字段更清晰。</li>
+          <li><strong>格式说明放后段</strong> —— 角色 / 任务 / 上下文 / 思考在前，输出格式在后。模型先理解任务，再被约束输出格式。</li>
+        </ul>
+        <div class="source-quote">
+          <strong>CHRISTIAN · 原句</strong>
+          Tell Claude exactly what shape you want the answer in. XML and JSON are best because they parse cleanly. If you let Claude free-form, you'll spend more time parsing its answer than getting value.
+        </div>
+        <p>实际效果：V5 之前 Claude 的输出是"Vehicle A appears to be at fault based on..."——一段话，要程序去解析。V5 之后是干净的 <code>&lt;verdict&gt;Vehicle A&lt;/verdict&gt;</code>，<strong>程序一行代码就能取出来</strong>。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            如果你把 Claude 的输出接到任何下游工具（Notion API、Google Sheets、自动化脚本），<strong>一定要在 prompt 里明确输出格式</strong>。用 XML 标签或 JSON 结构。这是 Claude "工程化"和"玩具用"的分水岭。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 Pre-fill & extended thinking -->
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PRE-FILL &amp; EXTENDED THINKING · 22:15</div>
+          <h2 class="cap-title-en">Start the answer yourself, and let Claude think out loud</h2>
+          <div class="cap-title-cn">预填充 + 扩展思考 —— 替 Claude 起个头，让它"出声想"</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>第 10 章是 workshop 的最后两个技巧，<strong>这两个技巧在 Claude API 里能用，普通网页 Claude 聊天框里部分能用</strong>。</p>
+        <p><strong>第一个 —— 预填充（Pre-fill）。</strong></p>
+        <p>在 API 调用时，你可以在 Assistant 角色里先写一段字符串作为"开头"。Claude 接着你的开头继续写。</p>
+        <pre class="code-block"><span class="c-comment">// API 调用示意</span>
+messages: [
+  { role: "user", content: "分析这份车祸报告" },
+  { role: <span class="c-key">"assistant"</span>, content: <span class="c-str">"&lt;verdict&gt;"</span> }  <span class="c-comment">// 预填充</span>
+]</pre>
+        <p>为什么这样做？</p>
+        <ul class="skill-stack">
+          <li><strong>强制输出格式</strong> —— 预填充 <code>&lt;verdict&gt;</code>，Claude 不会先写"以下是分析结果："这种废话。</li>
+          <li><strong>跳过模型自动写的前缀</strong> —— 模型默认会写"Sure!" / "Of course!" / "Let me help you with that."——预填充直接进入正题。</li>
+          <li><strong>用预填充控制语气起头</strong> —— 预填充 "Here's my analysis:"——Claude 接下来就是分析的语调。</li>
+        </ul>
+        <p><strong>第二个 —— Extended Thinking。</strong></p>
+        <p>Claude 的扩展思考模式让它"出声思考"——把推理过程显式写出来再给答案。这和前面说的 "Think step by step" 不同：</p>
+        <ul class="skill-stack">
+          <li><strong>"Think step by step" 是 prompt 技巧</strong> —— 你写一句话让 Claude 思考。它遵守或不遵守取决于 prompt。</li>
+          <li><strong>Extended Thinking 是模型能力</strong> —— 你在 API 里启用，Claude 内部先做大量推理再生成答案。质量更高、更慢。</li>
+          <li><strong>可视化推理</strong> —— Extended Thinking 的输出包含完整的思考过程，调试时直接看推理链路。</li>
+          <li><strong>适合调试 + 复杂任务</strong> —— 模型答错时，看 Extended Thinking 知道它哪里想错了；任务复杂时（多步骤推理），Extended Thinking 准确率高很多。</li>
+        </ul>
+        <div class="source-quote">
+          <strong>HANNAH · 原句</strong>
+          Pre-fill skips the small talk. Extended thinking shows you the work. Both make debugging Claude dramatically easier.
+        </div>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            <strong>Pre-fill</strong>：在 Claude.ai 网页聊天框里，把 Claude 上一次的回复修改一下再发送——这等于手动预填充。<strong>Extended Thinking</strong>：在 Claude API 里启用 <code>thinking={"type": "enabled"}</code> 参数。<strong>两者结合</strong>：Extended Thinking 推理完，预填充 <code>&lt;final_answer&gt;</code> 让 Claude 直接给结论。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 配套视频：工具 & Agent -->
+    <section class="capability" id="cap-11">
+      <div class="cap-head">
+        <div class="cap-num">11</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">BONUS · 配套视频</div>
+          <h2 class="cap-title-en">Tooling and agents (from Prompting for Agents)</h2>
+          <div class="cap-title-cn">配套福利 —— 工具与 Agent 的提示词要点</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Prompting 101 主讲完后，Anthropic 还发布了一支姊妹篇：<strong>Prompting for Agents</strong>（29 分钟，讲 agent 怎么写 prompt）。那支视频里有两条和工具相关的关键技巧，纳入这 40 个里：</p>
+        <p><strong>技巧 39 — 工具描述要清晰独立。</strong></p>
+        <p>给 agent 接一堆工具时，每个工具的描述要<strong>让模型知道什么时候该用它</strong>。讲者在视频里举例：</p>
+        <div class="source-quote">
+          <strong>CHRISTIAN · 原句</strong>
+          Don't give Claude six search tools that all search slightly different databases. That confuses the model. Keep tools distinct and combine similar ones into one.
+        </div>
+        <p>反例——给 agent 接 6 个搜索工具，每个搜索不同的数据库。这会让 Claude 困惑"该用哪个"。</p>
+        <p>正例——把 6 个搜索合并成 1 个，根据参数决定搜哪个。或者保持 6 个但每个的描述<strong>非常明确地说明触发条件</strong>。</p>
+        <p><strong>技巧 40 — 工具错误信息要 actionable。</strong></p>
+        <p>工具返回错误时，不要只返回 stack trace 或 error code。返回<strong>告诉 agent 下一步该怎么改</strong>的错误信息。</p>
+        <div class="source-quote">
+          <strong>ANTHROPIC · WRITING TOOLS FOR AGENTS</strong>
+          If a tool call raises an error, prompt-engineer your error responses to clearly communicate specific and actionable improvements, rather than opaque error codes or tracebacks.
+        </div>
+        <p>反例：<code>"Error: 400 Bad Request"</code>。</p>
+        <p>正例：<code>"The 'date' parameter must be in ISO 8601 format (YYYY-MM-DD). You provided '2025/01/15'. Please retry with '2025-01-15'."</code></p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            如果你在用 Claude Code / Cursor / 任何接 agent 的工具——看看那些工具的描述是不是"清楚独立、错误信息 actionable"。<strong>好工具 = Claude 用得对</strong>；烂工具 = Claude 反复撞墙。这不是 Claude 的问题，是工具设计的问题。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 2 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">提示工程是迭代的实证科学<span class="arrow">·</span>不是一次写好就能用的咒语</div>
+      <div class="pull-quote-caption">Anthropic · on the iterative nature of prompt engineering</div>
+    </section>
+
+    <!-- 整体原则 + 速查表衔接 -->
+    <section class="capability" id="cap-12">
+      <div class="cap-head">
+        <div class="cap-num">12</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE META-LESSON</div>
+          <h2 class="cap-title-en">5 principles that run through all 40 techniques</h2>
+          <div class="cap-title-cn">贯穿全程的 5 条元原则 —— 40 个技巧背后的 5 件事</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>前面 11 章拆了 35 个具体技巧。<strong>但技巧清单本身不是最重要的——技巧背后的元原则才是</strong>。以下 5 条贯穿全程：</p>
+        <ul class="skill-stack">
+          <li><strong>提示工程是迭代的实证过程</strong> —— 不是"写一次就完事"。是写 → 跑 → 观察 → 修 → 再跑。V1 → V5 的过程就是这条原则的演示。</li>
+          <li><strong>不要信任模型，要为它设计</strong> —— Claude 默认会出错。你的工作不是"等它答对"，是"设计 prompt 让它答对的概率变高"。</li>
+          <li><strong>System prompt 保持 right altitude</strong> —— 不过度硬编码（写成 if-else 逻辑）、不过度模糊（"做得好一点"）。在两者之间找平衡。</li>
+          <li><strong>保持上下文信息密集但紧凑（informative yet tight）</strong> —— 不要堆废话（"请仔细思考，认真回答……"），但要信息密度高。每一个 token 都该有价值。</li>
+          <li><strong>测试 → 观察失败 → 加规则 → 循环</strong> —— 不靠"感觉写得好"，靠"测出来好"。每次加新规则前，先有一个能复现失败的测试用例。</li>
+        </ul>
+        <p>这 5 条原则比 40 个技巧都重要。<strong>技巧会过时（Claude 模型在变），原则不会</strong>。模型升级后，某些技巧可能不再需要（比如 Extended Thinking 默认开了），但这 5 条原则在 5 年后还是对的。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            选一个你反复让 Claude 做的任务。<strong>写 5 个测试用例</strong>（5 个不同的输入 + 你期望的正确输出）。然后用这 5 个用例跑你现在的 prompt——记录哪些跑错了。错的那些就是你要修的——按本文的 40 个技巧去改。改完再用 5 个用例测。直到全过。这一套流程跑通，你就有了"prompt 工程的肌肉"。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHEAT SHEET -->
+    <section class="cheatsheet" id="cheatsheet">
+      <p class="cheatsheet-kicker">CHEAT SHEET</p>
+      <h2 class="cheatsheet-title">40 个技巧速查表</h2>
+      <p class="cheatsheet-subtitle">按视频章节分组，每条一句话。可以截图保存，或打印贴在桌前。</p>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">01</span>
+          <span class="cheat-group-title">Introduction · 提示词工程定义<span class="cheat-group-title-en">— What prompt engineering is</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">01</span><span><strong>清晰指令 + 必要上下文 + 合理排列</strong>——三件套缺一不可。</span></li>
+          <li><span class="num">02</span><span><strong>练比读有用</strong>——学这个最好的方式就是写、改、看输出、再改。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">02</span>
+          <span class="cheat-group-title">Setting the stage · 真实场景设定<span class="cheat-group-title-en">— Real scenario over toy example</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">03</span><span><strong>用真实业务场景</strong>——toy example 教不会真东西。</span></li>
+          <li><span class="num">04</span><span><strong>模型会自信地胡说</strong>——"s skiing accident"幻觉是设计问题不是模型问题。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">03</span>
+          <span class="cheat-group-title">Prompt structure · 10 步结构<span class="cheat-group-title-en">— The 10-step anatomy</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">05</span><span><strong>10 步模板</strong>——role / tone / background / task / rules / examples / history / request / think / output。</span></li>
+          <li><span class="num">06</span><span><strong>静态信息放 system prompt</strong>——省钱 + 推理稳 + prompt caching 友好。</span></li>
+          <li><span class="num">07</span><span><strong>动态信息放 user 消息</strong>——当前任务、当前文档、当前问题。</span></li>
+          <li><span class="num">08</span><span><strong>顺序比措辞重要</strong>——静态先、动态后；上下文先、查询后。</span></li>
+          <li><span class="num">09</span><span><strong>System prompt 保持 right altitude</strong>——不过度硬编码，也不过度模糊。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">04</span>
+          <span class="cheat-group-title">Task context · 任务上下文<span class="cheat-group-title-en">— Who Claude is</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">10</span><span><strong>明确角色定位</strong>——不要只说"helpful assistant"，说具体角色 + 行业 + 专业领域。</span></li>
+          <li><span class="num">11</span><span><strong>指定语气</strong>——"factual and confident" / "warm and conversational"。</span></li>
+          <li><span class="num">12</span><span><strong>设定回答边界</strong>——"不确定时说我不确定"，不要让它自信胡答。</span></li>
+          <li><span class="num">13</span><span><strong>不指定角色 = Claude 猜你想要什么</strong>——猜错就翻车。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">05</span>
+          <span class="cheat-group-title">Background detail · 背景细节<span class="cheat-group-title-en">— Where to put long context</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">14</span><span><strong>区分静态 vs 动态</strong>——每次不变的 vs 每次变的，分开放。</span></li>
+          <li><span class="num">15</span><span><strong>长文档放 prompt 顶部</strong>——20k+ tokens 时尤其重要。</span></li>
+          <li><span class="num">16</span><span><strong>图像可 Base64 编码</strong>——直接放进 user 消息的 content 数组。</span></li>
+          <li><span class="num">17</span><span><strong>多图像场景 Claude 表现好</strong>——Opus 4.5/4.6 在多图像理解上有专门优化。</span></li>
+          <li><span class="num">18</span><span><strong>XML tag 划分背景</strong>——<code>&lt;document_1&gt;</code> <code>&lt;document_2&gt;</code> 让 Claude 知道哪是哪。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">06</span>
+          <span class="cheat-group-title">Examples · 少样本学习<span class="cheat-group-title-en">— Few-shot beats many rules</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">19</span><span><strong>少量多样化示例</strong>——3-5 个覆盖典型场景，胜过 50 个重复。</span></li>
+          <li><span class="num">20</span><span><strong>XML tag 包装示例</strong>——<code>&lt;example&gt;</code> 让 Claude 知道这是学习样本。</span></li>
+          <li><span class="num">21</span><span><strong>边缘案例做成示例</strong>——不确定 Claude 会不会懂的，做成示例教它。</span></li>
+          <li><span class="num">22</span><span><strong>不要堆砌 edge case</strong>——挑最有代表性的几个，不是把所有可能都列出来。</span></li>
+          <li><span class="num">23</span><span><strong>示例放在请求前</strong>——先看"该怎么做"再看"这次怎么做"。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">07</span>
+          <span class="cheat-group-title">Conversation history · 对话历史<span class="cheat-group-title-en">— What to carry over</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">24</span><span><strong>传相关历史不传全部</strong>——切换话题开新对话。</span></li>
+          <li><span class="num">25</span><span><strong>摘要历史比贴原历史省 token</strong>——超 10 轮后摘要早期消息。</span></li>
+          <li><span class="num">26</span><span><strong>历史相关性过滤</strong>——中间工具调用可摘要，核心意图保留原话。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">08</span>
+          <span class="cheat-group-title">Task reminder · 任务提醒 + 分步<span class="cheat-group-title-en">— Recap + think step by step</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">27</span><span><strong>末尾 reminder 抗衰减</strong>——长 prompt 末尾把核心规则复述一遍。</span></li>
+          <li><span class="num">28</span><span><strong>Think step by step</strong>——让 Claude 先想再答，准确率提升 10-30%。</span></li>
+          <li><span class="num">29</span><span><strong>XML tag 区分思考和答案</strong>——<code>&lt;thinking&gt;</code> 给过程，<code>&lt;answer&gt;</code> 给结果。</span></li>
+          <li><span class="num">30</span><span><strong>步骤顺序符合人类推理</strong>——先分析 → 再对照规则 → 最后给结论。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">09</span>
+          <span class="cheat-group-title">Output formatting · 输出格式<span class="cheat-group-title-en">— Structure for parsing</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">31</span><span><strong>明确指定输出格式</strong>——XML / JSON / Markdown，越具体越好。</span></li>
+          <li><span class="num">32</span><span><strong>让程序能直接解析</strong>——工程化 Claude 的基础。</span></li>
+          <li><span class="num">33</span><span><strong>XML 嵌套表达层级</strong>——比平铺字段清晰。</span></li>
+          <li><span class="num">34</span><span><strong>格式说明放后段</strong>——任务理解在前，格式约束在后。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">10</span>
+          <span class="cheat-group-title">Pre-fill &amp; extended thinking · 预填充 + 扩展思考<span class="cheat-group-title-en">— Skip small talk, show the work</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">35</span><span><strong>预填充跳过废话</strong>——API 里预填 Assistant 起始字符串。</span></li>
+          <li><span class="num">36</span><span><strong>强制输出格式</strong>——预填 <code>&lt;verdict&gt;</code> 直接进入正文。</span></li>
+          <li><span class="num">37</span><span><strong>Extended Thinking 是模型能力</strong>——API 里启用，Claude 内部推理更彻底。</span></li>
+          <li><span class="num">38</span><span><strong>Extended Thinking 适合调试</strong>——看推理链路知道哪里想错了。</span></li>
+        </ul>
+      </div>
+
+      <div class="cheat-group">
+        <div class="cheat-group-head">
+          <span class="cheat-group-num">11</span>
+          <span class="cheat-group-title">Bonus · 工具与 Agent<span class="cheat-group-title-en">— From Prompting for Agents</span></span>
+        </div>
+        <ul class="cheat-list">
+          <li><span class="num">39</span><span><strong>工具描述清晰独立</strong>——不要 6 个相似搜索工具让 Claude 困惑。</span></li>
+          <li><span class="num">40</span><span><strong>工具错误信息 actionable</strong>——告诉 agent 下一步该怎么改，不是返回 stack trace。</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES &amp; CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL WORKSHOP</strong>
+          <em>Prompting 101 | Code w/ Claude</em><br>
+          讲者：Hannah Moran &amp; Christian Ryan（Anthropic Applied AI 团队）<br>
+          发布：2025/05/22 · 旧金山 Code w/ Claude 活动<br>
+          YouTube：<a href="https://www.youtube.com/watch?v=ysPbXH0LpIE" target="_blank" rel="noopener">https://www.youtube.com/watch?v=ysPbXH0LpIE</a>（389K 观看）
+        </li>
+        <li>
+          <strong>ANTHROPIC OFFICIAL DOCS</strong>
+          Prompting best practices · <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices" target="_blank" rel="noopener">platform.claude.com</a><br>
+          Effective context engineering for AI agents · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">anthropic.com</a><br>
+          Writing effective tools for AI agents · <a href="https://www.anthropic.com/engineering/writing-tools-for-agents" target="_blank" rel="noopener">anthropic.com</a>
+        </li>
+        <li>
+          <strong>SISTER TALK · PROMPTING FOR AGENTS</strong>
+          <em>Prompting for Agents | Code w/ Claude</em> · 29 分钟<br>
+          YouTube：<a href="https://www.youtube.com/watch?v=XSZP9GhhuAc" target="_blank" rel="noopener">https://www.youtube.com/watch?v=XSZP9GhhuAc</a><br>
+          （本文第 11 章的"工具与 Agent"内容来自这支视频）
+        </li>
+        <li>
+          <strong>ANTHROPIC ACADEMY</strong>
+          官方免费课程：<a href="https://anthropic.skilljar.com" target="_blank" rel="noopener">anthropic.skilljar.com</a><br>
+          涵盖 API / MCP / Tool usage / Prompting 等完整课程
+        </li>
+        <li>
+          <strong>INTERPRETATION NOTE</strong>
+          本文为完整中文解读版本。<br>
+          （1）按视频 10 个章节 + 1 个 Bonus（配套视频）逐条拆解，覆盖全部 40 个技巧。<br>
+          （2）每条技巧配视频原句引用（source-quote）和"普通读者怎么用"实操建议。<br>
+          （3）结尾附 40 技巧速查表（cheat sheet），可作为长期参考。<br>
+          （4）保留 Anthropic 工程师"提示工程是迭代实证过程"的精神，不神话任何单一技巧。
+        </li>
+      </ul>
+      <p class="references-note">如果你只做一件事：打开 Claude，选一个你反复让它做的任务，写 5 个测试用例，跑你现在的 prompt，记录哪些跑错了。按这 40 个技巧去改，直到 5 个全过。这一件事做完——比多看 10 篇 prompt 文章有用。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">提示工程不是写魔法咒语，<strong>是写清晰的指令 + 必要的上下文 + 合理的信息排列</strong>。</p>
+      <p class="closing-text">Claude 答错不是它笨，<strong>是你没为它设计</strong>。</p>
+      <p class="closing-caption">读完了。下一步：写 5 个测试用例，跑你现在的 prompt。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">12 章节 + 速查表</div>
+    <div class="nav-panel-content">
+      <a href="#cap-00" class="nav-item">
+        <span class="nav-item-num">00</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Why these 40 techniques</span>
+          <span class="nav-item-cn">为什么这 40 个值得</span>
+        </span>
+      </a>
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Introduction</span>
+          <span class="nav-item-cn">提示词工程是什么</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Setting the stage</span>
+          <span class="nav-item-cn">真实场景的价值</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Prompt structure</span>
+          <span class="nav-item-cn">10 步 prompt 解剖</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Task context</span>
+          <span class="nav-item-cn">任务上下文</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Background detail</span>
+          <span class="nav-item-cn">背景细节</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Examples</span>
+          <span class="nav-item-cn">少样本学习</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Conversation history</span>
+          <span class="nav-item-cn">对话历史</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Task reminder</span>
+          <span class="nav-item-cn">任务提醒 + 分步</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-item-num">09</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Output formatting</span>
+          <span class="nav-item-cn">输出格式控制</span>
+        </span>
+      </a>
+      <a href="#cap-10" class="nav-item">
+        <span class="nav-item-num">10</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Pre-fill &amp; Extended thinking</span>
+          <span class="nav-item-cn">预填充 + 扩展思考</span>
+        </span>
+      </a>
+      <a href="#cap-11" class="nav-item">
+        <span class="nav-item-num">11</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Tools &amp; Agents</span>
+          <span class="nav-item-cn">工具与 Agent</span>
+        </span>
+      </a>
+      <a href="#cap-12" class="nav-item">
+        <span class="nav-item-num">12</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">5 meta-principles</span>
+          <span class="nav-item-cn">5 条元原则</span>
+        </span>
+      </a>
+      <a href="#cheatsheet" class="nav-item">
+        <span class="nav-item-num">CS</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Cheat sheet</span>
+          <span class="nav-item-cn">40 技巧速查表</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+
+      navPanel.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', function() {
+          navPanel.classList.remove('active');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

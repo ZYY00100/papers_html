@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loop Engineering · 从提示 agent 到设计提示 agent 的循环 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 64px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 760px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* REPLY CARDS（评论+博主回复） */
+    .reply-thread {
+      margin: 24px 0 8px;
+      list-style: none;
+      padding: 0;
+    }
+    .reply-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .reply-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.35);
+    }
+    .reply-author {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .reply-author.is-author {
+      color: var(--accent-red);
+    }
+    .reply-text {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .reply-text strong { color: var(--text-primary); font-weight: 600; }
+    .reply-text code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+
+    /* SOURCES GRID（资源汇编） */
+    .sources-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin: 28px 0 8px;
+    }
+    .source-item {
+      display: block;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      padding: 18px 22px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .source-item:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-red);
+    }
+    .source-item-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .source-item-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+    .source-item-meta {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    .source-item-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">LOOP · AGENTIC ENGINEERING</div>
+      <h1 class="article-title">Loop Engineering</h1>
+      <p class="article-subtitle">从提示 agent 到设计提示 agent 的循环</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 steipete (@steipete) · 6.39M 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/09</span>
+      </div>
+      <p class="article-desc">steipete 一条 2 句话的推文 6.39M 浏览、1592 回复。Addy Osmani 当天就发长文专门解读。本文把围绕这条推文形成的整套"loop engineering"思潮讲透：什么是 loop、跟 prompt 有什么区别、Anthropic 的 Claude Code 负责人怎么说、5 个 building blocks 怎么搭。</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">"Here's your monthly reminder that you shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents."</p>
+      <p class="intro-lead">—— Peter Steinberger (@steipete)，OpenClaw 创始人、PSPDFKit 联创、现 OpenAI 团队。<strong>6.39M 浏览，17.9K 点赞，1592 回复，13.1K 书签，1197 引推</strong>。一句话，6.39M 人看了。</p>
+      <p class="intro-statement">这条推文只有 2 句话，但它不是一篇长文——它是一句"提醒"。真正撑得起一篇文章的，是围绕这条推文在 24 小时内形成的整套"loop engineering"思潮：Addy Osmani 当天就发了完整长文《Loop Engineering》专门解读，Boris Cherny（Anthropic Claude Code 团队负责人）也说出几乎一模一样的话。</p>
+      <p class="intro-statement">本文按 7 个章节展开。先讲 steipete 是谁、这条推文为什么是金句（cap 01），讲清楚 loop 跟 prompt 到底有什么区别（cap 02），借 Boris Cherny 的呼应看这不是个例（cap 03），然后用 Addy Osmani 那篇长文把 loop 的 5 个 building blocks 讲透（cap 04-05），再回到评论里 steipete 自己回复透露的实操 insight（cap 06），最后给 8 篇延伸阅读（cap 07）。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">you shouldn't be prompting coding agents anymore<span class="arrow">·</span>you should be designing loops that prompt your agents</div>
+      <div class="pull-quote-caption">Peter Steinberger (@steipete) · 6.39M Views · 2026/06/07</div>
+    </section>
+
+    <!-- 01 STEIPETE 是谁 + 这条推文的金句地位 -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">Who is steipete</h2>
+          <div class="cap-title-cn">steipete 是谁 + 这条推文为什么是金句</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Peter Steinberger（X 账号 <code>@steipete</code>），维也纳人。他的公开标签很幽默：<strong>"Polyagentmorous ClawFather"</strong>，副标题 "Came back from retirement to mess with AI and help a lobster take over the world"（"退休回来跟 AI 瞎混，顺便帮一只龙虾统治世界"）。</p>
+
+        <p>但他不是段子手，是干了十几年严肃工程的人：</p>
+        <ul class="cap-features">
+          <li><strong>PSPDFKit 联创</strong> —— 一个做了十几年的 PDF SDK 商业公司，管过 70+ 人团队</li>
+          <li><strong>OpenClaw 创始人</strong> —— open source 项目，"Polyagentmorous ClawFather" 这个标签就来自这里</li>
+          <li><strong>现 OpenAI 团队</strong> —— description 里直接挂着 <code>@OpenAI</code></li>
+          <li><strong>X 上 538K followers</strong>，经常发"monthly reminder"系列金句</li>
+        </ul>
+
+        <p>关键一点：他不是评论员，是<strong>每天用 coding agent、跑 5-10 个 agent 并行的实操者</strong>。Pragmatic Engineer Newsletter 之前做过一期深度访谈 <em>The creator of Clawd: "I ship code I don't read"</em>，讲的就是他怎么同时调度多个 agent、自己不读代码、只盯架构和 prompt。</p>
+
+        <p>所以那条 2 句话的推文不是键盘侠喊口号——它背后是一个每天都在用 agent、并且对 agent 怎么用有自己的成熟看法的人在喊。<strong>这就是为什么 6.39M 人会停下来看</strong>。不是因为句子漂亮，是因为说话的人真的做这件事。</p>
+      </div>
+    </section>
+
+    <!-- 02 什么是 LOOP，区别于 PROMPT -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">What is a loop, and how it differs from a prompt</h2>
+          <div class="cap-title-cn">什么是 loop —— 跟 prompt 的本质区别</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>之前一篇 5/22 的文章（解读 Anatoli Kopadze 那条 101K 浏览的 AI Agents 长文）讲过：<strong>agent = chat + tools + memory + loop</strong>。在 Anatoli 那篇里 loop 还只是 agent 的一个内部组件。</p>
+
+        <p>steipete 这次说"loop 是你设计的"——意思不同：<strong>loop 不该藏在 agent 内部，应该是你显式设计</strong>。这是同一条概念链的第三次升级：</p>
+        <ul class="cap-features">
+          <li><strong>Prompt</strong>：你问，agent 答。一次性的，你始终在场</li>
+          <li><strong>Agent</strong>：agent 自己能调 tool、能记 memory、能在 loop 里迭代——但 loop 是 agent 内置的</li>
+          <li><strong>Loop engineering</strong>：loop 是你写的小程序。你不在 loop 里，你是 loop 的作者</li>
+        </ul>
+
+        <p>把这件事讲透的，是 Anthropic Claude Code 团队负责人 <strong>Boris Cherny</strong>：</p>
+
+        <div class="cap-body"><div class="source-quote"><strong>BORIS CHERNY · ANTHROPIC</strong>"I don't prompt Claude anymore. I have loops running that prompt Claude and figuring out what to do. My job is to write loops."</div></div>
+
+        <p>"我的工作就是写 loop"——这句话的份量在于，说它的人是 Anthropic Claude Code 的负责人。他不是在用 Claude Code，他是在<strong>用 loop 来编排 Claude Code</strong>。</p>
+      </div>
+    </section>
+
+    <!-- 03 BORIS CHERNY 呼应 -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">Boris Cherny echoes the same view</h2>
+          <div class="cap-title-cn">Anthropic 的呼应 —— loop 不是 steipete 一家之言</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Addy Osmani 在他那篇完整长文里专门引用了 Boris Cherny 的那段话。两个来自完全不同阵营的人——steipete 在 OpenAI，Cherny 在 Anthropic——说出几乎一样的话：</p>
+
+        <ul class="cap-features">
+          <li><strong>steipete</strong>（OpenAI / OpenClaw）："you should be designing loops that prompt your agents"</li>
+          <li><strong>Boris Cherny</strong>（Anthropic Claude Code lead）："My job is to write loops"</li>
+        </ul>
+
+        <p>这意味着：<strong>loop 不是一个工具的某个 feature，是 coding agent 这个行业里两家最强团队的人在同一个方向上汇合</strong>。Addy 把这件事命名为 "loop engineering"，并把 6/7 当天就发的完整长文标题直接定成 "Loop Engineering"——他在用这个 term 抢占一个赛道命名权。</p>
+
+        <p>对普通用户来说这个信号很明确：<strong>2026 年中 coding agent 的前沿，已经从"怎么写好 prompt"切到"怎么设计 loop"</strong>。你还在琢磨 prompt engineering 的时候，最前面的人已经在写 loop 了。</p>
+      </div>
+    </section>
+
+    <!-- 04 ADDY OSMANI 完整解读 -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">Addy Osmani's Loop Engineering</h2>
+          <div class="cap-title-cn">Addy Osmani 完整解读 —— 5 个 building blocks + 3 个 loop 还没替你做的事</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Addy Osmani（Chrome team lead，工程界老牌意见领袖）6/7 当天发了完整长文《Loop Engineering》，副标题是 <em>"From prompting agents to designing the systems that prompt them."</em></p>
+
+        <p>Addy 把一个 loop 拆成 <strong>5 个 building blocks</strong>：</p>
+        <ul class="cap-features">
+          <li><strong>Prepare context</strong> —— 任务 + 指令 + memory + 历史拼成一个 context</li>
+          <li><strong>Call model</strong> —— 把 context 发给 LLM，拿回响应</li>
+          <li><strong>Handle response</strong> —— 如果是文字，结束；如果是 tool call，执行</li>
+          <li><strong>Iterate</strong> —— 把 tool 结果塞回 context，回到第 2 步</li>
+          <li><strong>Return</strong> —— 最终响应准备好，结束</li>
+        </ul>
+
+        <p>每个 coding agent（Claude Code、Codex、Cursor、Pi）背后都是这 5 块。区别不在结构，在<strong>你用什么方式把这 5 块拼起来、让它替你跑多久</strong>。</p>
+
+        <p>但 Addy 最重要的章节是 <em>"What the loop still does not do for you"</em>——<strong>3 件事 loop 还没替你做</strong>，而且做得越好这些事越尖锐：</p>
+        <ul class="cap-features">
+          <li><strong>验证仍然在你</strong>（Verification is still on you）—— 一个无人值守的 loop 也是一个无人值守地犯错的 loop。loop 里的 verifier sub-agent 是为了让 "its done" 有意义，但 "done" 是声明不是证明。你的工作还是"交付你确认过能跑的代码"</li>
+          <li><strong>loop 改变了工作，没把你从工作中删除</strong>（The loop changes the work, it does not delete you from it）—— 你的角色从"敲键的人"变成"设计 loop 的人 + 验收的人"，但你不能消失</li>
+          <li><strong>Token 成本</strong>（Token cost can be huge）—— loop 越自动，token 烧得越快。sub-agent、verifier、retry 都在烧 token。"token rich" 和 "token poor" 的用法会差别巨大</li>
+        </ul>
+
+        <div class="cap-body"><div class="source-quote"><strong>ADDY OSMANI</strong>"Verification is still on you. A loop running unattended is also a loop making mistakes unattended. The whole reason you split the verifier sub-agent from the maker is to make the loop's 'its done' mean something, and even then 'done' is a claim and not a proof."</div></div>
+      </div>
+    </section>
+
+    <!-- 05 一个 LOOP 长什么样 -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">What one loop looks like</h2>
+          <div class="cap-title-cn">一个 loop 长什么样 —— Addy 的 control panel 例子</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Addy 给了一个非常具体的例子：把 5 个 building blocks 粘起来后，<strong>一个 thread 变成一个 control panel</strong>。他用的形状大致是：</p>
+
+        <div class="cap-example">
+          <div class="cap-example-label">CONCRETE SHAPE</div>
+          <div class="cap-example-text">一个 loop 跑起来后，输出不是"一段回答"，而是这些你能在 UI 里看到、能在 CI 里跑、能在 webhook 里推的东西的组合：<br>
+          — <strong>compile / lint / type-check</strong> 自动跑，错误回灌到 context<br>
+          — <strong>test</strong> 自动跑，失败的 case 重写 prompt 再来<br>
+          — <strong>screenshot / DOM diff</strong>（web 项目）让 agent 看见自己改完长什么样<br>
+          — <strong>verifier sub-agent</strong> 用一个<strong>不同的</strong>模型 review 一下这次的输出<br>
+          — <strong>retry 策略</strong>：失败 N 次后降级，或者把任务扔回给人类<br>
+          你设计的不是 prompt，你设计的是这一整套"agent 的环境"</div>
+        </div>
+
+        <p>Addy 强调一个反直觉的点：<strong>这些步骤你只设计一次</strong>。之后你不再 prompt 这些步骤，loop 自己跑。steipete 那条金句的真正含义就在这——你的一次性投入换来的是之后的不在场。</p>
+
+        <p>这也是 Boris Cherny 说 "My job is to write loops" 的意思：<strong>写 loop 是新工作，prompt 是旧工作</strong>。不是 prompt 没用，是它的天花板太低了。</p>
+      </div>
+    </section>
+
+    <!-- 06 评论里的关键 INSIGHT -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 06</div>
+          <h2 class="cap-title-en">What steipete revealed in the replies</h2>
+          <div class="cap-title-cn">评论里 steipete 自己回复透露的关键 insight</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>那条推文底下 1592 条回复里，steipete 自己下场回了不少。其中几条含金量比推文本身还高，是真正的"实操 insight"：</p>
+
+        <ul class="reply-thread">
+          <li class="reply-card">
+            <div class="reply-author">@gauthampai</div>
+            <div class="reply-text">"Don't worry it'll take 3 months until it's there. <strong>We'll be talking about fleets that design your loops then.</strong>"</div>
+          </li>
+          <li class="reply-card">
+            <div class="reply-author is-author">@steipete</div>
+            <div class="reply-text">（回应"can you explain your workflow in detail"）"<strong>The jump from 'write me a function' to 'design the feedback loop that writes the functions' is where most people stall out for about six months.</strong>"</div>
+          </li>
+          <li class="reply-card">
+            <div class="reply-author">@mosyaseen</div>
+            <div class="reply-text">"I use a <code>VISION.md</code> for my projects"</div>
+          </li>
+          <li class="reply-card">
+            <div class="reply-author is-author">@steipete</div>
+            <div class="reply-text">（回应"what does this loop look like in practice? Like <code>Claude -p</code> in a for loop? <code>/goal</code>?"）"<strong>You kinda still need to be in the loop to test stuff unless you literally have infinite tokens</strong> [...]"（呼应 Addy 的"验证仍然在你"）</div>
+          </li>
+          <li class="reply-card">
+            <div class="reply-author is-author">@steipete</div>
+            <div class="reply-text">"If you wonder how to do it, you're not alone: <strong>I've built AgentBox to streamline controlling tens of agents from Claude/Codex/Opencode.</strong>"</div>
+          </li>
+          <li class="reply-card">
+            <div class="reply-author">@sabastod</div>
+            <div class="reply-text">"Yeah that's one of the OpenClaw features, I use that when we have meetings. <code>bidi</code> > <code>sst/tts</code> tho"</div>
+          </li>
+        </ul>
+
+        <p>把 steipete 自己的回复提炼出 4 个关键判断：</p>
+        <ul class="cap-features">
+          <li><strong>跳跃期 6 个月</strong> —— 从"写函数"到"设计写函数的 loop"，多数人卡 6 个月。预期管理：这是技能升级，不是新工具</li>
+          <li><strong>你仍然要在 loop 里</strong>（人话版）—— 除非 token 无限，否则你得测试。Addy 说的"验证仍然在你"在 steipete 这边变成"你在 loop 里，但角色是验收"</li>
+          <li><strong>多 agent 管理是真实需求</strong> —— steipete 自己做的 AgentBox 用来管理 tens of agents，跑 Claude / Codex / Opencode 多个工具混用</li>
+          <li><strong>下一步是 fleet of loops</strong>（@gauthampai 提的）—— 现在你写一个 loop；未来 loop 多到需要 fleet 调度。"fleet" 暗示的是一种类似 Kubernetes 之于容器、Airflow 之于 DAG 那种"调度层"会出现</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 07 资源汇编 -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 07</div>
+          <h2 class="cap-title-en">8 readings to go deeper</h2>
+          <div class="cap-title-cn">8 篇延伸阅读 —— 想动手前必读</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>想从"看懂了"到"会设计 loop"，下面 8 篇是配套阅读。按建议顺序读：</p>
+
+        <div class="sources-grid">
+          <a class="source-item" href="https://addyo.substack.com/p/loop-engineering" target="_blank" rel="noopener">
+            <div class="source-item-label">CORE READING</div>
+            <div class="source-item-title">Loop Engineering</div>
+            <div class="source-item-meta">Addy Osmani · 2026/06/07</div>
+            <div class="source-item-desc">当天发的完整长文。5 个 building blocks、一个具体 control panel 例子、3 个 loop 还没替你做的事。读完你就有"怎么搭一个 loop"的完整图。</div>
+          </a>
+          <a class="source-item" href="https://www.danieldemmel.me/blog/feedback-loop-engineering" target="_blank" rel="noopener">
+            <div class="source-item-label">DEEP DIVE</div>
+            <div class="source-item-title">Feedback loop engineering</div>
+            <div class="source-item-meta">Daniel Demmel · 2026</div>
+            <div class="source-item-desc">讲清"feedback loop engineering"和"prompt engineering / context engineering"三者的层次关系。一个有用的分层框架。</div>
+          </a>
+          <a class="source-item" href="https://steipete.me/posts/just-talk-to-it" target="_blank" rel="noopener">
+            <div class="source-item-label">STEIPETE'S BLOG</div>
+            <div class="source-item-title">Just Talk To It</div>
+            <div class="source-item-meta">steipete · 2025/10 · 23 min read</div>
+            <div class="source-item-desc">steipete 自己写的 agentic engineering 实践。包含他怎么处理 <code>CLAUDE.md</code> / <code>AGENTS.md</code>、<code>commit</code> 命令习惯、refactor day 等真实工作流细节。</div>
+          </a>
+          <a class="source-item" href="https://steipete.me/posts/shipping-at-inference-speed" target="_blank" rel="noopener">
+            <div class="source-item-label">STEIPETE'S BLOG</div>
+            <div class="source-item-title">Shipping at Inference-Speed</div>
+            <div class="source-item-meta">steipete · 2025/12 · 18 min read</div>
+            <div class="source-item-desc">副标题 "Why I stopped reading code and started watching it stream by"。讲他怎么"不看代码"——背后是 loop 思维的具体落地。</div>
+          </a>
+          <a class="source-item" href="https://newsletter.pragmaticengineer.com/p/the-creator-of-clawd-i-ship-code" target="_blank" rel="noopener">
+            <div class="source-item-label">DEEP PROFILE</div>
+            <div class="source-item-title">The creator of Clawd: "I ship code I don't read"</div>
+            <div class="source-item-meta">Pragmatic Engineer Newsletter</div>
+            <div class="source-item-desc">最完整的 steipete workflow 报道。讲他怎么跑 5-10 个 agent 并行、PR 怎么变成"prompt request"、code review 为什么死了。</div>
+          </a>
+          <a class="source-item" href="https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html" target="_blank" rel="noopener">
+            <div class="source-item-label">FRAMEWORK</div>
+            <div class="source-item-title">Humans and Agents in Software Engineering Loops</div>
+            <div class="source-item-meta">Martin Fowler</div>
+            <div class="source-item-desc">框架级文章。"Human runs the why loop, agent runs the how loop"——为什么 loop 这个词对，比"自动化"更准确。</div>
+          </a>
+          <a class="source-item" href="https://github.com/steipete/agent-rules" target="_blank" rel="noopener">
+            <div class="source-item-label">REFERENCE</div>
+            <div class="source-item-title">steipete/agent-rules</div>
+            <div class="source-item-meta">GitHub · 5.7k stars</div>
+            <div class="source-item-desc">steipete 自己用的 agent rules 仓库（已 archived，README 指向新工作）。看看 top engineer 的 <code>AGENTS.md</code> 长什么样。读完 Loop Engineering 后看这个最有感觉。</div>
+          </a>
+          <a class="source-item" href="https://www.reddit.com/r/vibecoding/comments/1tznfir/you_guys_are_promoting_or_using_loop/" target="_blank" rel="noopener">
+            <div class="source-item-label">DISCUSSION</div>
+            <div class="source-item-title">You guys are promoting or using loop?</div>
+            <div class="source-item-meta">r/vibecoding · 260K views</div>
+            <div class="source-item-desc">这条推文在 r/vibecoding 上的讨论。普通 vibe coder 在问"你们真的用 loop 吗"——能让你看到圈外人对这件事的真实反应。</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">你不能再提示 agent 了。<strong>去设计让 agent 跑起来的循环。</strong></p>
+      <p class="closing-caption">读完 loop engineering 是一回事；下一个 6 个月，把自己卡在的那个跳跃期过完，是另一回事。</p>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL TWEET</strong>
+          <em>Here's your monthly reminder that you shouldn't be prompting coding agents anymore. You should be designing loops that prompt your agents.</em><br>
+          作者：Peter Steinberger (@steipete) · 发布于 2026/06/07 · 6.39M 浏览 / 17.9K 点赞 / 1592 回复<br>
+          原文链接：<a href="https://x.com/steipete/status/2063697162748260627" target="_blank" rel="noopener">https://x.com/steipete/status/2063697162748260627</a>
+        </li>
+        <li>
+          <strong>CORE READING · ADDY OSMANI</strong>
+          <em>Loop Engineering — From prompting agents to designing the systems that prompt them.</em><br>
+          <a href="https://addyo.substack.com/p/loop-engineering" target="_blank" rel="noopener">https://addyo.substack.com/p/loop-engineering</a>
+        </li>
+        <li>
+          <strong>DEEP DIVE · DANIEL DEMMEL</strong>
+          <em>Feedback loop engineering</em><br>
+          <a href="https://www.danieldemmel.me/blog/feedback-loop-engineering" target="_blank" rel="noopener">https://www.danieldemmel.me/blog/feedback-loop-engineering</a>
+        </li>
+        <li>
+          <strong>DEEP PROFILE · PRAGMATIC ENGINEER</strong>
+          <em>The creator of Clawd: "I ship code I don't read"</em><br>
+          <a href="https://newsletter.pragmaticengineer.com/p/the-creator-of-clawd-i-ship-code" target="_blank" rel="noopener">https://newsletter.pragmaticengineer.com/p/the-creator-of-clawd-i-ship-code</a>
+        </li>
+        <li>
+          <strong>STEIPETE · JUST TALK TO IT</strong>
+          <a href="https://steipete.me/posts/just-talk-to-it" target="_blank" rel="noopener">https://steipete.me/posts/just-talk-to-it</a>
+        </li>
+        <li>
+          <strong>STEIPETE · SHIPPING AT INFERENCE-SPEED</strong>
+          <a href="https://steipete.me/posts/shipping-at-inference-speed" target="_blank" rel="noopener">https://steipete.me/posts/shipping-at-inference-speed</a>
+        </li>
+        <li>
+          <strong>FRAMEWORK · MARTIN FOWLER</strong>
+          <em>Humans and Agents in Software Engineering Loops</em><br>
+          <a href="https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html" target="_blank" rel="noopener">https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html</a>
+        </li>
+        <li>
+          <strong>REFERENCE REPO</strong>
+          steipete/agent-rules · GitHub 5.7k stars<br>
+          <a href="https://github.com/steipete/agent-rules" target="_blank" rel="noopener">https://github.com/steipete/agent-rules</a>
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为多源主题综述。原推文只有 2 句话，本文把围绕它形成的"loop engineering"思潮串起来：原推文 + 6.39M 浏览引发的 1592 条评论 + steipete 自己在评论里透露的实操 insight + Addy Osmani 当天发的完整长文 + Daniel Demmel / Pragmatic Engineer / Martin Fowler 等多篇配套解读。原推文为英文，本文按中文阅读习惯重排。
+        </li>
+      </ul>
+      <p class="references-note">steipete 在评论里说的"6 个月跳跃期"是真实存在的——这是从 prompt engineering 切到 loop engineering 的真实成本。但反过来，你过去在 prompt 上的经验不会作废：它变成 loop 里 verifier 那一段、sub-agent 的 system prompt、retry 策略的判断标准。prompt 不会消失，<strong>它从主角变成 loop 里的一个零件</strong>。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">7 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Who is steipete</span>
+          <span class="nav-item-cn">steipete 是谁</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">What is a loop</span>
+          <span class="nav-item-cn">loop vs prompt</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Boris Cherny echoes</span>
+          <span class="nav-item-cn">Anthropic 呼应</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Addy Osmani's read</span>
+          <span class="nav-item-cn">Addy 完整解读</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">What a loop looks like</span>
+          <span class="nav-item-cn">loop 长什么样</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">What steipete revealed</span>
+          <span class="nav-item-cn">评论里的 insight</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">8 readings to go deeper</span>
+          <span class="nav-item-cn">8 篇延伸阅读</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>

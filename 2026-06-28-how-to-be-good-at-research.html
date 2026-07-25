@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何做好研究 · Vivek 5.4M 浏览 X 长文解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(30px, 4.5vw, 44px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+    .article-title .highlight { color: #C8161D; }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+
+    /* 原句引用块 */
+    .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* 小技能清单 */
+    .skill-stack {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .skill-stack li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .skill-stack li:last-child { border-bottom: none; }
+    .skill-stack li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .skill-stack li strong { color: var(--text-primary); font-weight: 600; }
+
+    /* 实战例子框 */
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* REFERENCES */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-title { white-space: normal; font-size: 26px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-head { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">RESEARCH · METHODOLOGY · 解读</div>
+      <h1 class="article-title">如何<span class="highlight">做好</span>研究</h1>
+      <p class="article-subtitle">Vivek 5.4M 浏览 X 长文：研究是一组可刻意训练的小技能</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Vivek (@itsreallyvivek) · 5.4M 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/28</span>
+      </div>
+      <p class="article-desc">"没人教过你研究"——大多数人是看着别人的样子反推回去学的。学会的也只是怎么看起来像研究者。Vivek 这篇 5.4M 浏览的长文讲透了一件事：研究是一组小技能，每一项都可以刻意训练到变成肌肉。taste 也是肌肉。没有哪一项是等出来的。</p>
+    </section>
+
+    <!-- COVER IMAGE -->
+    <section class="cover-frame">
+      <img src="images/2026-06-28-how-to-be-good-at-research-cover.jpg" alt="Vivek how to be good at research 长文封面">
+      <p class="cover-caption">Vivek · how to be good at research · 2026/06/10</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">你打开这篇文的时候，可能正在想一件事：<strong>"为什么有人研究做得那么顺？"</strong></p>
+      <p class="intro-lead">Vivek 的回答很直接——没有"顺"这回事。大多数研究者靠反推学，<strong>从外面能看见的东西（论文、推文、新闻稿）反推回去自己琢磨该做什么</strong>。琢磨出来的不是怎么做研究，是怎么看起来像研究者。</p>
+      <p class="intro-statement">本文按 8 章拆解这篇 5.4M 浏览的长文。前两章说清楚"为什么大多数人研究做不出来"和"问题是怎么挑的"；中间三章拆三个最反常识的支点——taste 可训练、读什么比读得多重要、写下来比想清楚重要；后三章讲怎么把这些原则用到自己的循环里——收紧跑实验的节奏、盯住 loss 之外的输出、最后再讲为什么复利和人是长期变量。</p>
+      <p class="intro-statement">原文是 Vivek 联合 claude 写的，写给 AI 圈研究者；本文保留他所有核心论点，但场景从 AI 研究平移到任何"想做出点新东西"的人——学一门新技能、做产品、写公众号、转岗、创业，全用得上。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">The actual skill is a stack of smaller skills<span class="arrow">·</span>and almost every one of them can be deliberately trained</div>
+      <div class="pull-quote-caption">Vivek · on what research actually is</div>
+    </section>
+
+    <!-- 01 没人教过你研究 -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE HIDDEN TRUTH</div>
+          <h2 class="cap-title-en">Nobody really teaches you research</h2>
+          <div class="cap-title-cn">没人教过你研究 —— 大多数人是反推学的</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>"你拿到一张桌子，一个别人挑好的问题，一句'做出点新东西'。"</p>
+        <p>Vivek 在文章开头这样描述大多数人研究的起点。这一句扎心，因为大多数人回想自己的"研究 / 学习 / 第一次接项目"，开头基本就是这样的——导师给题、领导派活、上司丢一个方向，然后就是那句万能的"看你的"。</p>
+        <p>没人坐在你旁边手把手教你"该怎么想"。于是大多数人做的事是：<strong>看着外面能看见的东西反推</strong>。</p>
+        <p>外面能看见的是什么？论文、推文、新闻稿、大佬访谈、获奖感言、TED 演讲。所有人看到的是同一批材料，所以琢磨出来的也是同一批"研究者范式"——周三发推、周五做播客、用 PPT 不用 Keynote、引用的时候带年份、感谢家人的时候带上狗。</p>
+        <p>反推学到的是"形"，不是"骨"。结果就是多数人能<strong>看起来</strong>像研究者、做不出研究者能做出的东西。</p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          most people reverse-engineer the job from what they can see, which is papers, threads, and announcements, and what they end up learning is how to look like a researcher rather than how to be one.
+        </div>
+        <p>怎么办？Vivek 的回答是另一句话——"the actual skill is a stack of smaller skills"。这一句是全文的母题，后面所有章节都从这个判断里长出来。</p>
+        <p>翻译成中文就是：<strong>别再问"我是不是做研究的料"。问"我现在还没练好的是哪一个具体小技能"。</strong></p>
+      </div>
+    </section>
+
+    <!-- 02 挑自己的问题 -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">PICK YOUR OWN PROBLEMS</div>
+          <h2 class="cap-title-en">Richard Hamming's lunch question</h2>
+          <div class="cap-title-cn">挑自己的问题 —— 别接别人剩下的</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Richard Hamming 是贝尔实验室的传奇，他在食堂吃午饭的时候有个坏习惯——他会问坐在旁边的人"你这个领域最重要的问题是什么"。然后接着问"那你为什么不在这上面做"。</p>
+        <p>他这么问是因为他发现一件事：<strong>大多数人不挑问题，他们吸收问题。</strong>从导师那里来，从"某个大厂上个季度刚宣布的方向"来，从"这个礼拜所有人都在转的论文"来。</p>
+        <p>吸收的问题有个致命缺陷——你<strong>拿着结论，没有过程</strong>。你知道某个大厂关心一个方向，但不知道为什么、不知道他们想找到什么、不知道什么结果会让他们放弃。等他们转向了，你一年后才知道。</p>
+        <p>跟风问题的另一个代价是：你是在和一千个比你早起步、有更多算力的人赛跑。</p>
+        <div class="source-quote">
+          <strong>JOHN SCHULMAN · 原句</strong>
+          in one, you read the literature and hunt for things to improve. in the other, you choose an outcome you genuinely want to exist and reason backwards to the experiments. he argues for the second, and the quiet reason is that it manufactures originality.
+        </div>
+        <p>OpenAI 联合创始人 John Schulman 把研究拆成两种模式。一种：读文献，找能改进的点。另一种：选一个你真的想让它存在的"结果"，倒推回去需要哪些实验。</p>
+        <p>Schulman 主张第二种，理由很安静但很重——<strong>这种模式会自己制造原创性</strong>。一个你真的在乎的目标，会把你拖进任何综述都没覆盖过的领地。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            不要再说"我想做 AI"、"我想学英语"、"我想做副业"。问自己：<strong>你有没有一个结果，是你真的想让它存在、不做出来会难受的？</strong>如果是，倒推出下一步；如果不是，先别动——你还没找到值得吸收的问题。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 2 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">A goal you actually care about will drag you into territory<span class="arrow">·</span>no survey paper covers</div>
+      <div class="pull-quote-caption">Vivek · on why chosen problems beat absorbed ones</div>
+    </section>
+
+    <!-- 03 taste 是肌肉 -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">TASTE IS A MUSCLE</div>
+          <h2 class="cap-title-en">Predict before you run</h2>
+          <div class="cap-title-cn">Taste 是肌肉 —— 跑实验前先预测</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Taste 在中文里没有完全对应的词。可以叫"判断力"、"品味"、"直觉"、"眼力"，但每一个都不够准。它指的是——<strong>在结果出来之前，你对"什么会 work、什么不会 work"的那种准得不讲理的预判</strong>。</p>
+        <p>Vivek 的论断：taste 被讨论得像天赋。它表现得像肌肉。</p>
+        <p>这两个判断差很远。前者意味着"等"，等你长出来；后者意味着"练"，每次练都是一组具体的动作。</p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          taste, meanwhile, gets discussed like a gift. it behaves more like a muscle. predict the result of every experiment before you run it. cover a paper's results section and guess the numbers from the method alone. mark down which of this month's releases will matter in two years and check your hit rate later.
+        </div>
+        <p>Vivek 给的训练动作非常具体：</p>
+        <ul class="skill-stack">
+          <li><strong>预测再跑。</strong>每个实验跑之前先写下"我预期会看到什么"，跑完对照。预期准了说明 taste 在长，预期跑偏了说明你的模型还差一段。</li>
+          <li><strong>读方法学猜数据。</strong>看一篇 paper 的方法部分，盖住 results，猜数字会落在哪。猜得越准，taste 越在肌肉里。</li>
+          <li><strong>看现在判未来。</strong>这个月发布的东西里挑出哪些会在两年后还有用，记录你的命中率，半年后回看。错的会告诉你哪一段判断是凭印象做的。</li>
+        </ul>
+        <p>这一套动作 Vivek 用了一句话总结——"<strong>a forecast plus a correction, repeated a few hundred times, is how every good model gets trained, including the one in your head</strong>"。一次预测 + 一次修正，几百次循环之后你脑子里的模型就被训出来了。这和训 GPT 没什么本质区别。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            下次你要做一个决定之前（要不要换工作 / 要不要做这个项目 / 要不要写这篇文 / 要不要投这笔钱），<strong>先写下来你预期会发生什么</strong>。3 个月后回来看。10 次下来你就会知道自己的判断准不准，准在哪、偏在哪。taste 是这么长出来的。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 升级输入 -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">UPGRADE YOUR INPUTS</div>
+          <h2 class="cap-title-en">Shared reading lists produce shared ideas</h2>
+          <div class="cap-title-cn">升级输入 —— 读什么比读得多重要 10 倍</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Vivek 的下一句像冷水："shared reading lists produce shared ideas"。共享的书单产出共享的想法。</p>
+        <p>你如果只看 arxiv 热门榜 + 群聊里转发的内容，你会准时得到和大家一样的结论。<strong>准时得到大家一样的结论，等于那些结论一文不值。</strong>因为决定你稀缺性的不是"我和别人想法一致的速度"，是"我和别人想法不一样的角度"。</p>
+        <p>怎么不一样？两条路。</p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          old material is criminally underpriced. this field reruns its own past on a delay: mixture of experts dates to 1991, lstms to 1997, backprop went mainstream in 1986. rich sutton needed about a thousand words in 2019 to write the bitter lesson, and it predicts the shape of the field better than surveys ten times its length.
+        </div>
+        <p><strong>第一条：回去读老的材料。</strong>AI 这个圈子在延迟重播自己的过去——MoE 1991，LSTM 1997，反向传播 1986 主流化。Rich Sutton 2019 年写了 1000 字叫《The Bitter Lesson》，预测整个领域的形状比十倍长度的综述都准。Claude Shannon 1952 年讲"创造性思维"，开场动作是把一个问题缩到几乎琐碎，先解小版本，再一块一块把难度加回去。</p>
+        <p>那个"先把问题缩到最小再解"的招，在任何一个领域都比任何"现代效率建议"都管用。</p>
+        <p><strong>第二条：拉宽范围。</strong></p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          range matters as much as depth. interpretability borrows shamelessly from neuroscience. eval design is mechanism design wearing a lab coat. a working sense of how gpus actually move memory tells you which architecture papers are doomed before the benchmarks do.
+        </div>
+        <p>可解释性从神经科学抄方法；评测设计是穿了白大褂的机制设计；真正懂 GPU 怎么搬数据的人，benchmark 还没出就知道哪篇架构论文注定失败。诚实的统计可能是 ML 里最稀缺的技能，因为很多发表的"严谨"是带误差线的氛围。</p>
+        <p>还有一条：<strong>读 paper 本身，别读总结它的推文</strong>。附录里埋着尸体，limitations 一段通常是整篇文档最诚实的部分。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            把你的"信息来源清单"列出来。如果列表里 80% 是当下热门（公众号热文 / 知乎热榜 / 抖音爆款 / 微博热搜），你的想法会和 80% 的人一样。<strong>加 3 个老资料源</strong>（领域经典、5-10 年前的论文 / 书、跨学科的基础教材），3 个慢信息源（个人 newsletter、播客长访谈、纸质书），你的输入端就升级了。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 写下来 -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">WRITE EVERYTHING DOWN</div>
+          <h2 class="cap-title-en">The page finds gaps your head papers over</h2>
+          <div class="cap-title-cn">写下来 —— 脑子里想清楚的不算数，写清楚的才算</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Paul Graham 有个观察：<strong>一个想法你觉得彻底成形了，直到你要把它写成字的那一刻。</strong></p>
+        <p>页面会找出你脑子里被掩盖的漏洞——那个你从来没验证过的假设、那个其实不成立的步骤、那两个悄悄矛盾的论断。脑子里能糊弄过去，写下来糊弄不过。</p>
+        <p>Feynman 的规矩是"最不该骗的人是自己，因为你自己是最容易被骗的"。书写是自古以来最便宜的防御。</p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          darwin went further and made it procedural. any fact that cut against his theory got written down on the spot, because he'd caught his own memory deleting inconvenient evidence faster than the convenient kind.
+        </div>
+        <p>达尔文更狠，他把这条规则变成流程。<strong>任何和他理论相反的事实，当场记下来</strong>。因为他已经发现自己的记忆力删除不利证据的速度比删有利证据快得多。你脑子对你的失败跑，做的是同一件事。</p>
+        <p>怎么办？Vivek 给的实操：</p>
+        <ul class="skill-stack">
+          <li><strong>记 log：</strong>假设、设置、预期、结果、修正后的判断。一个月后回看，humbling 到任何 reviewer 都给不了的程度。</li>
+          <li><strong>把一部分放出去。</strong>Chris Olah 和 Shan Carter 那篇 research debt 文章说过——领域是被没消化的想法噎死的，一篇清楚的解释本身就是贡献，不是什么"服务工作"。</li>
+          <li><strong>写公开的好处：</strong>很多做 interpretability 的人是先通过好读的 blog 进的领域，不是会议论文。一批公开写作也是你能拿出来的最强 credential，因为它是你不可伪造的思考样本。</li>
+        </ul>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            今天起开一个 note，标题就叫"log"。每做一个决定，每搞砸一件事，每改变一个判断，写 3 行：<strong>我以为 / 我做了 / 现在知道</strong>。3 个月回看，你会发现自己脑子里的"成功故事"全是事后编的。写下来是治后视偏差最便宜的药。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 3 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">A clear explanation is a genuine contribution<span class="arrow">·</span>rather than a service job</div>
+      <div class="pull-quote-caption">Olah & Carter · on why writing matters</div>
+    </section>
+
+    <!-- 06 收紧循环 -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">TIGHTEN THE LOOP</div>
+          <h2 class="cap-title-en">Volume beats genius</h2>
+          <div class="cap-title-cn">收紧循环 —— 跑得越快，错得越快，学得越快</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Alec Radford（GPT 系列早期重要贡献者之一）的故事里很少有"灵光一闪"。有的都是<strong>量</strong>。每天更多 run，每周更多被丢弃的错误想法，<strong>一个比别人更新得更快的现实模型</strong>。这就是真正的游戏。研究速度基本等于"你多快发现自己错了"的速度。</p>
+        <p>这就让 tooling 变成了一类研究活动，不是什么后勤。Vivek 给的清单很具体：</p>
+        <ul class="skill-stack">
+          <li>启动一次 run 应该是一个命令。</li>
+          <li>画图应该再一个命令。</li>
+          <li>每个实验都应该能根据 config 重现。</li>
+          <li>对比两次 run 应该几秒就完，而不是花一下午考古。</li>
+        </ul>
+        <p>Karpathy 那篇训练神经网络的"recipe"里有一个步骤回报率高到离谱——<strong>先在单 batch 上 overfit，再放大训练</strong>。30 秒的事，bug 一半没了。先把一切缩到便宜，做对，再花算力。</p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          retire the idea that engineering is the junior partner here. at the frontier the two jobs have fused. the researcher who can build the harness, the eval, and the data pipeline is the one whose hypotheses actually get tested. everyone else is waiting in a queue.
+        </div>
+        <p>丢掉"工程是研究的副手"这个想法。在前沿这两个活已经合二为一。<strong>能自己搭 harness、自己做 eval、自己接数据 pipeline 的研究者，是那些假说真的会被测到的人。</strong>其他人都在排队。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            不要把"做出决定"和"验证决定"分开。决定 — 跑 — 修正，<strong>这个循环应该能在一周甚至一天内完成</strong>。如果你做一个决定要等 3 个月才看到结果，你的循环太松了。把它缩短——做小一点的决定、跑短一点的实验、看快一点的反馈——你学的速度会跳一档。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 盯住输出 -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STARE AT THE OUTPUTS</div>
+          <h2 class="cap-title-en">Loss curve is not analysis</h2>
+          <div class="cap-title-cn">盯住输出 —— 别只看 loss 曲线，去读 100 个失败案例</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>一条下降的 loss 曲线不是分析，是安慰。</p>
+        <p>你的实验抛出的信息远比你消费的多——transcripts、failure cases、分布那个奇怪的尾巴。大部分信息在 logs 文件夹里没被读过就死了。</p>
+        <p>Karpathy 的 recipe 在写任何训练代码之前就开始了——<strong>花几小时手抠原始数据</strong>。大部分 ML bug 藏在数据里，它们静默地死。不会 crash。你只会得到一个平庸的模型 + 一个关于"为什么"错得离谱的解释。</p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          andrew ng has taught the same unglamorous move for over a decade because nothing beats it. pull a hundred failures, read all of them, sort them into piles, attack the biggest pile.
+        </div>
+        <p>吴恩达教了同一个不性感的动作十几年，因为没东西能打过它。<strong>拉 100 个失败案例，全读完，分堆，攻最大那一堆。</strong>对模型管用，对评测也管用。一个你没读过 transcript 的 benchmark，等于你不真理解的 benchmark。一段真正奇怪行为的 transcript 教你的东西，比下一位小数精度的 accuracy 都多。</p>
+        <p>这一段对普通读者的迁移最直接：<strong>别只看 dashboard 上的漂亮曲线，去读最失败的 100 条。</strong></p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            下次你做任何一个项目（公众号 / 副业 / 一次产品上线），找 100 个最不成功的样本（最差的 100 篇文章、最差的 100 个客户反馈、最差的 100 次销售对话），全读完，分堆，攻最大堆。<strong>单看平均数你永远修不掉真正的问题</strong>——平均数被少数好样本撑住了，多数坏样本在水下。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 漫步 + 找人 + 复利 -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">WANDER, PEOPLE, COMPOUND</div>
+          <h2 class="cap-title-en">Your first subfield is an accident of timing</h2>
+          <div class="cap-title-cn">漫步 + 找人 + 长期复利 —— 三个慢变量</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>你的第一个子方向是时间的偶然，所以<strong>把它当偶然来对待</strong>。在决定你在哪里扎根之前，先认真花时间在 interpretability、evals、RL、系统这几个地方。<strong>这个领域的某个角落，你的某个具体的怪，是一个不公平的优势。</strong>要找到那个角落，唯一的方式是在好几个地方先交学费。没人能免。</p>
+        <p>每个想法先跑一个用完就丢的版本，让大多数想法早早死掉。baseline 调到疼为止——ML 的墓地全是蒸发掉的增益，蒸发的原因是没对一个真正调过的 baseline 做对比。你拿一个 reviewer 来学这件事是最贵的。ablate 到你真的知道是哪个组件撑住了结果，通常只有一个，通常不在标题里那个。</p>
+        <p>宽度也是保险。子方向都会饱和，<strong>全都饱和</strong>，通常就在它们在推特上达到顶峰之后。能持续出活的人，是那些已经熟悉邻近领地的人。</p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          hamming noticed a pattern in who ended up doing important work. colleagues with closed office doors got more done in any given year, and colleagues with open doors did the work that mattered, because the interruptions carried information about what the world actually needed.
+        </div>
+        <p>Hamming 看到一条规律：最终做出重要工作的人有个共同点——开着门办公。那些年产出最多的人，关门的人产出更多；<strong>但做出重要工作的，是开门的人</strong>，因为打扰本身带着"世界真正需要什么"的信息。你的"开门"可能是个 inbox。保持开着。</p>
+        <p>慷慨在研究里的复利比什么都强。复现一个结果并公开你发现什么；把你给自己做的工具发出去；用大白话解释一件难的事。回报会绕着弯来——几个月后变成一个合作、一条引用、一个你根本没申请过的角色。在时间线上承认自己错了，比在印刷品里错便宜得多。<strong>那个能在你投入三个月之前告诉你"这想法不行"的合作者，比算力值钱</strong>。这种关系买不到，只能挣。</p>
+        <p>最后一句，巴斯德说"机遇偏爱有准备的头脑"，Hamming 在上面盖了一整套职业哲学——<strong>知识和生产力像利息一样复利。</strong></p>
+        <div class="source-quote">
+          <strong>VIVEK · 原句</strong>
+          the daily edges look trivial in isolation. what you read, what you record, how fast your loop runs, who you argue with. give them a few years and they produce careers that look like luck from the outside. start compounding earlier than feels necessary.
+        </div>
+        <p>日常的边看起来都不值一提。你读什么、你记什么、你的循环跑多快、你跟谁吵。给它们几年，它们会造出从外面看像运气一样的职业。<strong>比你觉得必要的更早开始复利。</strong>未来的你已经知道这段时间是最便宜的。</p>
+        <div class="cap-example">
+          <div class="cap-example-label">普通读者怎么用</div>
+          <div class="cap-example-text">
+            三个动作今天就能开：(1) <strong>开门</strong>——把你的 DMs / 微信 / 邮箱真的开起来，主动找人聊，别等别人来找你。(2) <strong>复现一件你欣赏的作品</strong>，把你做出来的版本连同你的发现一起公开。(3) <strong>认一个你想超过 5 年的人</strong>，去读他的所有东西，给他写邮件，每 6 个月一次。三件事做完一年，你就和别人不一样了。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>how to be good at research</em><br>
+          作者：Vivek (@itsreallyvivek) · 发布于 2026/06/10 · 5.4M 浏览<br>
+          原文链接（X 长文）：<a href="https://x.com/itsreallyvivek/article/2064686372737454155?lang=en" target="_blank" rel="noopener">https://x.com/itsreallyvivek/article/2064686372737454155?lang=en</a><br>
+          摘要链接（X 主帖）：<a href="https://x.com/itsreallyvivek/status/2064686372737454155" target="_blank" rel="noopener">https://x.com/itsreallyvivek/status/2064686372737454155</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/itsreallyvivek" target="_blank" rel="noopener">https://x.com/itsreallyvivek</a>
+        </li>
+        <li>
+          <strong>AUTHOR · NOTE</strong>
+          原文为 Vivek 联合 Claude 共同创作（self-disclosed in 2026/06/12 follow-up post）。作者本人也提到"taste is a muscle, not a gift"是全文最让他反复琢磨的一句话。
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文是写给 AI 圈研究者的方法论长文，本文保留所有核心论点，并把场景从 AI 研究平移到任何"想做出点新东西"的人——学技能、做产品、写公众号、转岗、创业。原文引用的 Hamming、Schulman、Karpathy、吴恩达、Paul Graham 等人的金句都保留了英文原貌。
+        </li>
+      </ul>
+      <p class="references-note">如果你只做一件事：从今天起开一个"log"。每次做决定、搞砸、改变判断时，写 3 行——我以为 / 我做了 / 现在知道。3 个月后回看，你会发现自己的判断准不准、偏在哪。taste 是这么长出来的。研究也是。其余的 7 章都会自己长出来。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">没人教过你研究。<strong>但每一项都可以练。</strong></p>
+      <p class="closing-caption">读完了。下一步：关掉手机，写下你最近一次决定——你当时预期会发生什么。3 个月后回来看。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">8 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Nobody teaches you research</span>
+          <span class="nav-item-cn">没人教过你研究</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Hamming's lunch question</span>
+          <span class="nav-item-cn">挑自己的问题</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Predict before you run</span>
+          <span class="nav-item-cn">Taste 是肌肉</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Upgrade your inputs</span>
+          <span class="nav-item-cn">升级输入</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Write everything down</span>
+          <span class="nav-item-cn">写下来</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Tighten the loop</span>
+          <span class="nav-item-cn">收紧循环</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Stare at the outputs</span>
+          <span class="nav-item-cn">盯住输出</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Wander, people, compound</span>
+          <span class="nav-item-cn">漫步·找人·复利</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+
+      navPanel.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', function() {
+          navPanel.classList.remove('active');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

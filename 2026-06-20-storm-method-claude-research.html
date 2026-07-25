@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stanford STORM Method · 让 Claude 5 分钟做出博士级研究 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-source {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .article-byline .byline-sep {
+      color: var(--border-subtle);
+    }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 720px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 64px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 20px 0;
+      font-style: italic;
+    }
+    .cap-body .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .cap-features {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+    .cap-features li {
+      position: relative;
+      padding: 10px 0 10px 28px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .cap-features li:last-child { border-bottom: none; }
+    .cap-features li::before {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 18px;
+      width: 12px;
+      height: 1px;
+      background: var(--accent-gold-dim);
+    }
+    .cap-features li strong { color: var(--text-primary); font-weight: 600; }
+
+    .cap-example {
+      margin: 24px 0 8px;
+      padding: 20px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-red);
+      border-radius: 4px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-example:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-gold-dim);
+    }
+    .cap-example-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-example-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* PROMPT CARD — 套 30-system-prompts 模板（暗色卡片 + head 头 + EN/中文 toggle + Copy） */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 6px;
+      border: 1px solid #1f1f23;
+      overflow: hidden;
+      margin: 28px 0 12px;
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.3);
+    }
+    .prompt-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #1f1f23;
+      background: #0a0a0c;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      letter-spacing: 0.1em;
+      flex-shrink: 0;
+      min-width: 32px;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .prompt-name-en {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #e8e8ea;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #8a8a8e;
+      letter-spacing: 0.04em;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* REFERENCES — 引用与原文出处 */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+    .references-note {
+      margin-top: 8px;
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.85;
+    }
+
+    /* IMAGE GRID (single image wrapper) */
+    .cap-image {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      margin: 28px 0;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-image:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-image img { display: block; width: 100%; height: auto; }
+    .cap-image figcaption {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cap-image figcaption strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* 层级图（spectrum 4 阶） */
+    .spectrum-stack {
+      list-style: none;
+      margin: 24px 0;
+      padding: 0;
+    }
+    .spectrum-row {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px 18px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      margin-bottom: 8px;
+      border-radius: 4px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .spectrum-row:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-left-color: var(--accent-red);
+    }
+    .spectrum-level {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 64px;
+      padding-top: 2px;
+    }
+    .spectrum-text {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .spectrum-text strong { color: var(--text-primary); font-weight: 600; }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-prompt pre { font-size: 11.5px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+      .spectrum-row { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">STANFORD · STORM METHOD</div>
+      <h1 class="article-title">Stanford STORM Method</h1>
+      <p class="article-subtitle">让 Claude 5 分钟做出博士级研究 · 4 个 prompt 全拆解</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Nav Toor (@heynavtoor) · 2.23M 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/06/20</span>
+      </div>
+      <p class="article-desc">Stanford NAACL 2024 论文背后的方法论——4 个 prompt 串成 8 阶段 pipeline：Multi-Perspective Scan / Contradiction Map / Synthesis / Peer Review，附 7 个真实使用场景。每张 prompt 卡片支持中英文切换 + 一键复制。</p>
+    </section>
+
+    <!-- COVER IMAGE -->
+    <section class="cover-frame">
+      <img src="images/2026-06-20-storm-cover.jpg" alt="Stanford STORM Method cover">
+      <p class="cover-caption">Nav Toor · The Stanford STORM Method: How to Make Claude Research Like a PhD in Minutes · 2026/06/17</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">大多数人用 Claude 像用搜索引擎：问一句，答一句，关 tab。<strong>这是把最好的功能锁起来了。</strong></p>
+      <p class="intro-lead">Stanford 2024 年在 NAACL 发了一篇论文，做了一个叫 <strong>STORM</strong> 的研究系统——比下一个最佳方法组织度提升 25%、覆盖面广 10%。MIT 开源，免费跑，但几乎没人知道：<strong>你可以在 Claude 里用 4 个 prompt 复刻它。</strong></p>
+      <p class="intro-statement">本文按 8 个章节展开：先讲清楚 STORM 是什么（cap 01）、为什么单 prompt 永远不够（cap 02）、然后逐个拆解 4 个核心 prompt——Multi-Perspective Scan / Contradiction Map / Synthesis / Peer Review（cap 03-06），再串成 5 分钟工作流（cap 07），最后给 7 个真实使用场景（cap 08）。每张 prompt 卡片可中英切换 + 一键复制。</p>
+    </section>
+
+    <!-- PULL QUOTE -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">A research is not a prompt<span class="arrow">·</span>it is a four-phase pipeline</div>
+      <div class="pull-quote-caption">Stanford NAACL 2024 · on the difference between search and research</div>
+    </section>
+
+    <!-- 01 WHAT STORM ACTUALLY IS -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 01</div>
+          <h2 class="cap-title-en">What STORM actually is</h2>
+          <div class="cap-title-cn">STORM 是什么：Stanford NAACL 2024 的多视角研究法</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>大多数人用 Claude 像用搜索引擎：问一句，答一句，关 tab。<strong>这是把最好的功能锁起来了。</strong></p>
+        <p>Stanford 2024 年在 NAACL 发了一篇论文，做了一个叫 <strong>STORM</strong> 的研究系统。论文经过同行评审，结论很硬：</p>
+        <ul class="cap-features">
+          <li><strong>STORM</strong> = Synthesis of Topic Outlines through Retrieval and Multi-perspective Question Asking</li>
+          <li><strong>发布</strong>：NAACL 2024 · Stanford OVAL Lab</li>
+          <li><strong>效果</strong>：相比下一个最佳方法，产出的文章 <strong>组织度提升 25%</strong>，覆盖面 <strong>广 10%</strong></li>
+          <li><strong>许可</strong>：MIT 开源，免费用，免费跑</li>
+        </ul>
+        <p>Stanford 还做了一个在线 demo：<a href="https://storm.genie.stanford.edu" target="_blank" rel="noopener">storm.genie.stanford.edu</a>。不用注册，输个主题直接看它写一篇带来源的文章。</p>
+        <p>完整代码在 <a href="https://github.com/stanford-oval/storm" target="_blank" rel="noopener">github.com/stanford-oval/storm</a>。本地能跑。</p>
+        <p><strong>但真正值钱的部分不是代码。</strong>Stanford 这套系统的核心是一种思维方式——而你完全可以在 Claude 里复刻它，方法就是接下来要讲的 <strong>4 个 prompt</strong>。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-20-storm-01.jpg" alt="STORM paper overview">
+          <figcaption><strong>STORM 论文</strong>Stanford NAACL 2024 · 25% 更优 · 10% 更广 · MIT 开源</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 02 WHY ONE PROMPT WILL ALWAYS FAIL -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 02</div>
+          <h2 class="cap-title-en">Why one prompt always fails</h2>
+          <div class="cap-title-cn">为什么单 prompt 永远不够：缺 5 个视角</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>你问 Claude「告诉我 X 是什么」，它给你的是<strong>主流观点</strong>。最常见的框架。最表面的东西。</p>
+        <p>你得不到的是：</p>
+        <ul class="cap-features">
+          <li><strong>实战派</strong> —— 每天跟 X 打交道的人知道什么？学术圈忽略什么？</li>
+          <li><strong>怀疑派</strong> —— 主流观点哪里错了？支持者故意忽略了什么证据？</li>
+          <li><strong>经济派</strong> —— 谁从当前叙事里获利？什么财务激励在塑造研究？</li>
+          <li><strong>历史派</strong> —— 以前见过类似的模式吗？最后怎么发展的？</li>
+          <li><strong>学院派</strong> —— 同行评审的证据到底说了什么？哪里跟大众认知矛盾？</li>
+        </ul>
+        <p><strong>这 5 个声音看到的是不同的东西。</strong>这正是 PhD 学生做的事——他们不是问一个问题，他们问 5 个。</p>
+        <div class="source-quote"><strong>STANFORD 数据</strong>基于多视角的文章比基于单视角的文章，组织度提升 25%，覆盖面广 10%。这就是全部突破——多视角提问捕捉到了单 prompt 研究永远看不到的盲点。</div>
+        <p>一个 PhD 级的研究任务需要人类花 40-60 小时阅读。多数人没这个时间。STORM 把它压缩了。下面 4 个 prompt 把它进一步压缩——总共 5 分钟。</p>
+      </div>
+    </section>
+
+    <!-- 03 PROMPT 1: MULTI-PERSPECTIVE SCAN -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 03</div>
+          <h2 class="cap-title-en">Prompt 1 · Multi-Perspective Scan</h2>
+          <div class="cap-title-cn">多视角扫描：5 个专家同时给答案</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这是整套方法的<strong>核心</strong>。粘贴到 Claude，把第一行的 topic 换成你的研究主题。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-20-storm-02.jpg" alt="Multi-Perspective Scan prompt screenshot">
+          <figcaption><strong>PROMPT 1</strong>5 个视角同时跑 · 60 秒出结果</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-01">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">01</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Multi-Perspective Scan</span>
+                <span class="prompt-name-cn">多视角扫描</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I need to research [YOUR TOPIC].
+Simulate 5 different expert perspectives on this topic:
+1. THE PRACTITIONER: works with this daily.
+What do they know that academics miss?
+What practical realities are usually ignored?
+2. THE ACADEMIC: has studied this for years.
+What does the peer reviewed evidence actually say?
+Where does the evidence contradict popular belief?
+3. THE SKEPTIC: thinks the mainstream view is wrong.
+What is the strongest counterargument?
+What evidence do proponents conveniently ignore?
+4. THE ECONOMIST: follows the money.
+Who profits from the current narrative?
+What financial incentives shape the research?
+5. THE HISTORIAN: has seen similar patterns before.
+What historical parallels exist?
+What can we learn from how those played out?
+For each perspective give me:
+- Their core position in 2 sentences
+- The strongest evidence supporting their view
+- The one thing they would tell me that no other perspective would</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我要研究 [你的主题]。
+请模拟 5 个不同的专家视角：
+1. 实战派：每天跟这个主题打交道。
+   他们知道什么学术界忽略的？
+   哪些现实情况通常被忽视？
+2. 学院派：研究这个领域多年。
+   同行评审的证据实际说了什么？
+   哪些地方跟大众认知矛盾？
+3. 怀疑派：认为主流观点是错的。
+   最强的反驳论据是什么？
+   支持者故意忽略了什么证据？
+4. 经济派：跟着钱走。
+   谁从当前叙事里获利？
+   什么财务激励在塑造研究？
+5. 历史派：以前见过类似模式。
+   存在哪些历史类比？
+   从那些类比的发展能学到什么？
+对每个视角给出：
+- 他们的核心立场（2 句话）
+- 支持他们观点的最强证据
+- 只有他们会告诉你的、别的视角不会说的那一件事</div>
+        </div>
+        <p><strong>你会得到什么：</strong>同一个主题的 5 种完全不同的解读。实战派看到学院派漏掉的东西。怀疑派挑战实战派的假设。经济派暴露学院派忽略的激励机制。历史派提供经济派看不到的模式。</p>
+        <p>这是 <strong>60 秒</strong> 的工作量，但它能捕捉到单 prompt 永远找不到的东西。</p>
+      </div>
+    </section>
+
+    <!-- 04 PROMPT 2: CONTRADICTION MAP -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 04</div>
+          <h2 class="cap-title-en">Prompt 2 · Contradiction Map</h2>
+          <div class="cap-title-cn">矛盾图谱：找出 5 视角的交锋点</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>现在让 Claude 找出这 5 个声音<strong>在哪里打架</strong>。<strong>交锋的地方才有真正的理解。</strong></p>
+        <figure class="cap-image">
+          <img src="images/2026-06-20-storm-03.jpg" alt="Contradiction Map prompt screenshot">
+          <figcaption><strong>PROMPT 2</strong>找出 5 视角的矛盾 · 5 分钟内出图谱</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-02">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">02</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Contradiction Map</span>
+                <span class="prompt-name-cn">矛盾图谱</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Based on the 5 perspectives above, map the contradictions:
+1. Where do two or more perspectives directly contradict
+each other? List each conflict with the specific claims
+that clash.
+2. Which perspective has the strongest evidence?
+Which has the weakest? Why?
+3. What is the one question that, if answered, would
+resolve the biggest contradiction?
+4. What does EVERY perspective agree on?
+(This is likely true. Even opponents confirm it.)
+5. What topic did NONE of the perspectives address?
+(This is the blind spot in the whole field.
+Often the most valuable finding.)</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>基于上面的 5 个视角，画出矛盾图谱：
+1. 哪两个或更多视角直接矛盾？
+   列出每个冲突和具体冲突的论点。
+2. 哪个视角的证据最强？哪个最弱？为什么？
+3. 如果只能问一个问题来回答，问哪个问题能解决最大的矛盾？
+4. 所有视角都同意什么？
+   （这很可能是真的。连反对者也确认的事。）
+5. 哪个主题没有任何一个视角提到？
+   （这是整个领域的盲区，往往是最有价值的发现。）</div>
+        </div>
+        <p><strong>你会得到什么：</strong>一张专家分歧地图——分歧在哪里、为什么分歧、哪个证据最强。<strong>多数人跳过这一步。</strong>但这一步正是从「表面理解」到「真本事」的分水岭。</p>
+        <div class="source-quote"><strong>两条隐含规则</strong>如果 5 个视角都同意——很可能是真的。如果某个主题没人提到——你刚刚发现了整个领域的空白。</div>
+      </div>
+    </section>
+
+    <!-- 05 PROMPT 3: SYNTHESIS -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 05</div>
+          <h2 class="cap-title-en">Prompt 3 · Synthesis</h2>
+          <div class="cap-title-cn">综合简报：5 视角拼成一份 briefing</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>现在让 Claude 把前面所有东西<strong>整合成一份研究简报</strong>。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-20-storm-04.jpg" alt="Synthesis prompt screenshot">
+          <figcaption><strong>PROMPT 3</strong>5 视角 + 矛盾图谱 → 一份 60 秒 briefing</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-03">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">03</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Synthesis</span>
+                <span class="prompt-name-cn">综合简报</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Synthesize everything from the 5 perspectives and the
+contradiction map into a research briefing:
+1. THE ONE PARAGRAPH SUMMARY: explain this topic as if
+briefing a CEO who has 60 seconds and needs nuance,
+not just the headline.
+2. THE 5 KEY FINDINGS: most important things I now know,
+ranked by reliability. For each, note which perspectives
+support it and which challenge it.
+3. THE HIDDEN CONNECTION: one non obvious link between
+findings that only shows up when you look at all 5
+perspectives together.
+4. THE ACTIONABLE INSIGHT: based on all the evidence,
+what should someone in [YOUR ROLE] actually DO
+differently? Be specific.
+5. THE FRONTIER QUESTION: the one question that, if
+answered, would change everything about how we
+understand this topic.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>把 5 个视角和矛盾图谱综合成一份研究简报：
+1. 一段话总结：假设你给一个 CEO 简报，他有 60 秒，需要的是细节不是标题党——怎么讲？
+2. 5 个关键发现：我现在知道的最重要的 5 件事，按可信度排序。每个都注明哪些视角支持，哪些挑战。
+3. 隐藏关联：只有同时看 5 个视角才能发现的、一个不明显的联系。
+4. 可执行洞察：基于所有证据，[你的角色] 具体应该做什么不同的事？说具体。
+5. 边界问题：哪个问题一旦被回答，会彻底改变我们理解这个主题的方式？</div>
+        </div>
+        <p><strong>你会得到什么：</strong>一份任何单一专家都写不出来的简报。它涵盖了每个角度，标出了矛盾点，给可信度排了序，最后落到一个具体行动上。这本来是一个 PhD 学生 48 小时能产出的东西。你 90 秒拿到了。</p>
+      </div>
+    </section>
+
+    <!-- 06 PROMPT 4: PEER REVIEW -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 06</div>
+          <h2 class="cap-title-en">Prompt 4 · Peer Review</h2>
+          <div class="cap-title-cn">自我评审：给自己的研究打分</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>STORM 有一个<strong>已知的弱点</strong>——Stanford 自己的研究者公开标出来了：<strong>它不自查</strong>。来源偏差、事实错位会偷偷混进来。</p>
+        <p>这个 prompt 修这个 bug：让 Claude 给自己打分。</p>
+        <figure class="cap-image">
+          <img src="images/2026-06-20-storm-05.jpg" alt="Peer Review prompt screenshot">
+          <figcaption><strong>PROMPT 4</strong>自我评审 · 把来源偏差和事实错位揪出来</figcaption>
+        </figure>
+        <div class="prompt-card" data-card id="prompt-04">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">04</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Peer Review</span>
+                <span class="prompt-name-cn">自我评审</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Now peer review your own research briefing:
+1. CONFIDENCE SCORES: rate each of the 5 key findings
+on a 1 to 10 scale for reliability. Explain each score.
+2. WEAKEST LINK: which claim are you least confident in?
+What specific info would you need to verify it?
+3. BIAS CHECK: which perspective might be overrepresented
+in your synthesis? Did one voice dominate?
+4. MISSING PERSPECTIVE: is there a 6th angle I should
+have included that would change the conclusions?
+5. OVERALL GRADE: if a Stanford professor reviewed this
+briefing, what grade would they give and why?
+What would they tell me to fix?</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>现在给你的研究简报做同行评审：
+1. 可信度评分：给 5 个关键发现按 1-10 打可信度分。解释每个分数。
+2. 最弱环节：你最没把握的论断是哪个？需要什么具体信息来验证它？
+3. 偏差检查：综合时哪个视角被过度代表了？有没有一个声音主导了整篇？
+4. 缺失视角：是不是应该加一个第 6 视角？这个视角会改变结论吗？
+5. 总评分：如果一个 Stanford 教授评审这份简报，他会打几分？为什么？他会告诉你改什么？</div>
+        </div>
+        <p><strong>你会得到什么：</strong>一份对你自己研究的诚实评估——哪些论断强、哪些弱、有哪些偏差、缺哪些角度。真正的同行评审要几个月。你 60 秒做完了。</p>
+      </div>
+    </section>
+
+    <!-- 07 THE 5-MINUTE WORKFLOW -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 07</div>
+          <h2 class="cap-title-en">The 5-minute workflow</h2>
+          <div class="cap-title-cn">5 分钟流程：每个 prompt 一分钟</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>把 4 个 prompt 串成一个工作流，每个 prompt 一分钟：</p>
+        <ul class="cap-features">
+          <li><strong>第 1 分钟</strong> — Prompt 1：5 个专家视图。</li>
+          <li><strong>第 2-3 分钟</strong> — Prompt 2：矛盾图谱。</li>
+          <li><strong>第 3-4 分钟</strong> — Prompt 3：研究简报。</li>
+          <li><strong>第 5 分钟</strong> — Prompt 4：可信度评分。</li>
+        </ul>
+        <p>总耗时：5 分钟。<br>输出：一份带矛盾分析、综合、具体行动、可靠性评分的多视角简报。</p>
+        <p>PhD 学生人工产出这个要 40-60 小时。不是因为他们慢，而是因为从 5 个角度读、画出矛盾、综合、自查——这本来就是一个大脑要 40 小时才能完成的活。</p>
+      </div>
+    </section>
+
+    <!-- 08 7 WAYS TO USE THIS STARTING TODAY -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CAPABILITY 08</div>
+          <h2 class="cap-title-en">7 ways to use this starting today</h2>
+          <div class="cap-title-cn">今天就能用的 7 个真实场景</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这 4 个 prompt 不是写文章专用——任何需要<strong>先想清楚再行动</strong>的事都能用：</p>
+        <ul class="cap-features">
+          <li><strong>写文章或报告之前</strong> — 跑一遍 4 prompt，你的文章能覆盖别人没想到的角度。</li>
+          <li><strong>重大商业决策之前</strong> — 拿 5 个视角。实战派告诉你现实里什么有效，怀疑派告诉你哪里会出错，经济派告诉你谁获利。</li>
+          <li><strong>面试之前</strong> — 5 分钟从 5 个角度研究目标公司。实战派视角给你 insider 行话，怀疑派视角给你犀利问题。你走进面试间比任何人都准备得充分。</li>
+          <li><strong>投资之前</strong> — 看多情形、看空情形、历史类比、激励图谱、学术证据——5 分钟。矛盾图谱告诉你真正的风险藏在哪里。</li>
+          <li><strong>学新技能之前</strong> — 从 5 个角度摸这个领域。实战派告诉你先学什么，学院派告诉你理论是什么，怀疑派告诉你哪里被过度炒作。你跳过噪音。</li>
+          <li><strong>谈判之前</strong> — 从 5 个角度研究对方。理解他们的激励、弱点、历史行为。你走进谈判间带着结构性优势。</li>
+          <li><strong>任何演讲之前</strong> — 对你的主题跑一遍 STORM。你的 slides 在观众提反对意见之前就回答了。你的 Q&amp;A 看起来毫不费力。</li>
+        </ul>
+        <figure class="cap-image">
+          <img src="images/2026-06-20-storm-06.jpg" alt="7 ways to use STORM">
+          <figcaption><strong>7 个场景</strong>写文 · 决策 · 面试 · 投资 · 学习 · 谈判 · 演讲</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>The Stanford STORM Method: How to Make Claude Research Like a PhD in Minutes</em><br>
+          作者：Nav Toor (@heynavtoor) · 发布于 2026/06/17 · 2.23M 浏览<br>
+          原文链接：<a href="https://x.com/heynavtoor/status/2067194761446920264" target="_blank" rel="noopener">https://x.com/heynavtoor/status/2067194761446920264</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/heynavtoor" target="_blank" rel="noopener">https://x.com/heynavtoor</a>
+        </li>
+        <li>
+          <strong>AUTHOR · LINKTREE</strong>
+          <a href="https://linktr.ee/navtoor" target="_blank" rel="noopener">https://linktr.ee/navtoor</a> — Free Products + Sponsorships
+        </li>
+        <li>
+          <strong>STANFORD STORM · PAPER</strong>
+          <em>Synthesis of Topic Outlines through Retrieval and Multi-perspective Question Asking</em> · NAACL 2024<br>
+          <a href="https://storm.genie.stanford.edu" target="_blank" rel="noopener">https://storm.genie.stanford.edu</a>（在线 demo）<br>
+          <a href="https://github.com/stanford-oval/storm" target="_blank" rel="noopener">https://github.com/stanford-oval/storm</a>（MIT 开源）
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文中 4 个 prompt 模板均保留英文原貌；中文版为意译，便于理解。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">STORM 不是 prompt 越多越好，而是视角越多元越准。这套方法适用于任何需要"先想清楚再行动"的场景——写文前跑一遍，决策前跑一遍，面试前跑一遍。</p>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">You now have a PhD-level research method<span class="arrow">·</span>four prompts, five minutes, eight phases.</p>
+      <p class="closing-caption">读完了。下一步：打开 Claude，粘 Prompt 1，5 分钟后你对自己的研究主题会有一个完全不同的视角。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">8 个章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-item-num">01</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">What STORM is</span>
+          <span class="nav-item-cn">STORM 是什么</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-item-num">02</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Why one prompt fails</span>
+          <span class="nav-item-cn">单 prompt 为何失败</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-item-num">03</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Multi-Perspective Scan</span>
+          <span class="nav-item-cn">多视角扫描</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-item-num">04</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Contradiction Map</span>
+          <span class="nav-item-cn">矛盾图谱</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-item-num">05</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Synthesis</span>
+          <span class="nav-item-cn">综合简报</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-item-num">06</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">Peer Review</span>
+          <span class="nav-item-cn">自我评审</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-item-num">07</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">5-minute workflow</span>
+          <span class="nav-item-cn">5 分钟流程</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-item-num">08</span>
+        <span class="nav-item-stack">
+          <span class="nav-item-en">7 ways to use</span>
+          <span class="nav-item-cn">7 个使用场景</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // ===== Prompt Card: EN/CN toggle + Copy =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) {
+              body.removeAttribute('hidden');
+            } else {
+              body.setAttribute('hidden', '');
+            }
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector(`.prompt-card-body[data-lang="${activeLang}"]`);
+      const content = body.textContent;
+
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else {
+        fallbackCopy(content, showCopied);
+      }
+    }
+
+    function fallbackCopy(content, cb) {
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(textarea);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => {
+      navPanel.classList.toggle('active');
+    });
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => {
+        navPanel.classList.remove('active');
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>

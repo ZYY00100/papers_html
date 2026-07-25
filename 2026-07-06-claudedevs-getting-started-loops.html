@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四种 Loop 完全指南 · ClaudeDevs 官方解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 88px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(34px, 5vw, 48px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.6vw, 22px);
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 620px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      margin-top: 16px;
+      text-transform: uppercase;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(18px, 2.4vw, 21px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+      font-size: clamp(24px, 4vw, 32px);
+      font-weight: 300;
+      line-height: 1.4;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 600;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 8px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY (section) */
+    .capability {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 6px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 3.5vw, 32px);
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(15px, 2vw, 17px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      background: var(--bg-secondary);
+      padding: 1px 6px;
+      border-radius: 3px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    /* CAP ROW (旧/新模式对比) */
+    .cap-rows {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    @media (max-width: 640px) { .cap-rows { grid-template-columns: 1fr; } }
+    .cap-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--accent-gold);
+      padding: 18px 22px;
+      border-radius: 4px;
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+    .cap-row.new { border-left-color: var(--accent-red); }
+    .cap-row strong { color: var(--text-primary); font-weight: 600; }
+
+    /* SOURCE QUOTE (原文引用) */
+    .source-quote {
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      padding: 16px 22px;
+      margin: 24px 0;
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .source-quote strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      font-style: normal;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* CALLOUT (内嵌示例) */
+    .cap-callout {
+      background: var(--bg-code);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 24px 0;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      color: #e8e8ea;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #2a2a2e;
+    }
+
+    /* CODE BLOCK (bash 文件夹结构) */
+    .code-block {
+      background: var(--bg-code);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 24px 0;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      color: #e8e8ea;
+      white-space: pre-wrap;
+      word-break: break-word;
+      border: 1px solid #2a2a2e;
+    }
+
+    /* PROMPT CARDS - 完整套 06-08 那篇 */
+    .prompt-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin: 28px 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .prompt-card:hover {
+      transform: scale(1.006);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .prompt-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+    }
+    .prompt-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+      flex: 1;
+      min-width: 0;
+    }
+    .prompt-card-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-red);
+      flex-shrink: 0;
+    }
+    .prompt-card-tag .prompt-num {
+      color: var(--accent-gold);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .prompt-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .prompt-name-en {
+      color: #e8e8ea;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-name-cn {
+      font-family: 'Noto Serif SC', 'Rajdhani', sans-serif;
+      color: #8a8a8e;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prompt-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .prompt-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'Inter', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .prompt-card-body[hidden] { display: none; }
+
+    /* DIVIDER */
+    .divider {
+      border: 0;
+      border-top: 1px dashed var(--border-subtle);
+      margin: 32px 0;
+    }
+
+    /* INLINE IMAGE (memory feedback-original-article-images 第二节) */
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img {
+      display: block;
+      width: 100%;
+      max-width: 880px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .inline-image img:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .inline-image-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 64px 0 32px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .references-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3vw, 26px);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .references-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 24px 0;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .references-list em {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-style: italic;
+      color: var(--text-primary);
+    }
+    .references-list a {
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note {
+      padding: 18px 22px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-top: 16px;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 28px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 300px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 22px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 26px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .prompt-card-body { font-size: 12px; padding: 18px 20px; }
+      .prompt-card-head { padding: 12px 14px; }
+    }
+
+    /* CAP-TABLE (4-loop comparison) */
+    .cap-table-wrap { overflow-x: auto; margin: 28px 0; }
+    .cap-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14.5px;
+      line-height: 1.7;
+      background: var(--bg-card);
+    }
+    .cap-table th {
+      text-align: left;
+      padding: 12px 14px;
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--accent-gold);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+    }
+    .cap-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+    .cap-table tr:hover td {
+      background: var(--bg-secondary);
+    }
+
+    /* CAP-META (4-line metadata block: triggered/stop/best/managed) */
+    .cap-meta {
+      margin: 28px 0;
+      padding: 18px 24px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .cap-meta:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .cap-meta-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 12px;
+    }
+    .cap-meta p { margin-bottom: 8px; font-size: 14.5px; line-height: 1.85; color: var(--text-secondary); }
+    .cap-meta p:last-child { margin-bottom: 0; }
+    .cap-meta strong { color: var(--text-primary); font-weight: 600; margin-right: 8px; }
+
+    /* CAP-LIST (ordered/unordered list inside section body) */
+    .cap-list {
+      margin: 18px 0;
+      padding-left: 24px;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.9;
+    }
+    .cap-list li { margin-bottom: 10px; }
+    .cap-list li:last-child { margin-bottom: 0; }
+
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+  <main class="container">
+    <section class="article-hero">
+      <div class="article-category">CLAUDE CODE · LOOP DESIGN</div>
+      <h1 class="article-title">四种 Loop 完全指南</h1>
+      <p class="article-subtitle">ClaudeDevs 官方解读 — Getting started with loops</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Delba Oliveira(@delba_oliveira) · ClaudeDevs · 2.9M 浏览</span>
+        <span class="byline-sep">·</span>
+        <span>2026/07/06</span>
+      </div>
+      <p class="article-desc">Claude Code 团队把「loop」定义为 agent 重复工作直到满足停止条件 —— 按触发方式、停止方式、所用 primitive、适用任务分成 4 类:Turn-based / Goal-based / Time-based / Proactive。本文是官方文章的逐段中文解读,4 段可直接复制的命令 + 3 张原文配图 + 一张总结表都留给你。</p>
+    </section>
+    <section class="cover-frame">
+      <img src="images/2026-07-06-claudedevs-getting-started-loops/cover.jpg" alt="Getting started with loops — Delba Oliveira, ClaudeDevs">
+      <p class="cover-caption">原文封面 · Delba Oliveira(@delba_oliveira) · ClaudeDevs · 2026/07/06</p>
+    </section>
+    <section class="article-intro">
+      <p class="intro-lead">最近大家都在谈「设计 loop」而不是「提示词工程」。如果你花点时间在 X 上翻，会发现 loop 这个词每个人说的都不一样。</p>
+      <p class="intro-lead"><strong>在 Claude Code 团队，我们把 loop 定义为:agent 重复执行同一段工作，直到满足停止条件为止。我们按 4 个维度给它分类:</strong></p>
+      <ul style="margin: 8px 0 18px 24px; color: var(--text-secondary); font-size: 16px; line-height: 1.9;">
+        <li>How they are triggered</li>
+        <li>How they are stopped</li>
+        <li>What Claude Code primitive is used</li>
+        <li>What type of task is most appropriate for each.</li>
+      </ul>
+      <p class="intro-lead">我们会讲主流的 loop 类型、什么时候用哪种、怎么在管好 token 的同时不丢代码质量。不是每个任务都需要复杂的 loop —— 从最简单的方案开始，按需用这些 pattern。</p>
+    </section>
+    <section class="pull-quote">
+      <div class="pull-quote-text">On the Claude Code team, we define loops as agents repeating cycles of work<span class="arrow">·</span>until a stop condition is met.</div>
+      <div class="pull-quote-caption">Delba Oliveira · on what a loop actually is</div>
+    </section>
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">OVERVIEW</div>
+          <h2 class="cap-title-en">Four loops at a glance</h2>
+          <div class="cap-title-cn">四种 Loop 一图看懂</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>先把总结表放最前面 —— 这张表是 Delba 写在文末的,把它前置:30 秒建立心智模型,后面 4 章展开讲细节。</p>
+        <div class="cap-table-wrap"><table class="cap-table">
+          <thead><tr>
+            <th>Loop(循环类型)</th>
+            <th>你把什么交给 Claude</th>
+            <th>什么时候用</th>
+            <th>关键工具</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td>Turn-based(回合制)</td>
+              <td>验证步骤</td>
+              <td>探索或决策的时候</td>
+              <td>自定义 verification skills</td>
+            </tr>
+            <tr>
+              <td>Goal-based(目标制)</td>
+              <td>停止条件</td>
+              <td>你知道「完成」长什么样</td>
+              <td>`/goal`</td>
+            </tr>
+            <tr>
+              <td>Time-based(时间制)</td>
+              <td>触发方式</td>
+              <td>工作按排期发生在项目外</td>
+              <td>`/loop`、`/schedule`</td>
+            </tr>
+            <tr>
+              <td>Proactive(主动循环)</td>
+              <td>Prompt 本身</td>
+              <td>重复且定义清晰的工作</td>
+              <td>以上全部 + dynamic workflows</td>
+            </tr>
+          </tbody>
+        </table></div>
+        <p><strong>怎么用这张表:</strong>横向看「你把什么交给 Claude」 —— 这是 loop 类型之间的本质差别。纵向看,4 类 loop 从最轻量(Turn-based,每条 prompt 就是一个)到最重(Proactive,routine 自跑几天)。</p>
+      </div>
+    </section>
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">LOOP TYPE 1</div>
+          <h2 class="cap-title-en">Turn-based loops</h2>
+          <div class="cap-title-cn">回合制循环(每条 prompt = 一个手动 loop)</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>你每发一条 prompt，就已经开了一个手动 loop —— 你自己指挥每一回合。Claude 收集上下文 → 动手 → 检查 → 不行就再试 → 给你回复。我们管这叫 agentic loop。</p>
+        <p>比如让 Claude 写一个点赞按钮。它会读你的代码、动手改、跑测试，回来一份「我觉得可以了」的版本。然后你人工看一下，再发下一条 prompt。</p>
+        <p>你可以把这步验证自己做的事写成一个 SKILL.md，让 Claude 能端到端自检。要带工具或连接器，让 Claude 能「看到、测量或触碰」结果。检查越量化，Claude 自检越容易。</p>
+        <p>比如你的 SKILL.md 里可以这么写:</p>
+    <div class="prompt-card" data-card id="prompt-01">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">01</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">verify-frontend-change SKILL.md</span>
+            <span class="prompt-name-cn">前端变更五步验证</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">--- 
+name: verify-frontend-change 
+description: Verify any UI change end-to-end before declaring it done. 
+--- 
+
+# Verifying frontend changes 
+Never report a UI change as complete based on a successful edit alone. Verify it the way a human reviewer would: 
+
+1. Start the dev server and open the edited page in the browser. 
+
+2. Interact with the change directly. For a new control (button, input, toggle): click it, confirm the expected state change, and screenshot before/after. 
+
+3. Check the browser console: zero new errors or warnings. 
+
+4. Use the Chrome Devtools MCP, run a performance trace and audit Core Web Vitals.
+
+If any step fails, fix the issue and rerun from step 1 — do not hand back partially verified work.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden># verify-frontend-change · SKILL.md(中文意译版)
+
+## 作用
+把这个 SKILL 放在你的项目里，Claude 改完任何 UI 都要按这 5 步自检，不能只看到「edit succeeded」就宣布完成。
+
+## YAML 头
+---
+name: verify-frontend-change
+description: 端到端验证任何 UI 变更，不能只凭「编辑成功」就宣布完成
+---
+
+## 主流程
+
+永远不要只因为「编辑成功了」就报告一个 UI 变更已完成。要像真人 reviewer 那样去验证:
+
+1. 启动 dev server，在浏览器里打开被改动的页面。
+
+2. 直接跟这个变更交互。如果是新加的控件(button / input / toggle):
+   点一下，确认状态变化符合预期，截图保存改动前后对比。
+
+3. 看浏览器 console:零个新的 error 或 warning。
+
+4. 用 Chrome Devtools MCP，跑一次 performance trace，审一下 Core Web Vitals。
+
+任何一步失败，修一下，然后从第 1 步重跑 —— 不要带着半验证的工作回来。
+</div>
+    </div>
+        <div class="cap-meta">
+          <p class="cap-meta-kicker">FOUR METADATA</p>
+          <p><strong>触发</strong>由用户 prompt 触发。</p>
+          <p><strong>停止条件</strong>Claude 自己判断任务完成，或需要补充上下文。</p>
+          <p><strong>适合</strong>短任务，不属于固定流程或排期的一部分。</p>
+          <p><strong>管理用量</strong>写具体的 prompt，用 skill 强化验证，减少回合数。</p>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-07-06-claudedevs-getting-started-loops/turn-based.jpg" alt="回合制循环 · 每条 prompt 就是一个手动 loop,你来指挥每一步">
+          <p class="inline-image-caption">原文配图 · 回合制循环 · 每条 prompt 就是一个手动 loop,你来指挥每一步 · Delba Oliveira(@delba_oliveira) · 2026/07/06</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">LOOP TYPE 2</div>
+          <h2 class="cap-title-en">Goal-based loop (/goal)</h2>
+          <div class="cap-title-cn">目标制循环(用 /goal 定义成功标准)</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>有时候一回合不够，尤其是复杂任务。Agent 在能迭代的时候表现更好。你可以延长 Claude 跑多久:用 /goal 定义「做完了是什么样」。</p>
+        <p>你把成功标准定下来，Claude 就不用自己判断「够好了」而提前结束。每次 Claude 想停，evaluator 模型会核对你的条件，把它打回去继续，直到目标达成或你定的回合数用完。</p>
+        <p>所以才说「通过的测试数」「分数超过某条线」这种确定性指标特别有效。</p>
+        <p>例如:</p>
+    <div class="prompt-card" data-card id="prompt-02">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">02</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">/goal Lighthouse 90</span>
+            <span class="prompt-name-cn">用 /goal 把 Lighthouse 打到 90</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">/goal get the homepage Lighthouse score to 90 or above, stop after 5 tries.
+</div>
+      <div class="prompt-card-body" data-lang="cn" hidden>/goal get the homepage Lighthouse score to 90 or above， stop after 5 tries.
+</div>
+    </div>
+        <div class="cap-meta">
+          <p class="cap-meta-kicker">FOUR METADATA</p>
+          <p><strong>触发</strong>实时人工 prompt。</p>
+          <p><strong>停止条件</strong>目标达成，或达到最大回合数。</p>
+          <p><strong>适合</strong>有可验证退出标准的任务。</p>
+          <p><strong>管理用量</strong>定具体的完成标准 + 明确的回合上限，比如「试 5 次就停」。</p>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-07-06-claudedevs-getting-started-loops/goal-based.jpg" alt="目标制循环 · /goal 定义「做完了是什么样」,evaluator 守住停止条件">
+          <p class="inline-image-caption">原文配图 · 目标制循环 · /goal 定义「做完了是什么样」,evaluator 守住停止条件 · Delba Oliveira(@delba_oliveira) · 2026/07/06</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">LOOP TYPE 3</div>
+          <h2 class="cap-title-en">Time-based loop (/loop and /schedule)</h2>
+          <div class="cap-title-cn">时间制循环(/loop 与 /schedule)</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>有些 agent 工作是周期性的:任务不变，只有输入在变。比如每天早上总结 Slack 消息。还有些依赖外部系统 —— 简单的接入方式是定时去查，看变了什么。比如一个 PR 可能收到 review 或 CI 挂掉。</p>
+        <p>对这些情况，你可以让 Claude 跑 /loop —— 按间隔重复一条 prompt。例如:</p>
+    <div class="prompt-card" data-card id="prompt-03">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">03</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">/loop 5m check my PR</span>
+            <span class="prompt-name-cn">/loop 5 分钟巡检 PR</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">/loop 5m check my PR, address review comments, and fix failing CI
+</div>
+      <div class="prompt-card-body" data-lang="cn" hidden># /loop 5m check my PR(中文意译)
+
+## 作用
+每 5 分钟跑一次 Claude:让它检查 PR 状态，处理 review 评论，修 CI 失败。
+
+## 直接复制可用的英文命令
+/loop 5m check my PR， address review comments， and fix failing CI
+
+## 中文拆解
+- /loop 5m — 每 5 分钟跑一次
+- check my PR — 检查 PR 状态(有没有新 review、有没有 CI 失败)
+- address review comments — 处理新进来的 review 评论
+- and fix failing CI — 顺手把 CI 跑挂的地方修了
+
+`/loop` 跑在你电脑上，关机就停 —— 适合个人开发者的持续巡检。
+</div>
+    </div>
+        <p>`/loop` 跑在你电脑上，你关机它就停。想搬到云上，用 /schedule 创建一个 routine。</p>
+        <div class="cap-meta">
+          <p class="cap-meta-kicker">FOUR METADATA</p>
+          <p><strong>触发</strong>指定时间间隔。</p>
+          <p><strong>停止条件</strong>你手动取消，或者工作完成(PR 合了、队列清空了)。</p>
+          <p><strong>适合</strong>周期性任务，或对接外部环境/系统。</p>
+          <p><strong>管理用量</strong>拉长间隔，或者改成事件驱动而不是时间驱动。</p>
+        </div>
+        <p style="margin-top: 24px;"><strong>把 routine 搬到云上,用 /schedule:</strong></p>
+    <div class="prompt-card" data-card id="prompt-04">
+      <div class="prompt-card-head">
+        <span class="prompt-card-tag">
+          <span class="prompt-num">04</span>
+          <span class="prompt-name-stack">
+            <span class="prompt-name-en">/schedule every hour bug triage</span>
+            <span class="prompt-name-cn">/schedule 每小时巡检 bug</span>
+          </span>
+        </span>
+        <div class="prompt-card-actions">
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="cn">中文</button>
+          </div>
+          <button class="copy-btn" data-copy-btn>Copy</button>
+        </div>
+      </div>
+      <div class="prompt-card-body" data-lang="en">/schedule every hour: check the project-feedback channel for bug reports. /goal: don't stop until every report found this run is triaged, actioned, and responded to. When fixing a bug, use a workflow to explore three solutions in parallel worktrees and have a judge adversarially review them.</div>
+      <div class="prompt-card-body" data-lang="cn" hidden># /schedule every hour bug triage(中文意译)
+
+## 作用
+每小时跑一次:扫 project-feedback 频道的新 bug 报告，直到这一轮发现的每个报告都 triage、处理、回复。修 bug 时用 workflow 在三个并行 worktree 探索方案，让 judge 模型对抗性 review。
+
+## 直接复制可用的英文命令
+/schedule every hour: check the project-feedback channel for bug reports. /goal: don't stop until every report found this run is triaged， actioned， and responded to. When fixing a bug， use a workflow to explore three solutions in parallel worktrees and have a judge adversarially review them.
+
+## 中文拆解
+- /schedule every hour — 每小时跑一次(云端 routine，电脑关了也能跑)
+- check the project-feedback channel for bug reports — 扫反馈频道的新报告
+- /goal: don't stop until ... — 加目标约束:每个报告都要处理完才能停
+- workflow to explore three solutions in parallel worktrees — 修 bug 时并行试 3 个方案
+- have a judge adversarially review them — 让 judge 模型对抗性 review，挑最好的
+
+把 routine 搬到云上，即便本机关了它也跑。
+</div>
+    </div>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">LOOP TYPE 4</div>
+          <h2 class="cap-title-en">Proactive loops</h2>
+          <div class="cap-title-cn">主动循环(组合多个 primitive)</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>上面那些 primitive，加上 Claude Code 其他特性(auto mode、dynamic workflows，目前 research preview)可以组合成一个 loop，跑长时间任务。</p>
+        <p>比如处理进来的反馈，可以这样组合:</p>
+        <ol class="cap-list">
+          <li>`/schedule`(research preview)跑一个 routine，检查新进来的报告</li>
+          <li>`/goal`定义「做完了是什么样」，用 skill 写清楚怎么验证</li>
+          <li>Dynamic workflows 编排一组 agent:每个报告 triage、修掉、review 修法</li>
+          <li>Auto mode 让 routine 不用停下来问你能不能继续</li>
+        </ol>
+        <p>拼起来，一条 prompt 长这样:</p>
+        <div class="cap-meta">
+          <p class="cap-meta-kicker">FOUR METADATA</p>
+          <p><strong>触发</strong>事件或排期，无人在场。</p>
+          <p><strong>停止条件</strong>每个任务达到自己的目标就退出。整个 routine 在你关掉之前一直跑。</p>
+          <p><strong>适合</strong>重复且定义清晰的工作流 —— bug 报告、issue triage、迁移、依赖升级等等。</p>
+          <p><strong>管理用量</strong>把 routine 路由到更小更快的模型，只在需要判断时才上最强的模型。</p>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-07-06-claudedevs-getting-started-loops/proactive.jpg" alt="主动循环 · /schedule + /goal + dynamic workflows + auto mode 拼起来">
+          <p class="inline-image-caption">原文配图 · 主动循环 · /schedule + /goal + dynamic workflows + auto mode 拼起来 · Delba Oliveira(@delba_oliveira) · 2026/07/06</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">OPERATIONS</div>
+          <h2 class="cap-title-en">Maintaining code quality</h2>
+          <div class="cap-title-cn">维持代码质量</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>一个 loop 输出质量的好坏，取决于它周围的系统。设计系统的时候:</p>
+        <ol class="cap-list">
+          <li><strong>代码库本身要干净:</strong>Claude 会跟随代码库里已有的 pattern 和规范。</li>
+          <li><strong>给 Claude 一个自检的方法:</strong>用 skill 把「什么是好的」写清楚给你和你的团队。</li>
+          <li><strong>文档要容易拿到:</strong>框架和库的文档跟得上最新最佳实践。</li>
+          <li><strong>用第二个 agent 做 code review:</strong>一个全新上下文的 reviewer 更少偏见，不会被原作者的推理带跑。你可以用内置的 `/code-review` skill，或者用 Code Review for GitHub。</li>
+        </ol>
+        <p>当某次单独的结果不达标，别只修这一处 —— 把它编码成规则，让未来每一轮都受益。</p>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">OPERATIONS</div>
+          <h2 class="cap-title-en">Managing token usage</h2>
+          <div class="cap-title-cn">管理 token 用量</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>管 token,loop 要有清晰的边界:</p>
+        <ol class="cap-list">
+          <li><strong>挑对的 primitive 和模型:</strong>小任务不需要多个 agent 或 loop。有些任务可以上更便宜更快的模型。</li>
+          <li><strong>定义清晰的成败和停止标准:</strong>说清楚「做完了是什么样」,Claude 就能更快收敛到解(但不能太快)。</li>
+          <li><strong>大规模跑之前先小规模试:</strong>Dynamic workflows 能并行起几百个 agent。先用一小片工作估一下用量。</li>
+          <li><strong>确定性工作用脚本:</strong>跑脚本比从头推演便宜。比如一个 PDF skill 可以带一个填表单的脚本，让 Claude 每次跑，而不是重新推导代码。</li>
+          <li><strong>routine 别跑得比实际需要还勤:</strong>间隔跟「你监控的东西变化频率」对齐。</li>
+          <li><strong>用量复盘:</strong>`/usage` 命令按 skill / subagent / MCP 拆解最近用量;`/goal` 不带参数会显示回合数和已用 token;`/workflows` 显示每个 agent 的 token 用量，你随时可以停掉一个 agent。</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">GET STARTED</div>
+          <h2 class="cap-title-en">Getting started</h2>
+          <div class="cap-title-cn">入门指引</div>
+        </div>
+      </div>
+      <div class="cap-body">
+
+        <p>总结一下:</p>
+        <p>想上手 loop，从你已经在做的工作里挑一个。挑一个你是瓶颈的任务，问自己哪一段可以交给 Claude:你能写出验证吗？目标够清晰吗？工作是按排期来的吗？</p>
+        <p>有想法之后，跑一下 loop，观察结果(看哪里卡住、哪里跑过头)，别怕迭代。</p>
+        <p>更多信息，看 Claude Code 关于并行跑 agent 的文档，以及 loop、schedule、goal、dynamic workflows 几个页面。</p>
+        <p style="font-family: Noto Serif SC, serif; font-style: italic; color: var(--text-muted);">本文作者 @delba_oliveira</p>
+      </div>
+    </section>
+
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>Getting started with loops</em><br>
+          作者:Delba Oliveira(@delba_oliveira) · 发布在 ClaudeDevs 官方账号 · 2026/07/06 · 2,981,828 浏览<br>
+          原文链接:<a href="https://x.com/ClaudeDevs/status/2074208949205881033" target="_blank" rel="noopener">https://x.com/ClaudeDevs/status/2074208949205881033</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/delba_oliveira" target="_blank" rel="noopener">https://x.com/delba_oliveira</a>
+        </li>
+        <li>
+          <strong>PUBLISHER</strong>
+          ClaudeDevs(<a href="https://x.com/ClaudeDevs" target="_blank" rel="noopener">@ClaudeDevs</a>) · Anthropic 官方开发者账号 · 550K followers
+        </li>
+        <li>
+          <strong>CLAUDE CODE DOCS REFERENCED</strong>
+          <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Skills</a> · SKILL.md 标准<br>
+          <a href="https://code.claude.com/docs/en/routines" target="_blank" rel="noopener">Routines</a> · /loop 与 /schedule 详细文档<br>
+          <a href="https://code.claude.com/docs/en/code-review" target="_blank" rel="noopener">Code Review</a> · 内置 /code-review skill<br>
+          <a href="https://code.claude.com/docs/en/goal" target="_blank" rel="noopener">/goal</a> · 目标制循环<br>
+          <a href="https://code.claude.com/docs/en/workflows" target="_blank" rel="noopener">Dynamic workflows</a> · agent 编排<br>
+          <a href="https://code.claude.com/docs/en/agents" target="_blank" rel="noopener">Agents</a> · 并行跑 agent
+        </li>
+        <li>
+          <strong>NOTE ON IMAGES</strong>
+          原文 4 张图(1 张封面 + 3 张 inline 配图)全部下载到 <code>images/2026-07-06-claudedevs-getting-started-loops/</code> 子目录,文件名与原文位置对应:cover / turn-based / goal-based / proactive。
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本,按中文阅读习惯意译正文段落。所有 prompt / SKILL.md / bash 命令保留英文原貌,提供中文意译版在 prompt-card 内 EN/CN 切换;表格直接渲染中文版。术语译法:Turn-based = 回合制、Goal-based = 目标制、Time-based = 时间制、Proactive = 主动循环。
+        </li>
+      </ul>
+      <p class="references-note">建议:不要 4 类 loop 一起搭。从 Turn-based 开始 —— 每条 prompt 都是一个手动 loop,你已经在用了。然后按任务复杂度递增:Goal-based 加成功标准,Time-based 加触发器,Proactive 拼所有 primitive。先把 Turn-based + 一个 SKILL.md 跑顺,再加 /goal,再加 /loop,最后才上 /schedule + dynamic workflows 的组合。</p>
+    </section>
+    <section class="closing">
+      <p class="closing-text">Not all tasks require complex loops<span class="arrow">·</span>start with the simplest solution.</p>
+      <p class="closing-text" style="font-size: 18px; color: var(--text-secondary); font-style: italic; font-family: Noto Serif SC, serif;">不是每个任务都需要复杂的 loop。<br>从最简单的方案开始,<strong>按需</strong>用这些 pattern。</p>
+      <p class="closing-caption">— Delba Oliveira · on choosing the right loop</p>
+    </section>
+    <footer class="article-footer">
+      <p>本文为解读版本 · 原文所有 prompt / SKILL.md / bash 命令均保留英文原貌</p>
+      <p class="credit">朱有以 · 为 AI 发电 · 2026/07</p>
+    </footer>
+  </main>
+  <button class="floating-nav-toggle" id="navToggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item"><span class="nav-item-num">01</span><span class="nav-item-stack"><span class="nav-item-en">Four loops at a glance</span><span class="nav-item-cn">四种 Loop 一图看懂</span></span></a>
+      <a href="#cap-02" class="nav-item"><span class="nav-item-num">02</span><span class="nav-item-stack"><span class="nav-item-en">Turn-based loops</span><span class="nav-item-cn">回合制循环</span></span></a>
+      <a href="#cap-03" class="nav-item"><span class="nav-item-num">03</span><span class="nav-item-stack"><span class="nav-item-en">Goal-based loop (/goal)</span><span class="nav-item-cn">目标制循环</span></span></a>
+      <a href="#cap-04" class="nav-item"><span class="nav-item-num">04</span><span class="nav-item-stack"><span class="nav-item-en">Time-based loop (/loop & /schedule)</span><span class="nav-item-cn">时间制循环</span></span></a>
+      <a href="#cap-05" class="nav-item"><span class="nav-item-num">05</span><span class="nav-item-stack"><span class="nav-item-en">Proactive loops</span><span class="nav-item-cn">主动循环</span></span></a>
+      <a href="#cap-06" class="nav-item"><span class="nav-item-num">06</span><span class="nav-item-stack"><span class="nav-item-en">Maintaining code quality</span><span class="nav-item-cn">维持代码质量</span></span></a>
+      <a href="#cap-07" class="nav-item"><span class="nav-item-num">07</span><span class="nav-item-stack"><span class="nav-item-en">Managing token usage</span><span class="nav-item-cn">管理 token 用量</span></span></a>
+      <a href="#cap-08" class="nav-item"><span class="nav-item-num">08</span><span class="nav-item-stack"><span class="nav-item-en">Getting started</span><span class="nav-item-cn">入门指引</span></span></a>
+    </div>
+  </nav>
+  <script>
+    // ===== Floating Nav Toggle =====
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    if (navToggle && navPanel) {
+      navToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+      document.addEventListener('click', (e) => {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+      navPanel.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => navPanel.classList.remove('active'));
+      });
+    }
+
+    // ===== Prompt Card: EN/CN toggle + Copy =====
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      const copyBtn = card.querySelector('[data-copy-btn]');
+
+      langBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          langBtns.forEach(b => b.classList.toggle('active', b === btn));
+          bodies.forEach(body => {
+            if (body.dataset.lang === lang) body.removeAttribute('hidden');
+            else body.setAttribute('hidden', '');
+          });
+          copyBtn.dataset.activeLang = lang;
+        });
+      });
+      copyBtn.dataset.activeLang = 'en';
+    });
+
+    function copyPrompt(btn) {
+      const card = btn.closest('[data-card]');
+      const activeLang = btn.dataset.activeLang || 'en';
+      const body = card.querySelector('.prompt-card-body[data-lang="' + activeLang + '"]');
+      const content = body.textContent;
+      const showCopied = () => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 2000);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(content).then(showCopied).catch(() => fallbackCopy(content, showCopied));
+      } else fallbackCopy(content, showCopied);
+    }
+
+    function fallbackCopy(content, cb) {
+      const ta = document.createElement('textarea');
+      ta.value = content;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      cb();
+    }
+
+    document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+      btn.addEventListener('click', () => copyPrompt(btn));
+    });
+  </script>
+</body>
+</html>
