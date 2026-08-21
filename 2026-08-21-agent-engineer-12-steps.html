@@ -75,8 +75,11 @@
     /* code block (原文嵌入代码片段) */
     .code-block { background: var(--bg-code); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; margin: 18px 0 28px; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
     .code-block:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
-    .code-block-head { padding: 10px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .code-block-head { padding: 10px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .code-block-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent-gold); letter-spacing: 0.1em; text-transform: uppercase; }
+    .code-copy-btn { background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+    .code-copy-btn:hover { color: #e8e8ea; border-color: rgba(201,169,98,0.5); }
+    .code-copy-btn.copied { color: var(--accent-gold); border-color: var(--accent-gold); }
     .code-block-body { padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.65; color: #e8e8ea; white-space: pre-wrap; word-wrap: break-word; margin: 0; max-height: 480px; overflow-y: auto; }
     /* 7 jobs section */
     .jobs-section { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
@@ -237,7 +240,10 @@
 <p><strong>按块删,不要按行删</strong>——一句话躲在你的 evals 噪声底里,告诉你不了什么。整段整段删,evals 才有信号。</p>
 <p><strong>把绝对指令改成原则</strong>——与其「绝不写多行注释」,不如写「让代码读起来像周围的代码——匹配注释密度、命名风格、习惯」。规则给一个固定答案,原则给 Claude 一种方法,让它读你的 repo 自己找正确答案。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">python · CLAUDE.md</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">python · CLAUDE.md</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body"># payments-api
 Subscription billing and invoicing for the web app.
 
@@ -287,7 +293,10 @@ Subscription billing and invoicing for the web app.
         </div>
 <p>一个 <code>pending | in_progress | completed</code> 的 status 枚举不需要一个例子就把整条 lifecycle 教会了——<strong>类型本身就是文档</strong>。Anthropic 在 SWE-bench Verified 上跑到 SOTA,部分靠的是对工具描述的精确打磨,不是模型本身的改动。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">python · MCP tools</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">python · MCP tools</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">@mcp.tool()
 def find_stalled_shipments(hours: int = 24) -&gt; list[dict]:
     """Shipments with no scan event in N hours.
@@ -366,7 +375,10 @@ def reroute(shipment_id: str, hub: str, reason: str) -&gt; dict:
         </div>
 <p>停下来的条件应该放在 <strong>模型判断之外的代码里</strong>。对有界的工作,就是 test gate 或 schema check。对大小未知的探索,收敛模式是 <strong>loop-until-dry</strong>——一直跑到 K 轮连续没新东西。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">javascript</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">javascript</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">const seen = new Set(); const confirmed = []; let dry = 0;
 
 while (dry &lt; 2) {                      // stop after 2 empty rounds
@@ -411,7 +423,10 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
 <p><strong>视角多样式 verify</strong>——给每个 verifier 一个不同的视角(正确性、安全性、可复现性),因为多样性抓得到 N 个一模一样的检查永远抓不到的失败模式。</p>
 <p><strong>Judge panel</strong>——从不同角度生成 N 个 attempts,用并行的 judge打分,从赢家合成、嫁接 runner-up 里最好的部分。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">text</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">› For each finding, spawn three verifiers - correctness, security, reproducibility. Accept only what survives two of three.
 
 ● 6 findings → 18 verifier agents, running in parallel
@@ -450,7 +465,10 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
 <p>主力形状是 <strong>diamond</strong>——fan out 收集广度,plain code 收口,一个 agent 做综合。reduce 一步值得强调,因为钱从这里漏——flattening 和 deduping 是 flatMap 加一个 Set,不是又一个 agent。</p>
 <p><strong>Edge 是免费的。把 agent 留给判断,不是 plumbing。</strong></p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">text</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">› Run a workflow to audit every route under src/routes/ for missing auth. One agent per route file, verify each finding before reporting.
 
 ● Claude wrote an orchestration script · launching…
@@ -523,7 +541,10 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
         </div>
 <p>两件事在任何 coding 启动前就要修好——一个 <strong>initializer agent</strong> 跑一次把环境搭起来:一个 init.sh 启动 dev server、一份 progress log、一个 initial git commit、一份 <strong>JSON 格式的 feature list</strong>——给 claude.ai clone 这样的项目 200 多项,每一项都标 failing。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">json</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">json</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">{
   "category": "functional",
   "description": "New chat button creates a fresh conversation",
@@ -567,7 +588,10 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
 <p>「干净」就是真实团队里的那种干净——没大 bug、代码有序、下一位工程师能开始干不用先替别人收拾残局。</p>
 <p>认方向的仪式是机械的、每次都能省 token:<code>pwd</code>、读 progress 文件、读 git log、读 feature list、跑 <code>init.sh</code>、<strong>动手任何东西之前先测一遍基础还在跑</strong>。最后那个检查比听起来重要——少了它,一个 agent 在已经坏掉的 app 上接着做新 feature,只会让破损更深。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">text</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">[Assistant] Getting my bearings on the current state.
 [Tool] bash — pwd
 [Tool] read — claude-progress.txt
@@ -611,7 +635,10 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
         </div>
 <p>从你已经在手测的东西、你 bug tracker 里的、你 support 队列里抓。写的时候让 <strong>两个 domain 专家独立得出同样的判断</strong>——任务里的模糊变成指标里的噪声。建 <strong>平衡集</strong>——既测「这个行为应该触发」也测「不应该触发」,不然你会调出一个到处搜东西的 agent。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">yaml</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">yaml</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">task:
   id: "fix-auth-bypass_1"
   desc: "Fix authentication bypass when password field is empty"
@@ -662,7 +689,10 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
 <p>然后把两个指标分清楚。<strong>pass@k</strong> 是 k 次里至少一次成功的概率——k 越大它越大。<strong>pass^k</strong> 是 k 次里全成功的概率——k 越大它掉得越快。单 trial 75%,三次 都过只剩 ~42%。</p>
 <p>一次成功就够的用 pass@k;面向客户的用 <strong>pass^k</strong>,用户期望每次都跑通。</p>
 <div class="code-block">
-          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <div class="code-block-head">
+            <span class="code-block-lang">text</span>
+            <button class="code-copy-btn" data-copy-btn>Copy</button>
+          </div>
           <pre class="code-block-body">› Run the suite against the new model and compare to baseline.
 
 ● 47 tasks × 3 trials · 141 runs · parallel
@@ -845,6 +875,34 @@ the upgrade decision took an afternoon, not three weeks</pre>
       });
       navPanel.querySelectorAll('a').forEach(function(a) {
         a.addEventListener('click', function() { navPanel.classList.remove('open'); });
+      });
+
+      // code-block 一键复制(per prompt-card 复制模式,改用 code-block 父容器)
+      document.querySelectorAll('.code-block').forEach(function(block) {
+        const btn = block.querySelector('.code-copy-btn');
+        if (!btn) return;
+        btn.addEventListener('click', function() {
+          const body = block.querySelector('.code-block-body');
+          const text = body ? body.textContent : '';
+          const fallback = function() {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch(e) {}
+            document.body.removeChild(ta);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(fallback);
+          } else { fallback(); }
+          const orig = btn.textContent;
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function() {
+            btn.textContent = orig;
+            btn.classList.remove('copied');
+          }, 2000);
+        });
       });
     })();
   </script>
