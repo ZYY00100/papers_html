@@ -180,6 +180,14 @@
         <p class="intro-lead"><strong>怎么读这篇文章。</strong>12 步对应 12 章,每章顶部金句框 + Addy-style 口语化中文翻译(Codez 原句英文保留),原文里嵌入的 9 段代码片段全部按 `.code-block` 渲染成可读的代码面板,19 张原文配图按位置插入。最后一节是「7 个 jobs to run with Claude」行动清单 + 结尾。</p>
       </div>
     </section>
+    <section class="intro-overview">
+      <div class="container">
+        <div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-01.jpg" alt="7 pillars 关系图:foundation / execution / reliability 三层">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 12 步走完 7 个 pillar · foundation 先(execution second、reliability last)的 dependency order 全景。</p>
+        </div>
+      </div>
+    </section>
     <section class="pull-quote">
       <div class="container">
         <p class="pull-quote-text"><strong>Bad context breaks the loop. A loop without evals never converges on anything you can trust. A graph without evals scales your error instead of your throughput.</strong></p>
@@ -202,14 +210,14 @@
         </div>
         <div class="cap-body">
           <p>Karpathy 那套框架是你该抓住的:模型是 CPU,context window 是 RAM。Context engineering 的艺术就是把这个 RAM 装得刚刚好——只装下一步需要的,不多装。</p>
-<div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-01.jpg" alt="intro overview · 7 pillars 全景图">
-          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 7 pillars 关系图:foundation / execution / reliability 三层。</p>
-        </div>
 <p>一个重新框定所有事的数字:在 Claude Code 里,你打一个字之前,大概有 <strong>7,850 个 token 已经加载好了</strong>——system prompt、auto memory、skill descriptions、CLAUDE.md、environment info、MCP 工具名。你真正打的 prompt 大概 45 个 token。</p>
 <div class="inline-image">
           <img src="images/2026-08-21-agent-engineer-12-steps/x-02.jpg" alt="Step 1 · Claude Code context breakdown">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · /context 命令输出:7,850 vs 45 的真实 token 分布。</p>
+        </div>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-03.jpg" alt="Step 1 · Claude Code /context 详细 breakdown">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · Claude Code /context 命令实际输出:按类别拆 token、memory 文件清单、free space。</p>
         </div>
 <p>所有人都在优化那 45,从来没人打开过那 7,850。<code>/context</code> 命令能打印出按类别分布的真实组成——哪些 memory 文件加载了、哪个 tool call 吃了最多 token。两个数字值得盯着:<strong>memory files</strong>(如果重,说明 CLAUDE.md 超重)+ <strong>free space</strong>(剩余空间)。配合 <code>/memory</code> 看清楚到底哪些文件在场。</p>
         </div>
@@ -233,7 +241,7 @@
           <p>Anthropic <strong>删了 Claude Code system prompt 的 80%+</strong> 给 Claude 5 一代用,在 coding evals 上没测出下降。</p>
 <p>大多数 context 不是错——它是为更弱的模型写的指引,现在只是烧 token 还要让 Claude 在开始前先 reconcile 一堆互相矛盾的指令。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-03.jpg" alt="Step 2 · cut + layer">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-04.jpg" alt="Step 2 · cut + layer">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · context 的「cut + layer」哲学。</p>
         </div>
 <p>两条规则让「删」这件事变安全:</p>
@@ -283,12 +291,12 @@ Subscription billing and invoicing for the web app.
         <div class="cap-body">
           <p>工具是 agent 触碰世界的方式,而工具的描述就是 context——所以这是「agent 能做什么」和「agent 负担得起知道什么」之间的铰链。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-04.jpg" alt="Step 3 · tools + MCP overview">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-05.jpg" alt="Step 3 · tools + MCP overview">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 工具设计:description 既是文档也是发现表面。</p>
         </div>
 <p>过去的建议是用例子教工具用。现在反过来了:对当前的模型来说,<strong>例子反而把 Claude 困在它们描述的那一小块探索空间里</strong>。设计有表现力的参数吧。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-05.jpg" alt="Step 3 · MCP tool description">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-06.jpg" alt="Step 3 · MCP tool description">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · MCP tool description:use when + 类型作为文档。</p>
         </div>
 <p>一个 <code>pending | in_progress | completed</code> 的 status 枚举不需要一个例子就把整条 lifecycle 教会了——<strong>类型本身就是文档</strong>。Anthropic 在 SWE-bench Verified 上跑到 SOTA,部分靠的是对工具描述的精确打磨,不是模型本身的改动。</p>
@@ -335,12 +343,12 @@ def reroute(shipment_id: str, hub: str, reason: str) -&gt; dict:
         <div class="cap-body">
           <p>每个长任务最后都会超过一个 window。跨过那条边界的时候发生什么,是个设计决定——大多数人从来没做过这个决定,他们让 auto compaction 自己猜,然后奇怪为什么 agent 忘了 1 小时前说的一个 constraint。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-06.jpg" alt="Step 4 · memory mechanics">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-07.jpg" alt="Step 4 · memory mechanics">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · memory 加载机制:re-injected vs in-history。</p>
         </div>
 <p>机制是具体的、值得记住的。项目根的 CLAUDE.md 和 auto memory <strong>从磁盘重新注入</strong>。但用 paths scoped 的规则、嵌套的 CLAUDE.md 文件活在 message history 里——它们会被 summarize 掉,然后 <strong>不会再回来</strong>,除非匹配的 file 重新被读。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-07.jpg" alt="Step 4 · write to file">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-08.jpg" alt="Step 4 · write to file">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · plan file / progress log 留磁盘是跨 session 的最可靠 memory。</p>
         </div>
 <p>被 invoke 的 skill body 会回来,cap 是 <strong>每个 5k、总共 25k</strong>,老的先丢、从尾部截断——所以关键的东西放在 SKILL.md 的顶部。</p>
@@ -365,12 +373,12 @@ def reroute(shipment_id: str, hub: str, reason: str) -&gt; dict:
         <div class="cap-body">
           <p>一个 agent loop 就是 act → observe → decide → repeat。整条工程的难题全活在最后一步:<strong>它怎么知道自己搞完了?</strong></p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-08.jpg" alt="Step 5 · stop condition">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-09.jpg" alt="Step 5 · stop condition">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · loop:什么时候停。</p>
         </div>
 <p>让它自己跑,模型在两个方向都答得很差——要么在造了一半的东西上宣布胜利,要么在 3 个迭代前就搞完的事情上磨到天荒地老。这两个都不是 prompt 能修的,因为它们是结构性的。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-09.jpg" alt="Step 5 · loop-until-dry">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-10.jpg" alt="Step 5 · loop-until-dry">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · loop-until-dry:K 轮没新东西才停。</p>
         </div>
 <p>停下来的条件应该放在 <strong>模型判断之外的代码里</strong>。对有界的工作,就是 test gate 或 schema check。对大小未知的探索,收敛模式是 <strong>loop-until-dry</strong>——一直跑到 K 轮连续没新东西。</p>
@@ -415,7 +423,7 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
         <div class="cap-body">
           <p>一个收敛的 loop 还是收敛在模型相信的东西上。修法是 <strong>verifier</strong>——一个在模型自身判断之外、唯一工作是尝试杀掉这个发现的东西。如果它活下来,就过;如果没活下来,就永远到不了答案。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-10.jpg" alt="Step 6 · verifier pattern">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-11.jpg" alt="Step 6 · verifier pattern">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · verifier:对抗式 / 视角多样性 / judge panel。</p>
         </div>
 <p>三种模式值得手里有:</p>
@@ -458,7 +466,7 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
         <div class="cap-body">
           <p>大多数人把 agent 写成一条直线——step 1、step 2、step 3,每一步礼貌地等上一步。然后他们发现,有一半的步骤根本不需要等。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-11.jpg" alt="Step 7 · diamond shape">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-12.jpg" alt="Step 7 · diamond shape">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · diamond 形状:fan out + reduce + synthesize。</p>
         </div>
 <p>一个 node 是一份工作,一条 edge 是「这个输出喂给那个输入」。<strong>如果没有数据穿过,就没有 edge</strong>——那个等待就是纯粹的浪费。</p>
@@ -499,13 +507,13 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
         <div class="cap-body">
           <p>Topology 不是装饰——它是你在 latency和和花销上最大的杠杆,两个选择承担了大部分。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-12.jpg" alt="Step 8 · topology choice">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-13.jpg" alt="Step 8 · topology choice">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · parallel() vs pipeline() 选择。</p>
         </div>
 <p>第一,<code>parallel()</code> 对比 <code>pipeline()</code>。<code>parallel()</code> barrier 让所有东西等最慢的那个节点,然后下一阶段才开始。<code>pipeline()</code> 让每个 item 独立流过所有阶段——item A 可以在 stage 3,同时 B 还在 stage 1。</p>
 <p><strong>默认 pipeline。</strong>只有当一个 stage 真需要所有前序结果同时到位(比如 cross-set dedupe)时才用 barrier。「感觉更干净」不算理由——barrier 的 latency 是真实的、可度量的、浪费掉的时间。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-13.jpg" alt="Step 8 · model tiering">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-14.jpg" alt="Step 8 · model tiering">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 模型分层:cheap fan-out + top-tier merge。</p>
         </div>
 <p>第二,<strong>按 model 分层</strong>。每个 subagent 默认继承你 session 的 model,除非 script 显式 override——所以一次大 run 默认全按你的 top tier 计费。</p>
@@ -530,15 +538,11 @@ while (dry &lt; 2) {                      // stop after 2 empty rounds
         <div class="cap-body">
           <p>Anthropic 把这个问题框定得完美:一个长任务就是 <strong>一个软件项目,由轮班的工程师来写,每个新工程师来上班时对上一班一无所知</strong>。</p>
 <div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-14.jpg" alt="Step 9 · initializer">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-15.jpg" alt="Step 9 · initializer">
           <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · initializer agent:搭脚手架、写 init.sh、progress log、feature list。</p>
         </div>
 <p>光靠 compaction 不够。就算 frontier model 在 context window 上 loop「做一个 claude.ai 的 clone」也达不到要求——而且它会以两种特定的、可重复的方式失败。</p>
 <p>第一,agent <strong>试图一炮打响整个 app</strong>,跑到一半 context 用光,留给下一会的是一个半成品的、没文档的、需要反编译的功能。第二,项目稍后某个阶段,一个 agent 看了看周围,看到真实进展,<strong>宣布活儿干完了</strong>。</p>
-<div class="inline-image">
-          <img src="images/2026-08-21-agent-engineer-12-steps/x-15.jpg" alt="Step 9 · feature list JSON">
-          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · feature list 用 JSON 不用 markdown,因为模型不太会乱改 JSON。</p>
-        </div>
 <p>两件事在任何 coding 启动前就要修好——一个 <strong>initializer agent</strong> 跑一次把环境搭起来:一个 init.sh 启动 dev server、一份 progress log、一个 initial git commit、一份 <strong>JSON 格式的 feature list</strong>——给 claude.ai clone 这样的项目 200 多项,每一项都标 failing。</p>
 <div class="code-block">
           <div class="code-block-head">
