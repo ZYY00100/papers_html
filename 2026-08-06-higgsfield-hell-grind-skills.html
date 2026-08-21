@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Higgsfield Hell Grind Skills · 8 个 Cinema Studio 提示词 skill · 朱有以解读</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .article-hero { padding: 80px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; white-space: nowrap; }
+    .article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 680px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 620px; margin: 24px auto 0; }
+    /* MCSLA cover banner (CSS-only, no image) */
+    .mcsla-cover { padding: 64px 0; background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); }
+    .mcsla-banner { background: var(--bg-code); color: #e8e8ea; padding: 56px 48px; border-radius: 8px; text-align: center; box-shadow: var(--shadow-card); border: 1px solid rgba(255,255,255,0.06); position: relative; overflow: hidden; }
+    .mcsla-banner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at center top, rgba(201,169,98,0.08), transparent 60%); pointer-events: none; }
+    .mcsla-banner-label { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.35em; color: var(--accent-gold); margin-bottom: 28px; text-transform: uppercase; position: relative; }
+    .mcsla-layers { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; position: relative; }
+    .mcsla-layer { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(201,169,98,0.25); border-radius: 6px; min-width: 96px; transition: border-color 0.3s; }
+    .mcsla-layer:hover { border-color: rgba(201,169,98,0.6); }
+    .mcsla-layer b { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 600; color: var(--accent-gold); line-height: 1; }
+    .mcsla-layer span { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; color: #e8e8ea; text-transform: uppercase; }
+    .mcsla-banner-note { font-family: 'Noto Serif SC', serif; font-size: 13px; color: #8a8a8e; letter-spacing: 0.05em; position: relative; }
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-family: 'Noto Serif SC', serif; font-size: clamp(18px, 2.4vw, 21px); font-weight: 400; color: var(--text-primary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+    .capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 32px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    /* PROMPT CARD */
+    .prompt-card { background: var(--bg-code); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; margin: 18px 0 28px; overflow: hidden; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .prompt-card:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .prompt-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .prompt-card-tag { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .prompt-num { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.15em; color: var(--accent-gold); padding: 3px 8px; border: 1px solid rgba(201,169,98,0.4); border-radius: 3px; flex-shrink: 0; }
+    .prompt-name-stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .prompt-name-en { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #e8e8ea; }
+    .prompt-name-cn { font-family: 'Noto Serif SC', serif; font-size: 11px; color: var(--text-muted); font-weight: 300; }
+    .prompt-card-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .lang-toggle { display: flex; border: 1px solid rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; }
+    .lang-btn { background: transparent; color: var(--text-muted); border: none; padding: 4px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+    .lang-btn:hover { color: #e8e8ea; }
+    .lang-btn.active { background: var(--accent-gold); color: var(--bg-code); }
+    .copy-btn { background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.12); padding: 4px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+    .copy-btn:hover { color: #e8e8ea; border-color: rgba(201,169,98,0.5); }
+    .copy-btn.copied { color: var(--accent-gold); border-color: var(--accent-gold); }
+    .prompt-card-body { padding: 16px 18px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: #e8e8ea; white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+    /* REFERENCES */
+    .references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+    .references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+    .references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+    .references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+    .references-list a { color: var(--text-primary); word-break: break-all; }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+    .closing { padding: 64px 0; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); margin-bottom: 12px; letter-spacing: 0; }
+    .closing-text strong { font-weight: 600; color: var(--accent-red); }
+    .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
+    .article-footer { padding: 32px 0 64px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px; }
+    .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 8px; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 200; }
+    .floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+    .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 320px; max-height: 78vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+    .floating-nav-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-panel-header { padding: 14px 20px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
+    .nav-panel-content { padding: 4px 0 12px; }
+    .nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+    .nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+    .nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+    .nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+    .nav-leaf { display: flex; align-items: baseline; gap: 10px; padding: 6px 20px 6px 36px !important; font-size: 12px; }
+    .nav-leaf:hover { color: var(--accent-red); }
+    .nav-leaf-num { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; color: var(--accent-gold-dim); min-width: 22px; flex-shrink: 0; letter-spacing: 0.05em; }
+    .nav-leaf-title { flex: 1; line-height: 1.4; }
+    .nav-top { font-weight: 600; color: var(--text-muted); }
+    @media (max-width: 768px) {
+      .article-title { white-space: normal; font-size: 28px; }
+      .article-subtitle { font-size: 17px; }
+      .cap-head { gap: 16px; }
+      .cap-num { font-size: 40px; }
+      .mcsla-layers { gap: 8px; }
+      .mcsla-layer { min-width: 70px; padding: 14px 10px; }
+      .mcsla-layer b { font-size: 32px; }
+    }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 360px; }
+      .prompt-card-head { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="article-hero" id="hero">
+      <div class="container">
+        <div class="article-category">CINEMA STUDIO · OPEN-SOURCE SKILLS</div>
+        <h1 class="article-title">Higgsfield Hell Grind Skills</h1>
+        <p class="article-subtitle">8 个 Cinema Studio 提示词 skill · 双语卡片 · 一键复制</p>
+        <div class="article-byline">
+          <span class="byline-author">朱有以</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">Higgsfield OSideMedia mirror v3.24.0</span>
+          <span class="byline-sep">·</span>
+          <span>2026/08/06</span>
+        </div>
+        <p class="article-desc">Higgsfield 把《Hell Grind》95 分钟 AI 电影用的 Cinema Studio 提示工程方法论整理成 20+ 开源 skill。从 200+ 个 skill 里精选 8 个核心，按 MCSLA 公式 / 镜头画面 / 风格运动 / Cinema Studio 进阶四层组织，每张卡片支持 EN/CN 切换 + 一键复制。</p>
+      </div>
+    </section>
+    <section class="mcsla-cover">
+      <div class="container">
+        <div class="mcsla-banner">
+          <div class="mcsla-banner-label">MCSLA · 5-LAYER PROMPT FORMULA</div>
+          <div class="mcsla-layers">
+            <span class="mcsla-layer"><b>M</b><span>Model</span></span>
+            <span class="mcsla-layer"><b>C</b><span>Camera</span></span>
+            <span class="mcsla-layer"><b>S</b><span>Subject</span></span>
+            <span class="mcsla-layer"><b>L</b><span>Look</span></span>
+            <span class="mcsla-layer"><b>A</b><span>Action</span></span>
+          </div>
+          <div class="mcsla-banner-note">每个 Higgsfield 提示词的五层骨架 · 缺一不可</div>
+        </div>
+      </div>
+    </section>
+    <section class="article-intro">
+      <div class="container">
+        <p class="intro-lead"><strong>《Hell Grind》是什么。</strong>Higgsfield Studio 2026 年 8 月在戛纳 Marché du Film 首映的 95 分钟 AI 长片。预算 50 万美元（其中约 40 万花在算力上）、14 天做完、累计跑了 108,000+ 次生成、从 16,181 条独立视频片段里挑出 253 个最终镜头（<strong>~64:1 的策展比</strong>）。WSJ / Variety / BBC News 都做了报道。</p>
+        <p class="intro-lead"><strong>为什么开源这些 skill。</strong>《Hell Grind》成片后，Higgsfield 把整套 Cinema Studio 提示工程方法论整理成 20+ 个独立 <code>SKILL.md</code>，放到 <code>github.com/OSideMedia/higgsfield-ai-prompt-skill</code>（MIT 协议）。每个 skill 是单一职责、参数化、可组合的提示词工具。今天整理的这 8 个，是 Hell Grind 主创团队反复用到的"骨架型" skill。</p>
+        <p class="intro-lead"><strong>8 个怎么配合。</strong>第一组 <code>higgsfield-prompt</code> 是 MCSLA 五层公式 —— 任何 prompt 的骨架；<code>higgsfield-image-shots</code> + <code>higgsfield-camera</code> 是静态画面和镜头语态；<code>higgsfield-style</code> + <code>higgsfield-motion</code> 是视觉风格和预设动作；<code>higgsfield-cinema</code> + <code>higgsfield-seedance</code> + <code>higgsfield-soul</code> 是 Cinema Studio 的三块基石（多镜头工作流 / Seedance 2.0 提示导演 / Soul ID 角色一致性）。</p>
+        <p class="intro-lead"><strong>怎么用这张页面。</strong>每张卡片右上角有 EN / 中文 切换，点 Copy 复制当前语言版本。卡片底部是 skill 原文里的关键 bullets / 表格，按你需要的颗粒度选 prompt。直接拿到 Higgsfield Cinema Studio 的 prompt 框里就能用 —— 配合 Higgsfield 官方 CLI（<code>higgsfield generate create kling3_0 --prompt "..." --aspect_ratio 16:9 --duration 8 --wait</code>）或 MCP connector（<code>https://mcp.higgsfield.ai/mcp</code>）就能跑起来。</p>
+      </div>
+    </section>
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text">MCSLA = <strong>Model</strong> · <strong>Camera</strong> · <strong>Subject</strong> · <strong>Look</strong> · <strong>Action</strong> — the five layers of every prompt.</p>
+        <p class="pull-quote-caption">— HIGGSFIELD · higgsfield-prompt SKILL.md · QUICK FACTS</p>
+      </div>
+    </section>
+
+    <section class="capability" id="cap-01">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">01</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">CORE FORMULA</div>
+            <h2 class="cap-title-en">The MCSLA Formula</h2>
+            <div class="cap-title-cn">MCSLA 五层公式——所有 prompt 的骨架</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">每条 Higgsfield prompt 都由五层组成：M（模型）+ C（镜头）+ S（主体）+ L（视觉风格）+ A（动作）。填好五层，模型就有了它需要的一切。Hell Grind 108K+ 次生成，每一条 prompt 都跑过这个公式。</span>
+        </div>
+        <div class="cap-body">
+          <div class="prompt-card" data-card id="prompt-01">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">01</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-prompt</span>
+                <span class="prompt-name-cn">MCSLA 提示工程核心</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">- MCSLA = Model, Camera, Subject, Look, Action — the five layers of every prompt
+- I2V: describe ONLY what moves or changes, never what's already in the image
+- Keep prompts under 200 words — **short-form MCSLA regime only**; block-scaffold production prompts replace the cap with structural lint (HARD RULE 8 carve-out); Cinema Studio has a hard 512-character cap
+- 1 primary action per clip, 1–2 secondary max; Fast Motion Trick: render in Slow Mo, speed up in post
+- Never leave a generic emotion ("sad"/"angry") in a prompt — decompose into muscle movements, breath, eyes, skin
+- Soul ID / recurring characters: split every prompt into Identity Block + Motion Block — never mix them
+- Conflict order when sub-skills disagree: explicit user direction &gt; scene archetype &gt; emotion-sync
+- Aspect ratio is a per-model enum set in the UI/header, never in the prompt body — verify via `../../specs/model-specs.yaml`
+- Never combine Dolly In + Dolly Out in one shot; @ Elements for static scenes, plain text for action
+- Iterate by changing exactly ONE variable per regeneration
+- 6-Pass Diagnostic order: Subject → Action → Camera → Style → Audio → Output; most failures land on Pass 1–2
+- Seedance short-form: 30–100 words win; Subject + Action in the first 20–30 words. Block-scaffold production briefs run 218–2,059-word medians by register — see `../higgsfield-seedance/SKILL.md` § Official Prompt Architecture
+- Genre length targets: Product 30–50w, Lifestyle 40–60w, Drama 60–100w, Music Video 50–80w, Anime 50–90w
+- Kill slop words (beautiful, stunning, epic, amazing) — replace with concrete visuals/physics
+- Seedance/CS 3.0 has NO negative-prompt syntax — phrase as positive constraints
+- Dialogue cap: ~25–30 spoken words fit in 15 seconds — keep the power-shift line, convert the rest to behavior
+- Engine limits: ≤3 characters tracked across cuts; exit-frame = gone; off-screen = nonexistent; avoid reflections
+- Every cut must change BOTH shot size AND camera character
+- Age-blind rule: never boy/girl/child/kid/young/teen/little — describe by role, clothing, action
+- Scenes start already in progress unless the user says "starts with…" or "ends with…"</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>MCSLA = Model（模型）、Camera（镜头）、Subject（主体）、Look（视觉风格）、Action（动作）—— 每条 prompt 的五层骨架，缺一不可
+- I2V（图生视频）：只描述画面里"动了或变了"的部分，不要重新描述图里已有的内容
+- 单条 prompt 控制在 200 词以内；Cinema Studio 硬上限 512 字符
+- 一个镜头一个主动作，最多 1–2 个次动作；想让动作变快 → 用 Slow Mo 拍，后期加速
+- 别留 "sad" / "angry" 这类笼统情绪词——拆成肌肉、呼吸、眼神、皮肤微动
+- Soul ID / 复用角色：每条 prompt 拆成 Identity Block（静态）+ Motion Block（动作）—— 永远分开写
+- 子 skill 之间矛盾时优先级：用户明确指示 &gt; 场景原型 &gt; 情绪同步
+- 画幅比例是每个模型在 UI/header 里设的 enum，不要写在 prompt 里
+- 一个镜头里别同时写 Dolly In + Dolly Out；静态用 @ Elements，动作直接写正文
+- 每次重生成只改一个变量
+- 6-Pass 诊断顺序：Subject → Action → Camera → Style → Audio → Output；多数失败发生在第 1–2 步
+- Seedance 短 prompt 50–80 词最佳，Subject + Action 必须在前 20–30 词
+- Genre 长度目标：Product 30–50w · Lifestyle 40–60w · Drama 60–100w · MV 50–80w · Anime 50–90w
+- 删掉 slop 词（beautiful / stunning / epic / amazing）—— 用具体画面或物理替换
+- Seedance / CS 3.0 没有 negative prompt 语法 —— 用正向约束表达
+- 对白上限：15 秒里塞得下 25–30 个英文单词 —— 保留 power-shift 一句，其余转行为动作
+- 引擎硬限制：跨镜头最多追踪 3 个角色；出框 = 消失；屏外 = 不存在；避免反射
+- 每次 cut 必须同时改变景别和镜头语态
+- Age-blind：禁用 boy / girl / child / kid / young / teen / little —— 用角色、服装、动作描述
+- 默认从镜头中段开始，除非用户说 "starts with…" 或 "ends with…"
+</pre>
+        </div>
+        </div>
+      </div>
+    </section>
+    <section class="capability" id="cap-02">
+<div class="container">
+<div class="cap-head">
+          <div class="cap-num">02</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">FRAMING & ANGLE</div>
+            <h2 class="cap-title-en">Framing, Angle & Camera</h2>
+            <div class="cap-title-cn">镜头与画面——景别 / 角度 / 运动关键词 / 镜头语态</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">静态图靠景别 + 角度 + 运动暗示三层叠加造出"画面感"；视频靠 named preset（dolly / crane / orbit / zoom / follow 等）+ 镜头是主角情绪替身的原则造出"镜头语态"。所有预设名必须按官方 exact name 引用。</span>
+        </div>
+<div class="cap-body">
+<div class="prompt-card" data-card id="prompt-02">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">02</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-image-shots</span>
+                <span class="prompt-name-cn">电影级静态图构图</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">- Scope: still-image composition only; `[img 1]` is the Soul ID / uploaded reference token — replace with a character description or @ Element when no reference is used
+- Base pattern: [Shot keyword] of [img 1 or character description] + [pose/action] + [environment detail] + [lighting/atmosphere]
+- 10 framing sizes, EWS → Macro: EWS tiny-in-landscape, Wide full body, Full head-to-toe, MLS knees up, Cowboy mid-thigh up, Medium waist up, MCU chest up, CU face, ECU single detail, Macro texture
+- Framing keywords: "EWS, Vast, Landscape" / "Wide Shot, Full Body" / "Cowboy Shot" / "MCU" / "Close-Up" / "ECU" / "Macro"
+- 10 angles: Eye-Level, Low Angle, High Angle, Overhead, Worm's Eye, Dutch/Canted, OTS, POV, Selfie, Ground Level
+- Angle = emotional read: Low = power, High = vulnerability, Dutch = unease/chaos, Worm's Eye = extreme power/surreal
+- Multi-word angle keywords: "POV, First Person Perspective" / "Selfie Angle, Arm's Length" / "Ground Level, Surface View"
+- OTS = looking past one person's shoulder at another — essential for dialogue
+- Movement keywords create the FEELING of motion in a single frame — motion blur, implied movement, frozen mid-movement
+- Static/Basic movements: Static, Pan, Tilt, Zoom In / Zoom Out, Pedestal Up/Down
+- Advanced Physical movements: Dolly In, Dolly Out, Truck Left/Right, Orbit, Crane
+- Cinematic &amp; AI movements: Dolly Zoom (Vertigo), Crash Zoom, FPV, Bullet Time, Handheld Follow, Camera Roll, Rack Focus, Pull Back Reveal, Fly-Through
+- Strongest prompts layer all three: [Distance/Size] + [Angle] + [Movement hint] + Subject + Environment + Lighting
+- Full formula closes with [Lighting — time of day, source, quality] then [Style — cinematic, film stock, color grade]</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>- 只管单帧画面构图；`[img 1]` 是 Soul ID 或上传参考图 —— 无参考图时换成角色描述或 @ Element
+- 基础公式：[景别关键词] of [img 1 或角色描述] + [姿势/动作] + [环境细节] + [光影/氛围]
+- 10 个景别：EWS / Wide / Full / MLS / Cowboy / Medium / MCU / CU / ECU / Macro
+- 景别关键词示例："EWS, Vast, Landscape" / "Wide Shot, Full Body" / "Cowboy Shot" / "MCU" / "Close-Up" / "ECU" / "Macro"
+- 10 个角度：Eye-Level / Low / High / Overhead / Worm's Eye / Dutch / OTS / POV / Selfie / Ground Level
+- 角度 = 情绪读法：Low = 力量，High = 脆弱，Dutch = 不安/混乱，Worm's Eye = 极端力量/超现实
+- 多词角度："POV, First Person Perspective" / "Selfie Angle, Arm's Length" / "Ground Level, Surface View"
+- OTS = 越过一个人的肩膀看向另一个 —— 对话场景必备
+- 运动关键词在静态图里造出"运动感" —— motion blur / implied movement / frozen mid-movement
+- Static / Basic：Static, Pan, Tilt, Zoom In/Out, Pedestal Up/Down
+- Advanced Physical：Dolly In/Out, Truck Left/Right, Orbit, Crane
+- Cinematic &amp; AI：Dolly Zoom（Vertigo 效果）/ Crash Zoom / FPV / Bullet Time / Handheld Follow / Camera Roll / Rack Focus / Pull Back Reveal / Fly-Through
+- 最强 prompt 三层叠加：[景别] + [角度] + [运动暗示] + 主体 + 环境 + 光影
+- 公式末尾用 [光影 —— 时间/光源/质感] 再接 [风格 —— cinematic/film stock/调色]
+</pre>
+        </div>
+<div class="prompt-card" data-card id="prompt-03">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">03</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-camera</span>
+                <span class="prompt-name-cn">镜头控制全景</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">- Named preset tables by family: dolly / crane / orbit / zoom / follow / specialty / time-based / through-object / vehicle, plus angles and shot sizes — always cite the **exact preset name**
+- Layer max two *compatible* moves; sequenced combos get explicit timing; static-pan beats glide for most coverage
+- **The camera is the emotional double of the focal character** — 7 emotional registers map to camera prescriptions; arcs change the camera in named phases
+- [OFFICIAL] Lens + aperture chosen by shot *purpose* (85/100mm F1.4 tight emotional CU … 45mm macro F2.8), with standing focus-lock and distortion-forbid clauses
+- [OFFICIAL] Shot duration by type: flash establish 0.3–0.5s · dialogue line 3–7s · wordless reaction 5–10s · full-arc emotional CU 8–15s
+- Micro-moves need exact distances — state total travel + time ("10–15 cm over 7 seconds"); never write `zoom` for a physical move
+- Cinema Studio 3.0: One-Move Rule, genre presets, reliable phrasing library, camera transfer via `@Video`
+- What a `@Video` reference reads reliably (world, materials, physics, camera character) vs cannot do (frame-accurate continuation, identity)</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>- 命名预设按家族分类：dolly / crane / orbit / zoom / follow / specialty / time-based / through-object / vehicle —— 必须用准确的预设名
+- 单镜头最多叠两个 *兼容* 的运动；多段串联要写明时间节奏；多数情况下 static-pan 比 glide 镜头更稳
+- 镜头是主角情绪的替身 —— 7 种情绪状态对应镜头处方；角色情绪弧变化时镜头要分阶段换
+- 镜头 + 光圈按镜头 *目的* 选：85/100mm F1.4 拍特写情绪，45mm macro F2.8 拍细节；常驻 focus-lock 和 distortion-forbid 条款
+- 单镜头时长按类型：flash establish 0.3–0.5s · dialogue line 3–7s · wordless reaction 5–10s · full-arc 情绪 CU 8–15s
+- 微距运动必须给精确距离 —— 写明总行程 + 时间（如"10–15 cm over 7 seconds"）；别用 zoom 描述物理运动
+- Cinema Studio 3.0：One-Move Rule、genre presets、可靠措辞库、`@Video` 传递镜头
+- `@Video` 参考能稳定读取：场景 / 材质 / 物理 / 镜头语态；不能做到：逐帧续拍 / 角色一致性
+</pre>
+        </div>
+</div></div></section>
+    <section class="capability" id="cap-03">
+<div class="container">
+<div class="cap-head">
+          <div class="cap-num">03</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">STYLE & MOTION</div>
+            <h2 class="cap-title-en">Visual Style & Motion Presets</h2>
+            <div class="cap-title-cn">视觉风格 + 命名动作预设——Style / Cinematic / VHS / Anime + VFX 预设库</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">视觉风格按 exact preset name 引用（5 个核心 + 几十种衍生）；motion presets 是 viral/social 特效，不是电影语法 —— 严肃电影项目走 free-prompted camera 路径。预设是 VFX macro，一个名字触发一整套预制视觉特效。</span>
+        </div>
+<div class="cap-body">
+<div class="prompt-card" data-card id="prompt-04">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">04</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-style</span>
+                <span class="prompt-name-cn">视觉风格 + 色调</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">Five named platform styles. Always reference by exact name.
+
+[Style 1] Cinematic
+Look: Polished, high-contrast, vivid colors, balanced exposure — modern blockbuster
+Best for: Drama, action, narrative films, commercials, any professional content
+Color tendency: Rich, saturated, clean
+Prompt phrase: "Style: Cinematic"
+Pair with: Kling 2.6/3.0, Sora 2, Dolly In, Arc, Crane Up
+
+[Style 2] VHS
+Look: Retro videotape grain, color bleed, slight scanlines, analog imperfection
+Best for: 80s/90s nostalgia, horror, thriller, retro music videos, flashbacks
+Color tendency: Slightly washed out, warm yellows/reds, low contrast
+Prompt phrase: "Style: VHS"
+Pair with: Handheld camera, Wan 2.5, any horror preset
+
+[Style 3] Anime
+Look: Hand-drawn anime aesthetic, bold outlines, vibrant flat colors
+Best for: Anime-style content, stylized narratives, music videos
+Color tendency: Saturated, varied per scene
+Prompt phrase: "Style: Anime"
+
+[Style 4] Cinematic Anime
+Look: Anime aesthetic + cinematic grading, cel-shaded characters in filmic lighting
+Best for: Anime films, hybrid realism
+Prompt phrase: "Style: Cinematic Anime"
+
+[Style 5] Vintage Film
+Look: 70s/80s film stock, faded colors, slight grain, warm highlights
+Best for: Period pieces, nostalgic content, music videos
+Color tendency: Washed, warm yellows, faded reds
+Prompt phrase: "Style: Vintage Film"
+
+Example prompt:
+A detective walks through a night market.
+Style: Cinematic. Cold blue shadows, warm amber market stall light.
+Shallow depth of field. 16:9.</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>Higgsfield 平台五种命名风格预设，按准确名引用。
+
+【风格 1】Cinematic（电影感）
+外观：高对比、饱和色彩、曝光平衡 —— 现代商业大片质感
+适合：剧情、动作、叙事电影、广告、任何专业内容
+色调倾向：浓郁、饱和、干净
+Prompt 写法："Style: Cinematic"
+搭配：Kling 2.6/3.0、Sora 2、Dolly In、Arc、Crane Up
+
+【风格 2】VHS（录像带）
+外观：复古磁带颗粒、色彩溢出、轻微扫描线、模拟质感
+适合：80/90 年代怀旧、恐怖、惊悚、复古 MV、闪回
+色调倾向：略褪色、暖黄和红、低对比
+Prompt 写法："Style: VHS"
+搭配：Handheld 镜头、Wan 2.5、任何 horror 预设
+
+【风格 3】Anime（动画）
+外观：手绘动画质感、粗描边、鲜艳平涂色
+适合：动画风格内容、风格化叙事、MV
+色调倾向：饱和、随场景变化
+Prompt 写法："Style: Anime"
+
+【风格 4】Cinematic Anime（电影动画）
+外观：动画 + 电影调色、赛璐璐角色配电影光
+适合：动画电影、混合写实
+Prompt 写法："Style: Cinematic Anime"
+
+【风格 5】Vintage Film（复古胶片）
+外观：70/80 年代胶片、褪色、轻微颗粒、暖高光
+适合：年代戏、怀旧内容、MV
+色调倾向：褪色、暖黄、暗红
+Prompt 写法："Style: Vintage Film"
+
+Prompt 示例：
+一个侦探穿过夜市。
+Style: Cinematic。冷蓝阴影、暖琥珀色摊位灯光。
+浅景深。16:9。</pre>
+        </div>
+<div class="prompt-card" data-card id="prompt-05">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">05</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-motion</span>
+                <span class="prompt-name-cn">命名动作预设库</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">100+ named motion presets. Reference by EXACT NAME in prompt — one name triggers a complete pre-built VFX effect.
+
+[Usage pattern]
+[Your scene description.] Apply the [Preset Name] preset.
+
+[Sample — Transformation &amp; Body Effects]
+- Animalization: subject transforms into an animal — werewolf, shapeshifter
+- Werewolf: human-to-werewolf sequence — horror, supernatural
+- Cyborg: subject gains mechanical parts — sci-fi, augmentation
+- Turning Metal: subject/object → metal — sci-fi, industrial
+- Disintegration: subject breaks into particles — dramatic death, magic
+- Gas Transformation: subject dissolves into gas/smoke — mystery, horror
+- Clone Explosion: subject multiplies outward — action, surreal
+- Monstrosity: subject → monstrous form — horror, dark fantasy
+- X-Ray: visible internal structure — medical, sci-fi, surreal
+- Freezing: subject/scene freezes into ice — winter, magic, time-stop
+
+[Sample — Elemental &amp; Environmental Effects]
+- Fire Burst: flames erupt from subject/object
+- Lightning Strike: electric discharge across scene
+- Water Surge: tidal wave or water burst
+- Earth Shake: ground trembles, dust clouds
+- Wind Blast: powerful gust sweeps across
+
+[Sample — Camera &amp; Movement Presets]
+- Bullet Time: matrix-style freeze + camera orbit
+- Crash Zoom: ultra-fast zoom in/out for shock
+- Pull Back Reveal: camera pulls back to reveal full scene
+- Spin Shot: camera rotates around subject 360°
+- Fly-Through: camera flies through scene
+
+[Sample — Social/Viral Effects]
+- Heart Pop: cartoon heart bursts from chest
+- Sparkle Burst: glitter/sparkle explosion
+- Slow-Motion Stretch: time slows dramatically
+- Zoom Punch: rapid punch + zoom for impact
+- Confetti Rain: celebratory confetti falls
+
+Note: motion presets are viral/social effects, not film grammar.
+For serious film work, free-prompt camera language via Cinema Studio / Seedance block briefs.</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>100+ 命名动作预设。按准确名引用 —— 一个名字触发一整套预设好的 VFX 效果。
+
+【用法】
+[你的场景描述。] Apply the [Preset Name] preset.
+
+【示例：变身与身体特效】
+- Animalization：主体变成动物 —— 狼人、变形者、奇幻
+- Werewolf：人→狼人变身序列 —— 恐怖、超自然
+- Cyborg：主体获得机械部件 —— 科幻、改造人
+- Turning Metal：主体或物体变成金属 —— 科幻、工业
+- Disintegration：主体分解成粒子 —— 戏剧性死亡、奇幻
+- Gas Transformation：主体化成气或烟 —— 悬疑、超自然、恐怖
+- Clone Explosion：主体复制并向外爆开 —— 动作、超现实
+- Monstrosity：主体变成怪物形态 —— 恐怖、黑暗奇幻
+- X-Ray：内部结构可见 —— 医学、科幻、超现实
+- Freezing：主体或场景冻成冰 —— 冬日、奇幻、时间停止
+
+【示例：元素与环境特效】
+- Fire Burst：火焰从主体/物体喷发
+- Lightning Strike：电流扫过场景
+- Water Surge：海浪或水涌
+- Earth Shake：地面震动、扬尘
+- Wind Blast：强风横扫
+
+【示例：镜头与运动预设】
+- Bullet Time：黑客帝国式定格 + 镜头环绕
+- Crash Zoom：极速推拉镜头 —— 制造冲击
+- Pull Back Reveal：拉远镜头揭示全景
+- Spin Shot：镜头绕主体旋转 360°
+- Fly-Through：穿越场景
+
+【示例：社交/病毒式特效】
+- Heart Pop：卡通爱心从胸口爆开
+- Sparkle Burst：闪光/亮片爆炸
+- Slow-Motion Stretch：戏剧化慢动作
+- Zoom Punch：快速冲拳 + 推镜 —— 制造打击感
+- Confetti Rain：庆祝彩带飘落
+
+注意：motion presets 主要服务于 viral/social 效果，不是电影语法。
+严肃电影项目，用 Cinema Studio / Seedance block brief 自由写镜头语言。</pre>
+        </div>
+</div></div></section>
+    <section class="capability" id="cap-04">
+<div class="container">
+<div class="cap-head">
+          <div class="cap-num">04</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">CINEMA STUDIO ADVANCED</div>
+            <h2 class="cap-title-en">Cinema Studio · Seedance · Soul ID</h2>
+            <div class="cap-title-cn">Cinema Studio 进阶——多镜头工作流 / Seedance 2.0 / Soul ID 角色一致性</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Cinema Studio 三版本共存（2.5 / 3.0 / 3.5）；Seedance 2.0 的过滤器是 LLM 在读全场景意图、不是关键词黑名单；Soul ID 把每条 prompt 拆成 Identity Block + Motion Block 让角色跨镜头不漂。Hell Grind 90 分钟 + 253 个镜头就是这三套机制撑起的。</div>
+        </div>
+<div class="cap-body">
+<div class="prompt-card" data-card id="prompt-06">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">06</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-cinema</span>
+                <span class="prompt-name-cn">Cinema Studio 全功能</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">- Three Cinema Studio versions coexist (2.5 / 3.0 / 3.5) — user-selected, no auto-routing; always detect the version first
+- Hard 512-character prompt cap; 2.5 @ Element chips eat ~80–100 hidden chars each
+- Elements System: define @Characters/@Locations/@Props once, call everywhere
+- 3.5 main UI = three pills (Genre / Style / Camera), each Auto by default — override only with a creative reason
+- 7 confirmed 3.5 genres: General · Action · Horror · Comedy · Noir · Drama · Epic — never invent genre names
+- Style presets: 8 Color Palettes · 6 Lighting · 9 Camera Moveset Styles, or free-form Manual Style
+- Camera axes: 3 bodies · 5 lenses · focal 8/14/35/50/75mm · aperture f/1.4–f/4–f/11; two camera vocabularies coexist — vocabulary follows the selected model
+- Output enums: 7 aspect ratios incl. 21:9 · 480p/720p/1080p · duration 4–15s · Sound On/Off
+- Lead every delivered shot with the one-line settings strip (UI presets ≠ prompt text; never restate strip values in the body)
+- The UI shot counter caps internal cuts — "strictly N shots" must keep N within it (observed cap 4; API exposes no max — UI behavior, verify live)
+- Manual Style = saved ≤2,000-char block of project LAWS (grade, lighting law, texture, performance register); it replaces the preset axes
+- 480p drafts validate the prompt, NOT the take — no seed param; transfer a look via Hero Frame + start/end-frame pinning
+- Resolution matrix has two axes: shot physics × delivery context; 4K-finish pipelines master at model max res in std mode
+- Seedance fast mode cannot output 1080p — drafting in fast then "switching up" silently changes mode AND res</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>- Cinema Studio 三版本（2.5 / 3.0 / 3.5）共存 —— 用户自选，不自动路由；先识别版本
+- 硬性 512 字符 prompt 上限；2.5 @ Element chip 每个占 ~80–100 隐藏字符
+- Elements 系统：先定义 @Characters/@Locations/@Props，到处复用
+- 3.5 主界面 = 三 pills（Genre / Style / Camera），默认都是 Auto —— 有创意理由才覆盖
+- 3.5 七种 genre：General / Action / Horror / Comedy / Noir / Drama / Epic —— 不要自创 genre 名
+- 风格预设：8 调色板 · 6 灯光 · 9 镜头语态风格，或自由 Manual Style
+- 镜头四轴：3 机身 · 5 镜头 · 焦距 8/14/35/50/75mm · 光圈 f/1.4–f/4–f/11；两套镜头词汇共存，词汇跟所选模型走
+- 输出 enum：7 画幅（含 21:9）· 480p/720p/1080p · 时长 4–15s · Sound 开/关
+- 每个交付的镜头开头写 settings strip 一行（UI 预设 ≠ prompt 文本，body 里不要重复 strip 值）
+- UI shot counter 限制内部 cut 数量 —— "strictly N shots" 的 N 必须在 cap 内（实测 cap 4，API 没暴露 max）
+- Manual Style = 项目 LAWS 的 ≤2000 字符块（调色、灯光法、质感、表演寄存器）；它替换 preset 四轴
+- 480p 草稿验证的是 prompt 不是成片 —— 无 seed 参数；靠 Hero Frame + 首尾帧 pinning 传递视觉风格
+- 分辨率矩阵两轴：镜头物理 × 交付上下文；4K 终混在 std 模式下 master 到模型最大分辨率
+- Seedance fast 模式不能出 1080p —— 先用 fast 草稿再"升档"会偷偷改模式 + 分辨率
+</pre>
+        </div>
+<div class="prompt-card" data-card id="prompt-07">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">07</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-seedance</span>
+                <span class="prompt-name-cn">Seedance 2.0 提示导演</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">- The filter is an LLM reading full-scene intent, not a keyword blacklist — describe a SCENE, not a subject; fix the voice first
+- Instant fail (&lt;10s) = filter rejection; delayed fail (&gt;30s) = infra/complexity — never regenerate an instant fail unchanged
+- Six slots, in order: Camera + Subject + Action + Setting + Style + Lighting; missing 3+ slots is where flags come from
+- Empirical prompt-craft laws: 50–80-word attention sweet spot (front-load the load-bearing element), name a director/lens not "cinematic", "fast" degrades motion, no negative prompts in the body
+- Five prompt modes: Reference-Based / Continuation / Expand Shot / Edit Shot / Transformation — pick the mode before writing
+- [OFFICIAL] block scaffold for production prompts: SCENE CONTEXT → … → POSITIVE LOCKS, distributed style on standalone briefs (connected shotlists glue the compiled Style Prefix verbatim instead), FOV in degrees only, CAMERA block 3rd, cut ladder oner / CUT n / timed / freestyle
+- [FIELD] 13-project corpus calibration: word length scales with register (218w → 2,059w medians — the 50–80w sweet spot is single-shot-only), video briefs hand-authored (`enhance_prompt` off), Style Prefix = per-project constant compiled into home blocks
+- [FIELD] Three "helpful-instinct" drift sources, each with a standing lock: environment invention (#1, above character drift), character-height equalization, scale drift on wides
+- Build-safe construction for crowds/destruction/creatures: evacuated cities, contained fights ("stays at the sea surface"), the safe benchmark scene
+- Extend an existing clip: attach it as a video reference + open with "The scene continues." — match source resolution AND duration; chain cap ~2 (hard 3), then re-anchor from ORIGINAL references
+- Tutorial-demonstrated patterns (reference-role vocabulary incl. VARIETY reference, SCREEN REALISM + duration-match composites, 60:30:10 grade, red-arrow prop annotation): `PRODUCTION-PATTERNS.md` in this directory
+- Hard engine rules (age-blind, exit-frame = cut, off-screen = nonexistent, no reflections, ≤3 tracked characters, double-contrast cuts) + high-risk shot table: `ENGINE-RULES.md` in this directory
+- Reference roles: Character / Last-Frame / Environment / Prop — role determines what the prompt may re-describe
+- Working modes: Exploration / Continuation / Bridging / Repair (distinct from prompt modes)
+- Layer 1 briefing vs Layer 2 production prompt — never paste Layer 1 into the prompt box
+- Native **4K** is available in `mode=std` only; `mode=fast` (Seedance 2.0 Fast) caps at 480p/720p — in Cinema Studio the model is still capped at 1080p
+- Always preflight: `python3 scripts/seedance_lint.py --preflight --model seedance_2_0 "&lt;prompt&gt;"` — enums come from `../../specs/model-specs.json` (fast+1080p/4K and Kling 21:9 are auto-caught)
+- 480p drafts validate the prompt, NOT the take — no seed param; pin Hero Frame + start/end frames to carry a look
+- ZH prompts: hard 1,800-char cap; ZH antislop list enforced by the linter
+- Flagged prompt → rewrite playbook per linter rule, then voice pass
+- Repeated flags → full loop-breaker procedure + LOG THE OUTCOME (`--confirmed` / `add-quality`)</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>- 过滤器是 LLM 在读全场景意图，不是关键词黑名单 —— 描述场景 SCENE 而不是主体 subject；先调通语气
+- 立刻失败（&lt;10s）= 过滤器拒绝；延迟失败（&gt;30s）= 基础设施或复杂度问题 —— 立刻失败的原样重做绝对不行
+- 六 slot 顺序：Camera + Subject + Action + Setting + Style + Lighting；缺 3 个以上 slot 就是被 flag 的源头
+- Prompt 经验法则：50–80 词注意力甜区（核心元素前置），说导演/镜头名而不是说 "cinematic"，"fast" 拉低动作质量，body 里不要写 negative prompt
+- 五种 prompt 模式：Reference-Based / Continuation / Expand Shot / Edit Shot / Transformation —— 写之前先选模式
+- [官方] 制作 prompt 的 block scaffold：SCENE CONTEXT → ... → POSITIVE LOCKS，distributed style 用在 standalone brief；连起来的 shotlist 用编译好的 Style Prefix 串联；FOV 只用度数；CAMERA block 第 3 位；cut 阶梯 oner / CUT n / timed / freestyle
+- [实战] 13 个项目语料校准：词数随寄存器伸缩（218w → 2059w 中位数 —— 50–80w 甜区只对单 shot 有效）；视频 brief 手写（`enhance_prompt` 关闭）；Style Prefix = 每项目常量编译进 home block
+- [实战] 三个"好心办坏事"的漂移源，每条对应常驻锁：环境发明（最严重，超过角色漂移）、角色身高拉平、宽幅画面的尺度漂移
+- 人群 / 破坏 / 怪物的安全写法：清空的城市、限定空间的打斗（"stays at the sea surface"）、安全基准场景
+- 续拍：作为视频参考附上 + 以 "The scene continues." 开头 —— 匹配源分辨率和时长；串联上限 ~2（hard 3），然后从 ORIGINAL 参考重新锚定
+- 教程演示模式（参考角色词汇含 VARIETY reference、SCREEN REALISM + 时长匹配合成、60:30:10 调色、红箭头道具标注）：本目录下 `PRODUCTION-PATTERNS.md`
+- 引擎硬规则（age-blind、exit-frame = cut、off-screen = nonexistent、no reflections、≤3 追踪角色、double-contrast cut）+ 高风险镜头表：本目录下 `ENGINE-RULES.md`
+- 参考角色：Character / Last-Frame / Environment / Prop —— 角色决定 prompt 能重新描述什么
+- 工作模式：Exploration / Continuation / Bridging / Repair（和 prompt 模式不同的两套分类法）
+- Layer 1 brief ≠ Layer 2 production prompt —— Layer 1 永远不要贴进 prompt box
+- 原生 **4K** 只在 `mode=std` 有；`mode=fast`（Seedance 2.0 Fast）封顶 480p/720p —— Cinema Studio 里模型也封顶 1080p
+- 永远先 preflight：`python3 scripts/seedance_lint.py --preflight --model seedance_2_0 "&lt;prompt&gt;"` —— enum 来自 `../../specs/model-specs.json`（fast+1080p/4K 和 Kling 21:9 自动捕获）
+- 480p 草稿验证 prompt 不验证成片 —— 无 seed；用 Hero Frame + 首尾帧锁视觉风格
+- 中文 prompt：硬性 1800 字符上限；linter 强制 ZH antislop 词表
+- 被 flag 的 prompt → 按 linter 规则改写 playbook，再做语气 pass
+- 反复 flag → 完整 loop-breaker 流程 + 记录结果（`--confirmed` / `add-quality`）
+</pre>
+        </div>
+<div class="prompt-card" data-card id="prompt-08">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">08</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">higgsfield-soul</span>
+                <span class="prompt-name-cn">Soul ID 角色一致性</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="prompt-card-body" data-lang="en">- Hard rule: every Soul ID prompt splits into Identity Block (static descriptors only) + Motion Block (temporal/camera only)
+- Don't re-describe the face or core features — only describe what differs from the base character
+- Reference image rules: front or 3/4 angle, even lighting, neutral-to-slight expression, no blur, solo subject
+- Reference generators: Soul 2.0 (fashion-forward), Nano Banana Pro (max sharpness), Seedream 4.5 (style range)
+- Character sheet angles: front face, 3/4, side profile, optional full body + optional embedded prop sheets
+- Two-image floor per character: one clear face + one full body, on neutral grey — never a single image
+- Prefer the single-prompt 3×2 six-panel sheet (one 16:9 generation) — identity locks better than multi-step assembly
+- Outfit change without identity drift: split-panel sheet — ghost-mannequin outfit LEFT + "face matches input 100%" close-up RIGHT
+- Crowds: a single-character reference makes a clone army — build a multi-character lineup and declare it a "VARIETY reference"
+- Character Anchor Block = 10 per-shot attributes (identity, screen position, depth layer, frame occupancy, orientation, pose, gaze, contact points, state lock, expression)
+- One Soul ID sheet PER character state — 5 transformation stages = 5 distinct sheets; the prompt names the stage
+- Micro-expression presets: 9 core + 10 extended
+- Cinema Studio: identity goes in the @ Element definition, motion goes in the prompt field
+- Soul Cast is Business/Team plans only; 8 parameter categories incl. 12 Archetypes, Budget $10M–$500M, Era 1900s–2020s
+- Soul Cast specs: up to 4K (Character/Location modes) / 2K (General); batch 1 or 10; 0.125 credits per image
+- Use 2–3 reference shots (frontal, 3/4, side); if features drift, use the character sheet as @Image1
+- Soul Cinema is the default CS 3.0/3.5 image-mode model — single-step, ~0.125 credits/image
+- Studio-feeling output is an intermediate, not a final — re-pass through Soul Cinema with grade, directional lighting, lens character
+- Skip Soul ID for single shots or when you want maximum creative variation
+- Plasticky face in wide shots: crop the face from a closer-shot panel and replace it in post</pre>
+          <pre class="prompt-card-body" data-lang="cn" hidden>- 硬性规则：每个 Soul ID prompt 拆成 Identity Block（只写静态特征）+ Motion Block（只写时序/镜头）
+- 不要重复描述脸或核心特征 —— 只写相对基础角色的差异
+- 参考图规则：正面或 3/4 角度、光线均匀、表情中性到略微笑、不模糊、单一主体
+- 参考图生成器：Soul 2.0（时尚感强）、Nano Banana Pro（最高清晰度）、Seedream 4.5（风格范围广）
+- 角色表角度：正面脸、3/4、侧脸，可选全身 + 可选嵌入道具表
+- 每个角色至少两张图：一张清晰的脸 + 一张全身，中性灰底 —— 绝对不要只放一张
+- 推荐单 prompt 3×2 六宫格表（一次 16:9 出图）—— 角色锁定比多步拼接更稳
+- 换装不丢身份：分屏表 —— 左 ghost-mannequin 服装 + 右"face matches input 100%"特写
+- 群戏：单角色参考图会变成克隆军团 —— 搭多角色 lineup 并标注为 "VARIETY reference"
+- Character Anchor Block = 每个镜头的 10 个属性（身份、屏幕位置、深度层、画幅占比、朝向、姿势、视线、接触点、状态锁、表情）
+- 一个 Soul ID sheet 对应一个角色状态 —— 5 个变身阶段 = 5 张不同 sheet；prompt 写明是哪个阶段
+- 微表情预设：9 个核心 + 10 个扩展
+- Cinema Studio：身份写进 @ Element 定义里，动作写进 prompt 字段
+- Soul Cast 只在 Business/Team 计划有；8 个参数类别含 12 个 Archetype、Budget $10M–$500M、Era 1900s–2020s
+- Soul Cast 规格：最高 4K（Character/Location 模式）/ 2K（General）；批量 1 或 10；0.125 credits/张
+- 用 2–3 张参考图（正面、3/4、侧面）；如果特征漂移，用 character sheet 作 @Image1
+- Soul Cinema 是 CS 3.0/3.5 默认 image-mode 模型 —— 单步，~0.125 credits/张
+- "Studio 感"输出是中间态不是终片 —— 用 Soul Cinema 二次过色、定向光、镜头语态
+- 单镜头或想要最大化创意变化时跳过 Soul ID
+- 宽幅画面里脸部塑料感：从近景面板裁脸再后期贴回
+</pre>
+        </div>
+</div></div></section>
+
+    <section class="references" id="references">
+      <div class="container">
+        <p class="references-kicker">SOURCES & CREDITS</p>
+        <h2 class="references-title">引用与原文出处</h2>
+        <ul class="references-list">
+          <li>
+            <strong>ORIGINAL ARTICLE (URL PROVIDED)</strong>
+            <em>Higgsfield Hell Grind project page</em><br>
+            作者：Higgsfield AI · 发布于 2026/08<br>
+            URL: <a href="https://higgsfield.ai/generate?projectId=3caa2f3a-52b5-4293-9237-0c8f76c7158a&amp;brief=1&amp;from=%2F%40higgsfield.studio%2Fprojects%2Fhell-grind" target="_blank" rel="noopener">higgsfield.ai/generate?projectId=3caa2f3a-52b5-4293-9237-0c8f76c7158a</a><br>
+            注：原文 URL 是 Clerk 登录墙 + React SPA，公网无法直接抓取。本页内容来自下面 OSideMedia 镜像的对应 SKILL.md。
+          </li>
+          <li>
+            <strong>SKILL SOURCE · OPEN-SOURCE MIRROR</strong>
+            <em>OSideMedia/higgsfield-ai-prompt-skill v3.24.0</em><br>
+            251 stars · 195 commits · MIT license · 2026-08-01 更新<br>
+            仓库：<a href="https://github.com/OSideMedia/higgsfield-ai-prompt-skill" target="_blank" rel="noopener">github.com/OSideMedia/higgsfield-ai-prompt-skill</a><br>
+            本页 8 个 SKILL.md 原文已抓取到 <code>素材/drafts/2026-08-06-higgsfield-hell-grind-skills-source.md</code>。
+          </li>
+          <li>
+            <strong>OFFICIAL BUNDLED SKILLS</strong>
+            <a href="https://github.com/higgsfield-ai/skills" target="_blank" rel="noopener">github.com/higgsfield-ai/skills</a> — Higgsfield 官方 CLI 配套的 bundled skills (<code>higgsfield-generate</code> · <code>higgsfield-soul</code> · <code>higgsfield-product-photoshoot</code>)，通过 <code>npx skills add higgsfield-ai/skills</code> 安装
+          </li>
+          <li>
+            <strong>OFFICIAL CLI</strong>
+            <a href="https://github.com/higgsfield-ai/cli" target="_blank" rel="noopener">github.com/higgsfield-ai/cli</a> — Higgsfield 官方 CLI（<code>brew install higgsfield-ai/tap/higgsfield</code>），canonical 调用：<code>higgsfield generate create kling3_0 --prompt "..." --aspect_ratio 16:9 --duration 8 --wait</code>
+          </li>
+          <li>
+            <strong>MCP CONNECTOR</strong>
+            <a href="https://mcp.higgsfield.ai/mcp" target="_blank" rel="noopener">https://mcp.higgsfield.ai/mcp</a> — Higgsfield 官方 MCP custom connector，用于 claude.ai web + Claude desktop
+          </li>
+          <li>
+            <strong>FILM · HELL GRIND</strong>
+            <em>世界首部 AI 长片 · 95 分钟 · 50 万美元 · 14 天做完</em><br>
+            108,000+ 次生成 → 16,181 视频片段 → 253 最终镜头（~64:1 策展比）<br>
+            首映：Marché du Film / Cannes · 报道：WSJ · Variety · BBC News<br>
+            导演：Aitore Zholdaskali · 联合编剧：Adilkhan Yerzhanov · CEO：Alex Mashrabov
+          </li>
+          <li>
+            <strong>SKILL CARDS · CN TRANSLATION</strong>
+            本页 8 个 skill 的中文 body 是译者意译 + 关键术语保留英文原文（如 MCSLA / Soul ID / Soul Cast / Elements / @Characters 等专有名词）。如发现术语偏译，以 Higgsfield 官方文档为准。
+          </li>
+        </ul>
+        <p class="references-note">AI 长片不是 prompt 工程能单独解的题 —— 但 108K 次生成都跑过同一个 MCSLA 五层公式。把这 8 个 skill 的 cards 拿到 Cinema Studio 里跑一遍，再决定哪些值得装进你自己的 SKILL.md。</p>
+      </div>
+    </section>
+    <section class="closing">
+      <div class="container">
+        <p class="closing-text">MCSLA 五层公式 + 7 个支撑 skill ——</p>
+        <p class="closing-text"><strong>这是 Higgsfield 用 50 万美元跑出来的 Cinema Studio 提示工程最小集合。</strong></p>
+        <p class="closing-caption">— HIGGSFIELD · Hell Grind · 2026/08</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="article-footer">
+      <div>本页面由 <a href="index.html">为 AI 发电</a> 出品 · 8 个 skill cards · 双语切换 + 一键复制</div>
+      <div class="credit">OSideMedia/higgsfield-ai-prompt-skill · v3.24.0 · 2026/08/06</div>
+    </footer>
+
+  <button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <nav class="floating-nav-panel" id="navPanel">
+      <div class="nav-panel-header">本文章节 · 8 个 skill</div>
+      <div class="nav-panel-content">
+        <a href="#hero" class="nav-section nav-top"><div class="nav-section-kicker">TOP</div><div class="nav-section-title">回到顶部</div></a>
+        <a href="#cap-01" class="nav-section"><div class="nav-section-kicker">01 · CORE FORMULA</div><div class="nav-section-title">MCSLA 五层公式</div></a>
+        <a href="#cap-02" class="nav-section"><div class="nav-section-kicker">02 · FRAMING & ANGLE</div><div class="nav-section-title">镜头与画面 · 2 cards</div></a>
+        <a href="#cap-03" class="nav-section"><div class="nav-section-kicker">03 · STYLE & MOTION</div><div class="nav-section-title">视觉风格 + 动作预设 · 2 cards</div></a>
+        <a href="#cap-04" class="nav-section"><div class="nav-section-kicker">04 · CINEMA STUDIO</div><div class="nav-section-title">Cinema Studio 进阶 · 3 cards</div></a>
+        <a href="#prompt-01" class="nav-section nav-leaf"><span class="nav-leaf-num">01</span><span class="nav-leaf-title">MCSLA 提示工程核心</span></a>
+<a href="#prompt-02" class="nav-section nav-leaf"><span class="nav-leaf-num">02</span><span class="nav-leaf-title">电影级静态图构图</span></a>
+<a href="#prompt-03" class="nav-section nav-leaf"><span class="nav-leaf-num">03</span><span class="nav-leaf-title">镜头控制全景</span></a>
+<a href="#prompt-04" class="nav-section nav-leaf"><span class="nav-leaf-num">04</span><span class="nav-leaf-title">视觉风格 + 色调</span></a>
+<a href="#prompt-05" class="nav-section nav-leaf"><span class="nav-leaf-num">05</span><span class="nav-leaf-title">命名动作预设库</span></a>
+<a href="#prompt-06" class="nav-section nav-leaf"><span class="nav-leaf-num">06</span><span class="nav-leaf-title">Cinema Studio 全功能</span></a>
+<a href="#prompt-07" class="nav-section nav-leaf"><span class="nav-leaf-num">07</span><span class="nav-leaf-title">Seedance 2.0 提示导演</span></a>
+<a href="#prompt-08" class="nav-section nav-leaf"><span class="nav-leaf-num">08</span><span class="nav-leaf-title">Soul ID 角色一致性</span></a>
+        <a href="#references" class="nav-section nav-top"><div class="nav-section-kicker">END</div><div class="nav-section-title">引用与原文出处</div></a>
+      </div>
+    </nav>
+
+  <script>
+    document.querySelectorAll('.prompt-card').forEach(function(card) {
+      const langBtns = card.querySelectorAll('.lang-btn');
+      const bodies = card.querySelectorAll('.prompt-card-body');
+      langBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          langBtns.forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          const lang = btn.getAttribute('data-lang');
+          bodies.forEach(function(body) {
+            if (body.getAttribute('data-lang') === lang) { body.removeAttribute('hidden'); }
+            else { body.setAttribute('hidden', ''); }
+          });
+        });
+      });
+      const copyBtn = card.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+          const activeBody = card.querySelector('.prompt-card-body:not([hidden])');
+          const text = activeBody ? activeBody.textContent : '';
+          const fallback = function() {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch(e) {}
+            document.body.removeChild(ta);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(fallback);
+          } else { fallback(); }
+          const orig = copyBtn.textContent;
+          copyBtn.textContent = 'Copied';
+          copyBtn.classList.add('copied');
+          setTimeout(function() {
+            copyBtn.textContent = orig;
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      }
+    });
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    if (navToggle && navPanel) {
+      navToggle.addEventListener('click', function() { navPanel.classList.toggle('open'); });
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('open');
+        }
+      });
+      navPanel.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() { navPanel.classList.remove('open'); });
+      });
+    }
+  </script>
+</body>
+</html>

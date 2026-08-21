@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent 代码质量 · 把 review 变成约束 · Addy Osmani 40.5 万浏览长文解读 · 朱有以解读</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg-primary); color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px;
+      line-height: 1.8; min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px);
+      pointer-events: none; z-index: 0;
+    }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; white-space: nowrap; }
+    .article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 620px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+    .cover-frame { padding: 64px 0; }
+    .cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-family: 'Noto Serif SC', serif; font-size: clamp(18px, 2.4vw, 21px); font-weight: 400; color: var(--text-primary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+    .capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body ul { margin: 18px 0 24px 0; padding-left: 24px; }
+    .cap-body ul li { margin-bottom: 10px; line-height: 1.85; color: var(--text-secondary); }
+    .cap-body ul li:last-child { margin-bottom: 0; }
+    .cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .inline-image:hover img { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+    .inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+    .references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+    .references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+    .references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+    .references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+    .references-list a { color: var(--text-primary); word-break: break-all; }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+    .closing { padding: 64px 0; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); margin-bottom: 12px; letter-spacing: 0; }
+    .closing-text strong { font-weight: 600; color: var(--accent-red); }
+    .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
+    .article-footer { padding: 32px 0 64px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px; }
+    .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 8px; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 200; }
+    .floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+    .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 70vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+    .floating-nav-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-panel-header { padding: 16px 20px 8px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); }
+    .nav-panel-content { padding: 8px 0; }
+    .nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+    .nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+    .nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+    .nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+    @media (max-width: 768px) {
+      .article-title { white-space: normal; font-size: 28px; }
+      .article-subtitle { font-size: 17px; }
+      .cap-head { gap: 16px; }
+      .cap-num { font-size: 40px; }
+    }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="article-hero">
+      <div class="container">
+        <div class="article-category">AGENT ENGINEERING · QUALITY GATES</div>
+        <h1 class="article-title">Agent 代码质量</h1>
+        <p class="article-subtitle">把 review 变成约束 · Agentic Code Quality</p>
+        <div class="article-byline">
+          <span class="byline-author">朱有以</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">Addy Osmani (@addyosmani) · 40.5 万浏览</span>
+          <span class="byline-sep">·</span>
+          <span>2026/08/12</span>
+        </div>
+        <p class="article-desc">软件质量不再是靠人 review，而是靠给 agent 设置的 quality gates / back-pressure——测试、变异测试、圈复杂度、CI 拒绝编译、运行时护栏。这篇 40.5 万浏览的 X 长文,把"代码 review 不再 scale"这件事拆给你看,告诉你软件质量这一关,未来到底由谁来守。</p>
+      </div>
+    </section>
+    <section class="cover-frame">
+      <div class="container">
+        <img src="images/2026-08-21-agentic-code-quality/cover.jpg" alt="Agentic Code Quality · Addy Osmani">
+        <p class="cover-caption">ADDY OSMANI · @ADDYOSMANI · 2026/08/12</p>
+      </div>
+    </section>
+    <section class="article-intro">
+      <div class="container">
+        <p class="intro-lead"><strong>作者是谁。</strong>Addy Osmani——ChromeDevTools、Agent Skills、Core Web Vitals、TodoMVC 这些开源项目背后的工程负责人,前 Google Chrome 团队、Director of Engineering @ Google Cloud AI/Gemini。X 上 40 万关注,长期关注 developer productivity 和 agent engineering。</p>
+        <p class="intro-lead"><strong>这篇文章在讲什么。</strong>一句话浓缩:软件质量不再取决于你或你的团队 review 多认真,而是取决于你给 agent 设下了哪些约束。Agent 可以提任何 proposal——你的 constraints 决定它是不是够安全、够正确、够 scoped、够 useful,够不够你和团队发出去。</p>
+        <p class="intro-lead"><strong>为什么这篇值得读。</strong>Addy 不是在聊「怎么 prompt 一个 agent」,而是在聊「当 agent 每天能产生几十万个 change 的时候,质量这一关到底由谁来守」。他把这件事拆成 6 个章节——从 constraints 的形态、约束的三段位、环境与信任、自主性、back-pressure,到人 review 该往哪挪。读完你会明白,未来软件质量的护栏,不是「再多招几个 senior」,而是「把这套约束写下来,让 agent 替你执行」。</p>
+        <p class="intro-lead"><strong>怎么读这篇文章。</strong>原文 8 个粗体金句是骨架,每一节底下都有我的口语化翻译。所有 7 张原文配图按原位插入(附图说)。最后一节是 Addy 给的 takeaway——写出你自己的约束计划。</p>
+      </div>
+    </section>
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text"><strong>Software quality now depends on the constraints you set around your agents.</strong></p>
+        <p class="pull-quote-caption">— ADDY OSMANI · AGENTIC CODE QUALITY</p>
+      </div>
+    </section>
+<section class="capability" id="cap-01">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">01</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">CORE THESIS</div>
+            <h2 class="cap-title-en">Software Quality = Constraints</h2>
+            <div class="cap-title-cn">软件质量 = 你给 agent 设下的约束</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Agent 可以提任何 proposal。你的约束决定这个 proposal 是不是够安全、够正确、够 scoped、够 useful——够不够你和团队发出去。</span>
+        </div>
+        <div class="cap-body">
+          <p>很长的时间里,我们评价代码质量的方式就是 code review——找个人把你写的看一遍,确认它干净、想过、快、好懂、跑得通测试。这套方法在 agent 时代撑不住了:agent 一天能产生几十万到几百万行 change,根本没人读得过来。越来越多质量检查必须发生在 agent 外面的 harness、environment、operating system 里。</p>
+<p>Addy 自己现在还是读 code 也 review code,但他非常 intentional——只在一些特定地方允许"不读 code,让约束替我守"是合理的。原文给了一句话定调:</p>
+<p><em>Software quality now depends on the constraints you set around your agents.</em><br><em>—— 软件质量,现在取决于你给 agent 设下了哪些约束。</em></p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agentic-code-quality/x-01.jpg" alt="Guillermo 的「能否跳过读代码」清单">
+          <p class="inline-image-caption">原文配图 · Addy Osmani (@addyosmani) · 2026/08/12 · Guillermo 的「能否跳过读代码」清单,Addy 评价:每个 yes 其实都在说「这件事 stakes 太低」——一旦 stakes 上去,要么人读 code,要么让约束替你守。</p>
+        </div>
+<p>约束说的是:系统"被允许做什么"。具体做法是给 agent 的 proposal 扔测试、扔确定性约束。当 agent 每天产生几十万到几百万 change 时,正是这套约束让"高质量生产代码"这件事能持续跑下去,而不是变成一坨没法收场的 slop。</p>
+<p>Addy 把这套约束叫 <strong>quality gates</strong>,形式可以很多——单元测试、property tests、acceptance tests,还有 mutation testing(对代码生成变异,跑同一套测试,看测试能不能抓住被偷偷塞进来的 bug)。也包括圈复杂度、行长度这些"让代码还能被人读"的硬指标。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-02">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">02</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">QUALITY GATES</div>
+            <h2 class="cap-title-en">What Quality Gates Look Like</h2>
+            <div class="cap-title-cn">Quality Gates 长什么样——测试、变异、复杂度</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">约束不只是 lint 规则。单元测试、property tests、acceptance tests、mutation testing、圈复杂度、行长度——能拦住坏工作的全是约束。</span>
+        </div>
+        <div class="cap-body">
+          <p>约束也在"什么样的 proposal 能从 interpreter 走到 controller 再走到生产"这件事里起决定性作用。一个 proposal 从 agent 走到 production,中间要过多少关——只有过完才让你发,这一关就是 quality gates。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agentic-code-quality/x-02.jpg" alt="Addy Osmani 流程图 1">
+          <p class="inline-image-caption">原文配图 · Addy Osmani (@addyosmani) · 2026/08/12 · 流程示意:proposal 从 agent interpreter → controller → production,中间过多少 quality gates。</p>
+        </div>
+<p>Addy 的另一句话:这种模式给了我们很多,但也漏掉了不少——漏掉的部分今天值得想清楚。一个明显的问题是自主性:agent 可能在自己意图清晰时干得不错,但信息缺失、或者它要干的事本身定义不清的时候就会卡。这种"定义不清"既包括任务本身,也可能藏在 harness、environment、其他组件的 parameter 化方式里。</p>
+<p>人类写不出能上生产的代码的原因,和 agent 干不好的原因,有相当一部分是重叠的——脆弱的环境经不起脚本反复跑、不确定的 build、漏掉的权限、太弱的测试。这件事反过来给我们提了个要求:给 agent 的环境本身要能扛得住——给可信的反馈、让小错成本很低、让成功可以一步步累出来。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agentic-code-quality/x-03.jpg" alt="Guillermo vs Bob 的两种 gauntlet 视角">
+          <p class="inline-image-caption">原文配图 · Addy Osmani (@addyosmani) · 2026/08/12 · 「Guillermo 看 code,Bob 啥也不看——他们俩描述的都是 gauntlet,差别只在人坐不坐进去」。</p>
+        </div>
+<p>Addy 反复强调的另一件事是信任:哪怕是今天最强、最稳的 agent,你也不能直接把意图丢过去就当它已经做对——信任是要一次次挣来的。</p>
+<p><em>The environment we're after is one where an agent can do real work, get feedback it can trust, and fail without doing much damage.</em><br><em>—— 我们要的环境,是一个 agent 能干真活、能拿到可信反馈、犯了错也不会捅出大娄子的环境。</em></p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-03">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">03</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">BEFORE · DURING · AFTER</div>
+            <h2 class="cap-title-en">The Three Stages of Constraints</h2>
+            <div class="cap-title-cn">约束的三段位——前、中、后</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">约束不是一刀切的 lint。有的约束在工作开始前把路画出来;有的在过程中给反馈;有的决定产物能不能跨过 production 这条线。每一段都要有,但作用不同。</span>
+        </div>
+        <div class="cap-body">
+          <p>Addy 把约束按作用时机分了三种角色:</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agentic-code-quality/x-04.jpg" alt="Addy Osmani 流程图 2">
+          <p class="inline-image-caption">原文配图 · Addy Osmani (@addyosmani) · 2026/08/12 · 约束的三段位示意:before / during / after production boundary。</p>
+        </div>
+<p><em>Some constraints shape work before it begins. Others give feedback while the agent is working. Others decide whether its output can cross the production boundary at all.</em><br><em>—— 有的约束在工作开始前就把路画出来;有的约束在 agent 干活的过程中给它反馈;有的约束决定它的产物能不能跨过 production 这条线。</em></p>
+<p>怎么把这套 verification 结构套到系统上,套路不止一种。Addy 给的经验是:你的 constraint 集合要够广,但每一项的职责要够清晰——从 type safety、性能,到后置的 security scanning,各管一摊。团队也可以写自己的约束,比如让 ESLint 强制一套 architecture rule。这些工具大多自带 hook,挂上之后可以让 agent 或人在出问题的时候被叫进来。</p>
+<p>Addy 反复强调一条心法:</p>
+<p><em>For now, much of the difference between useful agent output and slop still comes down to the skill of the team operating the loop.</em><br><em>—— 至少在现在,agent 产出是 useful 还是 slop,差别主要还在跑这套 loop 的人的本事。</em></p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-04">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">04</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">ENVIRONMENT · TRUST · AUTONOMY</div>
+            <h2 class="cap-title-en">Environment, Trust, Autonomy</h2>
+            <div class="cap-title-cn">环境要可信、信任要挣来、自主性要给空间</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">人 review 这件事,以后长得完全不一样。AI 让人 review 不可能持续;正确性只是质量的一个维度,其他维度也都要靠约束兜。</span>
+        </div>
+        <div class="cap-body">
+          <p>AI 给了我们高吞吐量的代码生成和速度,但反过来,人类想逐行 review 每个 change 也变得更难。Addy 的应对是:对人的注意力去向要 intentional。在一个本身以机器速度运转的系统里塞一个"人必须 review",生产力一定会受影响——人的注意力是稀缺资源,应该主动导给那些最微妙、最需要 judgement 的问题。下游的人,只有在自动护栏真的扛不住的时候,才被拉进来。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agentic-code-quality/x-05.jpg" alt="Addy Osmani 流程图 3">
+          <p class="inline-image-caption">原文配图 · Addy Osmani (@addyosmani) · 2026/08/12 · verification loop 流程示意。</p>
+        </div>
+<p>正确性(correctness)只是质量的一个维度。还有可维护性、性能、安全、效率、可读性——这些维度,每一个都跟正确性一样分得出多种信号。所以"有多少约束"不重要,"这些约束能不能撑住我们对质量和生产门槛的 bar"才重要。Addy 给了这条很值得抄下来的原话:</p>
+<p><em>Software quality isn't a single metric. Think of it as a collection of signals of varying importance to you and your team.</em><br><em>—— 软件质量不是一个单一指标。把它想成一大堆对你和你的团队权重各不相同的信号。</em></p>
+<p>back-pressure 这件事,工具很多——编译器拒绝非法代码、测试挂掉、安全策略挡住坏习惯、CI 不让 deploy。理想状态是这条 back-pressure 不是只在最后一次性 review 才出现,而是贯穿整条 loop。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-05">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">05</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">BACK-PRESSURE · MULTI-DIMENSIONAL</div>
+            <h2 class="cap-title-en">Back-Pressure &amp; The Quality Spectrum</h2>
+            <div class="cap-title-cn">背压 + 质量是一条 spectrum</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">约束要贯穿整条 loop,不是只在 CI 拒绝 deploy 才出现。扩 verification、降 change 速率、降质量 bar——三条路都要准备好。质量维度之间也要 trade。</span>
+        </div>
+        <div class="cap-body">
+          <p>Addy 这一节开头给了一条金句:</p>
+<p><em>Constraints and back-pressure let agents catch bad work before its a problem.</em><br><em>—— 约束和背压,让 agent 在烂活儿变成问题之前就把它拦下来。</em></p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agentic-code-quality/x-06.jpg" alt="Dex Horthy 的软件工厂 / human review loop 图">
+          <p class="inline-image-caption">原文配图 · Addy Osmani (@addyosmani) · 2026/08/12 · Dex Horthy《Why Software Factories Fail》同款 loop 图——绿色框是 Horthy 的论点:当下 human review 应该回到 loop 里,而不是被换掉。</p>
+        </div>
+<p>如果约束这套卡不住——因为 change 太多、工具吃不下——我们就会开始排队,被一个"以人速度跑的 verification 系统"拖住。想 scale,verification 这条 loop 里能塞的检查越往前压越好,别等到最后才一次性检。能扩 verification,就能把整条交付系统的速度和吞吐量推上去。扩不动怎么办?Addy 列了三条出路:</p>
+<ul>
+<li>一、扩 verification 系统本身,给"接 change + push back"腾出更多容量。</li>
+<li>二、把 agent 产生新 change 的速率降下来,让 verification 跟得上工作量。</li>
+<li>三、把质量 bar 降低,让 verification 不再像现在这么往死里 push。</li>
+</ul>
+<p>从 scale 的角度,这三件事都要准备好用。同时也要意识到:有些方向其实可以"放松约束",换来更多产出。比如给 agent swarm 或自动 software factory 让它们自己去 change,不用每次都等我们 review。</p>
+<p>反过来,有些地方也可以反过来——给 agent 更多自由的同时,另一些地方把约束收得更紧。把约束压在我们最在意的地方,就能在不牺牲质量的前提下把吞吐量推上去。在这些决定里,选择很多。最明显的是要在不同质量维度之间做 trade。Addy 反复强调:安全很重要,但我们也在"安全"和"按时交付"之间做 trade——一面是创新导向,一面是质量导向,中间这条 spectrum 上,你必须选你站哪。</p>
+<p>这一节的最后一条原则,值得直接抄下来:</p>
+<p><em>Quality is in the constraints that we place around our agents. So as you're thinking about quality for your own apps, take this problem statement and come up with your own constraint-driven plan.</em><br><em>—— 质量就在我们给 agent 设下的约束里。所以当你想自己 app 的质量时,拿这条问题回去,写出你自己的约束计划。</em></p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-06">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">06</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">YOUR CONSTRAINT PLAN</div>
+            <h2 class="cap-title-en">Where Humans Belong · Build Your Plan</h2>
+            <div class="cap-title-cn">人在哪里 + 写出你自己的约束计划</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">未来人做 code review 这件事长得完全不一样。约束要 strategic——强的落在同时服务于质量和安全的地方,弱的要拿掉。最后一关,是你今天就能写出来的约束计划。</span>
+        </div>
+        <div class="cap-body">
+          <p>前面那一节末尾给了金句和"写出你自己的约束计划"。这一节把这套收尾做实——回答三个问题:人在 loop 里坐哪?这套约束要怎么分层?最后一步,你今晚能做什么?</p>
+<p><em>Human "code review" in the future is going to look very different.</em><br><em>—— 未来人"做 code review"这件事,长得完全不一样。</em></p>
+<p>Addy 把 back-pressure 这一套的核心原则再压缩一遍:背压应该贯穿 pipeline——编译器拒绝非法代码、测试挂掉、安全策略挡住坏习惯、CI 不让 deploy,而不是只在最后一刻才告诉你"你不能 deploy,先修问题"。信号要来得越早越好、走的路径越多越好。这套系统的终极约束,是我们给自己的约束——站得住这套系统怎么搭、怎么跑的决定和动作。但和所有约束一样,我们要想清楚:我们自己的判断要 back-pressure 到什么程度、要 restraint 到什么程度、要把它当成多重的最后一道关。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agentic-code-quality/x-07.jpg" alt="收尾图 · Quality is in the constraints">
+          <p class="inline-image-caption">原文配图 · Addy Osmani (@addyosmani) · 2026/08/12 · 收尾图 · Quality is in the constraints we place around our agents。</p>
+        </div>
+<p>Addy 反复强调:约束要 strategic。在哪强约束、在哪松或拿掉约束,要 deliberate。强约束要落在"同时服务于质量和安全"这两件事的地方;如果一条约束两件事都不服务,就别撑它。要随时准备把 bar 抬高或放低。说到底,这套分布在系统各处的约束,才是把软件质量真正落地的牙齿。</p>
+<p>最后一句话给你:</p>
+<p><em>Quality is in the constraints that we place around our agents.</em><br><em>—— 质量就在我们给 agent 设下的约束里。</em></p>
+<p>所以当你为自己 app 的质量做打算时,拿这条问题回去:你要给 agent 设下哪些 quality gates?哪些 back-pressure?哪些人是最后一道关?写出来。这套约束写下来,就是你的约束计划。</p>
+        </div>
+      </div>
+    </section>
+    <section class="references">
+      <div class="container">
+        <p class="references-kicker">SOURCES & CREDITS</p>
+        <h2 class="references-title">引用与原文出处</h2>
+        <ul class="references-list">
+          <li>
+            <strong>ORIGINAL ARTICLE</strong>
+            <em>Agentic Code Quality</em><br>
+            作者:Addy Osmani (@addyosmani) · 发布于 2026/08/12 · 405,611 浏览 · 1,032 赞 · 127 转推 · 2,007 收藏 · 36 回复<br>
+            推文链接:<a href="https://x.com/addyosmani/status/2087427868343373919" target="_blank" rel="noopener">https://x.com/addyosmani/status/2087427868343373919</a>
+          </li>
+          <li>
+            <strong>AUTHOR · X</strong>
+            <a href="https://x.com/addyosmani" target="_blank" rel="noopener">https://x.com/addyosmani</a>
+          </li>
+          <li>
+            <strong>AUTHOR · WEBSITE</strong>
+            <a href="https://addyosmani.com" target="_blank" rel="noopener">addyosmani.com</a> — Addy Osmani 个人站
+          </li>
+          <li>
+            <strong>RELATED · AGENT SKILLS</strong>
+            <a href="https://github.com/addyosmani/agent-skills" target="_blank" rel="noopener">github.com/addyosmani/agent-skills</a> — Addy 开源的 agent skills 库(quality gates 的可执行版本)
+          </li>
+          <li>
+            <strong>RELATED · CORE WEB VITALS</strong>
+            <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener">web.dev/articles/vitals</a> — Addy 主推的另一套"用 signals 衡量质量"框架
+          </li>
+          <li>
+            <strong>INTERPRETATION</strong>
+            本文为完整翻译版本,按原文 6 段(金句 1~6 + 收尾金句)的顺序重新组织成 6 章。所有 7 张原文配图按出现位置完整保留(图说附 Addy 原文 caption + 我的中文补充)。原文末尾 Sonar 广告位跳过——不是文章内容。如需引用请以原文为准。
+          </li>
+        </ul>
+        <p class="references-note">最反直觉的一条——未来软件质量不是 review 出来的,是 constraints 设出来的。今晚能做的:挑一个你团队 review 最多的事,把它写成一条 quality gate。</p>
+      </div>
+    </section>
+    <section class="closing">
+      <div class="container">
+        <p class="closing-text">未来软件质量的护栏,</p>
+        <p class="closing-text"><strong>不是你再多招几个 senior,而是你今天就写下这条 constraint。</strong></p>
+        <p class="closing-caption">— ADDY OSMANI · AGENTIC CODE QUALITY</p>
+      </div>
+    </section>
+    <footer class="article-footer">
+      <div class="container">
+        <p>本文为完整翻译版本 · 6 段金句 + 收尾金句保留原文 · 7 张原文配图按位置完整保留</p>
+        <p class="credit">朱有以 · 为 AI 发电 · 2026/08</p>
+      </div>
+    </footer>
+  </main>
+  <button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">本文章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-section">
+        <div class="nav-section-kicker">01 · CORE THESIS</div>
+        <div class="nav-section-title">软件质量 = 约束</div>
+      </a>
+      <a href="#cap-02" class="nav-section">
+        <div class="nav-section-kicker">02 · QUALITY GATES</div>
+        <div class="nav-section-title">Quality Gates 长什么样</div>
+      </a>
+      <a href="#cap-03" class="nav-section">
+        <div class="nav-section-kicker">03 · BEFORE · DURING · AFTER</div>
+        <div class="nav-section-title">约束的三段位</div>
+      </a>
+      <a href="#cap-04" class="nav-section">
+        <div class="nav-section-kicker">04 · ENV · TRUST · AUTONOMY</div>
+        <div class="nav-section-title">环境、信任、自主性</div>
+      </a>
+      <a href="#cap-05" class="nav-section">
+        <div class="nav-section-kicker">05 · BACK-PRESSURE</div>
+        <div class="nav-section-title">背压 + 质量是一条 spectrum</div>
+      </a>
+      <a href="#cap-06" class="nav-section">
+        <div class="nav-section-kicker">06 · YOUR PLAN</div>
+        <div class="nav-section-title">人在哪里 + 你的约束计划</div>
+      </a>
+    </div>
+  </nav>
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+      if (!navToggle || !navPanel) return;
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('open');
+      });
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('open');
+        }
+      });
+      navPanel.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() { navPanel.classList.remove('open'); });
+      });
+    })();
+  </script>
+</body>
+</html>
