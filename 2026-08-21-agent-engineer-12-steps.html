@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent 工程师 2026 路线图 · 12 步 7 pillar · Codez 6.7 万浏览长文解读 · 朱有以解读</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; white-space: nowrap; }
+    .article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 620px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+    .cover-frame { padding: 64px 0; }
+    .cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-family: 'Noto Serif SC', serif; font-size: clamp(18px, 2.4vw, 21px); font-weight: 400; color: var(--text-primary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+    .capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .inline-image:hover img { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+    .inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+    /* code block (原文嵌入代码片段) */
+    .code-block { background: var(--bg-code); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; margin: 18px 0 28px; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .code-block:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .code-block-head { padding: 10px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .code-block-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent-gold); letter-spacing: 0.1em; text-transform: uppercase; }
+    .code-block-body { padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.65; color: #e8e8ea; white-space: pre-wrap; word-wrap: break-word; margin: 0; max-height: 480px; overflow-y: auto; }
+    /* 7 jobs section */
+    .jobs-section { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .jobs-head { margin-bottom: 32px; text-align: left; }
+    .jobs-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .jobs-title { font-family: 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); margin-bottom: 8px; }
+    .jobs-subtitle { font-family: 'Noto Serif SC', serif; font-size: 16px; color: var(--text-secondary); }
+    .jobs-list { display: flex; flex-direction: column; gap: 14px; }
+    .job-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 22px 26px; display: flex; gap: 20px; align-items: flex-start; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease, background-color 0.3s ease; }
+    .job-card:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); background-color: var(--bg-secondary); }
+    .job-num { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; min-width: 36px; }
+    .job-body { flex: 1; min-width: 0; }
+    .job-pillar { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .job-claim { font-size: 15.5px; color: var(--text-primary); line-height: 1.7; margin-bottom: 10px; }
+    .job-claim strong { color: var(--text-primary); font-weight: 600; }
+    .job-claim em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--accent-gold-dim); }
+    .job-prompt { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+    .job-prompt code { font-family: 'JetBrains Mono', monospace; font-size: 0.92em; background: var(--bg-secondary); padding: 1px 5px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+    .references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+    .references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+    .references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+    .references-list a { color: var(--text-primary); word-break: break-all; }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+    .closing { padding: 64px 0; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); margin-bottom: 12px; letter-spacing: 0; }
+    .closing-text strong { font-weight: 600; color: var(--accent-red); }
+    .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
+    .article-footer { padding: 32px 0 64px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px; }
+    .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 8px; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 200; }
+    .floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+    .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 78vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+    .floating-nav-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-panel-header { padding: 14px 20px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
+    .nav-panel-content { padding: 4px 0 12px; }
+    .nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+    .nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+    .nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+    .nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+    @media (max-width: 768px) {
+      .article-title { white-space: normal; font-size: 28px; }
+      .article-subtitle { font-size: 17px; }
+      .cap-head { gap: 16px; }
+      .cap-num { font-size: 40px; }
+      .job-card { padding: 18px 20px; gap: 14px; }
+      .job-num { font-size: 22px; }
+    }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+      .code-block-body { font-size: 11.5px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="article-hero">
+      <div class="container">
+        <div class="article-category">AGENT ENGINEERING · 12-STEP ROADMAP</div>
+        <h1 class="article-title">AI Agent 工程师 2026 路线图</h1>
+        <p class="article-subtitle">12 步走完 7 个 pillar · Loops · Graphs · Evals · Context · Harness</p>
+        <div class="article-byline">
+          <span class="byline-author">朱有以</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">Codez (@0xCodez) · 6.7 万浏览 · 819 收藏</span>
+          <span class="byline-sep">·</span>
+          <span>2026/08/17</span>
+        </div>
+        <p class="article-desc">前一年 frontier model 在 SWE-bench Verified 上从 30% 干到 80%+,但只有 17% 的高管说自己公司在生产里真正跑通了 AI agent。这篇 6.7 万浏览 X 长文给出了 12 步路线图——走过 7 个 pillar(Context / Tools / Memory / Loops / Graphs / Harness / Evals),每一步附 Claude workflow、可执行的代码片段、避坑清单。读完你会明白:任何人都能让 demo 跑起来,真正难的是 demo 之后那一整套系统。</p>
+      </div>
+    </section>
+    <section class="cover-frame">
+      <div class="container">
+        <img src="images/2026-08-21-agent-engineer-12-steps/cover.jpg" alt="AI Agent Engineer in 2026: 12 steps roadmap · Codez">
+        <p class="cover-caption">CODEZ · @0XCODEZ · 2026/08/17</p>
+      </div>
+    </section>
+    <section class="article-intro">
+      <div class="container">
+        <p class="intro-lead"><strong>作者是谁。</strong>Codez (@0xCodez)·Content creator + AI researcher & builder,San Francisco,substack.com/@0xmovez。长期分享 AI agent 工程落地的一手经验——他从 2030 视角看 AI 趋势,关注的是「怎么把 agent 真正跑上生产」,不是「demo 多炫」。</p>
+        <p class="intro-lead"><strong>这篇文章在讲什么。</strong>一句话浓缩:agent 失败的真正原因不是 prompt——是 context 撑爆、loop 永远不收敛、你根本没数衡量上周的改动到底有没有让事情变好。demo 在你机器上能跑,生产是另一回事。这 12 步走完 7 个 pillar,每一步附 Claude workflow、可执行代码片段、避坑清单——读完你会知道下一步该装哪一块。</p>
+        <p class="intro-lead"><strong>为什么这篇值得读。</strong>Codez 把这 12 步排成了一个 dependency order:foundation 先(execution second、reliability last)。每一步都是「如果你跳过这一关,下一关一定崩」的写法——不是 12 个独立技巧,是一个 skill 在 7 个维度的投影。读完你会意识到:很多你之前以为「这一代模型不够好」的问题,其实是这一整套系统里某一环没装。</p>
+        <p class="intro-lead"><strong>怎么读这篇文章。</strong>12 步对应 12 章,每章顶部金句框 + Addy-style 口语化中文翻译(Codez 原句英文保留),原文里嵌入的 9 段代码片段全部按 `.code-block` 渲染成可读的代码面板,19 张原文配图按位置插入。最后一节是「7 个 jobs to run with Claude」行动清单 + 结尾。</p>
+      </div>
+    </section>
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text"><strong>Bad context breaks the loop. A loop without evals never converges on anything you can trust. A graph without evals scales your error instead of your throughput.</strong></p>
+        <p class="pull-quote-caption">— CODEZ · AI AGENT ENGINEER IN 2026 · 7-PILLAR REFRAME</p>
+      </div>
+    </section>
+<section class="capability" id="cap-01">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">01</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">CONTEXT · READ</div>
+            <h2 class="cap-title-en">Context - read what actually loads</h2>
+            <div class="cap-title-cn">Context(1)·先看,那 7,850 个 token 到底装了什么</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">你优化 prompt 之前,先看清楚已经在 context window 里的是什么——/context + /memory 两个命令,诊断用一下午,改起来只要一小时。</span>
+        </div>
+        <div class="cap-body">
+          <p>Karpathy 那套框架是你该抓住的:模型是 CPU,context window 是 RAM。Context engineering 的艺术就是把这个 RAM 装得刚刚好——只装下一步需要的,不多装。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-01.jpg" alt="intro overview · 7 pillars 全景图">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 7 pillars 关系图:foundation / execution / reliability 三层。</p>
+        </div>
+<p>一个重新框定所有事的数字:在 Claude Code 里,你打一个字之前,大概有 <strong>7,850 个 token 已经加载好了</strong>——system prompt、auto memory、skill descriptions、CLAUDE.md、environment info、MCP 工具名。你真正打的 prompt 大概 45 个 token。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-02.jpg" alt="Step 1 · Claude Code context breakdown">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · /context 命令输出:7,850 vs 45 的真实 token 分布。</p>
+        </div>
+<p>所有人都在优化那 45,从来没人打开过那 7,850。<code>/context</code> 命令能打印出按类别分布的真实组成——哪些 memory 文件加载了、哪个 tool call 吃了最多 token。两个数字值得盯着:<strong>memory files</strong>(如果重,说明 CLAUDE.md 超重)+ <strong>free space</strong>(剩余空间)。配合 <code>/memory</code> 看清楚到底哪些文件在场。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-02">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">02</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">CONTEXT · CUT + LAYER</div>
+            <h2 class="cap-title-en">Context - cut it, then layer it</h2>
+            <div class="cap-title-cn">Context(2)·砍掉 80%,剩下进树不是卷轴</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">把为弱模型写的指引删掉——它们现在只是烧 token。按块删,把绝对指令改成原则,把卷轴变树。</span>
+        </div>
+        <div class="cap-body">
+          <p>Anthropic <strong>删了 Claude Code system prompt 的 80%+</strong> 给 Claude 5 一代用,在 coding evals 上没测出下降。</p>
+<p>大多数 context 不是错——它是为更弱的模型写的指引,现在只是烧 token 还要让 Claude 在开始前先 reconcile 一堆互相矛盾的指令。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-03.jpg" alt="Step 2 · cut + layer">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · context 的「cut + layer」哲学。</p>
+        </div>
+<p>两条规则让「删」这件事变安全:</p>
+<p><strong>按块删,不要按行删</strong>——一句话躲在你的 evals 噪声底里,告诉你不了什么。整段整段删,evals 才有信号。</p>
+<p><strong>把绝对指令改成原则</strong>——与其「绝不写多行注释」,不如写「让代码读起来像周围的代码——匹配注释密度、命名风格、习惯」。规则给一个固定答案,原则给 Claude 一种方法,让它读你的 repo 自己找正确答案。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">python · CLAUDE.md</span></div>
+          <pre class="code-block-body"># payments-api
+Subscription billing and invoicing for the web app.
+
+## Gotchas
+// Non-obvious. Claude cannot infer these by reading the repo.
+- All shared types live in `src/types.ts` — one monolithic file.
+- `Money` is integer cents, never a float.
+- Webhook retries must stay idempotent — provider replays for 72h.
+- `db/legacy/` is frozen. Read it, never edit it.
+
+## Deeper guides
+- Verification → `.claude/skills/verify/`
+- Releases    → `.claude/skills/deploy/`
+
+// NOT here: directory tree, framework, test runner, language
+// version. Claude reads those from the repo itself.</pre>
+        </div>
+<p>活下来的部分进<strong>树,不是卷轴</strong>。Anthropic 给了一个硬数字:CLAUDE.md 控制在 <strong>200 行以内</strong>,只放 Claude 没法自己推断的 gotcha。其他全部升级为 skill(description 启动时加载,body 用时加载)或 path-scoped 规则(只有匹配的 file 被读时才加载)。</p>
+<p>这是 Anthropic 的实测:删 80% system prompt、coding evals 不下降的那一刀——拿同样的方法动你的 CLAUDE.md,通常还能再砍 30~50%。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-03">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">03</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">TOOLS · MCP</div>
+            <h2 class="cap-title-en">Tools &amp; MCP - what the agent can reach</h2>
+            <div class="cap-title-cn">Tools &amp; MCP·描述是文档也是发现表面</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">工具描述是 agent 的「检索接口」——说「什么时候用」而不是「能干什么」。按需加载 MCP schema 比一次性倒出提升 selection accuracy 三倍。</span>
+        </div>
+        <div class="cap-body">
+          <p>工具是 agent 触碰世界的方式,而工具的描述就是 context——所以这是「agent 能做什么」和「agent 负担得起知道什么」之间的铰链。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-04.jpg" alt="Step 3 · tools + MCP overview">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 工具设计:description 既是文档也是发现表面。</p>
+        </div>
+<p>过去的建议是用例子教工具用。现在反过来了:对当前的模型来说,<strong>例子反而把 Claude 困在它们描述的那一小块探索空间里</strong>。设计有表现力的参数吧。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-05.jpg" alt="Step 3 · MCP tool description">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · MCP tool description:use when + 类型作为文档。</p>
+        </div>
+<p>一个 <code>pending | in_progress | completed</code> 的 status 枚举不需要一个例子就把整条 lifecycle 教会了——<strong>类型本身就是文档</strong>。Anthropic 在 SWE-bench Verified 上跑到 SOTA,部分靠的是对工具描述的精确打磨,不是模型本身的改动。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">python · MCP tools</span></div>
+          <pre class="code-block-body">@mcp.tool()
+def find_stalled_shipments(hours: int = 24) -&gt; list[dict]:
+    """Shipments with no scan event in N hours.
+    Use when ops asks what is stuck, or before an escalation review."""
+    return query(STALLED_SQL, hours)
+
+@mcp.tool()
+def reroute(shipment_id: str, hub: str, reason: str) -&gt; dict:
+    """Reroute a shipment. Writes an audit row — compliance
+    requires a reason on every manual intervention."""
+    return post_with_audit(shipment_id, hub, reason)
+
+# "Use when..." is the discovery surface for tool search.
+# `reason: str` is required, so the audit trail cannot be skipped.
+# The type enforces what a paragraph of instructions would only ask for.</pre>
+        </div>
+<p><strong>延迟加载比一次性倒出来强</strong>。Claude Code 只加载 <strong>MCP 工具名——大概 120 token</strong>,schema 通过 tool search 按需拉。把检索机制套到工具描述上(而不是一次性全加载),selection accuracy 提升了大概 <strong>三倍</strong>。</p>
+<p>这把 description 变成了发现表面:<strong>说工具什么时候用,不是只说工具能干什么</strong>。Claude 找不到的工具,就是没 ship 的工具。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-04">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">04</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">MEMORY · DISK</div>
+            <h2 class="cap-title-en">Memory - what survives the window</h2>
+            <div class="cap-title-cn">Memory·写磁盘,跨 session 才不会蒸发</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">活过 compaction 的最可靠 memory 是磁盘上的文件——plan / progress log / notes。最关键的 SKILL.md 内容放顶部,因为 body 加载后尾部截断老的先丢。</span>
+        </div>
+        <div class="cap-body">
+          <p>每个长任务最后都会超过一个 window。跨过那条边界的时候发生什么,是个设计决定——大多数人从来没做过这个决定,他们让 auto compaction 自己猜,然后奇怪为什么 agent 忘了 1 小时前说的一个 constraint。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-06.jpg" alt="Step 4 · memory mechanics">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · memory 加载机制:re-injected vs in-history。</p>
+        </div>
+<p>机制是具体的、值得记住的。项目根的 CLAUDE.md 和 auto memory <strong>从磁盘重新注入</strong>。但用 paths scoped 的规则、嵌套的 CLAUDE.md 文件活在 message history 里——它们会被 summarize 掉,然后 <strong>不会再回来</strong>,除非匹配的 file 重新被读。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-07.jpg" alt="Step 4 · write to file">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · plan file / progress log 留磁盘是跨 session 的最可靠 memory。</p>
+        </div>
+<p>被 invoke 的 skill body 会回来,cap 是 <strong>每个 5k、总共 25k</strong>,老的先丢、从尾部截断——所以关键的东西放在 SKILL.md 的顶部。</p>
+<p>最靠谱的招是计算机里最老的那个:<strong>写到文件里</strong>。一个 plan 文件、一份 progress log、agent 边干边改的 notes。它持久存在、不占 window,因为它活在磁盘上,跨过 compaction 也能活下来。<code>/compact focus on the auth bug</code> 帮你刻意压缩——只留你选的东西。<code>/clear</code> 在下一个任务不依赖前面 20 条消息时,被严重低估了。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-05">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">05</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">LOOPS · STOP</div>
+            <h2 class="cap-title-en">Loops - when to stop</h2>
+            <div class="cap-title-cn">Loops(1)·停下来,写在代码里不在 prompt 里</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">loop 跑不跑得停,取决于 stop 条件写在代码里还是写在 prompt 里。loop-until-dry + dedupe against SEEN(不是 against confirmed)是大多数人会踩的坑。</span>
+        </div>
+        <div class="cap-body">
+          <p>一个 agent loop 就是 act → observe → decide → repeat。整条工程的难题全活在最后一步:<strong>它怎么知道自己搞完了?</strong></p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-08.jpg" alt="Step 5 · stop condition">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · loop:什么时候停。</p>
+        </div>
+<p>让它自己跑,模型在两个方向都答得很差——要么在造了一半的东西上宣布胜利,要么在 3 个迭代前就搞完的事情上磨到天荒地老。这两个都不是 prompt 能修的,因为它们是结构性的。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-09.jpg" alt="Step 5 · loop-until-dry">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · loop-until-dry:K 轮没新东西才停。</p>
+        </div>
+<p>停下来的条件应该放在 <strong>模型判断之外的代码里</strong>。对有界的工作,就是 test gate 或 schema check。对大小未知的探索,收敛模式是 <strong>loop-until-dry</strong>——一直跑到 K 轮连续没新东西。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">javascript</span></div>
+          <pre class="code-block-body">const seen = new Set(); const confirmed = []; let dry = 0;
+
+while (dry &lt; 2) {                      // stop after 2 empty rounds
+  const found = await runFinders();
+  const fresh = found.filter((b) =&gt; !seen.has(key(b)));
+
+  if (!fresh.length) { dry++; continue; }
+  dry = 0;
+  fresh.forEach((b) =&gt; seen.add(key(b)));
+  // ^ dedupe against SEEN, not against confirmed.
+  //   Backwards, and this loop never terminates.
+
+  confirmed.push(...(await verify(fresh)));
+}</pre>
+        </div>
+<p>一个细节决定整个东西能不能跑通,几乎所有人都第一次做错:<strong>dedupe 对比的是「见过的」,不是「已确认的」</strong>。否则被拒的发现每轮重新出现,loop 永远跑不干——你造了一台永远付费重新发现同样死胡同的机器。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-06">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">06</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">LOOPS · VERIFIER</div>
+            <h2 class="cap-title-en">Loops - who checks the answer</h2>
+            <div class="cap-title-cn">Loops(2)·verifier 写在 loop 里,不只是 release 时</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">verifier 是 inline 跑的 eval——同样的纪律,从 per-release 移到 per-result。写过 verifier 的团队,后面做 evals 轻松得多。</span>
+        </div>
+        <div class="cap-body">
+          <p>一个收敛的 loop 还是收敛在模型相信的东西上。修法是 <strong>verifier</strong>——一个在模型自身判断之外、唯一工作是尝试杀掉这个发现的东西。如果它活下来,就过;如果没活下来,就永远到不了答案。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-10.jpg" alt="Step 6 · verifier pattern">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · verifier:对抗式 / 视角多样性 / judge panel。</p>
+        </div>
+<p>三种模式值得手里有:</p>
+<p><strong>对抗式 verify</strong>——对每个发现,spawn N 个独立的 skeptic、prompt 让它反驳;只有多数 survives 过才留。</p>
+<p><strong>视角多样式 verify</strong>——给每个 verifier 一个不同的视角(正确性、安全性、可复现性),因为多样性抓得到 N 个一模一样的检查永远抓不到的失败模式。</p>
+<p><strong>Judge panel</strong>——从不同角度生成 N 个 attempts,用并行的 judge打分,从赢家合成、嫁接 runner-up 里最好的部分。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <pre class="code-block-body">› For each finding, spawn three verifiers - correctness, security, reproducibility. Accept only what survives two of three.
+
+● 6 findings → 18 verifier agents, running in parallel
+
+✓ missing auth on /invoices/:id 3/3 — accepted ✓ race in webhook retry 2/3 — accepted
+
+● "unsafe regex in validator" 0/3 — killed
+
+● "N+1 query in dashboard" 1/3 — killed 2 of 6 findings were confident and wrong. The loop caught them, not your reviewer, and not your users.</pre>
+        </div>
+<p>注意这条指向哪里。Verifier 就是 inline 跑的 eval——跟 Layer III 同样的纪律,只是从 per-release 移到 per-result 套。那些 verifier 写得好的团队,后面 step 11 会轻松得多——因为他们已经把「什么算好」这件事写下来了。</。>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-07">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">07</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">GRAPHS · PARALLEL</div>
+            <h2 class="cap-title-en">Graphs - what runs in parallel</h2>
+            <div class="cap-title-cn">Graphs(1)·fan out 不是排队,edge 是免费的</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">diamond 形状 + reduce 用 plain code、synthesize 留一个 agent——edge 是免费的,把 agent 留给判断不是 plumbing。</span>
+        </div>
+        <div class="cap-body">
+          <p>大多数人把 agent 写成一条直线——step 1、step 2、step 3,每一步礼貌地等上一步。然后他们发现,有一半的步骤根本不需要等。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-11.jpg" alt="Step 7 · diamond shape">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · diamond 形状:fan out + reduce + synthesize。</p>
+        </div>
+<p>一个 node 是一份工作,一条 edge 是「这个输出喂给那个输入」。<strong>如果没有数据穿过,就没有 edge</strong>——那个等待就是纯粹的浪费。</p>
+<p>主力形状是 <strong>diamond</strong>——fan out 收集广度,plain code 收口,一个 agent 做综合。reduce 一步值得强调,因为钱从这里漏——flattening 和 deduping 是 flatMap 加一个 Set,不是又一个 agent。</p>
+<p><strong>Edge 是免费的。把 agent 留给判断,不是 plumbing。</strong></p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <pre class="code-block-body">› Run a workflow to audit every route under src/routes/ for missing auth. One agent per route file, verify each finding before reporting.
+
+● Claude wrote an orchestration script · launching…
+✓ Scope 1/1
+✓ Fan-out 18/18 one agent per file
+◯ Verify 11/18 3-vote skeptics per finding
+○ Synthesize 0/1 your session stays responsive — the fleet runs in the background</pre>
+        </div>
+<p>天花板真的高。Claude Code 的 dynamic workflows 在一次 run 里能协调 <strong>1000 个并行的 subagent</strong>,而 orchestration 的模型 token 成本是 0——因为它是个 script,不是一段对话。</p>
+<p>这套架构是一个团队怎么用 6 天把 <strong>~960,000 行 Bun runtime 从 Zig 移植到 Rust</strong>,99.8% 的测试套件还在过。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-08">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">08</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">GRAPHS · COST</div>
+            <h2 class="cap-title-en">Graphs - what the shape costs you</h2>
+            <div class="cap-title-cn">Graphs(2)·pipeline 不是 barrier,cheap fan-out + top-tier merge</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">默认用 pipeline(不是 barrier)+ 按 model 分层(cheap fan-out、top-tier merge)。这两件事承担了大部分 latency 和花销。</span>
+        </div>
+        <div class="cap-body">
+          <p>Topology 不是装饰——它是你在 latency和和花销上最大的杠杆,两个选择承担了大部分。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-12.jpg" alt="Step 8 · topology choice">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · parallel() vs pipeline() 选择。</p>
+        </div>
+<p>第一,<code>parallel()</code> 对比 <code>pipeline()</code>。<code>parallel()</code> barrier 让所有东西等最慢的那个节点,然后下一阶段才开始。<code>pipeline()</code> 让每个 item 独立流过所有阶段——item A 可以在 stage 3,同时 B 还在 stage 1。</p>
+<p><strong>默认 pipeline。</strong>只有当一个 stage 真需要所有前序结果同时到位(比如 cross-set dedupe)时才用 barrier。「感觉更干净」不算理由——barrier 的 latency 是真实的、可度量的、浪费掉的时间。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-13.jpg" alt="Step 8 · model tiering">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 模型分层:cheap fan-out + top-tier merge。</p>
+        </div>
+<p>第二,<strong>按 model 分层</strong>。每个 subagent 默认继承你 session 的 model,除非 script 显式 override——所以一次大 run 默认全按你的 top tier 计费。</p>
+<p>有界的、重复的节点(提取这个字段、分类这个 ticket)放到更便宜的 model 上,merge 节点——判断真正发生的地方——保持在高 model。一百个便宜的 fan-out 节点喂给一个 top-tier synthesis,跟同一份工作平铺开来比,成本是一小部分,最终质量一样。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-09">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">09</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">HARNESS · SCAFFOLD</div>
+            <h2 class="cap-title-en">Harness - surviving session death</h2>
+            <div class="cap-title-cn">Harness(1)·initializer agent 把环境搭起来</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">长任务是软件项目 + 轮班工程师——每个新 session 对上一班一无所知。initializer agent 跑一次搭脚手架:init.sh + progress log + feature list JSON。</span>
+        </div>
+        <div class="cap-body">
+          <p>Anthropic 把这个问题框定得完美:一个长任务就是 <strong>一个软件项目,由轮班的工程师来写,每个新工程师来上班时对上一班一无所知</strong>。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-14.jpg" alt="Step 9 · initializer">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · initializer agent:搭脚手架、写 init.sh、progress log、feature list。</p>
+        </div>
+<p>光靠 compaction 不够。就算 frontier model 在 context window 上 loop「做一个 claude.ai 的 clone」也达不到要求——而且它会以两种特定的、可重复的方式失败。</p>
+<p>第一,agent <strong>试图一炮打响整个 app</strong>,跑到一半 context 用光,留给下一会的是一个半成品的、没文档的、需要反编译的功能。第二,项目稍后某个阶段,一个 agent 看了看周围,看到真实进展,<strong>宣布活儿干完了</strong>。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-15.jpg" alt="Step 9 · feature list JSON">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · feature list 用 JSON 不用 markdown,因为模型不太会乱改 JSON。</p>
+        </div>
+<p>两件事在任何 coding 启动前就要修好——一个 <strong>initializer agent</strong> 跑一次把环境搭起来:一个 init.sh 启动 dev server、一份 progress log、一个 initial git commit、一份 <strong>JSON 格式的 feature list</strong>——给 claude.ai clone 这样的项目 200 多项,每一项都标 failing。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">json</span></div>
+          <pre class="code-block-body">{
+  "category": "functional",
+  "description": "New chat button creates a fresh conversation",
+  "steps": [
+    "Navigate to main interface",
+    "Click the 'New Chat' button",
+    "Verify a new conversation is created",
+    "Check that chat area shows welcome state"
+  ],
+  "passes": false
+}
+
+// 200+ of these, all starting false. Agents may ONLY flip `passes`.
+// "It is unacceptable to remove or edit tests" — deliberately strong
+// wording, because a model that CAN edit the spec WILL edit the spec.</pre>
+        </div>
+<p>一个值得直接抄的细节:他们选 <strong>JSON 不用 Markdown</strong>做那份 list,因为模型乱改 JSON 的概率可测量地低。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-10">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">10</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">HARNESS · CONTRACT</div>
+            <h2 class="cap-title-en">Harness - one increment per session</h2>
+            <div class="cap-title-cn">Harness(2)·一个 session 一个 feature,留干净</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">每个 session 一份合同:认清方向、挑一个 feature、像用户一样验证它、把 repo 留干净。验证要给真工具(浏览器自动化、点击),不是 unit test。</span>
+        </div>
+        <div class="cap-body">
+          <p>环境搭好之后,每个 coding session 拿到一个合同:<strong>认清方向、挑一个 feature、像用户一样验证它、把 repo 留干净</strong>。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-16.jpg" alt="Step 10 · one increment">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · 一个 session 一个 feature。</p>
+        </div>
+<p>「干净」就是真实团队里的那种干净——没大 bug、代码有序、下一位工程师能开始干不用先替别人收拾残局。</p>
+<p>认方向的仪式是机械的、每次都能省 token:<code>pwd</code>、读 progress 文件、读 git log、读 feature list、跑 <code>init.sh</code>、<strong>动手任何东西之前先测一遍基础还在跑</strong>。最后那个检查比听起来重要——少了它,一个 agent 在已经坏掉的 app 上接着做新 feature,只会让破损更深。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <pre class="code-block-body">[Assistant] Getting my bearings on the current state.
+[Tool] bash — pwd
+[Tool] read — claude-progress.txt
+[Tool] read — feature_list.json
+[Tool] bash — git log --oneline -20
+[Tool] bash — ./init.sh start the dev server
+[Assistant] Verifying fundamentals before touching anything…
+✓ core chat, theme switching, conversation loading all pass
+[Assistant] Picking the highest-priority failing feature. no guessing. no archaeology. the previous shift left notes.</pre>
+        </div>
+<p>关于「标完成」这件事:Claude 的倾向是改完一个、跑几个 unit test、就宣布搞定——从来不去端到端验证一遍这个 feature。</p>
+<p><strong>给它真的测试工具,要求它像真人用户那样去验</strong>——浏览器自动化、真的点击。这一条单独的要求在 Anthropic 的实验里显著提升了表现,抓到了光看代码根本看不见的 bug。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-11">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">11</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">EVALS · BUILD</div>
+            <h2 class="cap-title-en">Evals - a number, not a vibe</h2>
+            <div class="cap-title-cn">Evals(1)·20-50 个真实失败任务起步,三类 grader 组合</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">起步比想象的小(20-50 个真实失败任务),三类 grader 组合(code 客观、rubric 灵活、human 校准),评结果不评路径。</span>
+        </div>
+        <div class="cap-body">
+          <p>崩溃点永远是同一句话:<strong>用户说 agent 感觉变差了,团队除了猜+验证,根本没方法核实</strong>。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-17.jpg" alt="Step 11 · eval set up">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · evals 起步:20-50 个真实失败的任务。</p>
+        </div>
+<p>没有 evals,debugging 是被动的——等投诉、手动重现、修、祈祷其他东西没回归。你分不清真实回归和噪声。</p>
+<p>起步比你想象的小。团队拖是因为他们觉得需要几百个 task;<strong>20-50 个从真实失败里抽出来的就够了</strong>,因为早期改动效应 size 大。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-18.jpg" alt="Step 11 · graders">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · grader 三类组合:code / model / human。</p>
+        </div>
+<p>从你已经在手测的东西、你 bug tracker 里的、你 support 队列里抓。写的时候让 <strong>两个 domain 专家独立得出同样的判断</strong>——任务里的模糊变成指标里的噪声。建 <strong>平衡集</strong>——既测「这个行为应该触发」也测「不应该触发」,不然你会调出一个到处搜东西的 agent。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">yaml</span></div>
+          <pre class="code-block-body">task:
+  id: "fix-auth-bypass_1"
+  desc: "Fix authentication bypass when password field is empty"
+  graders:
+    - type: deterministic_tests     # fast, objective, reproducible
+      required: [test_empty_pw_rejected.py]
+    - type: llm_rubric               # nuance tests can't capture
+      rubric: prompts/code_quality.md
+    - type: static_analysis
+      commands: [ruff, mypy, bandit]
+    - type: state_check              # the OUTCOME, not the claim
+      expect: { security_logs: { event_type: "auth_blocked" } }
+  tracked_metrics:
+    - type: transcript
+      metrics: [n_turns, n_toolcalls, n_total_tokens]
+
+# The agent says "fixed". The state_check decides whether it was.
+# Grade outcomes, not announcements.</pre>
+        </div>
+<p>刻意组合三种 grader。<strong>Code-based</strong>——快、便宜、客观;能用的地方都用。<strong>Model-based</strong>——rubric 处理 nuanced 的事、用人类校准、理想是每个维度一个独立 judge 而不是一个大 judge 打所有。<strong>Human</strong>——金标准,谨慎用,用来校准其他两个。</p>
+<p>还有一条:评 agent 实际产生的东西,不是它走的路径。检查一串确定的工具调用很脆,因为 agent 经常会找到你没预料到的有效做法。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-12">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">12</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">EVALS · HONEST</div>
+            <h2 class="cap-title-en">Evals - keeping the number honest</h2>
+            <div class="cap-title-cn">Evals(2)·读 transcript,接 CI,把数字变日常</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">grader 要靠读很多 transcript 才能信;pass@k 和 pass^k 别混;把 suite 接进 CI,model 升级从几周变一天。</span>
+        </div>
+        <div class="cap-body">
+          <p>没人读的 suite 就是没人该信的数字。<strong>你要读到很多次试验的 transcript,才会知道你的 grader 行不行</strong>——一个任务挂了的时候,transcript 告诉你到底是 agent 真做错了,还是你的 grader 拒了一个有效的解。</p>
+<div class="inline-image">
+          <img src="images/2026-08-21-agent-engineer-12-steps/x-19.jpg" alt="Step 12 · eval integrity">
+          <p class="inline-image-caption">原文配图 · Codez (@0xCodez) · 2026/08/17 · pass@k vs pass^k,saturation 陷阱。</p>
+        </div>
+<p>失败应该是 fair 的——一眼能看出来哪儿错了、为什么错。</p>
+<p>两个陷阱让好 agent 看起来很烂。<strong>跨多 trial 全 0% 通过率通常意味着任务坏了,不是 agent 不行</strong>。Opus 4.5 最初在 CORE-Bench 上拿 42%——后来有研究员发现评分太死板:期望「96.124991…」就把「96.12」拒了;任务说明歧义;任务不可复现。修完之后:<strong>95%</strong>。</p>
+<p>反过来的陷阱是 <strong>saturation</strong>——一个跑到 100% 的 eval 只能追回归,没坡给你爬,真实的能力提升开始看起来像噪声。</p>
+<p>然后把两个指标分清楚。<strong>pass@k</strong> 是 k 次里至少一次成功的概率——k 越大它越大。<strong>pass^k</strong> 是 k 次里全成功的概率——k 越大它掉得越快。单 trial 75%,三次 都过只剩 ~42%。</p>
+<p>一次成功就够的用 pass@k;面向客户的用 <strong>pass^k</strong>,用户期望每次都跑通。</p>
+<div class="code-block">
+          <div class="code-block-head"><span class="code-block-lang">text</span></div>
+          <pre class="code-block-body">› Run the suite against the new model and compare to baseline.
+
+● 47 tasks × 3 trials · 141 runs · parallel
+   capability suite  pass@1 61% → 74%   +13
+   regression suite  pass@1 99% → 99%   held
+   consistency       pass^3 52% → 68%   +16
+
+● 2 regressions: refund_partial, escalation_tone
+→ transcripts written to ./eval-results/failures/
+
+the upgrade decision took an afternoon, not three weeks</pre>
+        </div>
+<p>最后,把它做成 routine。把 suite 接到 CI 里,让它在每次改动和每次 model 升级时都跑。这就是把一个 model 发布从「几周手测」变成「跑一天 suite + 读 diff」的事——没 evals 的团队永远追不上来的复利差距。</p>
+        </div>
+      </div>
+    </section>
+    <section class="jobs-section" id="jobs">
+      <div class="container">
+        <div class="jobs-head">
+          <div class="jobs-kicker">ACTION ITEMS</div>
+          <h2 class="jobs-title">7 个 jobs to run with Claude — 一个 pillar 一个</h2>
+          <p class="jobs-subtitle">Codez 给的 7 个可立刻跑的 Claude workflow,每个对应一个 pillar。读完挑一个你今晚就能跑的。</p>
+        </div>
+        <div class="jobs-list">
+          <div class="job-card">
+            <div class="job-num">01</div>
+            <div class="job-body">
+              <div class="job-pillar">CONTEXT · /context + /doctor</div>
+              <p class="job-claim"><strong>打开那个你从来没看过的 window。</strong>先量再砍。memory-files 数字重 = CLAUDE.md 超重——一个命令诊断,一个下午修。</p>
+              <p class="job-prompt">› <code>/context</code> &nbsp; then &nbsp; <code>/doctor</code></p>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="job-num">02</div>
+            <div class="job-body">
+              <div class="job-pillar">TOOLS · audit tool descriptions</div>
+              <p class="job-claim"><strong>审一遍你的工具描述。</strong>每条 description 都应该说「<em>什么时候用</em>」,不只是「能干什么」。那句话是发现表面——少了它,一个接好的工具 Claude 永远不挑。</p>
+              <p class="job-prompt">› <code>Review every tool description in this MCP server. Add a "use when" sentence to each and tighten the parameter types.</code></p>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="job-num">03</div>
+            <div class="job-body">
+              <div class="job-pillar">MEMORY · write plan to disk</div>
+              <p class="job-claim"><strong>把状态搬到文件系统。</strong>让 Claude 写一份 plan 文件,边干边改。它 <em>活在磁盘上所以跨 compaction 也活</em>——长任务跑到一半不再丢主线。</p>
+              <p class="job-prompt">› <code>Before you start, write the plan to plan.md and update it after each step. Re-read it whenever you resume.</code></p>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="job-num">04</div>
+            <div class="job-body">
+              <div class="job-pillar">LOOPS · add verifier</div>
+              <p class="job-claim"><strong>给你的 loop 配一个 verifier。</strong>挑一个 Claude 自己判断「搞完了」的任务——加一个外部检查,看看第一个答案过不了 3 个 skeptic 的概率有多大。</p>
+              <p class="job-prompt">› <code>After each fix, spawn three verifiers — correctness, security, reproducibility. Accept only what survives two of three.</code></p>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="job-num">05</div>
+            <div class="job-body">
+              <div class="job-pillar">GRAPHS · fan-out</div>
+              <p class="job-claim"><strong>把一条直线任务变 fan-out。</strong>找一个你顺序遍历文件或 source 的任务——一个 item 一个 agent,同时跑,然后一个 merge。wall-clock 的差距就是全部教训。</p>
+              <p class="job-prompt">› <code>Run a workflow to audit every route under src/routes/. One agent per file, verify each finding, then synthesize.</code></p>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="job-num">06</div>
+            <div class="job-body">
+              <div class="job-pillar">HARNESS · initializer agent</div>
+              <p class="job-claim"><strong>给多 session 项目搭脚手架。</strong>在长 build 之前,让 Claude 写 init.sh、一份 progress log、一份 <strong>所有 feature 标 failing 的 JSON list</strong>。</p>
+              <p class="job-prompt">› <code>Act as an initializer agent: write init.sh, claude-progress.txt, and feature_list.json covering every requirement, all passes:false.</code></p>
+            </div>
+          </div>
+          <div class="job-card">
+            <div class="job-num">07</div>
+            <div class="job-body">
+              <div class="job-pillar">EVALS · bugs → suite</div>
+              <p class="job-claim"><strong>把上周的 bug 变 suite。</strong>打开 bug tracker,把真实失败写成 <strong>20 个判定标准不含糊的 task</strong>。这套 suite 比你这季度能接的任何 framework 都值钱。</p>
+              <p class="job-prompt">› <code>Here are 20 real failures. Write each as an eval task with deterministic graders where possible and a rubric where not.</code></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text"><strong>The ones who build the twelve steps will ship agents that work on days the model is having a bad one</strong> — which, in production, is the only reliability that has ever mattered.</p>
+        <p class="pull-quote-caption">— CODEZ · AI AGENT ENGINEER IN 2026 · CONCLUSION</p>
+      </div>
+    </section>
+    <section class="references">
+      <div class="container">
+        <p class="references-kicker">SOURCES & CREDITS</p>
+        <h2 class="references-title">引用与原文出处</h2>
+        <ul class="references-list">
+          <li>
+            <strong>ORIGINAL ARTICLE</strong>
+            <em>AI Agent Engineer in 2026: 12 steps roadmap - Loops, Graphs, Evals, Context, Harness (Full-Course)</em><br>
+            作者:Codez (@0xCodez) · 发布于 2026/08/17 · 66,958 浏览 · 501 赞 · 78 转推 · 819 收藏 · 19 回复<br>
+            推文链接:<a href="https://x.com/0xCodez/status/2089393338977829278" target="_blank" rel="noopener">https://x.com/0xCodez/status/2089393338977829278</a><br>
+            文章链接:<a href="https://x.com/i/article/2089344705402179584" target="_blank" rel="noopener">https://x.com/i/article/2089344705402179584</a>
+          </li>
+          <li>
+            <strong>AUTHOR · X</strong>
+            <a href="https://x.com/0xCodez" target="_blank" rel="noopener">https://x.com/0xCodez</a>
+          </li>
+          <li>
+            <strong>AUTHOR · SUBSTACK</strong>
+            <a href="https://substack.com/@0xmovez" target="_blank" rel="noopener">substack.com/@0xmovez</a> — Codez 的 newsletter,持续发 AI agent 一手观察
+          </li>
+          <li>
+            <strong>RELATED · 14-STEP GRAPH ENGINEERING</strong>
+            <a href="2026-07-25-0xcodez-graph-engineering-14-steps.html" target="_blank" rel="noopener">同作者前一篇:14 步 Graph Engineering</a> · 本文是它的「全栈版」,把 Loops / Graphs / Evals 扩展到完整工程 7 pillar
+          </li>
+          <li>
+            <strong>REFERENCED · CLAUDE CODE /CONTEXT</strong>
+            <code>/context</code> + <code>/memory</code> + <code>/doctor</code> 命令来自 Claude Code 官方 CLI,本文 step 1 + step 2 实操验证
+          </li>
+          <li>
+            <strong>REFERENCED · ANTHROPIC INIT.GUIDE</strong>
+            <a href="https://www.anthropic.com/engineering" target="_blank" rel="noopener">anthropic.com/engineering</a> · 本文 step 9 的 initializer agent 思路来自 Anthropic 长任务研究
+          </li>
+          <li>
+            <strong>INTERPRETATION</strong>
+            本文为完整翻译版本,按原文 12 步 + 7 个 jobs + 结论的顺序重新组织成 12 章 + 1 个行动清单 section。所有 19 张原文配图按出现位置完整保留(图说附 Codez 原文上下文 + 我的中文补充)。原文嵌入的 9 段代码片段(CLAUDE.md 模板 / MCP tool / loop dedupe / verifier / fan-out log / feature list JSON / orientation ritual / eval task / 升级 diff)按 `.code-block` 渲染成可读代码面板。如需引用请以原文为准。
+          </li>
+        </ul>
+        <p class="references-note">最值得今晚就做的一件事——打开 <code>/context</code>,看看 memory files 那一栏是多重。如果是几 KB,恭喜;如果是几十 KB,这就是你下一步的优化点。</p>
+      </div>
+    </section>
+    <section class="closing">
+      <div class="container">
+        <p class="closing-text">demo 谁都能让跑起来,</p>
+        <p class="closing-text"><strong>真正的活儿是 demo 之后那一整套系统。</strong></p>
+        <p class="closing-caption">— CODEZ · AI AGENT ENGINEER IN 2026</p>
+      </div>
+    </section>
+    <footer class="article-footer">
+      <div class="container">
+        <p>本文为完整翻译版本 · 12 章按 Codez 原文 step 01-12 顺序 · 7 个 jobs to run with Claude · 19 张原文配图 + 9 段代码片段按位置完整保留</p>
+        <p class="credit">朱有以 · 为 AI 发电 · 2026/08</p>
+      </div>
+    </footer>
+  </main>
+    <button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+    <nav class="floating-nav-panel" id="navPanel">
+      <div class="nav-panel-header">本文章节</div>
+      <div class="nav-panel-content">
+        <a href="#cap-01" class="nav-section"><div class="nav-section-kicker">01 · CONTEXT · READ</div><div class="nav-section-title">Context · 先看 7,850</div></a>
+        <a href="#cap-02" class="nav-section"><div class="nav-section-kicker">02 · CONTEXT · CUT</div><div class="nav-section-title">Context · 砍 80% 进树</div></a>
+        <a href="#cap-03" class="nav-section"><div class="nav-section-kicker">03 · TOOLS</div><div class="nav-section-title">Tools & MCP · 描述是文档</div></a>
+        <a href="#cap-04" class="nav-section"><div class="nav-section-kicker">04 · MEMORY</div><div class="nav-section-title">Memory · 写磁盘不蒸发</div></a>
+        <a href="#cap-05" class="nav-section"><div class="nav-section-kicker">05 · LOOPS · STOP</div><div class="nav-section-title">Loops · 写在代码里</div></a>
+        <a href="#cap-06" class="nav-section"><div class="nav-section-kicker">06 · LOOPS · VERIFY</div><div class="nav-section-title">Loops · Verifier 在 loop 里</div></a>
+        <a href="#cap-07" class="nav-section"><div class="nav-section-kicker">07 · GRAPHS</div><div class="nav-section-title">Graphs · Edge 是免费的</div></a>
+        <a href="#cap-08" class="nav-section"><div class="nav-section-kicker">08 · GRAPHS · COST</div><div class="nav-section-title">Graphs · Pipeline + 分层</div></a>
+        <a href="#cap-09" class="nav-section"><div class="nav-section-kicker">09 · HARNESS</div><div class="nav-section-title">Harness · Initializer 搭脚手架</div></a>
+        <a href="#cap-10" class="nav-section"><div class="nav-section-kicker">10 · HARNESS</div><div class="nav-section-title">Harness · 一 session 一 feature</div></a>
+        <a href="#cap-11" class="nav-section"><div class="nav-section-kicker">11 · EVALS</div><div class="nav-section-title">Evals · 20-50 个起步</div></a>
+        <a href="#cap-12" class="nav-section"><div class="nav-section-kicker">12 · EVALS · HONEST</div><div class="nav-section-title">Evals · 接 CI 变日常</div></a>
+        <a href="#jobs" class="nav-section"><div class="nav-section-kicker">JOBS · 7 ACTIONS</div><div class="nav-section-title">7 个 jobs 今晚就跑</div></a>
+      </div>
+    </nav>
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+      if (!navToggle || !navPanel) return;
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('open');
+      });
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('open');
+        }
+      });
+      navPanel.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() { navPanel.classList.remove('open'); });
+      });
+    })();
+  </script>
+</body>
+</html>
