@@ -193,10 +193,16 @@
 <p>Prompt → Plan → Execute → Verify</p>
 <p>Prompt 是你提出任务，Plan 是它准备怎么做，Execute 是实际读写文件和运行命令，Verify 是检查结果。这里最重要的是最后一步。Codex 说“完成了”，只能说明它结束了当前执行，不能自动证明文件正确、页面能用或者测试已经通过。</p>
 <p>Codex 有五个主要入口。</p>
-<div class="inline-image">
-  <img src="images/2026-08-25-codex-intro/x-02.jpg" alt="x-02">
-  <p class="inline-image-caption">原文配图 · 权限档位（Read-only / Workspace-write / Full access）与适合任务</p>
-</div>
+<table class="cheatsheet">
+  <thead>
+    <tr><th>权限</th><th>能做什么</th><th>适合什么任务</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Read-only</td><td>读取和分析，不写文件</td><td>审查代码、了解项目、找问题</td></tr>
+    <tr><td>Workspace-write</td><td>可修改当前工作区，越界受限</td><td>日常使用的默认选择</td></tr>
+    <tr><td>Full access</td><td>可访问更大范围并执行高权限动作</td><td>只适合明确、受控、可恢复的环境</td></tr>
+  </tbody>
+</table>
 <p>小白没有必要同时学习五种入口。已经打开桌面 App，就先把 App 用明白；习惯终端，再补 CLI。Cloud、IDE 和 Chrome 扩展都是为具体场景服务的，不是“越多越专业”。</p>
     </div>
   </div>
@@ -362,10 +368,27 @@
     </div>
     <div class="cap-body">
 <p>Codex 能读写文件、运行命令，权限不能含糊。常见的沙盒可以理解为三档。</p>
-<div class="inline-image">
-  <img src="images/2026-08-25-codex-intro/x-04.jpg" alt="x-04">
-  <p class="inline-image-caption">原文配图 · 你现在要做的事 vs 优先使用</p>
-</div>
+<table class="cheatsheet">
+  <thead>
+    <tr><th>你现在要做的事</th><th>优先使用</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>了解项目，不允许修改</td><td>Read-only + 普通任务</td></tr>
+    <tr><td>直接改当前目录</td><td>Local + Workspace-write</td></tr>
+    <tr><td>同仓库并行两个任务</td><td>Worktree</td></tr>
+    <tr><td>先讨论方案</td><td><code>/plan</code> 或明确要求只给计划</td></tr>
+    <tr><td>检查改动</td><td>Diff + <code>/review</code></td></tr>
+    <tr><td>查看报错、跑测试</td><td>集成终端</td></tr>
+    <tr><td>操作本地应用</td><td>Computer Use</td></tr>
+    <tr><td>检查本地网页</td><td>In-App Browser</td></tr>
+    <tr><td>操作已登录网页</td><td>Chrome 扩展</td></tr>
+    <tr><td>固化重复方法</td><td>Skill</td></tr>
+    <tr><td>安装整套现成能力</td><td>Plugin</td></tr>
+    <tr><td>连接外部数据和工具</td><td>MCP</td></tr>
+    <tr><td>定时重复执行</td><td>Automation</td></tr>
+    <tr><td>跨会话追一个长期结果</td><td><code>/goal</code></td></tr>
+  </tbody>
+</table>
 <p>对小白来说，Workspace-write 足够覆盖大多数工作。要分析时用 Read-only。Full access 不应该为了少点几次确认而打开，更不适合无人值守的定时任务。</p>
 <p>看到审批请求时，先看四件事：它准备执行什么命令，在哪个目录执行，是否需要网络，为什么这一步对当前目标有必要。安装依赖、上传文件、删除数据、修改账号设置、对外发布和访问凭据，都值得停下来确认。</p>
 <p>/permissions 可以查看和调整当前安全模式。CLI 里也可以在启动时指定：</p>
@@ -442,10 +465,28 @@ codex exec &quot;任务&quot;     # 非交互执行一次任务
 codex resume --last   # 继续最近的会话</code></pre>
 </div>
 <p>进入 TUI 后，输入 / 可以查看特殊命令。</p>
-<div class="inline-image">
-  <img src="images/2026-08-25-codex-intro/x-06.jpg" alt="x-06">
-  <p class="inline-image-caption">原文配图 · CLI 命令速查（/model /plan /review /diff /permissions /status 等）</p>
-</div>
+<table class="cheatsheet">
+  <thead>
+    <tr><th>命令</th><th>用途</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>/model</code></td><td>切换模型</td></tr>
+    <tr><td><code>/plan</code></td><td>进入计划模式</td></tr>
+    <tr><td><code>/review</code></td><td>审查当前改动</td></tr>
+    <tr><td><code>/diff</code></td><td>查看 Git Diff</td></tr>
+    <tr><td><code>/permissions</code></td><td>调整审批和沙盒</td></tr>
+    <tr><td><code>/goal</code></td><td>设置跨会话持续目标</td></tr>
+    <tr><td><code>/skills</code></td><td>查看可用 Skills</td></tr>
+    <tr><td><code>/plugins</code></td><td>浏览插件</td></tr>
+    <tr><td><code>/mcp</code></td><td>查看 MCP 连接</td></tr>
+    <tr><td><code>/compact</code></td><td>压缩对话历史</td></tr>
+    <tr><td><code>/copy</code></td><td>复制最近一次完整输出</td></tr>
+    <tr><td><code>/status</code></td><td>查看会话和用量信息</td></tr>
+    <tr><td><code>/clear</code></td><td>开始一段新对话</td></tr>
+    <tr><td><code>/fork</code></td><td>从当前位置分叉新任务</td></tr>
+    <tr><td><code>/exit</code></td><td>退出</td></tr>
+  </tbody>
+</table>
 <p>输入框还有几组很实用的操作：</p>
 <ul>
   <li>输入 @ 搜索并引用工作区文件；</li>
@@ -594,10 +635,16 @@ codex resume --last   # 继续最近的会话</code></pre>
     </div>
     <div class="cap-body">
 <p>这三个功能处理的是不同问题。</p>
-<div class="inline-image">
-  <img src="images/2026-08-25-codex-intro/x-09.jpg" alt="x-09">
-  <p class="inline-image-caption">原文配图 · 三个功能定位的对比（Plan / Automation / /goal 回答的问题）</p>
-</div>
+<table class="cheatsheet">
+  <thead>
+    <tr><th>功能</th><th>回答的问题</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Plan</td><td>这次准备分几步做</td></tr>
+    <tr><td>Automation</td><td>什么时候启动、多久重复一次</td></tr>
+    <tr><td><code>/goal</code></td><td>这个长期目标是否还在继续，何时算完成</td></tr>
+  </tbody>
+</table>
 <p>/goal 适合跨多次会话推进、有明确完成标准的长任务。它可以跨 /clear、对话压缩和会话切换保留状态。普通几分钟任务不需要 /goal，需要你频繁判断的探索任务也不适合强行让它“不做完不停止”。</p>
 <p>一个合理的目标要有可验证的结束条件。例如“把所有测试迁移完成，并让现有测试全部通过”比“持续优化这个项目”更适合 /goal。目标太空，Agent 只会不断寻找新的事情做。</p>
 <p>当 Skill、Plugin、MCP、Automation 和 /goal 同时出现时，可以这样理解：Skill 是操作手册，Plugin 是能力包，MCP 是外部接口，Automation 是闹钟，/goal 是长期任务状态。实际工作不必五个一起上，缺哪一层再补哪一层。</p>
