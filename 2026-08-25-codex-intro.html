@@ -195,12 +195,14 @@
 <p>Codex 有五个主要入口。</p>
 <table class="cheatsheet">
   <thead>
-    <tr><th>权限</th><th>能做什么</th><th>适合什么任务</th></tr>
+    <tr><th>入口</th><th>在哪里使用</th><th>更适合什么情况</th></tr>
   </thead>
   <tbody>
-    <tr><td>Read-only</td><td>读取和分析，不写文件</td><td>审查代码、了解项目、找问题</td></tr>
-    <tr><td>Workspace-write</td><td>可修改当前工作区，越界受限</td><td>日常使用的默认选择</td></tr>
-    <tr><td>Full access</td><td>可访问更大范围并执行高权限动作</td><td>只适合明确、受控、可恢复的环境</td></tr>
+    <tr><td>CLI</td><td>终端</td><td>单个任务、脚本化处理、需要完整控制</td></tr>
+    <tr><td>Codex App</td><td>桌面应用</td><td>多任务并行、查看 Diff、操作本机应用、定时任务</td></tr>
+    <tr><td>Cloud</td><td>浏览器中的云端环境</td><td>任务说清以后交给后台执行</td></tr>
+    <tr><td>IDE Extension</td><td>VS Code、Cursor 等编辑器</td><td>不想离开编辑器，围绕当前代码工作</td></tr>
+    <tr><td>Chrome 扩展</td><td>已登录的 Chrome 浏览器</td><td>操作 Gmail、CRM、内部系统等登录态网页</td></tr>
   </tbody>
 </table>
 <p>小白没有必要同时学习五种入口。已经打开桌面 App，就先把 App 用明白；习惯终端，再补 CLI。Cloud、IDE 和 Chrome 扩展都是为具体场景服务的，不是“越多越专业”。</p>
@@ -370,23 +372,12 @@
 <p>Codex 能读写文件、运行命令，权限不能含糊。常见的沙盒可以理解为三档。</p>
 <table class="cheatsheet">
   <thead>
-    <tr><th>你现在要做的事</th><th>优先使用</th></tr>
+    <tr><th>权限</th><th>能做什么</th><th>适合什么任务</th></tr>
   </thead>
   <tbody>
-    <tr><td>了解项目，不允许修改</td><td>Read-only + 普通任务</td></tr>
-    <tr><td>直接改当前目录</td><td>Local + Workspace-write</td></tr>
-    <tr><td>同仓库并行两个任务</td><td>Worktree</td></tr>
-    <tr><td>先讨论方案</td><td><code>/plan</code> 或明确要求只给计划</td></tr>
-    <tr><td>检查改动</td><td>Diff + <code>/review</code></td></tr>
-    <tr><td>查看报错、跑测试</td><td>集成终端</td></tr>
-    <tr><td>操作本地应用</td><td>Computer Use</td></tr>
-    <tr><td>检查本地网页</td><td>In-App Browser</td></tr>
-    <tr><td>操作已登录网页</td><td>Chrome 扩展</td></tr>
-    <tr><td>固化重复方法</td><td>Skill</td></tr>
-    <tr><td>安装整套现成能力</td><td>Plugin</td></tr>
-    <tr><td>连接外部数据和工具</td><td>MCP</td></tr>
-    <tr><td>定时重复执行</td><td>Automation</td></tr>
-    <tr><td>跨会话追一个长期结果</td><td><code>/goal</code></td></tr>
+    <tr><td>Read-only</td><td>读取和分析，不写文件</td><td>审查代码、了解项目、找问题</td></tr>
+    <tr><td>Workspace-write</td><td>可修改当前工作区，越界受限</td><td>日常使用的默认选择</td></tr>
+    <tr><td>Full access</td><td>可访问更大范围并执行高权限动作</td><td>只适合明确、受控、可恢复的环境</td></tr>
   </tbody>
 </table>
 <p>对小白来说，Workspace-write 足够覆盖大多数工作。要分析时用 Read-only。Full access 不应该为了少点几次确认而打开，更不适合无人值守的定时任务。</p>
