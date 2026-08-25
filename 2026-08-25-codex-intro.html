@@ -49,7 +49,7 @@
     .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
     .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
     .article-byline .byline-sep { color: var(--border-subtle); }
-    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; overflow-wrap: anywhere; word-break: break-word; }
     .cover-frame { padding: 64px 0; }
     .cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
     .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
@@ -111,7 +111,7 @@
     .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
     .article-footer { padding: 32px 0 64px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px; }
     .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 8px; }
-    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 200; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 1000; }
     .floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
     .floating-nav-toggle svg { width: 20px; height: 20px; }
     .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 70vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
@@ -130,8 +130,11 @@
     }
     @media (max-width: 640px) {
       .article-category::before, .article-category::after { width: 40px; }
-      .floating-nav-toggle { bottom: 20px; right: 20px; }
-      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+      .floating-nav-toggle {
+        bottom: max(20px, calc(env(safe-area-inset-bottom) + 16px));
+        right: max(20px, calc(env(safe-area-inset-right) + 12px));
+      }
+      .floating-nav-panel { right: 20px; bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px); width: calc(100vw - 40px); max-width: 320px; }
     }
   </style>
 </head>
@@ -156,7 +159,7 @@
           <span class="byline-sep">·</span>
           <span>2026/08/25</span>
         </div>
-        <p class="article-desc">这篇 153 万浏览的 Codex 中文教程，按界面/工作区/任务/权限/Plan/CLI/AGENTS.md/Skills·Plugins·MCP/Automation/学习顺序逐层拆开，把"第一次打开 Codex 容易卡住的地方"全讲一遍——所有 11 张原文配图按位置完整保留，8 个命令行/配置示例都附 Copy 按钮。</p>
+        <p class="article-desc">这篇 153 万浏览的 Codex 中文教程，按界面 / 工作区 / 任务 / 权限 / Plan / CLI / AGENTS.md / Skills · Plugins · MCP / Automation / 学习顺序逐层拆开，把"第一次打开 Codex 容易卡住的地方"全讲一遍——所有 11 张原文配图按位置完整保留，8 个命令行/配置示例都附 Copy 按钮。</p>
       </div>
     </section>
     <section class="cover-frame">

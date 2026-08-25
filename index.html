@@ -176,6 +176,8 @@
       color: var(--text-secondary);
       line-height: 1.8;
       margin-bottom: 14px;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
     .article-tags {
       display: flex;
@@ -310,12 +312,15 @@
     }
 
     @media (max-width: 768px) {
-      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-toggle {
+        bottom: max(20px, calc(env(safe-area-inset-bottom) + 16px));
+        right: max(20px, calc(env(safe-area-inset-right) + 12px));
+      }
       .floating-nav-panel {
         right: 12px;
         left: 12px;
         width: auto;
-        bottom: 90px;
+        bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px);
       }
     }
   </style>
@@ -333,7 +338,7 @@
       <a href="2026-08-25-codex-intro.html" class="article-card">
         <p class="article-date">2026/08/25</p>
         <h2 class="article-title">Codex 从入门到精通 · Miles Ma 153 万浏览中文教程完整版</h2>
-        <p class="article-desc">Miles Ma (@miles_mazy · 大厂AI算法专家 / 26年6月转型FDE) 1,530,757 浏览 / 4,532 赞 / 9,649 收藏 X 中文教程完整版。14 章按界面/工作区/任务/权限/Plan/CLI/AGENTS.md/Skills·Plugins·MCP/Automation/学习顺序逐层拆开。所有 11 张原文配图按位置完整保留,8 个命令行/配置示例附 Copy 按钮。原文已足够精简,本文不做删改,按原文逐段呈现。</p>
+        <p class="article-desc">Miles Ma (@miles_mazy · 大厂AI算法专家 / 26年6月转型FDE) 1,530,757 浏览 / 4,532 赞 / 9,649 收藏 X 中文教程完整版。14 章按界面 / 工作区 / 任务 / 权限 / Plan / CLI / AGENTS.md / Skills · Plugins · MCP / Automation / 学习顺序逐层拆开。所有 11 张原文配图按位置完整保留,8 个命令行/配置示例附 Copy 按钮。原文已足够精简,本文不做删改,按原文逐段呈现。</p>
         <div class="article-tags">
           <span class="tag">Codex</span>
           <span class="tag">OpenAI</span>
