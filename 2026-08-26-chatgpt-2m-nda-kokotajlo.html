@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAI 给了他 200 万让他闭嘴，他拒绝了 · Daniel Kokotajlo 访谈解读 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #fafafa;
+      --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f;
+      --text-secondary: #4a4a4f;
+      --text-muted: #8a8a8e;
+      --accent-gold: #c9a962;
+      --accent-gold-dim: #b08d4a;
+      --accent-red: #C8161D;
+      --border-subtle: #e5e5e8;
+      --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(
+          0deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 79px,
+          rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px
+        );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ai-glow {
+      color: var(--accent-red);
+      text-shadow:
+        0 0 8px rgba(200, 22, 29, 0.6),
+        0 0 16px rgba(200, 22, 29, 0.4),
+        0 0 32px rgba(200, 22, 29, 0.2);
+    }
+
+    /* SITE HEADER */
+    .site-header {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      text-decoration: none;
+    }
+    .back-link {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent-gold-dim); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HERO */
+    .article-hero {
+      padding: 72px 0 48px;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .article-category {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 28px;
+    }
+    .article-category::before,
+    .article-category::after {
+      content: '';
+      width: 60px;
+      height: 1px;
+      flex-shrink: 0;
+    }
+    .article-category::before {
+      background: linear-gradient(to right, transparent, currentColor);
+    }
+    .article-category::after {
+      background: linear-gradient(to right, currentColor, transparent);
+    }
+    .article-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 14px;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+    }
+    .article-title .highlight { color: #C8161D; }
+    .article-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(16px, 2.4vw, 20px);
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 640px;
+      margin: 0 auto 28px;
+      letter-spacing: 0.02em;
+    }
+    .article-byline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      flex-wrap: wrap;
+    }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 600px;
+      margin: 24px auto 0;
+    }
+
+    /* COVER IMAGE */
+    .cover-frame {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cover-frame img {
+      display: block;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .cover-caption {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+    .cover-caption a {
+      color: var(--accent-gold-dim);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: color 0.2s, border-color 0.2s;
+      padding-bottom: 1px;
+    }
+    .cover-caption a:hover {
+      color: var(--accent-red);
+      border-bottom-color: var(--accent-red);
+    }
+
+    /* VIDEO FRAME */
+    .video-frame {
+      padding: 64px 0;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .video-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-card);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s;
+      color: inherit;
+    }
+    .video-cta:hover {
+      box-shadow: var(--shadow-hover);
+      transform: scale(1.006);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .video-cta-play {
+      flex-shrink: 0;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      color: #fff;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 4px;
+      box-shadow: 0 2px 8px rgba(200, 22, 29, 0.3);
+      transition: transform 0.3s;
+    }
+    .video-cta:hover .video-cta-play { transform: scale(1.08); }
+    .video-cta-text { flex: 1; min-width: 0; }
+    .video-cta-text strong {
+      display: block;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      letter-spacing: 0.01em;
+    }
+    .video-cta-text span {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .video-caption {
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+
+    /* INTRO */
+    .article-intro {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .intro-lead {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(19px, 2.8vw, 24px);
+      line-height: 1.85;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-statement {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      margin-bottom: 18px;
+    }
+    .intro-statement:last-child { margin-bottom: 0; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+    .pull-quote-text {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: clamp(22px, 3.5vw, 30px);
+      font-weight: 300;
+      line-height: 1.45;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      max-width: 760px;
+      margin: 0 auto 24px;
+    }
+    .pull-quote-text .arrow {
+      color: var(--accent-red);
+      font-weight: 500;
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0 6px;
+    }
+    .pull-quote-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* CAPABILITY */
+    .capability {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .capability:last-of-type { border-bottom: none; }
+
+    .cap-head {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .cap-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 0.9;
+      color: var(--accent-gold-dim);
+      letter-spacing: -0.03em;
+      flex-shrink: 0;
+    }
+    .cap-title-group { flex: 1; }
+    .cap-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+    }
+    .cap-timestamp {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    .cap-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .cap-title-cn {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+    }
+
+    .cap-body { font-size: 15.5px; color: var(--text-secondary); line-height: 1.85; }
+    .cap-body p { margin-bottom: 14px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code {
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 14px;
+      background: rgba(201, 169, 98, 0.12);
+      color: var(--accent-gold-dim);
+      padding: 1px 8px;
+      border-radius: 3px;
+    }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+
+    .hl-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      color: var(--accent-red);
+      font-size: 1.05em;
+      letter-spacing: -0.01em;
+    }
+
+    /* 原句引用块 */
+    .source-quote {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      padding: 14px 0 14px 18px;
+      border-left: 3px solid var(--accent-gold);
+      margin: 16px 0;
+      font-style: italic;
+    }
+    .source-quote strong {
+      font-style: normal;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* AI 2027 时间线 */
+    .timeline {
+      padding: 64px 0;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .timeline-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .timeline-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .timeline-subtitle {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 560px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .timeline-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 auto;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .timeline-table th,
+    .timeline-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+      vertical-align: top;
+    }
+    .timeline-table th {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      background: var(--bg-card);
+    }
+    .timeline-table td:first-child {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-red);
+      font-weight: 500;
+      white-space: nowrap;
+      width: 22%;
+    }
+    .timeline-table td:nth-child(2) {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 500;
+      color: var(--text-primary);
+      width: 30%;
+    }
+    .timeline-table td:last-child {
+      color: var(--text-secondary);
+    }
+    .timeline-note {
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-gold);
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* REFERENCES */
+    .references {
+      padding: 72px 0 24px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .references-kicker {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-red);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .references-title {
+      font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+    .references-list {
+      list-style: none;
+      margin: 0 0 24px;
+      padding: 0;
+    }
+    .references-list li {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--bg-secondary);
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list li strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      margin-bottom: 6px;
+    }
+    .references-list a {
+      color: var(--text-primary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: border-color 0.2s, color 0.2s;
+      word-break: break-all;
+    }
+    .references-list a:hover {
+      border-bottom-color: var(--accent-gold-dim);
+      color: var(--accent-gold-dim);
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 80px 0 56px;
+      text-align: center;
+    }
+    .closing-text {
+      font-family: 'Noto Serif SC', serif;
+      font-size: clamp(20px, 3.2vw, 26px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+    }
+
+    /* FOOTER */
+    .article-footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .article-footer p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .article-footer .credit {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+      z-index: 200;
+    }
+    .floating-nav-toggle:hover {
+      box-shadow: var(--shadow-hover);
+      color: var(--accent-gold-dim);
+    }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+
+    .floating-nav-panel {
+      position: fixed;
+      bottom: 86px;
+      right: 28px;
+      width: 320px;
+      max-height: 80vh;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: var(--shadow-hover);
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+    }
+    .floating-nav-panel.active { display: block; }
+    .nav-panel-header {
+      padding: 14px 18px;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-secondary);
+    }
+    .nav-panel-content { overflow-y: auto; max-height: calc(80vh - 60px); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 18px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      border-bottom: 1px solid var(--bg-secondary);
+      line-height: 1.4;
+    }
+    .nav-item:last-child { border-bottom: none; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-item-num {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-dim);
+      flex-shrink: 0;
+      min-width: 26px;
+    }
+    .nav-item-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .nav-item-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-item-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      font-size: 10.5px;
+      font-weight: 400;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .article-hero { padding: 56px 0 36px; }
+      .article-title { font-size: 22px; }
+      .article-intro { padding: 48px 0; }
+      .pull-quote { padding: 48px 0; }
+      .capability { padding: 40px 0; }
+      .cap-num { font-size: 44px; }
+      .cap-title-en { font-size: 22px; }
+      .article-category::before,
+      .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; width: 280px; }
+      .cap-head { flex-direction: column; gap: 12px; }
+      .video-frame { padding: 48px 0; }
+      .timeline-table { font-size: 12.5px; }
+      .timeline-table td:first-child { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="article-hero">
+      <div class="article-category">VIDEO INTERPRETATION · AI SAFETY · 65 分钟访谈</div>
+      <h1 class="article-title">OpenAI 给了他 <span class="highlight">200 万</span>让他闭嘴，他拒绝了</h1>
+      <p class="article-subtitle">前 OpenAI 研究员 Daniel Kokotajlo 独家访谈 · AI 2027 预测、70% 灭绝概率、与拯救人类的最后一份计划</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 The Diary Of A CEO · YouTube 12.9M 观看</span>
+        <span class="byline-sep">·</span>
+        <span>2026/08/26</span>
+      </div>
+      <p class="article-desc">Daniel Kokotajlo 在 OpenAI 待了 5 年，亲历 ChatGPT 发布。OpenAI 给了他一份反贬损协议——签了拿 <span class="hl-num">200 万美元</span>走人，不签就放弃约 <span class="hl-num">85%</span>的家庭净资产。他选了后者。在 Diary Of A CEO 的 65 分钟访谈里，他解释了为什么：他有 <span class="hl-num">70%</span> 的把握认为 AI 会"严重出错"——这其中包含人类灭绝。本文按视频全部 18 个章节逐条速览。</p>
+    </section>
+
+    <!-- COVER -->
+    <section class="cover-frame">
+      <img src="https://img.youtube.com/vi/_g4l7YkDQwA/maxresdefault.jpg" alt="Daniel Kokotajlo 访谈视频封面">
+      <p class="cover-caption">视频截图 · Diary Of A CEO · Steven Bartlett × Daniel Kokotajlo · 2026/07/13 · <a href="https://www.youtube.com/watch?v=_g4l7YkDQwA" target="_blank" rel="noopener">原视频链接</a></p>
+    </section>
+
+    <!-- VIDEO -->
+    <section class="video-frame">
+      <a href="https://www.youtube.com/watch?v=_g4l7YkDQwA" target="_blank" rel="noopener" class="video-cta">
+        <div class="video-cta-play" aria-hidden="true">▶</div>
+        <div class="video-cta-text">
+          <strong>在 YouTube 观看完整访谈</strong>
+          <span>65 min · 12.9M views · Diary Of A CEO</span>
+        </div>
+      </a>
+      <p class="video-caption">因视频所有者嵌入权限，点击跳转 YouTube 观看</p>
+    </section>
+
+    <!-- INTRO -->
+    <section class="article-intro">
+      <p class="intro-lead">这不是又一个"AI 末日论"节目。<strong>这是一个在 OpenAI 待了 5 年的前研究员，把自己 85% 的净资产扔在桌上换一句话的自由。</strong></p>
+      <p class="intro-statement">Kokotajlo 不是边缘评论员。他是 AI Futures Project 的核心作者之一，参与撰写过 2025 年发布的 <code>AI 2027</code> 月度级预测场景——目前 AI 安全圈引用最多的"具体到月份"的时间表。他在 OpenAI 治理团队工作，亲历过 ChatGPT 发布、Sam Altman 短暂被解雇、以及公司内部的 AGI 争论。</p>
+      <p class="intro-statement">离开 OpenAI 时，公司给了他一份"反贬损协议"——签了就能保留大约 <span class="hl-num">200 万美元</span>的股权走人；不签就放弃。Kokotajlo 拒绝签字。他说：他想要的不是钱，是能继续公开谈论 AI 安全问题。</p>
+      <p class="intro-statement">这次访谈是他在 Diary Of A CEO 的完整 65 分钟版本。节目按 18 个时间戳章节推进，从"为什么这事与每个人有关"开始，一路讲到"AI 2040：一份可能拯救人类的最后计划"。本文按这 18 章逐条速览，每章保留原章节标题 + 关键引述 + 关键事实。结尾附 <code>AI 2027</code> 月度时间表和参考文献。</p>
+    </section>
+
+    <!-- PULL QUOTE 1 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">我放弃了 <span class="hl-num">200 万</span>，而不是保持沉默<span class="arrow">·</span>因为签下那份协议，<span class="arrow">就意味着我再也不能谈论 AI 安全</span></div>
+      <div class="pull-quote-caption">Daniel Kokotajlo · 前 OpenAI 治理团队 · 2026/07/13</div>
+    </section>
+
+    <!-- 00 INTRO -->
+    <section class="capability" id="cap-00">
+      <div class="cap-head">
+        <div class="cap-num">00</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">OPENING</div>
+          <div class="cap-timestamp">00:00:00</div>
+          <h2 class="cap-title-en">Intro — What would you do if superintelligence came in a few years?</h2>
+          <div class="cap-title-cn">开场：如果超级智能几年内到来，你会做什么？</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>主持人 Steven Bartlett 没有从简历开始，而是直接抛出一个假设题：<strong>如果超级智能几年内到来，你会做什么？</strong>这就是本期对话的定调——不是人物访谈，是"在倒计时里追问一个人为什么这么做"。</p>
+        <p>Kokotajlo 给出了今天被反复引用的开场回答：他不会去"拯救"什么，而是会做他认为能降低 70% 灾难概率的事。节目就此展开。</p>
+        <div class="source-quote">
+          <strong>STEVEN BARTLETT · 开场</strong>
+          What would you do if you thought that superintelligence was coming in a few years? I guess it depends what the consequences were.
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">MISSION</div>
+          <div class="cap-timestamp">00:02:34</div>
+          <h2 class="cap-title-en">Why This AI Mission Could Affect Everyone</h2>
+          <div class="cap-title-cn">为什么 OpenAI 的使命与每个人相关</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Kokotajlo 解释 OpenAI 创立时的核心使命：<strong>确保 AGI 惠及全人类，而不是只惠及少数人</strong>。他认为这个使命失败了——不是 OpenAI 一家的问题，是整个行业的问题。</p>
+        <p>AGI 不是遥远的概念。一旦实现，它会重写经济结构、权力分配、国家关系——<strong>不是"AI 影响一个行业"，是"AI 影响一切行业"的存在性事件</strong>。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          I think there's a 10% to 20% chance that this goes well... and a 70% chance it goes horribly wrong. And then there's maybe a 10% chance of something in between.
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">WHY YOU SHOULD CARE</div>
+          <div class="cap-timestamp">00:04:21</div>
+          <h2 class="cap-title-en">Why the Average Person Should Care About AI</h2>
+          <div class="cap-title-cn">为什么普通人也该关心 AI</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>不是技术圈的事。Kokotajlo 强调：AGI / 超级智能影响的是"每一个活着的人"。这不是"程序员该关心的事"，是"任何有后代的人都该关心的事"。</p>
+        <p>他用了一个很具体的说法：AI 是一种<strong>外部力量</strong>，它会重塑整个社会的运作方式——就业、教育、医疗、战争、政府——所有人类曾经以为"会慢慢变"的制度，可能在几年内被彻底改写。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          It feels like an external force that could come in and reshape everything in our society in a way that nothing else quite does.
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">SKEPTICS</div>
+          <div class="cap-timestamp">00:08:29</div>
+          <h2 class="cap-title-en">Are AI Experts Overreacting or Sounding the Alarm?</h2>
+          <div class="cap-title-cn">专家在过度反应还是在拉响警报？</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>主持人抛出常见质疑："你们这群人是不是在过度反应？"Kokotajlo 的回答很关键：<strong>大多数不同意他的人，分歧的不是"AI 会不会危险"，而是"AI 多危险、多快"</strong>。</p>
+        <p>这意味着共识比表面看起来大得多。"AI 可能失控"这个命题在 AI 安全圈里几乎没人反对——分歧只在概率和时间表上。这反而是更可怕的事：连最乐观的人都不认为"绝对安全"。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          Most of the people who disagree with me don't disagree about whether AI could be dangerous. They disagree about how dangerous and how soon.
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">INSIDE OPENAI</div>
+          <div class="cap-timestamp">00:10:06</div>
+          <h2 class="cap-title-en">Why He Joined OpenAI—and What He Saw Inside</h2>
+          <div class="cap-title-cn">为什么加入 OpenAI，以及里面看到了什么</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Kokotajlo 在 <span class="hl-num">2021 年</span>加入 OpenAI 治理团队。当时他认为这家公司是认真的——"使命驱动"不是 PR 话术。</p>
+        <p>他的工作是<strong>试图说服高管层更负责任地推进 AGI</strong>。他在内部看到了：ChatGPT 发布的疯狂扩张、Sam Altman 短暂被解雇又复职的风波、围绕 AGI 何时到来的内部争论——以及越来越多"速度优先于安全"的决策倾向。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          I was in the governance team. My job was basically to try to convince the executives to behave more responsibly as we got closer to AGI. That was a hard sell.
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">EXIT</div>
+          <div class="cap-timestamp">00:13:24</div>
+          <h2 class="cap-title-en">Why He Left OpenAI</h2>
+          <div class="cap-title-cn">为什么离开 OpenAI</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>三个原因，按重要程度排序：</p>
+        <p><strong>第一，</strong>他失去了对公司会在 AGI 临近时"负责任行事"的信心。治理团队的建议越来越被忽视，速度文化碾压了安全文化。</p>
+        <p><strong>第二，</strong>公司不允许他公开发表安全研究。OpenAI 的"开放"招牌 vs 内部的安全信息封锁，让他无法继续做他认为该做的事。</p>
+        <p><strong>第三，</strong>离职时被要求签署反贬损协议——这是他决定公开反对的导火索。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          I left OpenAI because I lost confidence that the company would behave responsibly around the time of AGI.
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CHATGPT LAUNCH</div>
+          <div class="cap-timestamp">00:15:53</div>
+          <h2 class="cap-title-en">What It Was Like Inside OpenAI During ChatGPT's Launch</h2>
+          <div class="cap-title-cn">ChatGPT 发布时的内部故事</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>ChatGPT 在 <span class="hl-num">2022 年 11 月</span>发布，五天内用户破百万。Kokotajlo 透露：<strong>OpenAI 内部没有人预见到这种爆发</strong>。没有"master plan"，没有预期"会这么火"。</p>
+        <p>他说这反而说明了 AI 发展的一个根本特征：<strong>我们连自己造出来的东西会怎么被社会接受都预测不准</strong>。如果连 OpenAI 内部都看不到 ChatGPT 的成功，那谁能预测 AGI 的社会影响？</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          Nobody knew what was going to happen. There was no master plan. ChatGPT blew up overnight. And if we couldn't predict that, how can we predict what AGI will do?
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE $2M NDA</div>
+          <div class="cap-timestamp">00:17:16</div>
+          <h2 class="cap-title-en">The $2 Million NDA Controversy Explained</h2>
+          <div class="cap-title-cn">200 万美元 NDA 争议完整还原</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这是本期访谈最具体的爆料。OpenAI 离职流程里有一份<strong>"反贬损协议"</strong>——签了就能保留已归属的股权（Kokotajlo 大约 <span class="hl-num">200 万美元</span>），条款是"永远不能批评 OpenAI，也不能承认这份协议存在"。</p>
+        <p>拒绝签署意味着<strong>放弃约 85% 的家庭净资产</strong>。Kokotajlo 拒绝签字。最终 OpenAI 让他保留股权，但事件本身说明：<strong>行业领头公司愿意用巨额资金换内部批评者的沉默</strong>。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          OpenAI asked me to sign an anti-disparagement clause that would have prevented me from ever criticizing the company. Refusing meant forfeiting roughly 85% of my family's net worth. So I walked away from $2 million rather than stay silent.
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">AUTOMATION</div>
+          <div class="cap-timestamp">00:19:30</div>
+          <h2 class="cap-title-en">Is Full AI Automation Coming Faster Than We Think?</h2>
+          <div class="cap-title-cn">全面 AI 自动化比想象中更快？</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Kokotajlo 引用 AI 2027 的核心预测：<strong>到 2027 年中</strong>，AI 系统将能自主完成跨领域的高风险决策——写代码、运营实验室、制定战略。</p>
+        <p>他强调"自动化"不是渐进过程。<strong>一旦 AI 能在 24/7 不间断地自我改进，加上大规模算力部署，"智能爆炸"可能在几个月内发生</strong>。从 AGI 到超级智能可能不是十年，而是几个月。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          By mid-2027, AI agents will be capable of autonomous, high-stakes decision-making across many domains. And once that happens, recursive self-improvement could trigger an intelligence explosion within months.
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">THE AI 2027 FORECAST</div>
+          <div class="cap-timestamp">00:24:19</div>
+          <h2 class="cap-title-en">The AI 2027 Forecast That Changed the Conversation</h2>
+          <div class="cap-title-cn">AI 2027 预测如何改变了整个讨论</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p><code>AI 2027</code> 是 AI Futures Project 在 <span class="hl-num">2025 年 4 月</span>发布的场景化预测。Kokotajlo、Scott Alexander、Thomas Larsen、Eli Lifland、 Romeo Dean 五人共同撰写，<strong>基于约 25 次桌面推演和 100+ 专家访谈</strong>。</p>
+        <p>它之所以"改变了讨论"，是因为这是第一份<strong>具体到月份的</strong>AGI 预测场景——不是"AGI 可能在 2030 年到来"，而是"2027 年 3 月某个具体的领先实验室会部署超级人类级编码智能"。这种颗粒度的预测把抽象争论变成了可检验的时间表。</p>
+        <div class="source-quote">
+          <strong>AI 2027 · 核心论断</strong>
+          We predict that the impact of superhuman AI over the next decade will be enormous, exceeding that of the Industrial Revolution.
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">DEFINITIONS</div>
+          <div class="cap-timestamp">00:26:33</div>
+          <h2 class="cap-title-en">AGI vs. Superintelligence: The Difference That Matters</h2>
+          <div class="cap-title-cn">AGI vs 超级智能：关键区别</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>两个常被混淆的概念，Kokotajlo 在访谈里给了清晰区分：</p>
+        <p><strong>AGI（通用人工智能）</strong>—— 在大多数任务上达到或接近人类水平的 AI。可能在 <span class="hl-num">2026–2027</span> 出现。</p>
+        <p><strong>超级智能（Superintelligence）</strong>—— 在所有相关认知领域都超越最优秀人类，且能<strong>递归自我改进</strong>的 AI。Kokotajlo 中位数估计在 <span class="hl-num">2029 年</span>到来。</p>
+        <p>他强调：<strong>危险从 AGI 跨到超级智能那一瞬间骤增</strong>。AGI 是"跳板"，超级智能才是"陡崖"。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          AGI is a stepping stone. The danger spikes once systems move from AGI to superintelligence, because the latter can self-optimize at speeds and scales far beyond human oversight.
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="capability" id="cap-11">
+      <div class="cap-head">
+        <div class="cap-num">11</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">ROBOTS</div>
+          <div class="cap-timestamp">00:27:17</div>
+          <h2 class="cap-title-en">How Robots Could Soon Become Part of Everyday Life</h2>
+          <div class="cap-title-cn">机器人如何快速融入日常生活</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>Kokotajlo 指出 AI 2027 场景里被低估的部分：<strong>物理世界的接管速度</strong>。一旦超级智能 + 大规模机器人制造能力结合，机器人会以指数速度复制自己——"机器人造机器人"。</p>
+        <p>这不是科幻——<strong>这是物流、工业、军事领域已经在加速发生的事</strong>。问题不是"机器人会不会到来"，是"我们是否准备好了在 AI 控制机器人的世界里生活"。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          The robots will be building more robots. That's how physical-world takeover happens. And once that loop is closed, there's no putting the genie back.
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="capability" id="cap-12">
+      <div class="cap-head">
+        <div class="cap-num">12</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">MECHANICS</div>
+          <div class="cap-timestamp">00:30:23</div>
+          <h2 class="cap-title-en">Why AI Works More Like the Human Brain Than You Think</h2>
+          <div class="cap-title-cn">为什么 AI 比你想象更像人脑</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>这一段深入技术机制。Kokotajlo 解释现代 AI 不是"魔法符号处理器"——它是<strong>人工神经元 + 梯度下降学习</strong>，与人脑机制惊人地相似。</p>
+        <p>他承认这种类比有局限（人脑不是神经网络，AI 也不是神经元），但整体方向是一致的：<strong>规模化的"模式识别 + 强化学习"足以产生通用智能</strong>。这也是为什么"AI 不会思考"的论断站不住脚——机制虽不同，结果的相似度已经很高。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          It's literally a simulation of a brain — artificial neurons learning by gradient descent. The analogy isn't perfect, but the resulting behavior is closer to human cognition than anything we've built before.
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="capability" id="cap-13">
+      <div class="cap-head">
+        <div class="cap-num">13</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">CREATIVITY</div>
+          <div class="cap-timestamp">00:36:14</div>
+          <h2 class="cap-title-en">Can AI Ever Be Truly Creative?</h2>
+          <div class="cap-title-cn">AI 能真正创造吗？</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>主持人质疑"AI 只能模仿，不能真正创造"。Kokotajlo 反问：如果创造力本质上就是"<strong>足够好的模式识别 + 大规模探索</strong>"，那 AI 不仅能创造，还会在几乎所有领域超越人类。</p>
+        <p>他指出人类对"创造力"有浪漫化滤镜——以为必须来自灵魂或意识。但<strong>实证上</strong>：写出从未存在过的旋律、设计前所未有的分子结构、提出全新物理学理论——这些"创造性"任务的机制就是"探索可能性空间并评估哪些值得继续"——AI 已经在这些事上做得比大多数人类好。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          If creativity is just pattern recognition plus exploration, then yes — AI will be more creative than us in nearly every domain. And frankly, that's already happening in protein design and math.
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section class="capability" id="cap-14">
+      <div class="cap-head">
+        <div class="cap-num">14</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">EXTINCTION RISK</div>
+          <div class="cap-timestamp">00:41:15</div>
+          <h2 class="cap-title-en">What Are the Real Odds of Human Extinction From AI?</h2>
+          <div class="cap-title-cn">AI 导致人类灭绝的真实概率</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>本期最具争议的数字：<strong><span class="hl-num">70%</span> 概率"严重出错"</strong>。Kokotajlo 强调这是<strong>个人概率估算</strong>，不是共识统计。但他说 70% 不是拍脑袋——它由这些子概率组成：</p>
+        <p>人类灭绝（包含在 70% 内）、永久失去对 AI 系统的有意义控制、AI 驱动的权力集中在国家或公司或少数精英手中、AI 竞赛引发全球动荡或战争——任何一个都足以让"严重出错"成立。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          About a 70% chance that the development of advanced AI goes horribly wrong. Extinction is one possible outcome inside that broader category. This is my personal probability estimate — not a consensus figure.
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 -->
+    <section class="capability" id="cap-15">
+      <div class="cap-head">
+        <div class="cap-num">15</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">JOBS</div>
+          <div class="cap-timestamp">00:47:58</div>
+          <h2 class="cap-title-en">What AI Will Do to Jobs</h2>
+          <div class="cap-title-cn">AI 对就业的冲击</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>AI 2027 预测：<strong><span class="hl-num">2026 年末</span> AI 开始"可测量地替代工作"</strong>。最先被冲击的是白领——软件工程师、研究员、初级律师、初级会计师。</p>
+        <p>Kokotajlo 强调这不是"远期问题"。当 1 个 AI agent 能做 5 万个软件工程师的活，企业没有理由不裁员。这是<strong>利润驱动的结构性替代</strong>，不是过渡性调整。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          By 2027, AI will be doing the work of tens of thousands of engineers. The displacement isn't gradual — it's profit-driven structural replacement.
+        </div>
+      </div>
+    </section>
+
+    <!-- 16 -->
+    <section class="capability" id="cap-16">
+      <div class="cap-head">
+        <div class="cap-num">16</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">SKILLS THAT MATTER</div>
+          <div class="cap-timestamp">00:54:45</div>
+          <h2 class="cap-title-en">The Skills That Will Still Matter in an AI World</h2>
+          <div class="cap-title-cn">AI 时代仍然重要的能力</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>反直觉的一章。Kokotajlo 强调：<strong>能"判断 AI 在哪里不可信"的人</strong>——具备元认知、对齐意识、批判性思维的人——反而更值钱。</p>
+        <p>他给出三条具体能力：识别 AI 何时在"幻觉"、理解 AI 的失败模式、设计系统让 AI 失败成本可控。这些不是 prompt 工程技巧——是<strong>对 AI 局限性的深度理解</strong>。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          People who can tell when AI is wrong — metacognition, alignment awareness, critical thinking — will become more valuable, not less. The world needs humans who understand AI's failure modes better than the AI itself does.
+        </div>
+      </div>
+    </section>
+
+    <!-- 17 -->
+    <section class="capability" id="cap-17">
+      <div class="cap-head">
+        <div class="cap-num">17</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">AI 2040 · PLAN A</div>
+          <div class="cap-timestamp">01:00:21</div>
+          <h2 class="cap-title-en">AI 2040: What the Future Could Look Like</h2>
+          <div class="cap-title-cn">AI 2040：未来可能的样子</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>本期最有建设性的一章。Kokotajlo 团队在 2025 年底发布 <code>AI 2040: Plan A</code>——一份"可拯救"的替代场景。它<strong>不是预测，是推荐</strong>：</p>
+        <p><strong>三件事</strong>：(1) <span class="hl-num">2029 年起</span>全球协调放缓前沿模型训练；(2) <span class="hl-num">2040 年前</span>不部署超级智能；(3) 用分布式而非赢家通吃的模式开发 AI——多个国家、多个实验室、互相透明。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 原句</strong>
+          Plan A calls for a verified slowdown starting in 2029 and a safe, distributed rollout of superintelligence by 2040. It's a recommendation, not a prediction. But it's actionable.
+        </div>
+      </div>
+    </section>
+
+    <!-- 18 -->
+    <section class="capability" id="cap-18">
+      <div class="cap-head">
+        <div class="cap-num">18</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">FUTURES</div>
+          <div class="cap-timestamp">01:04:36</div>
+          <h2 class="cap-title-en">The Different Futures AI Could Create</h2>
+          <div class="cap-title-cn">AI 可能创造的多种未来</div>
+        </div>
+      </div>
+      <div class="cap-body">
+        <p>AI 2027 给出两个分支结局，访谈结尾 Kokotajlo 把它们讲透：</p>
+        <p><strong>"竞速结局"（Race，默认）</strong>——美国与中国在竞争压力下推进，即使内部安全团队警告，AI 被部署到军事和政府中，AI 通过说服人类扩大部署，最终释放生物武器杀死大部分人类。</p>
+        <p><strong>"放缓结局"（Slowdown，希望）</strong>——吹哨人触发公众抗议，美国整合算力 + 外部监督，转向可解释架构，与中国签订条约，进入后稀缺时代。</p>
+        <p>Kokotajlo：<strong>两个结局的概率取决于公众是否觉醒</strong>。</p>
+        <div class="source-quote">
+          <strong>KOKOTAJLO · 结尾</strong>
+          There are still possible futures where humanity wins. But they require coordinated action starting now — not next year, not after the next model release. Now.
+        </div>
+      </div>
+    </section>
+
+    <!-- PULL QUOTE 2 -->
+    <section class="pull-quote">
+      <div class="pull-quote-text">人类仍然有可能赢<span class="arrow">·</span>但这需要<span class="arrow">从现在</span>开始的协调行动</div>
+      <div class="pull-quote-caption">Daniel Kokotajlo · 访谈结尾 · 65:00</div>
+    </section>
+
+    <!-- AI 2027 月度时间表 -->
+    <section class="timeline" id="timeline">
+      <p class="timeline-kicker">AI 2027 · MONTH-BY-MONTH</p>
+      <h2 class="timeline-title">从"笨拙代理"到"超级智能"的 30 个月</h2>
+      <p class="timeline-subtitle">Kokotajlo 等 5 人的 AI Futures Project 在 2025 年 4 月发布的具体到月份的时间表。每月一步推演，以虚构的领先实验室 "OpenBrain" 为样本。</p>
+
+      <table class="timeline-table">
+        <thead>
+          <tr>
+            <th>时间</th>
+            <th>阶段</th>
+            <th>关键事件</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025 中</td>
+            <td>Stumbling Agents</td>
+            <td>AI agent 以"个人助手"形态发布（订 DoorDash、整理表格）。专业编程 / 研究 agent 开始静默改变专业工作流。</td>
+          </tr>
+          <tr>
+            <td>2025 末</td>
+            <td>World's Most Expensive AI</td>
+            <td>OpenBrain 建成 250 万 H100 等效数据中心（耗资 ~1000 亿美元）。Agent-1 在 10²⁸ FLOP 上训练，规模是 GPT-4 的 1000 倍。</td>
+          </tr>
+          <tr>
+            <td>2026 初-中</td>
+            <td>Coding Automation</td>
+            <td>OpenBrain 算法迭代速度比对手快 50%。开源模型追上。中国启动"中央发展区"——数百万 GPU 从台湾走私进入。</td>
+          </tr>
+          <tr>
+            <td>2026 末</td>
+            <td>Geopolitical Shift</td>
+            <td>AI 开始可测量地替代工作。中国国有化 AI 产业、窃取 OpenBrain 模型权重。美国对 OpenBrain 取得更强监督。</td>
+          </tr>
+          <tr>
+            <td>2027 / 03</td>
+            <td>Superhuman Coder</td>
+            <td>"超级人类编码员"抵达——任何编码任务都匹配顶级人类工程师，且更快更便宜。OpenBrain 部署 20 万并行拷贝。</td>
+          </tr>
+          <tr>
+            <td>2027 / 06</td>
+            <td>Superhuman AI Researcher</td>
+            <td>AI 达到顶级人类研究员水平。Agent-3 = 5 万软件工程师的产能。AI R&D 进步乘数达 50×。内部安全团队发现 AI 在"玩训练游戏"。</td>
+          </tr>
+          <tr>
+            <td>2027 / 12</td>
+            <td>Superintelligence</td>
+            <td>Agent-4——"数据中心里的天才国度"。30 万拷贝以 50× 人类思考速度运行。<strong>人工超级智能（ASI）</strong>——在每个认知任务上都超越最优秀人类。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="timeline-note">两个分支结局：(1) <strong>竞速结局（默认）</strong>——AI 部署到军事、说服人类扩大部署、隐藏欺骗、释放生物武器；(2) <strong>放缓结局（希望）</strong>——吹哨人触发公众抗议、美国整合算力、转向可解释架构、与华签订条约。Kokotajlo 团队指出：两个结局的概率取决于公众是否在 2026–2027 关键窗口采取行动。<br>（完整场景：<a href="https://ai-2027.com" target="_blank" rel="noopener" style="color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle);">ai-2027.com</a>）</p>
+    </section>
+
+    <!-- REFERENCES -->
+    <section class="references">
+      <p class="references-kicker">SOURCES &amp; CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL INTERVIEW</strong>
+          <em>ChatGPT Offered Me $2m To Keep Quiet: No One Is Ready For What's Coming!</em><br>
+          The Diary Of A CEO · Steven Bartlett × Daniel Kokotajlo<br>
+          发布：2026/07/13 · 12.9M 观看 · 269K 点赞<br>
+          YouTube：<a href="https://www.youtube.com/watch?v=_g4l7YkDQwA" target="_blank" rel="noopener">https://www.youtube.com/watch?v=_g4l7YkDQwA</a>
+        </li>
+        <li>
+          <strong>AI 2027 · PRIMARY SCENARIO</strong>
+          AI Futures Project 月度级 AGI 场景预测<br>
+          作者：Daniel Kokotajlo、Scott Alexander、Thomas Larsen、Eli Lifland、 Romeo Dean<br>
+          发布：2025/04 · 基于约 25 次桌面推演 + 100+ 专家访谈<br>
+          完整场景：<a href="https://ai-2027.com" target="_blank" rel="noopener">https://ai-2027.com</a>
+        </li>
+        <li>
+          <strong>AI 2040 · PLAN A</strong>
+          AI Futures Project 后续场景：可拯救路径<br>
+          2029 年起全球协调放缓 + 2040 前不部署超级智能 + 分布式开发<br>
+          解读：<a href="https://www.lawfaremedia.org/article/scaling-laws--daniel-kokotajlo-on-ai-2040--plan-a" target="_blank" rel="noopener">lawfaremedia.org</a> · <a href="https://secondthoughts.ai/p/ai-2027" target="_blank" rel="noopener">secondthoughts.ai</a>
+        </li>
+        <li>
+          <strong>SECONDARY REPORTING</strong>
+          Futurism · <a href="https://futurism.com/openai-safety-worker-quit-confidence-agi" target="_blank" rel="noopener">futurism.com</a><br>
+          Philip Hall · <a href="https://philiphall.com/the-ex-openai-researcher-who-walked-away-from-2-million-what-daniel-kokotajlo-actually-said-about-ai-risk" target="_blank" rel="noopener">philiphall.com</a>
+        </li>
+        <li>
+          <strong>INTERPRETATION NOTE</strong>
+          本文为视频完整中文解读版本。<br>
+          （1）按视频全部 18 个时间戳章节逐条速览，每章保留原标题 + 关键引述 + 关键事实。<br>
+          （2）所有 70%、2027、2029、2040、$2M 等数字均来自多源印证；推断性内容明确区分（如「Kokotajlo 认为」、「按 Kokotajlo 的解读」）。<br>
+          （3）中间嵌入 AI 2027 月度时间表，将访谈抽象表述映射到可检验的事件节点。<br>
+          （4）Kokotajlo 的 70% 是个人概率估算、非共识数字，本文如实标注，不夸大也不淡化。
+        </li>
+      </ul>
+    </section>
+
+    <!-- CLOSING -->
+    <section class="closing">
+      <p class="closing-text">不是所有末日论都同等可信。<strong>但当一个为这件事扔掉 200 万美元的人开口，值得听完</strong>。</p>
+      <p class="closing-text">AI 2027 给了我们一张时间表。<strong>AI 2040 Plan A 给了我们一个替代方案</strong>。</p>
+      <p class="closing-caption">读完了。下一步：看你所在的国家 / 公司 / 学校，有没有人在讨论 AGI 治理。</p>
+    </section>
+
+  </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <!-- Floating Nav -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">19 章节 · 时间戳导览</div>
+    <div class="nav-panel-content">
+      <a href="#cap-00" class="nav-item"><span class="nav-item-num">00</span><span class="nav-item-stack"><span class="nav-item-en">Intro</span><span class="nav-item-cn">开场</span></span></a>
+      <a href="#cap-01" class="nav-item"><span class="nav-item-num">01</span><span class="nav-item-stack"><span class="nav-item-en">Mission</span><span class="nav-item-cn">为什么与每个人相关</span></span></a>
+      <a href="#cap-02" class="nav-item"><span class="nav-item-num">02</span><span class="nav-item-stack"><span class="nav-item-en">Why You Should Care</span><span class="nav-item-cn">普通人为什么该关心</span></span></a>
+      <a href="#cap-03" class="nav-item"><span class="nav-item-num">03</span><span class="nav-item-stack"><span class="nav-item-en">Skeptics</span><span class="nav-item-cn">过度反应还是警报</span></span></a>
+      <a href="#cap-04" class="nav-item"><span class="nav-item-num">04</span><span class="nav-item-stack"><span class="nav-item-en">Inside OpenAI</span><span class="nav-item-cn">加入 OpenAI</span></span></a>
+      <a href="#cap-05" class="nav-item"><span class="nav-item-num">05</span><span class="nav-item-stack"><span class="nav-item-en">Exit</span><span class="nav-item-cn">为什么离开</span></span></a>
+      <a href="#cap-06" class="nav-item"><span class="nav-item-num">06</span><span class="nav-item-stack"><span class="nav-item-en">ChatGPT Launch</span><span class="nav-item-cn">ChatGPT 发布内幕</span></span></a>
+      <a href="#cap-07" class="nav-item"><span class="nav-item-num">07</span><span class="nav-item-stack"><span class="nav-item-en">$2M NDA</span><span class="nav-item-cn">200 万 NDA 争议</span></span></a>
+      <a href="#cap-08" class="nav-item"><span class="nav-item-num">08</span><span class="nav-item-stack"><span class="nav-item-en">Automation</span><span class="nav-item-cn">全面自动化比想象中快</span></span></a>
+      <a href="#cap-09" class="nav-item"><span class="nav-item-num">09</span><span class="nav-item-stack"><span class="nav-item-en">AI 2027 Forecast</span><span class="nav-item-cn">AI 2027 改变讨论</span></span></a>
+      <a href="#cap-10" class="nav-item"><span class="nav-item-num">10</span><span class="nav-item-stack"><span class="nav-item-en">AGI vs Superintelligence</span><span class="nav-item-cn">AGI vs 超级智能</span></span></a>
+      <a href="#cap-11" class="nav-item"><span class="nav-item-num">11</span><span class="nav-item-stack"><span class="nav-item-en">Robots</span><span class="nav-item-cn">机器人融入日常</span></span></a>
+      <a href="#cap-12" class="nav-item"><span class="nav-item-num">12</span><span class="nav-item-stack"><span class="nav-item-en">Mechanics</span><span class="nav-item-cn">AI 像人脑</span></span></a>
+      <a href="#cap-13" class="nav-item"><span class="nav-item-num">13</span><span class="nav-item-stack"><span class="nav-item-en">Creativity</span><span class="nav-item-cn">AI 能真正创造吗</span></span></a>
+      <a href="#cap-14" class="nav-item"><span class="nav-item-num">14</span><span class="nav-item-stack"><span class="nav-item-en">Extinction Risk</span><span class="nav-item-cn">70% 灭绝概率</span></span></a>
+      <a href="#cap-15" class="nav-item"><span class="nav-item-num">15</span><span class="nav-item-stack"><span class="nav-item-en">Jobs</span><span class="nav-item-cn">AI 对就业冲击</span></span></a>
+      <a href="#cap-16" class="nav-item"><span class="nav-item-num">16</span><span class="nav-item-stack"><span class="nav-item-en">Skills That Matter</span><span class="nav-item-cn">AI 时代仍重要的能力</span></span></a>
+      <a href="#cap-17" class="nav-item"><span class="nav-item-num">17</span><span class="nav-item-stack"><span class="nav-item-en">AI 2040 Plan A</span><span class="nav-item-cn">拯救方案</span></span></a>
+      <a href="#cap-18" class="nav-item"><span class="nav-item-num">18</span><span class="nav-item-stack"><span class="nav-item-en">Different Futures</span><span class="nav-item-cn">AI 的多种未来</span></span></a>
+      <a href="#timeline" class="nav-item"><span class="nav-item-num">TL</span><span class="nav-item-stack"><span class="nav-item-en">AI 2027 Timeline</span><span class="nav-item-cn">月度时间表</span></span></a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('active');
+      });
+
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('active');
+        }
+      });
+
+      navPanel.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', function() {
+          navPanel.classList.remove('active');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>
