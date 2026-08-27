@@ -1,0 +1,2061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Native SDLC 实战手册 · Anthropic 官方博客解读 · 朱有以解读</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg-primary); color: var(--text-primary);
+      font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px;
+      line-height: 1.8; min-height: 100vh;
+    }
+    body::before {
+      content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px),
+        repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px);
+      pointer-events: none; z-index: 0;
+    }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; white-space: nowrap; }
+    .article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 620px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+    .cover-frame { padding: 64px 0; }
+    .cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-secondary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+    .capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body ul { margin: 18px 0 24px 0; padding-left: 24px; }
+    .cap-body ul li { margin-bottom: 10px; line-height: 1.85; color: var(--text-secondary); }
+    .cap-body ul li:last-child { margin-bottom: 0; }
+    .cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .inline-image:hover img { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+    .inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+    .references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+    .references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+    .references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+    .references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+    .references-list a { color: var(--text-primary); word-break: break-all; }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+    .closing { padding: 64px 0; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); margin-bottom: 12px; letter-spacing: 0; }
+    .closing-text strong { font-weight: 600; color: var(--accent-red); }
+    .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
+    .article-footer { padding: 32px 0 64px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px; }
+    .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 8px; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 200; }
+    .floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+    .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 70vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+    .floating-nav-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-panel-header { padding: 16px 20px 8px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); }
+    .nav-panel-content { padding: 8px 0; }
+    .nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+    .nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+    .nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+    .nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+    @media (max-width: 768px) {
+      .article-title { white-space: normal; font-size: 28px; }
+      .article-subtitle { font-size: 17px; }
+      .cap-head { gap: 16px; }
+      .cap-num { font-size: 40px; }
+    }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+    }
+
+    /* ============================================================
+       MARKDOWN-CARD · md 模板文档卡片(EN/CN toggle + Copy)
+       区别于 .prompt-card:金色边框 + 文件图标 + 文档语义
+       ============================================================ */
+    .markdown-card {
+      background: var(--bg-code);
+      border-radius: 8px;
+      margin: 20px 0 28px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      border: 1px solid transparent;
+      border-left: 2px solid var(--accent-gold);
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .markdown-card:hover {
+      transform: scale(1.008);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.2);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .markdown-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #1a1a1d;
+      border-bottom: 1px solid #2a2a2e;
+      gap: 12px;
+    }
+    .markdown-card-tag {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #8a8a8e;
+      flex: 1;
+      min-width: 0;
+    }
+    .md-file-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 18px;
+      background: var(--accent-gold);
+      color: #0e0e10;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .md-file-icon[data-type="yaml"],
+    .md-file-icon[data-type="yml"] { background: #7c3aed; color: #fff; }
+    .md-file-icon[data-type="json"] { background: #f59e0b; color: #0e0e10; }
+    .md-name-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .md-name-en {
+      color: #e8e8ea;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .md-name-cn {
+      font-family: 'Noto Serif SC', sans-serif;
+      color: #8a8a8e;
+      font-weight: 400;
+      font-size: 10px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .md-purposes {
+      color: var(--accent-gold-dim);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      margin-left: 4px;
+      white-space: nowrap;
+    }
+    .markdown-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .lang-toggle {
+      display: inline-flex;
+      background: #050507;
+      border: 1px solid #2a2a2e;
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .lang-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 3px;
+      background: transparent;
+      color: #6e6e73;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .copy-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover {
+      background: var(--accent-red);
+      color: #fff;
+      border-color: var(--accent-red);
+    }
+    .copy-btn.copied {
+      background: var(--accent-gold);
+      color: #fff;
+      border-color: var(--accent-gold);
+    }
+    .markdown-card-body {
+      padding: 22px 26px;
+      color: #e8e8ea;
+      font-family: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .markdown-card-body[hidden] { display: none; }
+    .prompt-card { background: var(--bg-code); border-radius: 8px; margin: 20px 0 28px; overflow: hidden; position: relative; box-shadow: 0 4px 24px rgba(0,0,0,0.15); border: 1px solid transparent; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .prompt-card:hover { transform: scale(1.006); box-shadow: 0 6px 32px rgba(0,0,0,0.2); border-color: rgba(201, 169, 98, 0.4); }
+    .prompt-card-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #1a1a1d; border-bottom: 1px solid #2a2a2e; gap: 12px; }
+    .prompt-card-tag { display: flex; align-items: center; gap: 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #8a8a8e; flex: 1; min-width: 0; }
+    .prompt-card-tag::before { content: ''; width: 8px; height: 8px; background: var(--accent-red); border-radius: 50%; box-shadow: 0 0 8px var(--accent-red); flex-shrink: 0; }
+    .prompt-num { color: var(--accent-gold); font-weight: 700; flex-shrink: 0; }
+    .prompt-name-stack { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+    .prompt-name-en { color: #e8e8ea; font-weight: 500; letter-spacing: 0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prompt-name-cn { font-family: 'Noto Serif SC', 'Rajdhani', sans-serif; color: #8a8a8e; font-weight: 400; font-size: 10px; letter-spacing: 0.02em; text-transform: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prompt-card-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .prompt-card-body { padding: 22px 26px; color: #e8e8ea; font-family: 'Inter', 'SF Mono', Menlo, monospace; font-size: 13px; line-height: 1.85; white-space: pre-wrap; word-break: break-word; }
+    .prompt-card-body[hidden] { display: none; }
+    .code-block { background: var(--bg-code); border: 1px solid #1f1f23; border-radius: 6px; margin: 20px 0 24px; overflow: hidden; }
+    .code-block-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: #16161a; border-bottom: 1px solid #1f1f23; }
+    .code-block-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 0.18em; text-transform: uppercase; }
+    .code-copy-btn { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted); background: transparent; border: 1px solid #2a2a30; padding: 4px 12px; border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+    .code-copy-btn:hover { color: var(--accent-gold); border-color: var(--accent-gold); }
+    .code-copy-btn.copied { color: #4ade80; border-color: #4ade80; }
+    .code-block-body { padding: 14px 18px; margin: 0; overflow-x: auto; }
+    .code-block-body code { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: #e8e8ec; background: transparent; border: none; padding: 0; white-space: pre; }
+    .cheatsheet { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14.5px; font-family: 'Noto Serif SC', 'Inter', sans-serif; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cheatsheet th, .cheatsheet td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-subtle); vertical-align: top; }
+    .cheatsheet th { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle); }
+    .cheatsheet td { color: var(--text-secondary); line-height: 1.6; }
+    .cheatsheet tr:last-child td { border-bottom: none; }
+    .cheatsheet tr:hover td { background: var(--bg-secondary); }
+    .cheatsheet code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 1px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .sub-head { font-family: 'Noto Serif SC', serif; font-size: clamp(16px, 2.2vw, 19px); font-weight: 600; color: var(--text-primary); margin: 28px 0 12px; padding-left: 14px; border-left: 3px solid var(--accent-gold-dim); letter-spacing: 0.02em; }
+    .resource-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .resource-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease;
+    }
+    .resource-card:hover {
+      transform: scale(1.006);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(201, 169, 98, 0.4);
+    }
+    .resource-icon {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent-gold-dim);
+      width: fit-content;
+    }
+    .resource-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .resource-title a, .resource-card .resource-title { color: var(--text-primary); text-decoration: none; }
+    .resource-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .resource-url {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      padding-top: 8px;
+      border-top: 1px solid var(--bg-secondary);
+      word-break: break-all;
+    }
+    @media (max-width: 640px) {
+      .resource-grid { grid-template-columns: 1fr; }
+    }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .sidebar { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 22px 26px; margin: 28px 0; }
+    .sidebar-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 8px; display: block; }
+    .sidebar-title { font-family: 'Noto Serif SC', serif; font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
+    .sidebar-body { font-size: 14.5px; color: var(--text-secondary); line-height: 1.8; }
+    .sidebar-body p { margin-bottom: 12px; }
+    .sidebar-body p:last-child { margin-bottom: 0; }
+    .sidebar-body strong { color: var(--text-primary); font-weight: 600; }
+    .sidebar-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-card); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .cap-body ol, .cap-body ol li { color: var(--text-secondary); }
+    .markdown-card-head .lang-toggle { background: #050507; }
+    @media (max-width: 640px) {
+      .markdown-card-head { flex-direction: column; align-items: stretch; gap: 10px; }
+      .markdown-card-actions { justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="article-hero">
+      <div class="container">
+        <div class="article-category">AGENTIC SDLC · ENTERPRISE AI</div>
+        <h1 class="article-title">AI-Native SDLC 实战手册</h1>
+        <p class="article-subtitle">How to transform your software development lifecycle with AI—stage by stage.</p>
+        <div class="article-byline">
+          <span class="byline-author">Louis Claxton</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">Anthropic Engineering Blog</span>
+          <span class="byline-sep">·</span>
+          <span>2026/08/27</span>
+          <span class="byline-sep">·</span>
+          <span>45 分钟阅读</span>
+        </div>
+        <p class="article-desc">Anthropic 官方工程团队把"用 Claude Code 造 Claude Code"的全过程拆成 6 个 stage —— Plan / Design / Build / Test / Deploy / Maintain。每个 stage 给一个核心 .md 文档模板（intent.md / spec.md / plan.md / REVIEW.md / bands.yaml）加上对应 governance / hooks / evals。原文 4 张配图按位插入,所有 prompt 与 md 模板都附 EN/CN toggle + Copy 按钮,原封不动照搬 + 翻译成中文。</p>
+      </div>
+    </section>
+    <section class="cover-frame">
+      <div class="container">
+        <img src="images/2026-08-21-ai-native-sdlc-playbook/bottleneck.png" alt="AI-Native SDLC · Build is no longer the constraint">
+        <p class="cover-caption">ANTHROPIC ENGINEERING · LOUIS CLAXTON · 2026/08/27</p>
+      </div>
+    </section>
+    <section class="article-intro">
+      <div class="container">
+        <p class="intro-lead"><strong>作者是谁。</strong>Louis Claxton——Anthropic Applied AI 团队负责人,Anthropic 内部"用 Claude Code 造 Claude Code"的实战手册就是他和团队写出来的。这篇博客是 Anthropic 工程团队把内部最佳实践公开化的版本,覆盖企业级 agentic 软件开发的完整 lifecycle。</p>
+        <p class="intro-lead"><strong>这篇文章在讲什么。</strong>一句话浓缩:代码不再是瓶颈——当 AI 能以机器速度写代码时,围绕代码的那些流程(审批、review、handoff)开始拖后腿。Anthropic 给出的解法是「AI-Native SDLC」——把传统 SDLC 的 6 个 stage(Plan / Design / Build / Test / Deploy / Maintain)重新设计,让每个 stage 结束都生成一个 committed artifact(.md / .yaml / .json),下一个 stage 读它启动。整个过程是一个 loop,而不是 linear flow。</p>
+        <p class="intro-lead"><strong>为什么这篇值得读。</strong>它不是在聊"怎么 prompt 一个 agent",而是在聊"当 agent 已经接管 build 之后,plan / review / deploy 这些 human-speed 的阶段要怎么重新设计"。它给的不是观点,是 17 个具体可落地的 plays——每个都含 prerequisites / infrastructure / how to execute / governance / how to measure。所有 4 张原文配图按位插入,所有 prompt / .md / .yaml 模板都附 EN/CN toggle 和 Copy 按钮。</p>
+        <p class="intro-lead"><strong>怎么读这篇文章。</strong>前 3 节是核心(代码不再是瓶颈 + 什么是 AI-Native SDLC + Plays 总览)。后 6 节是 6 个 stage 的具体 plays,每节都按"prerequisites → infrastructure → how to execute → governance → how to measure"的结构展开。建议直接挑你们团队最痛的那个 stage(对多数团队是 Test 或 Deploy),从那一节的第一个步骤开始执行。</p>
+      </div>
+    </section>
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text"><strong>The AI-native SDLC is a reimagined process that combines the old control objectives with new enforcement.</strong></p>
+        <p class="pull-quote-caption">— ANTHROPIC ENGINEERING · LOUIS CLAXTON</p>
+      </div>
+    </section>
+<section class="capability" id="cap-01">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">01</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">INTRO · BOTTLENECK</div>
+            <h2 class="cap-title-en">Code Is No Longer the Bottleneck</h2>
+            <div class="cap-title-cn">代码不再是瓶颈</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE THESIS</span>
+          <span class="principle-box-text">Organizations have started using AI to write code at a speed unthinkable one year ago, yet the processes around the code haven't changed at the same pace.</span>
+        </div>
+        <div class="cap-body">
+
+<p>很多团队已经开始用 AI 以一年前不可思议的速度写代码,然而围绕代码的那些流程——审批 gate、review、handoff、policy——并没有以同样的速度变化。</p>
+
+<p>很多工程团队还保留着同样的审批 gate、review、handoff 和 policy,这些流程正在拖住 agentic coding 工具(如 Claude Code)带来的生产力提升。</p>
+
+<p><strong>SDLC(software development lifecycle)</strong>,是从一个想法走到 production 软件的完整流程。大多数组织跑的版本都覆盖六个 stage——planning、design、building、testing、deploying、maintaining。传统上,每个 stage 都是一个由不同角色拥有的离散阶段:product manager 写需求、technical architect 转成 design、engineer 实现、QA 团队 verify、release team 上线、operations 监控运行。Work 通过 documents、tickets、sign-offs 在这些阶段之间流动。</p>
+
+<p>传统 SDLC 流程重,目的是保证每个步骤的 accountability 和 control。但传统 SDLC 是为"最耗时最贵的阶段是写代码"那个时代设计的——而那个时代已经过去了。PRD、estimation ritual、product security review 这些流程之所以存在,是因为开发工作可能要数周、数月、甚至数季,需要 force alignment。</p>
+
+<p>传统 SDLC 还假设每一步都是人做的。价值产出最多的那些组织已经围绕"agentic AI 现在能做什么"重建了他们的流程,同时确保 human 留在 loop 里。本 guide 走一遍我们 Applied AI 团队内部整合 Claude 的最佳实践,基于我们与客户合作的经验,逐 stage 加速开发、让流程跑得更快。</p>
+
+<p>当代码不再是瓶颈、build phase 比传统 SDLC 允许的还快时,有三件事变成真的:</p>
+<ul>
+<li>瓶颈移到 build phase 左和右的 stage——主要是 plan、review/test、deploy,它们仍然以 human speed 在跑。</li>
+<li>Controls 跟不上 reality,变成 intractable。每行代码都人工 review,在人写的代码时代是合理的;一旦 agent 写了大部分 diff,review 就跟不上了。</li>
+<li>Governance 成本上升——exception 仍然通过 meeting 和 committee 走,那些 meeting 每周或每月才开一次。</li>
+</ul>
+
+<p>以 security bottleneck 为例:security team 的 size 是按人输出算的,当 agent 放大代码输出时,review queue 要么堆积,要么代码在 under-reviewed 状态下被 ship 出去。受监管的组织不能接受这两种结果——所以它的 security 和 policy check 必须跟上 agent 的速度。</p>
+
+<p>为了更好地释放 agentic AI 的生产力,同时保证安全,传统 SDLC lifecycle 需要跟 implementation phase 经历过的那场同等规模的转型。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-02">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">02</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">DEFINITION</div>
+            <h2 class="cap-title-en">What Is an AI-Native SDLC?</h2>
+            <div class="cap-title-cn">什么是 AI-Native SDLC</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">AI-Native SDLC 是一套重新设计过的 process——把旧的控制目标和新的 enforcement 机制结合起来。流程不再是 linear flow,而是一个 loop,AI 嵌入在每个节点上。</span>
+        </div>
+        <div class="cap-body">
+
+<p>AI-Native SDLC 是一套重新设计过的 process——把旧的控制目标和新的 enforcement 机制结合起来。流程不再是 linear flow,而是一个 loop,AI 嵌入在每个节点上。AI-Native SDLC 主张自动化的 handover 和下一阶段的自动触发,缓解传统 SDLC 阶段之间那种手动、僵的交接。</p>
+
+<p>你也可能听到这个转变被叫作 agentic SDLC、AI SDLC,或者直接叫 agentic software development——名字不同,说的都是同一件事。</p>
+
+<h3 class="sub-head">六个 stage 的两端</h3>
+
+<p>下表展示传统 SDLC 和 Claude 支撑的 AI-Native SDLC 之间的 spectrum 两端。大多数组织会落在两列之间的某个位置。</p>
+
+<table class="cheatsheet">
+  <thead>
+    <tr><th>Stage</th><th>Traditional SDLC</th><th>AI-Native SDLC</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Plan</strong></td>
+      <td>Requirements gathered by committee, distilled through workshops and sign-offs, written up by hand.</td>
+      <td>由 committee 通过 workshop 和签字流程手工收集需求、写下来;通过 Claude 直接从 source 中综合 pain points,把它们写入 <code>intent.md</code>——人可读、机器可执行。</td>
+    </tr>
+    <tr>
+      <td><strong>Design</strong></td>
+      <td>Spec written by analysts, parsed by designers.</td>
+      <td>需求和设计压缩成一次 working session,由 agent 主导;由编码为 skills 的标准引导,在 git 里版本管理。</td>
+    </tr>
+    <tr>
+      <td><strong>Build</strong></td>
+      <td>Tests and code are handwritten and documentation is written after the main development happens.</td>
+      <td>测试和代码由 AI 生成,机构知识以版本化的、机器可读的 <code>CLAUDE.md</code> 和 skills 形式持续维护。</td>
+    </tr>
+    <tr>
+      <td><strong>Test</strong></td>
+      <td>QA gates at stage boundaries.</td>
+      <td>QA gate 设在 stage 边界。Continuous evals 嵌入到整个 implementation 流程里。</td>
+    </tr>
+    <tr>
+      <td><strong>Deploy</strong></td>
+      <td>Humans review every line of code and governance occurs in review cycles, often inconsistently.</td>
+      <td>多层 agentic review,人工 review 只留给受监管和关键代码。Governance 在 AI 行动时被强制执行——hooks 作为审批 gate。</td>
+    </tr>
+    <tr>
+      <td><strong>Maintain</strong></td>
+      <td>Humans watch production for bugs.</td>
+      <td>Agents 监控线上部署。任何 control band 被突破,都会被自动诊断并写回 loop 里,成为下一份 <code>intent.md</code>。</td>
+    </tr>
+  </tbody>
+</table>
+
+
+<p>贯穿右列的那条线,是 committed artifact。每个 stage 结束都把一个 artifact 写入 version control(<code>intent.md</code>、<code>spec.md</code>、<code>plan.md</code>、diff 及其测试、带 review findings 的 PR、incident record),下一个 stage 开始时读它。前几个 stage 以 .md 文件为主,因为 product owner 和 agent 能读、能操作同一份文件。从 Build 开始,artifact 是 code 及其记录。commit 链同时也是 audit trail:谁要了什么、agent 产出了什么、谁批准的。</p>
+
+
+<p>每个需要判断力的决定,人仍然 accountable。在 agentic SDLC 的世界里,human attention 跟着那些必须被 review 的 artifact 一起移动。</p>
+
+
+<p>每个 stage 都 commit 一个下一个 stage 能读的 artifact。Intent、spec、plan、diff、review findings 加在一起,就是 audit trail。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-03">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">03</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">OVERVIEW</div>
+            <h2 class="cap-title-en">Plays · The Six Stages &amp; Their Dependencies</h2>
+            <div class="cap-title-cn">Plays · 六个 stage 与它们的依赖关系</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Plays 是 playbook 的核心,分成 6 个非线性 stage(Plan / Design / Build / Test / Deploy / Maintain),共同覆盖整个 lifecycle。每个 stage 结束都 commit 一个 artifact,下一个 stage 由它触发。</span>
+        </div>
+        <div class="cap-body">
+
+<p>Plays 是 playbook 的核心,分成 6 个非线性 stage(Plan、Design、Build、Test、Deploy、Maintain),共同覆盖完整的 lifecycle。</p>
+
+
+<ul>
+
+<p>每个 play 覆盖:</p>
+<ul>
+<li>改了什么;</li>
+<li>如何开始;</li>
+<li>具体的实施步骤;</li>
+<li>Governance 注意事项;</li>
+<li>如何衡量是否有效。</li>
+</ul>
+
+
+<p>这些步骤是模块化的,组织可以基于各自需求,优先选择不同 stage 来转型。每个 play 都在 "Prerequisites" 下注明依赖项,dependency graph 进一步展示了依赖关系。</p>
+
+
+<p>一个 stage 的结束是 commit 一个 artifact,而该 commit 触发下一个 stage。被接受的 <code>intent.md</code> 触发需求和 design pass、被批准的 <code>spec.md</code> 触发 plan mode、被合并的 PR 触发 pipeline,生产中突破的 control band 写出下一份 <code>intent.md</code>——loop 就这样转下去。</p>
+
+
+<p>首先,手动逐个 step 进行 prompt,目标态是一个 loop——每个被接受的 artifact 触发下一个 gate。Human attention 集中在 gate,review agent 标记的内容,而不是每次从零开始启动一个 stage。</p>
+
+<div class="inline-image">
+          <img src="images/2026-08-21-ai-native-sdlc-playbook/plays-dependency.png" alt="Plays dependency graph">
+          <p class="inline-image-caption">原文配图 · Plays 列在 stage 下;箭头指示的是采用顺序。两者不是一回事。从任何"clay play"(没有箭头指向它的 play)开始——它不需要先做什么。对于其他 play,指向它的箭头就是先要采用的 play。</p>
+        </div>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-04">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">04</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">STAGE 1 · PLAN</div>
+            <h2 class="cap-title-en">Plan · Capture as intent.md</h2>
+            <div class="cap-title-cn">Plan:用 intent.md 把意图锁定下来</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Ideas stop waiting for someone to write them up. Intent is captured once, in the originator's own words, as a version-controlled artifact the next stage can act on.</span>
+        </div>
+        <div class="cap-body">
+<h3 class="sub-head">Traditional vs AI-native</h3>
+
+<p><strong>传统</strong> · 一个想法要经过 backlog entries、user stories、story points、refinement meetings 才能有人动它。所有权在每次 handoff 时转移,等它到达 engineering 那里时,已经跟提出者原意隔了好几手。</p>
+
+
+<p><strong>AI-Native</strong> · 提出者跟 Claude brainstorm,把结果写成 <code>intent.md</code>——一份用提出者自己语言写的 proto-spec。Artifact 包含"要什么"、"为什么"、"在什么约束下"。重复流程通过 skills 编码。</p>
+
+<h3 class="sub-head">Getting started</h3>
+
+<p><strong>Prerequisites</strong> · 无。</p>
+
+
+<p><strong>Infrastructure</strong> · 给非工程师开放 Claude 访问(claude.ai 或 Cowork);一份商定的 <code>intent.md</code> 模板;product owner 盯着的一个共享、版本化的 intent 存储位置。对单一产品来说,最简单就是产品 repo 里的 <code>intent/</code> 目录——artifact 链和由它派生出来的 code 放在一起。Intent 跨很多 repo 时才值得开一个独立 intent repo,monorepo 的话直接是目录。Stage 3: Build 的侧栏会讲这个 home 跟现有 Jira 或 requirements 工具怎么衔接。</p>
+
+
+<p>这件事由 platform 或 engineering team 一次性完成。需要一名技术团队成员搭起 intent home,决定谁能写——因为很多贡献者会来自整个组织。</p>
+
+
+<p>Repository 搭好之后,没有 git 经验的贡献者也不用直接用 git。VCS(比如 GitHub)的 connector 让 Claude 从 claude.ai 或 Cowork 代为 commit markdown 文件。</p>
+
+<h3 class="sub-head">How to execute it</h3>
+<ol>
+
+<ol>
+<li>提出者用自己语言把问题描述给 Claude。可以描述今天做不了什么、谁被这个想法影响、better 长什么样、什么 out of scope。不需要正式语言。</li>
+<li>一起 brainstorm,直到想法具体化。Claude 会问 analyst 通常会问的那些问题:scope、users、constraints、成功的样子。</li>
+<li>让 Claude 用组织模板把结果写成 <code>intent.md</code>。模板可以由技术团队成员编码为 skill,由 lead 签发。可以覆盖 problem、proposed outcome、affected users and systems、constraints、open questions。</li>
+<li>提出者纠正 Claude 误解的地方。</li>
+<li>把 <code>intent.md</code> commit 到共享 home。作者和时间戳一起进入记录,product owner 从那里接下这个想法。</li>
+</ol>
+
+<p>模板示例:</p>
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">intent.md</span>
+        <span class="md-name-cn">意图文档 · 模板</span>
+      </div>
+      <span class="md-purposes">PLAN · GOVERNANCE</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en"># Intent: claims status self-service
+Author: J. Ortiz (claims operations).
+Status: draft.
+
+## Problem
+Customers phone the contact center to ask where their claim is. Handlers spend roughly a third of call time on status-only queries.
+
+## Proposed outcome
+Customers see claim status, next step and expected date in the portal.
+
+## Affected users and systems
+Claims handlers, portal team, claims-core API.
+
+## Constraints
+No new PII in the portal session. Existing authentication only.
+
+## Open questions
+Do third-party loss adjusters need access too?</div>
+  <div class="markdown-card-body" data-lang="cn" hidden># 意图:理赔状态自助查询
+作者:J. Ortiz(理赔运营)。
+状态:草稿。
+
+## 问题
+客户打电话到联络中心,问他们的理赔在哪一步。坐席大约有三分之一的通话时间花在了"只查状态"这类查询上。
+
+## 期望结果
+客户在门户里就能看到理赔状态、下一步动作和预计完成日期。
+
+## 受影响的用户和系统
+理赔坐席、门户团队、claims-core API。
+
+## 约束
+门户会话中不能再引入新的 PII。只用现有认证。
+
+## 尚未回答
+第三方定损员是否也需要访问?</div>
+</div>
+
+<h3 class="sub-head">Governance considerations</h3>
+
+<p>证据就是那份被 commit 的 <code>intent.md</code>,其中包含作者、时间戳、完整的 revision history。它记在 intent home 的 git 历史中。Product owner 批准,然后把 intent 送到 Stage 2: Design 的"接受/拒绝"决定,以合并或关闭 review 的形式记录下来。</p>
+
+<h3 class="sub-head">How to measure it</h3>
+
+<p><strong>领先指标</strong> · 从第一次对话到一份被 commit 的 <code>intent.md</code> 所用的时间,直接从 intent home 的 git history 读取,那里有作者和时间戳。期望从原来多周的 elicit 和 refinement cycle 降到小时级。</p>
+
+
+<p><strong>滞后指标</strong> · "存活率",也就是 product owner 接受进入 Stage 2: Design、而不是关闭的 <code>intent.md</code> 占比。接受/拒绝决定以合并 artifact 或关闭 review 记录。同一个 change 在首次 <code>spec.md</code> commit 之后还改了 <code>intent.md</code> 的次数。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-05">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">05</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">STAGE 2 · DESIGN</div>
+            <h2 class="cap-title-en">Design · Requirements &amp; Design</h2>
+            <div class="cap-title-cn">Design:需求与设计一步到位</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Requirements and design collapse into one session. Policy is applied while the spec is written, not discovered in a review weeks later.</span>
+        </div>
+        <div class="cap-body">
+
+<h3 class="sub-head">Traditional vs AI-native</h3>
+
+<p><strong>传统</strong> · 需求和设计是 separate phases,由 separate teams 跑。Analyst 把想法变成 requirements,designer 再把它 parse 回 design。分开是因为 accountability,但慢、且有信息损失。</p>
+
+
+<p><strong>AI-Native</strong> · 两个 phase 在同一个 prompted session 里发生。Claude 读 <code>intent.md</code>,产出 requirements 和 design spec,被组织的 skills 约束,concerned 区域会被标出。</p>
+
+<h3 class="sub-head">Getting started</h3>
+
+<p><strong>Prerequisites</strong> · 先写一份 <code>intent.md</code> 文件,brand / security / compliance / UX 政策以 skills 形式存在。</p>
+
+
+<p><strong>Infrastructure</strong> · 一名有 Claude 访问权限的 product owner。不需要工程技能。</p>
+
+<h3 class="sub-head">How to execute it</h3>
+<ol>
+
+<ol>
+<li>Product owner 开一个 session,加载组织 skills,attach 上 <code>intent.md</code>。</li>
+<li>Product owner 的 prompt 指向 <code>intent.md</code>,点明约束,要求标出 concerns。先手动跑,再编码成组织级 slash command。之后把 <code>intent.md</code> 在 intent home 里被接受作为触发,跑一个 non-interactive job 在 merge 时触发,加载组织 skills 跑这次 pass,把 <code>spec.md</code> commit 成 PR(Stage 5: Deploy 的 CI/CD play 负责管 plumbing)。从那开始,product owner 第一次主动介入是 review。</li>
+<li>同一位 product owner 把 spec 对照 idea 一起 review。Spec 是否解决了 stated problem?<code>intent.md</code> 里的 open questions 是被回答了,还是被 carry forward 了?</li>
+<li>先处理 flagged concerns——它们是 analyst 通常会 escalate 的点。Product owner 在 engineering 看到 spec 之前,先和对应的 policy owner 把每一项解决。</li>
+<li>把 <code>spec.md</code> 跟 <code>intent.md</code> 一起 commit。文件 pair 记录了"要了什么"、"决定了什么"。</li>
+<li>Product owner 决定 spec 和 intent 是否进入 build,任何组织划为高风险的项都要咨询 technical lead。这件事一定由人做决定,接受 spec 就是启动 Stage 3: Build 的 plan mode play。</li>
+</ol>
+
+<h3 class="sub-head">What it looks like (the prompt)</h3>
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">spec.md prompt</span>
+        <span class="md-name-cn">需求与设计 prompt</span>
+      </div>
+      <span class="md-purposes">DESIGN · GOVERNANCE</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en">Read the attached intent.md and produce a requirements and design spec for integrating it into our existing codebase. Apply the skills available to you so the plan conforms to our brand guidelines, security policies and UX standards. Document the spec fully as spec.md, ready to hand to the engineering team. Describe clearly any areas of concern, especially where you cannot satisfy contradicting policies.</div>
+  <div class="markdown-card-body" data-lang="cn" hidden>读取附件里的 intent.md,为把它集成进我们现有 codebase,产出 requirements 与 design spec。应用你可以拿到的 skills,使计划符合我们的 brand 指南、安全政策和 UX 标准。把 spec 完整写进 spec.md,准备好交给 engineering team。清楚描述任何 concerns,尤其是当你无法同时满足相互冲突的 policy 时。</div>
+</div>
+
+<h3 class="sub-head">Governance considerations</h3>
+
+<p>Live policy 在 spec 被写的时候就读出来应用,不是在几周后的 review 才发现。组织的 skills 作为 spec 的 constraints 落地。Spec、生成它的 prompt、当时生效的 skill 版本,全部记在 version control 里。Product owner 给 spec 签字,再把 flagged concerns 转给指定的 policy owner。</p>
+
+<h3 class="sub-head">How to measure it</h3>
+
+<p><strong>领先指标</strong> · 同同一个 change 的 <code>intent.md</code> commit 与 <code>spec.md</code> commit 之间的时间差(两个 git timestamp),与过去 requirements+design cycle 的对比。</p>
+
+
+<p><strong>滞后指标</strong> · Build 启动后的 requirements rework 数。统计同同一个 change 在首次 <code>plan.md</code> commit 之后还 commit <code>spec.md</code> 的次数。Git log 直接给出。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-06">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">06</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">STAGE 3 · BUILD</div>
+            <h2 class="cap-title-en">Build · Plan Mode · CLAUDE.md · Skills · Hooks</h2>
+            <div class="cap-title-cn">Build:Plan mode / CLAUDE.md / Skills / Hooks</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Nothing is implemented without an accepted plan. Institutional knowledge becomes files the agent reads, and the guardrails run as code rather than as habits.</span>
+        </div>
+        <div class="cap-body">
+
+<h3 class="sub-head">Claude Code plan mode as the default starting point</h3>
+
+
+<p><strong>传统</strong> · Engineer 读 design 然后开始写代码。怎么改、改哪些文件、哪些测试,都在 engineer 脑子里,或者顶多写在 ticket comment。其他人无法 review。Reviewer 看到的第一眼是已经写好的 diff,等发现 rework 已经慢了。</p>
+
+
+<p><strong>AI-Native</strong> · 工作从一份书面 plan 开始。Claude 在 plan mode 里产出 plan,只能读 codebase,不能改任何东西。Engineer 在代码被写之前先纠正 plan,通过的版本作为 <code>plan.md</code> commit,供后续 stage 对照。</p>
+
+
+<p><strong>Prerequisites</strong> · intent artifact(<code>intent.md</code> 或 <code>spec.md</code>),如果有的话;还有 <code>CLAUDE.md</code> 文件会很有帮助。</p>
+
+
+<p><strong>Infrastructure</strong> · Claude Code,可以访问 repository。</p>
+
+
+<ol>
+
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">plan.md</span>
+        <span class="md-name-cn">实施计划模板</span>
+      </div>
+      <span class="md-purposes">BUILD · GOVERNANCE</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en"># Plan: claims status self-service (from intent.md 2026-06-02)
+
+## Files that change
+portal/src/claims/StatusPanel.tsx (new), claims-api/routes/status.py, claims-api/tests/test_status.py
+
+## Order of work
+1. Add the status endpoint behind existing auth.
+2. Panel against the endpoint.
+3. Wire into the portal nav.
+
+## Risks
+The claims-core API rate-limits at 50 rps; the panel must cache.
+
+## Proof
+test_status.py covers the four claim states; screenshot matches the approved mock.</div>
+  <div class="markdown-card-body" data-lang="cn" hidden># 实施计划:理赔状态自助查询(基于 intent.md 2026-06-02)
+
+## 改动的文件
+portal/src/claims/StatusPanel.tsx(新增)、claims-api/routes/status.py、claims-api/tests/test_status.py
+
+## 工作顺序
+1. 在现有 auth 后面加 status 端点。
+2. 把 panel 接到端点上。
+3. 接入门户导航。
+
+## 风险
+claims-core API 限流到 50 rps;panel 必须缓存。
+
+## 验证标准
+test_status.py 覆盖 4 种 claim 状态;截图与已批准的 mock 一致。</div>
+</div>
+
+
+<p><strong>Governance considerations</strong> · Design review 发生在任何代码被生成之前——那时改方向还只是改一份文档。Plan mode 本身就强制了这一点,因为 Claude 在 engineer 接受 plan 之前不能编辑文件。Plan 和它的 revision 与"谁接受的"一起被记录。Routine changes 由 engineer 批准,任何组织划为高风险的项交给 tech lead 或 architect。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:第一次 implementation pass 就合并的 change 占比,以及从 plan approve 到 PR 合入的时间(从 PR metadata 取)。滞后:每个 change 的 rework cycle 数(同样从 PR metadata 取),以及合并后的 diff 与 <code>plan.md</code> 还匹配的频率。</p>
+
+<h3 class="sub-head">Claude Code on auto-mode</h3>
+
+<p>Claude Code 还能以 auto-mode 跑——engineer 批准 plan,满意并迭代过之后,Claude 直接 apply 每一处改动,不再每个 edit 都 prompt 一次。随着后面 play 的 guardrails 成熟(调好的 <code>CLAUDE.md</code>、编码了 policy 的 skills、挡住不安全 action 的 hooks、以及 Claude 能跑的测试套件),auto-accept 就成了 routine work 的默认:一份紧凑的 <code>spec.md</code>、小 blast radius、代码在测试已经覆盖的范围里。</p>
+
+
+<p>重点现在从"用户盯着 agent 改东西、review 它每一个 action",转向"在更长的自主 session 之后,review artifact"。Auto-accept 模式配合 worktrees,还能让个人与团队之间并行起来,是让 SDLC 自主跑、闭环起来的基础(见 Stage 6: Maintenance)。</p>
+
+<div class="sidebar">
+  <span class="sidebar-kicker">SIDEBAR · LEGACY SYSTEMS &amp; SOURCE OF TRUTH</span>
+  <div class="sidebar-body">
+
+<p>适用于这个流程产生的每一个 artifact。</p>
+
+<p>现有 SDLC 流程很可能已经在跟踪 artifact,只是不在 markdown 文件里。Work items 可能在 Jira,requirements 在带合规追溯的工具里,design 在 Figma,变更审批有 change board。这些系统很难替换,因为 auditor 和 regulator 已经接受它们,其他团队也依赖它们,所以 AI-Native SDLC 必须围绕现有体系来设计。</p>
+
+
+<p>过渡到 AI-Native SDLC 时,对流程产出的每个 artifact,指定一个 system 作为 source of truth,其他系统持有副本或到原版的链接。下面这些配置可以做到"一个 source of truth",每个 artifact 各自选哪个:</p>
+
+
+<p><strong>Repo 作为 source of truth。</strong> Markdown artifact 是 authoritative record,legacy system 只引用 commit 里的文件。对工程主导的组织来说,这通常是最干净的——所有记录都活在同一个工具、同一套 timestamp 权威下。</p>
+
+
+<p><strong>Legacy system 作为 source of truth。</strong> Jira、ServiceNow 或 requirements 工具持 authoritative record,markdown artifact 是 working copies。Claude 在 session 开始时读记录,在产出 spec 或 plan 的同一个 session 里,通过 MCP connector 把结果写回去。</p>
+
+
+<p><strong>Linkage 是最低底线。</strong> 所有 artifact 记录 record ID,所有 legacy 记录包含 markdown 文件的 commit SHA。过渡到 AI-Native SDLC 时,从 linkage 开始是个稳妥起点,接受两个 source of truth 存在的事实。</p>
+
+
+<p>Legacy system 和 markdown-first system 可以共存,只要两者之间有 link,或其中一方被明确为 source of truth。</p>
+  </div>
+</div>
+
+<h3 class="sub-head">The CLAUDE.md</h3>
+
+<p><a href="https://code.claude.com/docs/en/memory"><code>CLAUDE.md</code></a> 把一个新加入者需要的 context 喂给 Claude——conventions、commands、architecture、团队最常踩的坑。曾经在别人脑子里和 wiki 上的知识,变成 agent 每次 session 开头都会读的文件,由全队共同维护,每次踩坑就迭代一次。</p>
+
+
+<p><strong>Prerequisites</strong> · 无。</p>
+
+
+<p><strong>Infrastructure</strong> · 一个 repo、装好 Claude Code、一名熟 codebase 的工程师。</p>
+
+<ol>
+
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">CLAUDE.md</span>
+        <span class="md-name-cn">项目上下文模板</span>
+      </div>
+      <span class="md-purposes">BUILD · CONTEXT</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en"># Payments service
+
+# Commands
+- Build: make build
+- Test: make test (unit), make itest (integration, needs docker)
+- Lint: make lint (runs in CI; fix before pushing)
+
+# Conventions
+- Java 21, Spring Boot 3. No new Lombok.
+- Money is always BigDecimal, never double.
+- Every endpoint needs an integration test in src/itest.
+
+# Architecture
+- api/ holds REST controllers, core/ holds domain domain logic, adapters/ talks to to external systems.
+- Kafka events are defined in schemas/; never edit generated classes.
+
+# Things Claude gets wrong
+- Do not bump dependency versions; the platform team owns them.
+- The legacy v1/ package is frozen; changes go in v2/.</div>
+  <div class="markdown-card-body" data-lang="cn" hidden># 支付服务
+
+# 命令
+- 构建:make build
+- 测试:make test(单元测试),make itest(集成测试,需要 docker)
+- Lint:make lint(在 CI 里跑;push 前先修)
+
+# 规范
+- Java 21、Spring Boot 3。不引入新的 Lombok。
+- 金额一律用 BigDecimal,永远不用 double。
+- 每个端点都要在 src/itest 里有集成测试。
+
+# 架构
+- api/ 放 REST 控制器,core/ 放 domain 逻辑,adapters/ 对接外部系统。
+- Kafka 事件定义在 schemas/;不要编辑自动生成的类。
+
+# Claude 经常搞错的事
+- 不要升级依赖版本;platform team 在管这件事。
+- 旧的 v1/ 包已经冻结;改动都放到 v2/。</div>
+</div>
+
+
+<p><strong>Governance considerations</strong> · <code>CLAUDE.md</code> 是 version controlled 的,所以 agent 工作的指令本身可 review、可 audit。团队 conventions 通过这份文件落地,对它的修改记在 git 历史中,由 code owner 在 PR review 时批准。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:Claude 重复犯一个 <code>CLAUDE.md</code> 本该拦住的错的频率。对 <code>CLAUDE.md</code> 的 correction 或 change 应通过 git history 跟踪。滞后:新人首次合入 PR 所需时间,从 PR 历史读取。</p>
+
+<h3 class="sub-head">Skills as institutional knowledge</h3>
+
+<p>Skills 是一个组织让机构知识变得可执行的方式。指令显式、版本化、广泛适用,policy 变化时统一更新。经验法则:为"必须一致应用"的机构知识写 skill;不要为那些应该放在 <code>CLAUDE.md</code> 或 prompt 里的组件写 skill。</p>
+
+
+<p><strong>Prerequisites</strong> · 无必需。有一份 <code>CLAUDE.md</code> 会更好,那让 agent 的工作知识住在 repo 里,但 skill 不依赖它。</p>
+
+
+<p><strong>Infrastructure</strong> · 一项 policy,有具名 owner 和书面 source of truth。</p>
+
+<ol>
+
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">SKILL.md</span>
+        <span class="md-name-cn">Skill 模板</span>
+      </div>
+      <span class="md-purposes">BUILD · SKILLS</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en">---
+name: secure-api-review
+description: Apply the API security standard. Use whenever creating or modifying an external-facing endpoint, reviewing API code, or generating an OpenAPI spec.
+---
+# Secure API review
+
+When you create or change an API endpoint:
+1. Authentication: every endpoint requires the the gateway JWT; no anonymous routes outside / /.
+2. Input validation: validate request bodies against the OpenAPI schema and reject unknown fields.
+3. Audit: every state-changing endpoint emits an audit event with actor, action, entity and timestamp.
+4. Data classification: fields tagged pii in the schema must never appear in logs or error messages.
+
+Run scripts/check-endpoints.sh and include its output in your summary.</div>
+  <div class="markdown-card-body" data-lang="cn" hidden>---
+name: secure-api-review
+description: 应用 API 安全标准。任何时候创建或修改对外 endpoint、review API 代码、或生成 OpenAPI 规格时使用。
+---
+# API 安全 review
+
+当你创建或修改 API endpoint 时:
+1. 认证:每个 endpoint 都要 gateway JWT;/health 之外不允许匿名路由。
+2. 输入校验:按 OpenAPI schema 校验 request body,拒绝未知字段。
+3. 审计:每个改变状态的 endpoint 必须发出 audit event,带 actor、action、entity、timestamp。
+4. 数据分类:schema 里标 pii 的字段绝不能出现在日志或错误信息里。
+
+跑 scripts/check-endpoints.sh,把它的输出包含进你的总结。</div>
+</div>
+
+
+<p><strong>Governance considerations</strong> · Skill 是一个 control,只是 advisory。它让 Claude 在写代码时"倾向于"应用 policy,但没有任何东西强制 session 必须遵守。一项必须一直成立的 policy,需要在 skill 后面再加一个 deterministic 的东西——比如 hook 挡住那个 action,或在 PR 时再过一遍 policy 的 review pass。Skill 让违规很少见,hook 让它几乎不可能。Skill 的 invocation 在 session trace 里记下来,policy owner 像 code 一样 review skill 的修改。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:从 policy owner 批准 policy 修改到更新后的 skill 合入的时间,从 skill 文件夹的 PR 取。滞后:PR review 中引用该 policy 的 findings 数,在 skill 在写代码时就应用 policy 之后应该趋近于零。如果没趋近于零,要么是 skill 没触发,要么是它的文字已经跟官方 policy 漂移了。</p>
+
+<h3 class="sub-head">Hooks as build-time guardrails</h3>
+
+<p>Skill 是 advisory control,<a href="https://code.claude.com/docs/en/hooks">hook</a> 是它身后的 deterministic layer。Claude 在 implementation 期间的绝大多数 action 都是 file edit 和 shell command,所以 build phase 是 hook 触发最频繁的地方。</p>
+
+
+<ul>
+
+<p>Build-phase hook 可以:</p>
+<ul>
+<li>阻挡针对受保护路径的 edit,比如 generated class 或冻结的 package;</li>
+<li>file edit 之后跑 formatter 和 linter,让 drift 不积累;</li>
+<li>让 credentials 不出现在 diff 里。</li>
+</ul>
+
+
+<p>凡是不允许例外的 policy 都要靠 hook 兜。Hook 对每个匹配的 action 都会跑一次,所以 build-phase 的 hook 要快、范围只覆盖改动过的文件。更重的检查,比如完整测试套件,放到 commit 或 PR 那一步。</p>
+
+
+<p>那种"问人批不批"的 hook,跟 Stage 5: Deploy 里的 gate 是一类——build 中弹审批 prompt,等于把所有并行 session 的 critical path 上又塞回一个人。</p>
+
+<h3 class="sub-head">Parallel sessions and subagents</h3>
+
+<p>一名工程师可以同时推进多条 work stream。</p>
+
+
+<p>Parallel session 是另一个完整的 Claude Code 实例,在一个 <a href="https://code.claude.com/docs/en/worktrees">git worktree</a> 里跑独立 task。每个独立 session 之间互不知情,唯一共享的是在 steering 它们的工程师。</p>
+
+
+<p><a href="https://code.claude.com/docs/en/sub-agents">Subagent</a> 跑在单个 session 里,是一个 scoped helper,有自己的 context window 和 tool 限制,适合那些在多个 task 里反复出现的小活儿,比如"验证 app 能跑"。</p>
+
+
+<p>Parallel session 提高工程师可以同时 in-flight 的 task 数量,subagent 让每个 session 专注在自己的 task 上。Engineer 的工作变成 steering 和 review 它们。</p>
+
+
+<p><strong>传统</strong> · 一名工程师一次做一个 task,每天/每周的大量时间花在 build、test、review 上。等的时候可以换 task,但 context switch 太累,很少有人这么做。</p>
+
+
+<p><strong>AI-Native</strong> · 一名工程师同时跑多个 Claude session,每个在自己的 worktree 跑自己的 task。重复的小活儿变成有自己 context 和 tool 限制的 subagent。Engineer 的工作转向 orchestration,最终转向构建和监控 loop。</p>
+
+
+<p><strong>Prerequisites</strong> · <code>CLAUDE.md</code>,因为所有 session 都会读它。Feedback loop(Stage 4: Test)在这里也有用,session 能自己 verify 自己时,工程师就不需要那么多监督。</p>
+
+
+<p><strong>Infrastructure</strong> · 一个 git repository,因为隔离来自 worktrees 和 permission 设置,后者被调成 session 不会为"组织认为安全"的命令等审批 prompt。</p>
+
+<ol>
+
+
+
+
+</ol>
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">.claude/agents/verifier.md</span>
+        <span class="md-name-cn">Verifier subagent 模板</span>
+      </div>
+      <span class="md-purposes">BUILD · SUBAGENTS</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en">---
+name: verifier
+description: Runs the app and checks the change works before the session reports done
+tools: Bash, Read
+---
+Start the app with make run. Exercise the changed behavior and the two nearest neighboring flows. Report what you ran, what you saw, and any behavior that does not match plan.md. Do not fix anything; report only.</div>
+  <div class="markdown-card-body" data-lang="cn" hidden>---
+name: verifier
+description: 跑应用并检查改动在 session 报 done 前能用
+tools: Bash, Read
+---
+用 make run 启动应用。把改动过的行为和邻近的两条 flow 跑一遍。报告你跑了什么、看到了什么、以及任何跟 plan.md 不符的行为。不修任何东西;只报告。</div>
+</div>
+
+
+<p><strong>Governance considerations</strong> · Session 越多产出越多,所以 control 一定要从 repo 里的配置来。在那定义的 hook 和 permission 设置对所有 session 都生效,一个 session 做了什么会被记录、并归到跑它的工程师名下。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:每名工程师并行的 session 数,在 review 质量仍能维持的前提下,从 OpenTelemetry export 取;以及一天中花在 steering 而不是等待上的占比。滞后:每名工程师每周合并的 change 数,跟 rework rate 并读,从 PR history 取。</p>
+        </div>
+      </div>
+    </section>
+    <section class="capability" id="cap-07">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">07</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">STAGE 4 · TEST</div>
+            <h2 class="cap-title-en">Test · Feedback Loops &amp; Continuous Evals</h2>
+            <div class="cap-title-cn">Test:Feedback loop + 持续 evals</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Every session checks its own work before a human sees it, and the configuration that steers the agent gets regression-tested like the code it writes.</span>
+        </div>
+        <div class="cap-body">
+
+<h3 class="sub-head">Give Claude a feedback loop</h3>
+
+<p>无论测试、build 还是截图 diff,永远给 Claude 一个能 verify 自己工作的方式。Session 在 engineer 看到之前先自己 check、自己修自己错的地方。</p>
+
+
+<p>Feedback loop 不要和 verifier subagent(Stage 3: Build)混淆。Feedback loop 在整个 task 里,按工作的需要跑很多次。Verifier subagent 则是一种"打 final check 包"的方式——session 自认为工作做完了,用一个 fresh context window 跑一次。这样判断不会受"产出代码时的假设"所染。</p>
+
+
+<p><strong>传统</strong> · 代码能 work 的信号来得很晚——CI 几分钟后、tester 几天后、生产几周后。当 agent 在产出代码时,信号晚到就意味着要人去检查全部产出,那个人就成了瓶颈。</p>
+
+
+<p><strong>AI-Native</strong> · Session 拿到一种方法,在人看到之前自己先 check。跑测试、跑 build、截屏。Claude 迭代到 check 通过,所以到 engineer 手里时已经通过了。Setup 这个 loop 是跑 session 的 engineer 的事,下面的步骤也是为他们写的。</p>
+
+
+<p><strong>Prerequisites</strong> · 无。</p>
+
+
+<p><strong>Infrastructure</strong> · 测试套件和 build,本地一条命令就能跑起来。做 UI 的话,让 Claude 能"看到"结果很关键——可以是一个浏览器工具,或通过 MCP 接进来的截图工具。</p>
+
+<ol>
+
+
+
+
+
+
+
+</ol>
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">CLAUDE.md (verification block)</span>
+        <span class="md-name-cn">CLAUDE.md 验证段</span>
+      </div>
+      <span class="md-purposes">TEST · CONTEXT</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en">## Verifying your work
+- Build: make build (must finish with "Build succeeded")
+- Test: make test (all green; never skip or delete a failing test)
+- Lint: make lint (zero warnings)
+
+Run all three before reporting any task complete, and paste the output. If a test fails, fix the code, not the test.</div>
+  <div class="markdown-card-body" data-lang="cn" hidden>## 验证你的工作
+- 构建:make build(必须以 "Build succeeded" 结尾)
+- 测试:make test(全绿;永远不要 skip 或删一个失败的测试)
+- Lint:make lint(零 warning)
+
+报告任何 task 完成前,先跑完这三个,并把输出贴出来。如果测试挂了,改代码,不改测试。</div>
+</div>
+
+
+<p><strong>什么被强制</strong> · 报 done 前先 verify,以及 fix 期间挡住 agent 改测试文件——如果组织想保证,就都实现为 hook。</p>
+
+
+<p><strong>证据是什么</strong> · Claude 跑出来的 "make test" 原样输出、build log,或截图 diff——证据来自工具链。</p>
+
+
+<p><strong>记在哪里</strong> · 记在 session transcript(由 OpenTelemetry export 转发到组织的可观测性栈),以及 PR 的 check run——reviewer 和任何后续 auditor 都看得到。</p>
+
+
+<p><strong>谁批准</strong> · review PR 的 code owner,因为机械证据已经挂上,他们可以专注于意图和风险。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:agent 写的 change 首次 CI 通过率,CI 系统本身就支持。滞后:每个 PR 的 review 时间(从 PR metadata 取),在测试接住 review 以前需要 catch 的东西后应该下降;以及 incident tracker 的 change failure rate。</p>
+
+<h3 class="sub-head">Continuous evals in CI</h3>
+
+<p>Evals 是 stage-gate QA 在 AI-Native 时代的等价物。实际就是一套 suite,在 agent 的 configuration 变化时跑。新 model 被换上、或 prompt 被重写时,eval suite 会告诉你 agent 是否还在按同样的 standard 干活。</p>
+
+
+<p>Evals 应被当作活的 suite。Model 进步之后,以前能区分的 case 不再区分,就要靠持续 monitoring 来的新 case 补进去。</p>
+
+
+<p>看 use case,有些团队可能愿意以固定节奏 offline 跑这些 evals,而不是每次 change 都跑。下面的步骤是为 continuous evals 写的。</p>
+
+
+<p><strong>Prerequisites</strong> · <code>CLAUDE.md</code> 和 feedback loop(Stage 4: Test)。</p>
+
+
+<p><strong>Infrastructure</strong> · CI 能以 non-interactive 方式跑 Claude Code,以及一个有 eval 预算的 API key。</p>
+
+<ol>
+
+
+
+
+
+</ol>
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="yaml">.yml</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">.github/workflows/agent-evals.yml</span>
+        <span class="md-name-cn">Evals workflow 模板</span>
+      </div>
+      <span class="md-purposes">TEST · EVALS</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en">name: Agent evals
+on:
+  pull_request:
+    paths: ['CLAUDE.md', '.claude/**']
+  schedule:
+    - cron: '0 2 * * *'
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Run eval suite
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          for eval in evals/*.json; do
+            claude -p "$(jq -r '.prompt' $eval)" \
+              --allowedTools "Read,Edit,Bash(make test)" \
+              --output-format json > result.json
+            ./evals/check.sh "$eval" result.json
+          done</div>
+  <div class="markdown-card-body" data-lang="cn" hidden># Agent 评估工作流
+
+> 这是一份 GitHub Actions workflow 配置,用于在每次改 agent 配置时自动跑 eval 套件。
+
+## 什么时候跑
+- **PR 触发**:只针对改了 `CLAUDE.md` 或 `.claude/**` 路径的 PR
+- **定时触发**:每天凌晨 2 点跑一次
+
+## 任务名:evals
+跑在 GitHub 提供的 `ubuntu-latest` 虚拟机上。
+
+## 步骤
+
+1. **拉代码** — 用 `actions/checkout@v4` 把当前 commit 拉到 runner
+2. **安装 Claude Code** — 全局安装 `@anthropic-ai/claude-code` 包
+3. **跑 eval 套件**(步骤名:Run eval suite)
+   - 从仓库 secrets 取出 `ANTHROPIC_API_KEY` 注入到环境
+   - 对 `evals/*.json` 目录里每一份 eval 文件:
+     - 用 `claude -p` 跑 prompt(从该 JSON 的 `.prompt` 字段取)
+     - 限制可用工具为 `Read` / `Edit` / `Bash(make test)`
+     - 输出 JSON 格式到 `result.json`
+     - 调 `evals/check.sh` 比对预期结果
+
+## 如何对接成中文版
+YAML 字段是 GitHub Actions 标准配置,英文原貌便于直接复制使用。如果想看中文版的关键字含义:
+- `name` = workflow 名字
+- `on` = 触发条件
+- `pull_request.paths` = 路径过滤
+- `schedule.cron` = cron 表达式
+- `jobs.<name>.runs-on` = 运行的 runner 环境
+- `steps[i].uses` = 复用的 action
+- `steps[i].run` = 直接跑的 shell 命令
+- `secrets.XXX` = 从仓库 secrets 取值
+
+实际部署时,以英文版为准。</div>
+</div>
+
+
+<p><strong>Governance considerations</strong> · Evals 给 QA 一个 gate,能跟上 agent 的产出。Pass rate threshold 被强制为 merge check,每次跑都记下来供后续比较,负责 configuration 修改的团队负责批准。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:eval pass rate 随时间变化(每次跑都报),以及一次生产 incident 变成长久 eval 的耗时。滞后:CI 拦下的 regression,跟从 incident tracker 来的生产里发现的 regression 对比。</p>
+        </div>
+      </div>
+    </section>
+    <section class="capability" id="cap-08">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">08</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">STAGE 5 · DEPLOY</div>
+            <h2 class="cap-title-en">Deploy · PR Review · REVIEW.md · Hooks · Managed Settings · CI/CD</h2>
+            <div class="cap-title-cn">Deploy:PR review / REVIEW.md / Hooks / managed settings / CI/CD</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Review runs in both directions, and governance is enforced as the agent acts. The agent does everything up to the production gate and nothing past it.</span>
+        </div>
+        <div class="cap-body">
+
+<h3 class="sub-head">AI in the PR review loop</h3>
+
+<p>Claude 既 review 也被 review。它按组织 policy review 进来的 PR,也处理它自己 PR 上的 review comments。这样工程师就能专注于"behavior"层面的 review——本质上是在判断 intent 和 risk。</p>
+
+
+<p><strong>传统</strong> · Review capacity 按人的输出来规划。PR 等 reviewer 把它读一遍,review 质量随 reviewer 负载波动,作者追着 reviewer 跑而 backlog 越长越大。</p>
+
+
+<p><strong>AI-Native</strong> · 所有 PR 拿到一样的 review pass,findings 按严重程度排序。Human attention 上移一层,去看"change 是否符合 plan 意图"、"风险是否可接受"。</p>
+
+
+<p><strong>Prerequisites</strong> · Stage 3: Build 里更新过的 <code>CLAUDE.md</code>;如果 review pass 强制书面 policy,则需要 skills;以及定义好的 subagents。</p>
+
+
+<p><strong>Infrastructure</strong> · 装了 Claude integration 的 repo——可以是管理员开启的 managed <a href="https://code.claude.com/docs/en/code-review">Code Review</a> 服务(research preview),或者跑在自有 CI 里的 <a href="https://code.claude.com/docs/en/github-actions">claude-code-action</a>;按需 model 调用走 AWS Bedrock、Google Vertex 或 Microsoft Foundry(CI/CD play 覆盖部署选项)。Branch protection policy 要求 code owner 批准也值得加。</p>
+
+<ol>
+
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="md">.md</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">REVIEW.md</span>
+        <span class="md-name-cn">Review policy 模板</span>
+      </div>
+      <span class="md-purposes">DEPLOY · REVIEW</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en"># Review instructions
+
+## Passes
+Run three passes and tag each finding with its pass:
+- Bugs: logic errors, broken edge cases, subtle regressions
+- Security: injection risks, authentication gaps, PII in logs
+- Compliance: the change matches spec.md, plan.md and our design principles
+
+## What Important means here
+Reserve Important for findings that would break behavior, leak data or breach a policy. Style and naming are nits.
+
+## Cap the nits
+Report at most five nits per review; summarize the rest as a count.
+
+## Do not report
+Generated files under src/gen/ and anything CI already enforces.</div>
+  <div class="markdown-card-body" data-lang="cn" hidden># Review 说明
+
+## Passes
+跑三次 pass,每条 finding 标上自己的 pass:
+- Bugs:逻辑错误、断掉的 edge cases、细微回归
+- Security:注入风险、认证缺口、日志里的 PII
+- Compliance:改动匹配 spec.md、plan.md 和我们的 design principles
+
+## 什么叫 Important
+把 Important 留给那些会让行为挂掉、漏数据或违反 policy 的 finding。Style 和命名都是 nit。
+
+## 限定 nit 数量
+每个 review 最多报 5 条 nit;剩下的总结成计数。
+
+## 不要报告
+src/gen/ 下的 generated file,以及 CI 已经强制了的任何东西。</div>
+</div>
+
+
+<p><strong>Governance considerations</strong> · Separation of duties 被保留——写 code 的 agent 没有途径去批准它。<code>REVIEW.md</code> 里的 review policy 被应用到所有 PR,findings、fixes、ratings、approvals 都记在 PR 历史里,PR 就是 audit record。Approval 来自人,通过 branch protection 拿,参考 findings 决定。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:首次 review 耗时(应该降到分钟级),以及无人触碰 branch 就被解决的 review comments 占比(数据直接存 Git)。滞后:merge 前拦下的缺陷和漏洞 vs 漏到生产的,来自 PR 历史和 incident tracker。</p>
+
+<h3 class="sub-head">Hooks as approval gates</h3>
+
+<p>Build phase 把 hooks 当 guardrail 用,允许或阻挡 action,完全不需要人参与(Stage 3: Build)。Hook 也能"问"——把 action 暂停,直到某个具体的人批准,这正是 release gating 需要的。</p>
+
+
+<p>这个 play 落在 Stage 5: Deploy,因为 release gate 是最清楚的例子,但 hooks 并不 deploy-specific——它在 Claude 行动的每个地方都跑。例如 hook 能在 Stage 3: Build 里挡住"没有 change ticket 就不让改 migration 和 infra",也能在 Stage 4: Test 的 fix task 里让 agent 不能改 test 文件。</p>
+
+
+<p><strong>Prerequisites</strong> · 无。</p>
+
+
+<p><strong>Infrastructure</strong> · 一份 change process 要求的 approvals 列表。</p>
+
+<ol>
+
+
+<div class="code-block" data-code-block>
+  <div class="code-block-head">
+    <span class="code-block-tag">JSON · APPROVAL GATE</span>
+    <button class="code-copy-btn" data-copy-btn>Copy</button>
+  </div>
+  
+<p><strong>Governance considerations</strong> · Hooks 就是 approval gates。Gate 条件每次、对每个人都强制。Allow/block 决定带 timestamp 记录。Gate 同时定义了"什么算 approval"——是已批准的 change ticket 还是 release manager 的签字。</p>
+
+<div class="sidebar">
+  <span class="sidebar-kicker">WORKED EXAMPLE · MANAGED SETTINGS FOR A REGULATED ENTERPRISE</span>
+  <div class="sidebar-body">
+
+<p><em>由 platform team 通过 MDM 或 admin console 部署;工程师不能编辑或覆盖其中任何一项。</em></p>
+</div>
+</div>
+
+<div class="code-block" data-code-block>
+  <div class="code-block-head">
+    <span class="code-block-tag">JSON · MANAGED SETTINGS</span>
+    <button class="code-copy-btn" data-copy-btn>Copy</button>
+  </div>
+  
+<p><em>每一行在 control 维度上买到了什么</em></p>
+
+
+<p><code>permissions.deny</code> 让 secrets 不进入 agent 的 context,也阻挡工具层的任意 network egress;<code>permissions.allow</code> 预批准安全的 inner loop,免得 deny list 变成 prompt fatigue。</p>
+
+
+<p><code>disableBypassPermissionsMode</code> 加上 <code>allowManagedPermissionRulesOnly</code>,意味着任何工程师、项目文件或命令行 flag 都不能 widen 这些规则。</p>
+
+
+<p><code>sandbox</code> 关上 permission 关不上的 gap。Tool 层的 WebFetch deny 挡不住 shell command 访问网络;OS 层的 domain allowlist 直接阻断 egress。</p>
+
+
+<p><code>failIfUnavailable</code> 与 <code>allowUnsandboxedCommands</code> 把 sandbox 变成一道 gate:sandbox 初始化不了时 Claude Code 拒绝启动;sandbox 内跑失败的命令不能在 sandbox 外重试。</p>
+
+
+<p><code>credentials</code> 关上 deny rule 留着的 gap。<code>permissions.deny</code> 管 Claude 的 file tools,但 sandbox 里的 shell 默认仍能读 <code>~/.ssh</code> 和 <code>~/.aws/credentials</code>;这一段 deny 掉这些读,并把具名 secrets 从每个 sandbox 命令的环境里剥掉。</p>
+
+
+<p><code>allowManagedHooksOnly</code> 意味着这个 play 的 approval gates 是唯一会跑的 hook;本地任何东西都不能加或换它们。</p>
+
+
+<p><code>disableSideloadFlags</code> 与 <code>strictKnownMarketplaces</code> 意味着工程师机器上每一个 skill、agent、hook、MCP server 都来自组织批准的 plugin marketplace,绝不会来自某个 home 目录。</p>
+
+
+<p><code>allowManagedMcpServersOnly</code> 让 agent 的 tool surface 由 platform team 拥有的 allowlist 管。</p>
+
+
+<p><code>requiredMinimumVersion</code> 拒绝在低于批准底线的 version 上启动,让 control 由组织实际评估过的 build 来强制。</p>
+
+
+<p>把上面当成定制的起点,而不是直接照抄的推荐。每条 deny 都跟能力做 trade,正确的平衡取决于 repo 的 data classification。Settings 参考文档列了每一个 key,包括仅 managed 的那些:<a href="https://code.claude.com/docs/en/settings">code.claude.com/docs/en/settings</a></p>
+
+
+<p><strong>How to measure it(对 hook 本身)</strong> · 领先:每个 approval gate 上花掉的时间。每每条 hook 决定带 timestamp和 an allow or block verdict 记到 OpenTelemetry export,所以每个 gate 的等待都看得见。滞后:hook 启用前后,到达生产的 gate violations,从 incident tracker 取。</p>
+
+<h3 class="sub-head">CI/CD integration and deployment</h3>
+
+<p>在 CI/CD pipeline 里以 non-interactive 方式跑 Claude Code,把执行 sandbox 起来让长跑的 agent 安全运行,把 deployment 通过 MCP integration 暴露出来,在 agent 需要回滚路径之前先演练一遍。</p>
+
+
+<p><strong>传统</strong> · Pipeline 跑 deterministic script,任何需要判断力的东西等一个人来。比如 triage flaky test、写 changelog、查 build 为什么挂了。Deployment 和 rollback 是人在压力下照着 runbook 操作。</p>
+
+
+<p><strong>AI-Native</strong> · Claude 在 pipeline 里以 non-interactive 方式跑 judgment 步骤,在 sandbox 里,带着 scoped 凭证。Deployment 工具通过 MCP 暴露给 agent,所以同一套 workflow 既写也测也上线也回滚,被组织按环境定义的 gate 包着。</p>
+
+
+<p><strong>Prerequisites</strong> · Claude in the PR review loop,以及 hooks as approval gates——因为自动化加速任何东西穿过 gate 之前,gate 必须先在。</p>
+
+
+<p><strong>Infrastructure</strong> · 装了 claude-code-action 的 CI 平台,或能调用 <code>claude -p</code> 的 runner;流量必须留在组织云合约里的就走 API、Bedrock、Foundry 或 Vertex;为 deployment target 配 MCP server;agent job 用没有长期 production 凭证的 sandbox profile。</p>
+
+<ol>
+
+
+<div class="code-block" data-code-block>
+  <div class="code-block-head">
+    <span class="code-block-tag">YAML · PIPELINE STEP</span>
+    <button class="code-copy-btn" data-copy-btn>Copy</button>
+  </div>
+  
+<p><strong>Governance considerations</strong> · 治理原则是:agent 可以在 production gate 之前做事,不能跨过它。下面这些 control 在强制这条原则。</p>
+
+<ul>
+<li>Branch protection 把 agent 写的任何东西变成 PR,没有直接到 main 的路径。</li>
+<li>Production deploy hook 挡住 release,直到具名 release manager 授权。每次 non-interactive 运行都在 agent 自己的 identity 下,所以 pipeline log 把"agent 做了什么"与"触发它的工程师做了什么"分开。</li>
+<li>按环境的 permission tier 决定 agent 在走到 gate 这一路上能做什么。</li>
+</ul>
+
+
+<p><strong>How to measure it</strong> · 领先:不叫人、就被 triage 掉的 pipeline failure 占比,从 CI/CD pipeline log 取。滞后:DORA(DevOps Research and Assessment)指标——CI 体系和 deployment 工具本来就会 emit。</p>
+        </div>
+      </div>
+    </section>
+    <section class="capability" id="cap-09">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">09</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">STAGE 6 · MAINTAIN</div>
+            <h2 class="cap-title-en">Maintain · Closing the Loop · Recurring Scans · Claude Tag</h2>
+            <div class="cap-title-cn">Maintain:闭环 / 周期扫描 / Claude Tag</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">The loop closes. A trigger invokes Claude with no person in the invocation path, and what it finds re-enters the pipeline as intent.md.</span>
+        </div>
+        <div class="cap-body">
+
+<h3 class="sub-head">Maintenance and closing the loop</h3>
+
+<p>到目前为止,我们讲的是怎么把 Claude 加到 SDLC 的每个 stage,每个阶段一开始还要人来启动。这一 stage 把焦点转向让 Claude 自主跑,让 loop 闭环。</p>
+
+
+<p>例如,一个持续跑的 monitoring agent 可以在 bug ticket 一被开出来之后,立刻建一份 <code>intent.md</code>,然后流过 requirements、plan、build、test、review 等阶段。Stage 6: Maintenance 跑在 headless,每个阶段之间有一道独立的 confidence gate(deterministic check 或对抗式 reviewing agent)决定上一阶段的产出是继续走,还是 escalate 给一个人。</p>
+
+
+<p><strong>传统</strong> · Maintenance 是被动阶段。所有 ticket 或 incident 都等一个人来动作、重启流程。凌晨 3 点 报警可能可能漏掉;一个 ticket 可能可能躺在 backlog 没人接;post-mortem action 可能根本进不了 codebase,如果另一场火先起。</p>
+
+
+<p><strong>AI-Native</strong> · 一个 trigger(control-band breach、ticket、channel message、schedule)在路径上无人,直接调起 Claude。Claude 诊断、只走 gated 路径做事、把发现写成 <code>intent.md</code>,然后顺着讲过的那些 stage 流下去。人来 triage 和 review 这些工作,但不再亲自启动它。</p>
+
+<h3 class="sub-head">Closing the loop</h3>
+
+<p>一段 deterministic 脚本盯着 production,在 control band 被突破时调起 Claude。监控一个 breach 是 loop 自主跑的一个有用的例子,<a href="https://claude.com/product/tag">Claude Tag</a>(public beta)那段讲的是通过不同 channel 进来的工作。</p>
+
+
+<p><strong>Prerequisites</strong> · <code>intent.md</code>——它给 loop 一个结构化的输出用来重启。加速过的 PR review、hooks as an action boundary、CI/CD 的 rollback path(最高自治 tier 会调起)。</p>
+
+
+<p><strong>Infrastructure</strong> · 检测脚本能查的 metrics store(Prometheus、CI 系统的 API 或等价的);repo 的读权限;在 CI 里 non-interactive 跑 Claude Code 的方法;接收 webhook 的服务用 <a href="https://platform.claude.com/docs/en/agent-sdk/overview">Agent SDK</a>。</p>
+
+<ol>
+
+
+<div class="markdown-card" data-md-card>
+  <div class="markdown-card-head">
+    <div class="markdown-card-tag">
+      <span class="md-file-icon" data-type="yaml">.yml</span>
+      <div class="md-name-stack">
+        <span class="md-name-en">bands.yaml</span>
+        <span class="md-name-cn">监控 bands 配置</span>
+      </div>
+      <span class="md-purposes">MAINTAIN · CONTROL BAND</span>
+    </div>
+    <div class="markdown-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-md-copy>Copy</button>
+    </div>
+  </div>
+  <div class="markdown-card-body" data-lang="en">metric: ci_test_failure_rate
+baseline: rolling_30d
+rules: western_electric
+tiers:
+  1sigma: { action: log }
+  2sigma: { action: diagnose,
+            tools: "Read,Grep,Bash(gh run view *)" }
+  3sigma: { action: propose,
+            routes: [pull_request, runbook:rollback-deploy] }</div>
+  <div class="markdown-card-body" data-lang="cn" hidden># 监控阈值配置(bands.yaml)
+
+> 这是一份控制带配置,用于决定 monitoring agent 何时该被调起、调起后能做什么。
+
+## 监控对象
+- **指标**:CI 测试失败率(`ci_test_failure_rate`)
+- **基准线**:用过去 30 天(`rolling_30d`)的滚动窗口作为对照基线
+- **判定规则**:Western Electric 规则——经典 SPC(统计过程控制)规则,既能抓住 spike 也能抓 slow drift
+
+## 分级响应(tiers)
+按偏离基准线几个 σ(标准差)分级:
+
+### 1σ(1 个标准差以内,小波动)
+- **动作**:只记录到日志,不调起 Claude
+
+### 2σ(2 个标准差,明显异常)
+- **动作**:调起 Claude 诊断(diagnose)
+- **允许使用的工具**:`Read` / `Grep` / `Bash(gh run view *)`——纯只读,不能改任何东西
+
+### 3σ(3 个标准差,严重突破)
+- **动作**:让 Claude 提议修复(propose)
+- **能走的两条路**:
+  - 开一个 PR 到 review gate(让人 review 后再合并)
+  - 触发事先批准过的 runbook:rollback-deploy(回滚部署的标准操作)
+
+## 字段含义速查
+- `metric` = 被监控的指标名
+- `baseline` = 基准线算法
+- `rules` = 判定规则
+- `tiers.<N>sigma` = 偏离 N 个标准差时的响应
+- `action` = 这个 tier 触发时该做什么(`log` / `diagnose` / `propose` / 其他自定义)
+- `tools` = diagnose 阶段允许调用的工具白名单
+- `routes` = propose 阶段允许走的修复路径白名单
+
+YAML 字段是配置,英文原貌便于直接复制使用。</div>
+</div>
+
+
+<p><strong>Governance considerations</strong> · Tier 边界从 version-controlled config 强制,permission 和 managed settings deny 掉 production 访问。Invocation、finding、triage 决定都带 timestamp 记录。Service owner triage 和批准 finding,改动走正常 PR review gate,agent 可以触发的 runbook 都是事先批准过的。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:从 band breach 到 triage queue 里出现一份 <code>intent.md</code> 的耗时,对照过去从 incident 到 post-mortem action 的时间。检测脚本的 log 里有 breach timestamp 和 incident tier。滞后:变 merged fixes 的 finding 占比(triage queue 对照实际 PR history),以及同类的重复 incident 数——随着 fix 加进 eval suite,这个数应该下降。</p>
+
+
+<ul>
+
+<ul>
+<li>当 CI test failure rate 突破 3σ,agent 隔离 flaky test 或开一个 revert PR,review gate 决定。</li>
+<li>当 post-deploy 5xx rate 在窗口里有 deployment 时突破 3σ,agent 触发已有的 rollback pipeline。</li>
+<li>当 PR cycle time 触发 drift rule,agent 写一份报告给工程 leadership——harness 对过程 metrics 也跟对生产 metrics 一样适用。</li>
+</ul>
+
+
+<p>Detection 保持 deterministic。Band 一被突破,Claude 才被调起,tier 决定它能做什么。</p>
+
+<h3 class="sub-head">Recurring codebase scans</h3>
+
+<p>Security scan 是在某个特定 model 下,关于 codebase 的 point-in-time 陈述,两半都会 stale:code 每周都在变,每个新一代 model 都比上一代找出更多漏洞。AI-Native 的答案是按 schedule 跑,——路径上无人——把发现顺着同一套 gate 送进 codebase 的其他改动走。</p>
+
+
+<p><a href="https://claude.com/product/claude-security">Claude Security</a> 是 hosted 形态的 schedule scanning。接一个 GitHub repo,扫描就跑在 Anthropic 基础设施上的 Claude Mythos 5,每条 finding 在报告前都被验证过,并打一个 confidence rating。Suggested patch 在 Claude Code on the web 上 review 和 apply。组织拿到拿到 finding,自己不需要有 model 访问。</p>
+
+
+<p><strong>传统</strong> · Security scanning 是一次事件,scan 在 release 前或 audit 前启动。报告送到 tracker,backlog 由人手往下处理,直到下一次事件。期间写的 code 只被 PR review 偶尔 catch 一点。</p>
+
+
+<p><strong>AI-Native</strong> · 扫描按 schedule,对着每个连进来的 repo,在能力最强的 model 上跑,findings 在任何人看到前都被验证过。每条 finding 的处理方式跟被突破的 control band 一样:一个 PR 装得下的 fix 走 review gate,更大的变成 <code>intent.md</code>。覆盖率从最后一次 run 起算,不是从第一次。</p>
+
+
+<p><strong>Prerequisites</strong> · PR review gate 与 hooks as approval gates(<a href="#sd-s5">Stage 5: Deploy</a>),让 findings 像其他任何改动一样被 review。<a href="#sd-s1">Stage 1: Plan</a> 的 <code>intent.md</code> 格式,留给那些"一个 PR 装不下"的 finding。</p>
+
+
+<p><strong>Infrastructure</strong> · Claude Security 对 Claude Enterprise 组织 public beta 开放。它需要在目标 repo(云上 github.com)装好 Anthropic GitHub App,打开 Claude Code on the Web,开 Extra Usage 并设 spending limit,跑 scan 的人有 premium seat,以及管理员在 <code>claude.ai/admin-settings/claude-code</code> 打开该功能。Scan 按 Mythos 5 rate 的 consumption 计费,所以 spending limit 要跟 repo 的大小与数量匹配。</p>
+
+<ol>
+
+
+
+
+
+
+
+
+</ol>
+
+
+<p><strong>Governance considerations</strong> · Scan 在组织 admin control 下运行——连哪些 repo、谁持有 scan seat、spend limit 都由中心设。每条 finding 都有 validation result 和 confidence rating,每个 dismissal 都有理由,所以 scan 历史就是"发现、修复、明确接受"的 audit record。</p>
+
+
+<p>Fix 通过 PR review gate 与 branch protection 到 production,不是由 scan 自己来。Claude Security 增强现有 static analysis 和 dependency scan。Deterministic check 留在 CI,model 驱动的 scan 覆盖那些 check 没法覆盖的、与 context 相关的漏洞。</p>
+
+
+<p><strong>How to measure it</strong> · 领先:在 schedule 上的连入 repo 占比,以及从 finding 被报告到 patch 进入 PR review gate 的耗时,从 scan history 和 PR metadata 取。滞后:被 schedule scan 发现的漏洞,对照生产或外部报告发现的,从 incident tracker 取;以及经过多次 run 的 repo,每次 scan 的 finding 趋势——随着 fix 和 eval 累积,应该下降。</p>
+
+<h3 class="sub-head">Claude on call with Claude Tag</h3>
+
+<p>Incident 也可以通过其他渠道进来,例如工作通讯 app(Slack、Teams)。Incident 可以是晚上 10 点在 incident channel 上的一条 Slack 消息,要求立刻修一个紧急问题——现在可以立刻动手。Claude Tag(public beta,目前 Slack 可用)让 Claude 以自己的身份成为这些 channel 的一员,每条新 incident 都有一个 first responder,response 本身也成为未来 incident 的 loop 和 memory 的一部分。</p>
+
+
+<p>对话和机构知识留在 channel 里,channel 里的任何人都能引导、动手 response。任何 team member 都能实时测假设、探索新选项、做调查,channel 历史也增加可审计性。通过 MCP 接入,Claude verify 指标是否回到 baseline,并在线程里确认,把 post-mortem 写进一个版本化的 lessons 文件,未来的调查可以读。</p>
+
+
+<p>Incident 不是 Claude Tag 唯一接的工作。在 MCP 上给 ticket 标记 tag,或在 channel 里被问到,Claude 用同样的方式 triage 这件工作。一份小、边界清楚的 fix 通过 review gate 进来变成 PR,更大的就写成 <code>intent.md</code> 进 Stage 1: Plan,这时 loop 开始喂自己。见:<a href="https://claude.com/blog/ai-ci-cd-on-call">how Claude Tag runs on-call for CI/CD at Anthropic</a>。</p>
+
+<div class="inline-image">
+          <img src="images/2026-08-21-ai-native-sdlc-playbook/closing.png" alt="Channel as audit trail">
+          <p class="inline-image-caption">原文配图 · The channel is the audit trail: request, diagnosis, human authorization and fix all stay where the incident was handled.</p>
+        </div>
+        </div>
+      </div>
+    </section>
+    <section class="capability" id="cap-10">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">10</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">CLOSING</div>
+            <h2 class="cap-title-en">Closing Thoughts · The Loop Keeps Running</h2>
+            <div class="cap-title-cn">收尾 · Loop 在转,人始终在上面</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CLOSING</span>
+          <span class="principle-box-text">Models and harnesses have become more advanced, allowing organizations to not just transform how they produce code, but the entire software development lifecycle.</span>
+        </div>
+        <div class="cap-body">
+
+<p>Model 和 harness 都变得更先进,让组织可以不只是改变它们产出代码的方式,而是改变整个 software development lifecycle。</p>
+
+
+<p>这场转型把 human judgement 放在流程的中心,也考虑到大型企业组织的 governance 和合规要求。</p>
+
+
+<p>这份 guide 把我们 Applied AI 团队为客户每日执行的真实最佳实践做了整合,我们希望它是一份实用、能立刻动手的资源。</p>
+
+
+<p>Loop 在转。Human judgement 一直在它上面。</p>
+
+<h3 class="sub-head">Resources &amp; acknowledgments</h3>
+
+<p>下面这些文档是 platform team 设置那些 control 需要的,大致按你要落地的顺序排列。</p>
+
+<div class="resource-grid">
+  <a href="https://code.claude.com/docs/en/admin-setup" class="resource-card">
+    <span class="resource-icon">Doc · 01</span>
+    <div class="resource-title">Set up Claude Code for your organization</div>
+    <div class="resource-desc">— the admin decision map; start here</div>
+    <div class="resource-url">code.claude.com/docs/en/admin-setup</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/settings" class="resource-card">
+    <span class="resource-icon">Doc · 02</span>
+    <div class="resource-title">Settings reference and precedence</div>
+    <div class="resource-desc">— including every managed-only key</div>
+    <div class="resource-url">code.claude.com/docs/en/settings</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/server-managed-settings" class="resource-card">
+    <span class="resource-icon">Doc · 03</span>
+    <div class="resource-title">Server-managed settings</div>
+    <div class="resource-desc">— from the Claude admin console</div>
+    <div class="resource-url">code.claude.com/docs/en/server-managed-settings</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/permissions" class="resource-card">
+    <span class="resource-icon">Doc · 04</span>
+    <div class="resource-title">Permissions</div>
+    <div class="resource-desc">— file / bash / MCP access control</div>
+    <div class="resource-url">code.claude.com/docs/en/permissions</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/sandboxing" class="resource-card">
+    <span class="resource-icon">Doc · 05</span>
+    <div class="resource-title">Sandboxing</div>
+    <div class="resource-desc">— OS-level filesystem and network isolation</div>
+    <div class="resource-url">code.claude.com/docs/en/sandboxing</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/hooks-guide" class="resource-card">
+    <span class="resource-icon">Doc · 06</span>
+    <div class="resource-title">Hooks — guide</div>
+    <div class="resource-desc">— when to use hooks, what they can do</div>
+    <div class="resource-url">code.claude.com/docs/en/hooks-guide</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/hooks" class="resource-card">
+    <span class="resource-icon">Doc · 07</span>
+    <div class="resource-title">Hooks — reference</div>
+    <div class="resource-desc">— full hook config syntax</div>
+    <div class="resource-url">code.claude.com/docs/en/hooks</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/skills" class="resource-card">
+    <span class="resource-icon">Doc · 08</span>
+    <div class="resource-title">Skills</div>
+    <div class="resource-desc">— institutional knowledge as operational files</div>
+    <div class="resource-url">code.claude.com/docs/en/skills</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/plugin-marketplaces" class="resource-card">
+    <span class="resource-icon">Doc · 09</span>
+    <div class="resource-title">Plugins and private marketplaces</div>
+    <div class="resource-desc">— how skills and hooks are distributed organization-wide</div>
+    <div class="resource-url">code.claude.com/docs/en/plugin-marketplaces</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/managed-mcp" class="resource-card">
+    <span class="resource-icon">Doc · 10</span>
+    <div class="resource-title">Managed MCP</div>
+    <div class="resource-desc">— central control of the agent's tool surface</div>
+    <div class="resource-url">code.claude.com/docs/en/managed-mcp</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/third-party-integrations" class="resource-card">
+    <span class="resource-icon">Doc · 11</span>
+    <div class="resource-title">Enterprise deployment overview</div>
+    <div class="resource-desc">— Bedrock, Vertex, Foundry</div>
+    <div class="resource-url">code.claude.com/docs/en/third-party-integrations</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/network-config" class="resource-card">
+    <span class="resource-icon">Doc · 12</span>
+    <div class="resource-title">Enterprise network configuration</div>
+    <div class="resource-desc">— egress allowlist, proxy setup</div>
+    <div class="resource-url">code.claude.com/docs/en/network-config</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/monitoring-usage" class="resource-card">
+    <span class="resource-icon">Doc · 13</span>
+    <div class="resource-title">Monitoring (OpenTelemetry)</div>
+    <div class="resource-desc">— session traces, eval runs, hook decisions</div>
+    <div class="resource-url">code.claude.com/docs/en/monitoring-usage</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/analytics" class="resource-card">
+    <span class="resource-icon">Doc · 14</span>
+    <div class="resource-title">The analytics dashboard</div>
+    <div class="resource-desc">— org-level Claude usage metrics</div>
+    <div class="resource-url">code.claude.com/docs/en/analytics</div>
+  </a>
+  <a href="https://platform.claude.com/docs/en/manage-claude/compliance-api" class="resource-card">
+    <span class="resource-icon">Doc · 15</span>
+    <div class="resource-title">Compliance API</div>
+    <div class="resource-desc">— Enterprise activity feed, chat retrieval and deletion</div>
+    <div class="resource-url">platform.claude.com/docs/en/manage-claude/compliance-api</div>
+  </a>
+  <a href="https://code.claude.com/docs/en/security" class="resource-card">
+    <span class="resource-icon">Doc · 16</span>
+    <div class="resource-title">Security model</div>
+    <div class="resource-desc">— how Claude Code handles secrets, auth, isolation</div>
+    <div class="resource-url">code.claude.com/docs/en/security</div>
+  </a>
+</div>
+
+<p>Thanks to Jim Blackhurst, Will Steuk, and Jamal Arif for their contributions to this guide, which was inspired by and built on much of their previous work.</p>
+        </div>
+      </div>
+    </section>
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text"><strong>The loop keeps running.</strong></p>
+        <p class="pull-quote-text"><strong>Human judgement stays above it.</strong></p>
+        <p class="pull-quote-caption">— ANTHROPIC ENGINEERING · LOUIS CLAXTON</p>
+      </div>
+    </section>
+    <section class="references">
+      <div class="container">
+        <p class="references-kicker">SOURCES & CREDITS</p>
+        <h2 class="references-title">引用与原文出处</h2>
+        <ul class="references-list">
+            <strong>ORIGINAL ARTICLE</strong>
+            <em>The AI-Native SDLC playbook</em><br>
+            作者:Louis Claxton · Anthropic Engineering · 解读于 2026/08/27 · 原文 2026/08/21 · 45 分钟阅读<br>
+            原文链接:<a href="https://claude.com/blog/the-ai-native-sdlc-playbook" target="_blank" rel="noopener">https://claude.com/blog/the-ai-native-sdlc-playbook</a>
+          </li>
+            <strong>PUBLISHER · ANTHROPIC</strong>
+            <a href="https://claude.com/blog" target="_blank" rel="noopener">claude.com/blog</a> — Anthropic Claude 官方博客
+          </li>
+            <strong>RELATED · ANTHROPIC SECURITY</strong>
+            <a href="https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle" target="_blank" rel="noopener">how-anthropic-secures-its-ai-native-software-development-lifecycle</a> — 配套阅读:Anthropic 如何在 enterprise scale 下组合这些 control
+          </li>
+            <strong>RELATED · CLAUDE TAG ON-CALL</strong>
+            <a href="https://claude.com/blog/ai-ci-cd-on-call" target="_blank" rel="noopener">ai-ci-cd-on-call</a> — Claude Tag 在 CI/CD on-call 的实战
+          </li>
+            <strong>INTERPRETATION</strong>
+            本文为解读版本,按中文阅读习惯重排 6 个 stage(Plan / Design / Build / Test / Deploy / Maintain)共 17 个 plays。所有 4 张原文配图按出现位置完整保留。原文所有 .md / .yaml / .json / prompt 模板均保留英文原貌,便于直接复制使用;中文版为意译,便于理解。如需引用请以原文为准。
+          </li>
+        </ul>
+        <p class="references-note">建议的上手顺序:先跑 cap-04 的 intent.md 模板,把它套到团队下一个需求上;再走 cap-07 的 feedback loop,把 make test / make build 真正接进 <code>CLAUDE.md</code>。最后才是 cap-06 的 hooks as build-time guardrails——顺序错了,先上 hook 只会挡自己。</p>
+      </div>
+    </section>
+    <footer class="article-footer">
+      <div class="container">
+        <p>本文为解读版本 · 6 个 stage × 17 个 plays 原封不动照搬 + 翻译成中文 · 4 张原文配图按位插入 · 所有 prompt / .md / .yaml 模板 EN/CN toggle + Copy</p>
+        <p class="credit">朱有以 · 为 AI 发电 · 解读于 2026/08/27 · 原文 © Anthropic · 2026/08/21</p>
+      </div>
+    </footer>
+  </main>
+  <button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">本文章节</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-section">
+        <div class="nav-section-kicker">01 · BOTTLENECK</div>
+        <div class="nav-section-title">代码不再是瓶颈</div>
+      </a>
+      <a href="#cap-02" class="nav-section">
+        <div class="nav-section-kicker">02 · DEFINITION</div>
+        <div class="nav-section-title">什么是 AI-Native SDLC</div>
+      </a>
+      <a href="#cap-03" class="nav-section">
+        <div class="nav-section-kicker">03 · OVERVIEW</div>
+        <div class="nav-section-title">Plays 依赖关系</div>
+      </a>
+      <a href="#cap-04" class="nav-section">
+        <div class="nav-section-kicker">04 · STAGE 1 · PLAN</div>
+        <div class="nav-section-title">intent.md</div>
+      </a>
+      <a href="#cap-05" class="nav-section">
+        <div class="nav-section-kicker">05 · STAGE 2 · DESIGN</div>
+        <div class="nav-section-title">spec.md</div>
+      </a>
+      <a href="#cap-06" class="nav-section">
+        <div class="nav-section-kicker">06 · STAGE 3 · BUILD</div>
+        <div class="nav-section-title">plan.md · CLAUDE.md · Skills · Hooks</div>
+      </a>
+      <a href="#cap-07" class="nav-section">
+        <div class="nav-section-kicker">07 · STAGE 4 · TEST</div>
+        <div class="nav-section-title">Feedback loop · evals</div>
+      </a>
+      <a href="#cap-08" class="nav-section">
+        <div class="nav-section-kicker">08 · STAGE 5 · DEPLOY</div>
+        <div class="nav-section-title">REVIEW.md · Hooks · CI/CD</div>
+      </a>
+      <a href="#cap-09" class="nav-section">
+        <div class="nav-section-kicker">09 · STAGE 6 · MAINTAIN</div>
+        <div class="nav-section-title">bands.yaml · Scans · Tag</div>
+      </a>
+      <a href="#cap-10" class="nav-section">
+        <div class="nav-section-kicker">10 · CLOSING</div>
+        <div class="nav-section-title">Loop 在转 · 人一直在上面</div>
+      </a>
+    </div>
+  </nav>
+  <script>
+    (function() {
+      const navToggle = document.getElementById('navToggle');
+      const navPanel = document.getElementById('navPanel');
+      if (!navToggle || !navPanel) return;
+      navToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        navPanel.classList.toggle('open');
+      });
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+          navPanel.classList.remove('open');
+        }
+      });
+      navPanel.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() { navPanel.classList.remove('open'); });
+      });
+
+      // ===== Markdown card EN/CN toggle + Copy =====
+      document.querySelectorAll('[data-md-card]').forEach(function(card) {
+        const btns = card.querySelectorAll('.lang-btn');
+        const bodies = card.querySelectorAll('.markdown-card-body');
+        const copyBtn = card.querySelector('[data-md-copy]');
+
+        btns.forEach(function(b) {
+              b.addEventListener('click', function() {
+                const lang = b.dataset.lang;
+                btns.forEach(function(x) { x.classList.toggle('active', x === b); });
+                bodies.forEach(function(body) {
+                  if (body.dataset.lang === lang) body.removeAttribute('hidden');
+                  else body.setAttribute('hidden', '');
+                });
+                copyBtn.dataset.activeLang = lang;
+              });
+            });
+
+        copyBtn.dataset.activeLang = 'en';
+        copyBtn.addEventListener('click', async function() {
+          const lang = copyBtn.dataset.activeLang || 'en';
+          const body = card.querySelector('.markdown-card-body[data-lang="' + lang + '"]');
+          const text = body.textContent;
+          let ok = false;
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(text);
+              ok = true;
+            }
+          } catch (e) {}
+          if (!ok) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); ok = true; } catch (e) {}
+            document.body.removeChild(ta);
+          }
+          const orig = copyBtn.textContent;
+          copyBtn.textContent = 'Copied';
+          copyBtn.classList.add('copied');
+          setTimeout(function() {
+            copyBtn.textContent = orig;
+            copyBtn.classList.remove('copied');
+          }, 2000);
+        });
+      });
+
+      // ===== Code block Copy =====
+      document.querySelectorAll('[data-code-block]').forEach(function(block) {
+        const btn = block.querySelector('[data-copy-btn]');
+        if (!btn) return;
+        btn.addEventListener('click', async function() {
+          const code = block.querySelector('code').innerText;
+          let ok = false;
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(code);
+              ok = true;
+            }
+          } catch (e) {}
+          if (!ok) {
+            const ta = document.createElement('textarea');
+            ta.value = code;
+            ta.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); ok = true; } catch (e) {}
+            document.body.removeChild(ta);
+          }
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function() {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 2000);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
