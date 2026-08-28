@@ -102,7 +102,7 @@
     .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
     .article-footer { padding: 32px 0 64px; text-align: center; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 13px; }
     .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-style: italic; margin-top: 8px; }
-    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 200; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 1000; }
     .floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
     .floating-nav-toggle svg { width: 20px; height: 20px; }
     .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 70vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
@@ -121,8 +121,11 @@
     }
     @media (max-width: 640px) {
       .article-category::before, .article-category::after { width: 40px; }
-      .floating-nav-toggle { bottom: 20px; right: 20px; }
-      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+      .floating-nav-toggle {
+        bottom: max(20px, calc(env(safe-area-inset-bottom) + 16px));
+        right: max(20px, calc(env(safe-area-inset-right) + 12px));
+      }
+      .floating-nav-panel { right: 20px; bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px); width: calc(100vw - 40px); max-width: 320px; }
     }
 
     /* ============================================================
