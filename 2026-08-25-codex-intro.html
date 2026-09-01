@@ -136,6 +136,23 @@
       }
       .floating-nav-panel { right: 20px; bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px); width: calc(100vw - 40px); max-width: 320px; }
     }
+    footer {
+      text-align: center;
+      padding: 40px 0 60px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    footer p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    footer .credit {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
@@ -742,6 +759,14 @@ codex resume --last   # 继续最近的会话</code></pre>
       </div>
     </footer>
   </main>
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
 
   <button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
