@@ -167,7 +167,7 @@
     }
 
     /* floating nav */
-    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); cursor: pointer; z-index: 200; box-shadow: var(--shadow-card); display: flex; align-items: center; justify-content: center; transition: box-shadow 0.3s, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s; }
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); cursor: pointer; z-index: 1000; box-shadow: var(--shadow-card); display: flex; align-items: center; justify-content: center; transition: box-shadow 0.3s, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s; }
     .floating-nav-toggle:hover { transform: scale(1.012); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
     .floating-nav-toggle svg { width: 22px; height: 22px; stroke: var(--text-secondary); }
     .floating-nav-panel { position: fixed; bottom: 96px; right: 28px; width: 280px; max-height: 70vh; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px 20px; z-index: 199; box-shadow: var(--shadow-hover); opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.25s, transform 0.25s, visibility 0.25s; }
@@ -183,10 +183,17 @@
       .cap-head { gap: 16px; }
       .cap-num { font-size: 42px; }
       .inline-image img { max-width: 100%; }
-      .floating-nav-toggle { width: 48px; height: 48px; bottom: 20px; right: 20px; }
-      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+      .floating-nav-toggle { width: 48px; height: 48px; }
+      .floating-nav-panel { width: calc(100vw - 40px); max-width: 320px; }
       .code-block-head { gap: 8px; }
       .code-block-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
+    }
+    @media (max-width: 640px) {
+      .floating-nav-toggle {
+        bottom: max(20px, calc(env(safe-area-inset-bottom) + 16px));
+        right: max(20px, calc(env(safe-area-inset-right) + 12px));
+      }
+      .floating-nav-panel { right: 20px; bottom: calc(max(20px, env(safe-area-inset-bottom)) + 76px); }
     }
   </style>
 </head>
