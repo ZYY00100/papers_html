@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>10 本 AI & ML 经典教材 · 朱有以整理</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    a { overflow-wrap: anywhere; word-break: break-word; }
+
+    /* HEADER */
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .container-wide { max-width: 920px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    /* HERO */
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+    }
+    .article-title { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(28px, 4.2vw, 40px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; }
+    .article-subtitle { font-family: 'Noto Serif SC', serif; font-size: clamp(16px, 2.4vw, 19px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.04em; line-height: 1.5; max-width: 620px; margin: 0 auto 28px; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+
+    /* INTRO */
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-size: 16px; color: var(--text-secondary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+
+    /* SECTION TITLE */
+    .section-title-block { padding: 56px 0 24px; text-align: center; }
+    .section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 10px; }
+    .section-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3.2vw, 28px); font-weight: 500; color: var(--text-primary); margin-bottom: 8px; }
+    .section-subtitle { font-size: 14.5px; color: var(--text-muted); letter-spacing: 0.04em; }
+
+    /* BOOK CARD LIST */
+    .book-list { display: flex; flex-direction: column; gap: 14px; padding-bottom: 64px; }
+    .book-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 22px 28px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  border-color 0.3s ease,
+                  background-color 0.3s ease;
+    }
+    .book-card:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); background-color: var(--bg-secondary); }
+    .book-num { font-family: 'Rajdhani', sans-serif; font-size: 36px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; min-width: 52px; padding-top: 4px; }
+    .book-body { flex: 1; min-width: 0; }
+    .book-title-zh { font-family: 'Noto Serif SC', serif; font-size: 19px; font-weight: 500; color: var(--text-primary); line-height: 1.4; margin-bottom: 4px; }
+    .book-title-en { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: var(--text-secondary); line-height: 1.4; margin-bottom: 6px; }
+    .book-author { font-size: 12.5px; color: var(--text-muted); letter-spacing: 0.04em; margin-bottom: 10px; }
+    .book-author strong { color: var(--accent-red); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-right: 8px; }
+    .book-desc { font-size: 14.5px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px; }
+    .book-meta { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+    .book-size { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-muted); padding: 2px 8px; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 3px; }
+    .book-difficulty { font-size: 11.5px; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.05em; }
+    .book-difficulty.easy { color: #2c7a3e; background: rgba(44, 122, 62, 0.08); border: 1px solid rgba(44, 122, 62, 0.2); }
+    .book-difficulty.mid { color: #b08d4a; background: rgba(176, 141, 74, 0.08); border: 1px solid rgba(176, 141, 74, 0.25); }
+    .book-difficulty.hard { color: #C8161D; background: rgba(200, 22, 29, 0.06); border: 1px solid rgba(200, 22, 29, 0.2); }
+    .book-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .book-btn { display: inline-flex; align-items: center; gap: 6px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 16px; border-radius: 4px; text-decoration: none; transition: all 0.2s; cursor: pointer; }
+    .book-btn-primary { background: var(--text-primary); color: #fff; border: 1px solid var(--text-primary); }
+    .book-btn-primary:hover { background: var(--accent-red); border-color: var(--accent-red); }
+    .book-btn-ghost { background: transparent; color: var(--text-primary); border: 1px solid var(--border-strong); }
+    .book-btn-ghost:hover { background: var(--text-primary); color: #fff; }
+
+    /* CLOSING NOTE */
+    .closing { padding: 64px 0; border-top: 1px solid var(--border-subtle); background: var(--bg-secondary); }
+    .closing-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 12px; text-align: center; }
+    .closing-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3.2vw, 28px); font-weight: 500; color: var(--text-primary); margin-bottom: 24px; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 300; line-height: 1.85; color: var(--text-secondary); max-width: 640px; margin: 0 auto 18px; text-align: left; }
+    .closing-text strong { color: var(--text-primary); font-weight: 600; }
+    .closing-byline { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 0.15em; color: var(--text-muted); font-style: italic; text-align: center; margin-top: 32px; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 40px 0 60px; border-top: 1px solid var(--border-subtle); }
+    footer p { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+    footer .credit { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
+
+    /* FLOATING NAV */
+    .floating-nav-toggle { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--text-primary); color: #fff; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; transition: transform 0.3s, box-shadow 0.3s; }
+    .floating-nav-toggle:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(0,0,0,0.25); }
+    .floating-nav-toggle svg { width: 24px; height: 24px; }
+    .floating-nav-panel { position: fixed; bottom: 100px; right: 32px; width: 340px; max-height: 70vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.15); z-index: 999; opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.98); transition: opacity 0.3s, transform 0.3s, visibility 0.3s; overflow: hidden; }
+    .floating-nav-panel.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+    .nav-panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
+    .nav-panel-content { padding: 12px 0; overflow-y: auto; max-height: calc(70vh - 52px); }
+    .nav-section-label { padding: 10px 20px 4px; font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
+    .nav-anchor { display: flex; align-items: baseline; gap: 10px; padding: 8px 20px; text-decoration: none; transition: background 0.2s; }
+    .nav-anchor:hover { background: var(--bg-secondary); }
+    .nav-anchor-num { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent-gold-dim); flex-shrink: 0; min-width: 24px; }
+    .nav-anchor-title { font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 400; color: var(--text-primary); line-height: 1.4; }
+
+    @media (max-width: 768px) {
+      .floating-nav-toggle { bottom: max(56px, calc(env(safe-area-inset-bottom) + 16px)); right: max(20px, calc(env(safe-area-inset-right) + 12px)); }
+      .floating-nav-panel { right: 12px; left: 12px; width: auto; bottom: calc(max(56px, env(safe-area-inset-bottom)) + 76px); }
+      .book-card { flex-direction: column; padding: 20px 22px; gap: 14px; }
+      .book-num { font-size: 28px; min-width: 0; padding-top: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <section class="article-hero">
+    <div class="container">
+      <p class="article-category">BOOK LIBRARY · 经典教材</p>
+      <h1 class="article-title">10 本 AI & ML 经典教材</h1>
+      <p class="article-subtitle">剑桥风格的数学+理论根基书单，从入门到深入，按难度排序</p>
+      <p class="article-byline">
+        <span class="byline-source">来源：@bkdgiffug</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">整理：朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">2026/09/02</span>
+      </p>
+      <p class="article-desc">全部 PDF 已下载到本仓库，国内可直接阅读与下载。难度分三档，按 1→10 顺序由易到难，建议至少硬啃 2-3 本。</p>
+    </div>
+  </section>
+
+  <section class="article-intro">
+    <div class="container">
+      <p class="intro-lead">推文原话说得很直白：<strong>"这些书没一本是轻松的，别指望躺着翻完"</strong>。但只要能硬啃下来两三本，比听群里吹一年AI牛逼都管用。</p>
+      <p class="intro-lead">这套书单的逻辑很清晰：先建立 ML 的理论直觉和数学基础（1-3），然后进入深度学习的理论根基（4-5），接着是算法视角和图深度学习（6-7），最后用概率论和数据分析收尾（8-10）。</p>
+      <p class="intro-lead">所有 PDF 已从原始源下载到 <strong>pdfs/2026-09-02-ml-classics/</strong> 目录，避开 GitHub Pages / arxiv / 海外学校服务器在国内的不稳定因素，直接在国内 CDN 节点服务。</p>
+    </div>
+  </section>
+
+  <div class="container-wide">
+
+    <div class="section-title-block">
+      <p class="section-kicker">FROM EASY TO HARD</p>
+      <h2 class="section-title">十本书 · 按难度递进</h2>
+      <p class="section-subtitle">点击书名阅读 · 点击下载按钮保存本地</p>
+    </div>
+
+    <div class="book-list">
+
+      <div class="book-card" id="book-01">
+        <div class="book-num">01</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">机器学习理解</h3>
+          <p class="book-title-en">Understanding Machine Learning: From Theory to Algorithms</p>
+          <p class="book-author"><strong>作者</strong>Shai Shalev-Shwartz &amp; Shai Ben-David · 剑桥大学出版社 2014</p>
+          <p class="book-desc">理论算法一把抓，零基础入门首选。前 8 章覆盖监督学习主流模型，后半部分深入 PAC 框架、计算学习理论。</p>
+          <div class="book-meta">
+            <span class="book-size">2.5 MB</span>
+            <span class="book-difficulty easy">入门</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/01-understanding-ml.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/01-understanding-ml.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-02">
+        <div class="book-num">02</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">机器学习数学基础</h3>
+          <p class="book-title-en">Mathematics for Machine Learning</p>
+          <p class="book-author"><strong>作者</strong>Marc Peter Deisenroth, A. Aldo Faisal, Cheng Soon Ong · 剑桥大学出版社 2020</p>
+          <p class="book-desc">数学底子弱的先把这本补上。两大块：线性代数/解析/概率/优化基础；四大 ML 经典模型的数学推导。</p>
+          <div class="book-meta">
+            <span class="book-size">17.5 MB</span>
+            <span class="book-difficulty easy">入门</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/02-math-for-ml.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/02-math-for-ml.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-03">
+        <div class="book-num">03</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">机器学习算法的数学分析</h3>
+          <p class="book-title-en">Mathematical Analysis of Machine Learning Algorithms</p>
+          <p class="book-author"><strong>作者</strong>Tong Zhang · 剑桥大学出版社</p>
+          <p class="book-desc">深入 ML 算法背后的数学原理。覆盖随机梯度下降、随机优化、统计学习理论，比 02 更聚焦算法层面。</p>
+          <div class="book-meta">
+            <span class="book-size">2.5 MB</span>
+            <span class="book-difficulty mid">进阶</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/03-ml-algorithms-math-analysis.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/03-ml-algorithms-math-analysis.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-04">
+        <div class="book-num">04</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">深度学习理论原理</h3>
+          <p class="book-title-en">The Principles of Deep Learning Theory</p>
+          <p class="book-author"><strong>作者</strong>Daniel A. Roberts, Sho Yaida, Boris Hanin · arXiv 2106.10165</p>
+          <p class="book-desc">用有效理论 (effective theory) 的视角讲 DL。讲清楚为什么深度网络能泛化，不是只跑实验给数字。</p>
+          <div class="book-meta">
+            <span class="book-size">4.8 MB</span>
+            <span class="book-difficulty mid">进阶</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/04-deep-learning-theory.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/04-deep-learning-theory.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-05">
+        <div class="book-num">05</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">神经网络与机器学习</h3>
+          <p class="book-title-en">Machine Learning with Neural Networks</p>
+          <p class="book-author"><strong>作者</strong>J. R. Berrendero, A. Cuevas · arXiv 1901.05639</p>
+          <p class="book-desc">神经网络的系统性讲解。从感知机到深度网络，每层都讲清楚为什么这样设计、为什么能 work。</p>
+          <div class="book-meta">
+            <span class="book-size">6.8 MB</span>
+            <span class="book-difficulty mid">进阶</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/05-neural-networks-and-ml.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/05-neural-networks-and-ml.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-06">
+        <div class="book-num">06</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">图深度学习</h3>
+          <p class="book-title-en">Deep Learning on Graphs</p>
+          <p class="book-author"><strong>作者</strong>Yao Ma, Jiliang Tang · 剑桥大学出版社</p>
+          <p class="book-desc">图神经网络入门必读。GNN/GraphSAGE/GAT 等主流方法，覆盖节点分类、链接预测、图分类任务。</p>
+          <div class="book-meta">
+            <span class="book-size">3.6 MB</span>
+            <span class="book-difficulty mid">进阶</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/06-deep-learning-on-graphs.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/06-deep-learning-on-graphs.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-07">
+        <div class="book-num">07</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">机器学习的算法视角</h3>
+          <p class="book-title-en">An Algorithmic Perspective on Machine Learning</p>
+          <p class="book-author"><strong>作者</strong>Ankur Moitra · 剑桥大学出版社</p>
+          <p class="book-desc">从算法角度重新理解 ML。强调算法设计本身，把 ML 当作"设计算法解决预测问题"的事。</p>
+          <div class="book-meta">
+            <span class="book-size">1.2 MB</span>
+            <span class="book-difficulty hard">深入</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/07-ml-algorithmic-perspective.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/07-ml-algorithmic-perspective.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-08">
+        <div class="book-num">08</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">概率论：理论与实例</h3>
+          <p class="book-title-en">Probability: Theory and Examples (5th ed.)</p>
+          <p class="book-author"><strong>作者</strong>Rick Durrett · Duke University</p>
+          <p class="book-desc">概率基础打牢。Durrett 的经典教材，公理化讲清楚概率，配合大量例子。比国内工科概率论教材深度高一档。</p>
+          <div class="book-meta">
+            <span class="book-size">2.2 MB</span>
+            <span class="book-difficulty mid">进阶</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/08-probability-theory-and-examples.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/08-probability-theory-and-examples.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-09">
+        <div class="book-num">09</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">应用概率基础</h3>
+          <p class="book-title-en">Elementary Probability for Applications</p>
+          <p class="book-author"><strong>作者</strong>Rick Durrett · Duke University</p>
+          <p class="book-desc">概率论实战应用。比 08 友好，工程师友好版。重点是工程问题上怎么用概率思维分析问题。</p>
+          <div class="book-meta">
+            <span class="book-size">1.0 MB</span>
+            <span class="book-difficulty easy">入门</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/09-elementary-probability-for-applications.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/09-elementary-probability-for-applications.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card" id="book-10">
+        <div class="book-num">10</div>
+        <div class="book-body">
+          <h3 class="book-title-zh">高级数据分析</h3>
+          <p class="book-title-en">Advanced Data Analysis from an Elementary Point of View</p>
+          <p class="book-author"><strong>作者</strong>Cosma Rohilla Shalizi · CMU / 自费出版</p>
+          <p class="book-desc">数据科学进阶必备。从基础统计讲到现代 ML，覆盖回归/分类/因果推断/非参数方法。理论 + R 代码示例。</p>
+          <div class="book-meta">
+            <span class="book-size">17.8 MB</span>
+            <span class="book-difficulty hard">深入</span>
+          </div>
+          <div class="book-actions">
+            <a class="book-btn book-btn-primary" href="pdfs/2026-09-02-ml-classics/10-advanced-data-analysis.pdf" target="_blank">阅读 →</a>
+            <a class="book-btn book-btn-ghost" href="pdfs/2026-09-02-ml-classics/10-advanced-data-analysis.pdf" download>下载 PDF</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <section class="closing">
+    <div class="container">
+      <p class="closing-kicker">A FINAL WORD</p>
+      <h2 class="closing-title">怎么读这套书</h2>
+      <p class="closing-text">从 01 开始，<strong>不要跳级</strong>。前 3 本把数学和理论打底，后面才能看懂深度学习在做什么。</p>
+      <p class="closing-text">读不下去很正常。建议<strong>每本配一份公开课</strong>：Shai Ben-David 在 UBC 的 ML 课程（Bilibili 有搬运），跟 01 完全对应。</p>
+      <p class="closing-text">读书笔记用 Zotero + Obsidian 整理，<strong>不要只收藏不读</strong>。每一章读完合上书默一遍：这一章想回答什么问题、用什么方法、留了什么悬念。</p>
+      <p class="closing-text">硬啃 2-3 本的产出，<strong>比听群里吹一年 AI 牛逼都管用</strong>。这是推文原话，也是事实。</p>
+      <p class="closing-byline">— 朱有以 · 2026/09/02</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>为 <span class="ai-glow">AI</span> 发电 · 朱有以</p>
+    <p class="credit">PDF 资源版权归原作者所有，仅供个人学习使用</p>
+  </footer>
+
+  <button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航 · 10 本书</div>
+    <div class="nav-panel-content">
+      <div class="nav-section-label">书籍索引</div>
+      <a href="#book-01" class="nav-anchor"><span class="nav-anchor-num">01</span><span class="nav-anchor-title">机器学习理解</span></a>
+      <a href="#book-02" class="nav-anchor"><span class="nav-anchor-num">02</span><span class="nav-anchor-title">机器学习数学基础</span></a>
+      <a href="#book-03" class="nav-anchor"><span class="nav-anchor-num">03</span><span class="nav-anchor-title">机器学习算法的数学分析</span></a>
+      <a href="#book-04" class="nav-anchor"><span class="nav-anchor-num">04</span><span class="nav-anchor-title">深度学习理论原理</span></a>
+      <a href="#book-05" class="nav-anchor"><span class="nav-anchor-num">05</span><span class="nav-anchor-title">神经网络与机器学习</span></a>
+      <a href="#book-06" class="nav-anchor"><span class="nav-anchor-num">06</span><span class="nav-anchor-title">图深度学习</span></a>
+      <a href="#book-07" class="nav-anchor"><span class="nav-anchor-num">07</span><span class="nav-anchor-title">机器学习的算法视角</span></a>
+      <a href="#book-08" class="nav-anchor"><span class="nav-anchor-num">08</span><span class="nav-anchor-title">概率论：理论与实例</span></a>
+      <a href="#book-09" class="nav-anchor"><span class="nav-anchor-num">09</span><span class="nav-anchor-title">应用概率基础</span></a>
+      <a href="#book-10" class="nav-anchor"><span class="nav-anchor-num">10</span><span class="nav-anchor-title">高级数据分析</span></a>
+    </div>
+  </nav>
+
+  <script>
+    (function() {
+      const toggle = document.getElementById('navToggle');
+      const panel = document.getElementById('navPanel');
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        panel.classList.toggle('open');
+      });
+      document.addEventListener('click', function(e) {
+        if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+          panel.classList.remove('open');
+        }
+      });
+      panel.querySelectorAll('a').forEach(function(a) {
+        a.addEventListener('click', function() { panel.classList.remove('open'); });
+      });
+    })();
+  </script>
+
+</body>
+</html>
