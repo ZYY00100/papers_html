@@ -111,22 +111,21 @@
     footer .credit { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
 
     /* FLOATING NAV */
-    .floating-nav-toggle { position: fixed; bottom: 32px; right: 32px; width: 56px; height: 56px; background: var(--text-primary); color: #fff; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 1000; display: flex; align-items: center; justify-content: center; transition: transform 0.3s, box-shadow 0.3s; }
-    .floating-nav-toggle:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(0,0,0,0.25); }
-    .floating-nav-toggle svg { width: 24px; height: 24px; }
-    .floating-nav-panel { position: fixed; bottom: 100px; right: 32px; width: 340px; max-height: 70vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.15); z-index: 999; opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.98); transition: opacity 0.3s, transform 0.3s, visibility 0.3s; overflow: hidden; }
-    .floating-nav-panel.open { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-    .nav-panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border-subtle); font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
-    .nav-panel-content { padding: 12px 0; overflow-y: auto; max-height: calc(70vh - 52px); }
-    .nav-section-label { padding: 10px 20px 4px; font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); }
-    .nav-anchor { display: flex; align-items: baseline; gap: 10px; padding: 8px 20px; text-decoration: none; transition: background 0.2s; }
-    .nav-anchor:hover { background: var(--bg-secondary); }
-    .nav-anchor-num { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent-gold-dim); flex-shrink: 0; min-width: 24px; }
-    .nav-anchor-title { font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 400; color: var(--text-primary); line-height: 1.4; }
+    /* FLOATING NAV (文章页规范:白底深色按钮 + 小面板 + z-index 199) */
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); cursor: pointer; z-index: 1000; box-shadow: var(--shadow-card); display: flex; align-items: center; justify-content: center; transition: box-shadow 0.3s, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s; }
+    .floating-nav-toggle:hover { transform: scale(1.012); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .floating-nav-toggle svg { width: 22px; height: 22px; stroke: var(--text-secondary); }
+    .floating-nav-panel { position: fixed; bottom: 96px; right: 28px; width: 280px; max-height: 70vh; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px 20px; z-index: 199; box-shadow: var(--shadow-hover); opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.25s, transform 0.25s, visibility 0.25s; }
+    .floating-nav-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+    .nav-panel-header { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle); }
+    .nav-panel-content { display: flex; flex-direction: column; gap: 8px; }
+    .nav-item { font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 400; color: var(--text-primary); text-decoration: none; padding: 7px 10px; border-radius: 4px; transition: background 0.2s, color 0.2s; line-height: 1.4; display: flex; align-items: baseline; gap: 8px; }
+    .nav-item:hover { background: var(--bg-secondary); color: var(--accent-red); }
+    .nav-item-num { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent-gold-dim); flex-shrink: 0; min-width: 22px; letter-spacing: 0.05em; }
 
     @media (max-width: 768px) {
-      .floating-nav-toggle { bottom: max(56px, calc(env(safe-area-inset-bottom) + 16px)); right: max(20px, calc(env(safe-area-inset-right) + 12px)); }
-      .floating-nav-panel { right: 12px; left: 12px; width: auto; bottom: calc(max(56px, env(safe-area-inset-bottom)) + 76px); }
+      .floating-nav-toggle { width: 48px; height: 48px; bottom: max(20px, calc(env(safe-area-inset-bottom) + 12px)); right: max(16px, calc(env(safe-area-inset-right) + 12px)); }
+      .floating-nav-panel { width: calc(100vw - 40px); max-width: 320px; right: 20px; bottom: calc(max(20px, env(safe-area-inset-bottom)) + 72px); }
       .book-card { flex-direction: column; padding: 20px 22px; gap: 14px; }
       .book-num { font-size: 28px; min-width: 0; padding-top: 0; }
     }
@@ -383,19 +382,18 @@
   </button>
 
   <nav class="floating-nav-panel" id="navPanel">
-    <div class="nav-panel-header">目录导航 · 10 本书</div>
+    <div class="nav-panel-header">本文目录 · 10 本书</div>
     <div class="nav-panel-content">
-      <div class="nav-section-label">书籍索引</div>
-      <a href="#book-01" class="nav-anchor"><span class="nav-anchor-num">01</span><span class="nav-anchor-title">机器学习理解</span></a>
-      <a href="#book-02" class="nav-anchor"><span class="nav-anchor-num">02</span><span class="nav-anchor-title">机器学习数学基础</span></a>
-      <a href="#book-03" class="nav-anchor"><span class="nav-anchor-num">03</span><span class="nav-anchor-title">机器学习算法的数学分析</span></a>
-      <a href="#book-04" class="nav-anchor"><span class="nav-anchor-num">04</span><span class="nav-anchor-title">深度学习理论原理</span></a>
-      <a href="#book-05" class="nav-anchor"><span class="nav-anchor-num">05</span><span class="nav-anchor-title">神经网络与机器学习</span></a>
-      <a href="#book-06" class="nav-anchor"><span class="nav-anchor-num">06</span><span class="nav-anchor-title">图深度学习</span></a>
-      <a href="#book-07" class="nav-anchor"><span class="nav-anchor-num">07</span><span class="nav-anchor-title">机器学习的算法视角</span></a>
-      <a href="#book-08" class="nav-anchor"><span class="nav-anchor-num">08</span><span class="nav-anchor-title">概率论：理论与实例</span></a>
-      <a href="#book-09" class="nav-anchor"><span class="nav-anchor-num">09</span><span class="nav-anchor-title">应用概率基础</span></a>
-      <a href="#book-10" class="nav-anchor"><span class="nav-anchor-num">10</span><span class="nav-anchor-title">高级数据分析</span></a>
+      <a href="#book-01" class="nav-item"><span class="nav-item-num">01</span><span>机器学习理解</span></a>
+      <a href="#book-02" class="nav-item"><span class="nav-item-num">02</span><span>机器学习数学基础</span></a>
+      <a href="#book-03" class="nav-item"><span class="nav-item-num">03</span><span>机器学习算法的数学分析</span></a>
+      <a href="#book-04" class="nav-item"><span class="nav-item-num">04</span><span>深度学习理论原理</span></a>
+      <a href="#book-05" class="nav-item"><span class="nav-item-num">05</span><span>神经网络与机器学习</span></a>
+      <a href="#book-06" class="nav-item"><span class="nav-item-num">06</span><span>图深度学习</span></a>
+      <a href="#book-07" class="nav-item"><span class="nav-item-num">07</span><span>机器学习的算法视角</span></a>
+      <a href="#book-08" class="nav-item"><span class="nav-item-num">08</span><span>概率论：理论与实例</span></a>
+      <a href="#book-09" class="nav-item"><span class="nav-item-num">09</span><span>应用概率基础</span></a>
+      <a href="#book-10" class="nav-item"><span class="nav-item-num">10</span><span>高级数据分析</span></a>
     </div>
   </nav>
 
@@ -405,15 +403,15 @@
       const panel = document.getElementById('navPanel');
       toggle.addEventListener('click', function(e) {
         e.stopPropagation();
-        panel.classList.toggle('open');
+        panel.classList.toggle('active');
       });
       document.addEventListener('click', function(e) {
         if (!panel.contains(e.target) && !toggle.contains(e.target)) {
-          panel.classList.remove('open');
+          panel.classList.remove('active');
         }
       });
       panel.querySelectorAll('a').forEach(function(a) {
-        a.addEventListener('click', function() { panel.classList.remove('open'); });
+        a.addEventListener('click', function() { panel.classList.remove('active'); });
       });
     })();
   </script>
