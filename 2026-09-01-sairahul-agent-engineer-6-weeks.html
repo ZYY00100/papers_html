@@ -144,7 +144,7 @@
     .references-list li:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
     .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--accent-red); display: block; margin-bottom: 8px; }
     .references-list em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--text-primary); font-size: 15px; }
-    .references-list a { color: var(--accent-gold-dim); text-decoration: none; border-bottom: 1px solid rgba(201, 169, 98, 0.3); transition: border-color 0.2s; }
+    .references-list a { color: var(--accent-gold-dim); text-decoration: none; border-bottom: 1px solid rgba(201, 169, 98, 0.3); transition: border-color 0.2s; word-break: break-all; overflow-wrap: anywhere; }
     .references-list a:hover { border-color: var(--accent-gold-dim); }
     .references-note { font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; text-align: center; max-width: 640px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid var(--border-subtle); font-style: italic; }
 
@@ -188,6 +188,11 @@
       .code-block-head { gap: 8px; }
       .code-block-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
     }
+
+    /* 防溢出:长 URL(X 推文链接等)自动换行,表格强制列等宽收缩 */
+    a { overflow-wrap: anywhere; word-break: break-word; }
+    table { table-layout: fixed; width: 100%; }
+    table th, table td { word-break: break-word; overflow-wrap: anywhere; }
     @media (max-width: 640px) {
       .floating-nav-toggle {
         bottom: max(56px, calc(env(safe-area-inset-bottom) + 16px));

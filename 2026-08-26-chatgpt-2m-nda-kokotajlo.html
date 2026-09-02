@@ -739,6 +739,11 @@
       .timeline-table { font-size: 12.5px; }
       .timeline-table td:first-child { white-space: normal; }
     }
+
+    /* 防溢出:长 URL(X 推文链接等)自动换行,表格强制列等宽收缩 */
+    a { overflow-wrap: anywhere; word-break: break-word; }
+    table { table-layout: fixed; width: 100%; }
+    table th, table td { word-break: break-word; overflow-wrap: anywhere; }
   </style>
 </head>
 <body>

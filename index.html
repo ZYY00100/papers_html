@@ -323,6 +323,11 @@
         bottom: calc(max(56px, env(safe-area-inset-bottom)) + 76px);
       }
     }
+
+    /* 防溢出:长 URL 自动换行,表格强制列等宽收缩 */
+    a { overflow-wrap: anywhere; word-break: break-word; }
+    table { table-layout: fixed; width: 100%; }
+    table th, table td { word-break: break-word; overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
