@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>三篇视觉提示词合集 · 字体图鉴上册 / 击凸压凹 / Less Is More — AdrianPunk115</title>
+<meta name="description" content="三篇中文 X 长文合集：20 种英文字体图鉴（上册）、击凸×压凹系统提示词、Less Is More 法式极简提示词。全部 prompt 一键复制。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #f5f5f7;
+  --bg-secondary: #fafaf9;
+  --bg-code: #1d1d1f;
+  --bg-card: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #4a4a4f;
+  --text-muted: #8a8a8e;
+  --border-subtle: #e5e5e8;
+  --border-default: #d4d4d8;
+  --accent-gold: #c9a962;
+  --accent-gold-dim: #a08850;
+  --accent-red: #C8161D;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+  --max-width: 760px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', 'Noto Serif SC', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px),
+    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px);
+  pointer-events: none;
+  z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+img { max-width: 100%; height: auto; }
+a { color: var(--accent-gold-dim); text-decoration: none; overflow-wrap: anywhere; word-break: break-word; }
+a:hover { text-decoration: underline; }
+table { table-layout: fixed; width: 100%; }
+table th, table td { word-break: break-word; overflow-wrap: anywhere; }
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+.site-header {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  position: sticky; top: 0; z-index: 100;
+}
+.site-header .container {
+  display: flex; justify-content: space-between; align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.site-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.ai-glow {
+  color: var(--accent-red);
+  text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2);
+}
+.back-link {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  transition: color 0.3s;
+}
+.back-link:hover { color: var(--accent-gold-dim); }
+
+.article-header {
+  padding: 64px 24px 48px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.article-header .container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+.article-category {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--accent-gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.article-category::before, .article-category::after {
+  content: ''; width: 60px; height: 1px; flex-shrink: 0;
+}
+.article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+.article-category::after { background: linear-gradient(to right, currentColor, transparent); }
+@media (max-width: 640px) {
+  .article-category::before, .article-category::after { width: 40px; }
+}
+.article-title {
+  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  font-size: clamp(30px, 4.5vw, 44px);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.article-subtitle {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: clamp(18px, 2.6vw, 22px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 620px;
+  margin: 0 auto 28px;
+  letter-spacing: 0.02em;
+}
+.article-byline {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; flex-wrap: wrap;
+  margin-top: 16px;
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.article-byline .byline-author, .article-byline .byline-source {
+  color: var(--text-muted); font-weight: 500;
+}
+.article-byline .byline-sep { color: var(--border-subtle); }
+.article-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  max-width: 600px;
+  margin: 24px auto 0;
+}
+@media (max-width: 768px) {
+  .article-title { white-space: normal; font-size: 28px; }
+  .article-subtitle { font-size: 17px; }
+}
+
+.cover-frame { padding: 64px 0; text-align: center; }
+.cover-frame img {
+  display: block; width: 100%; max-width: 720px;
+  margin: 0 auto;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+.cover-caption {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-muted); margin-top: 12px;
+  font-style: italic;
+}
+
+.article-intro { padding: 56px 0 40px; }
+.intro-lead { font-size: 16px; color: var(--text-secondary); line-height: 1.85; }
+.intro-lead p { margin-bottom: 14px; }
+.intro-lead blockquote.cap-blockquote {
+  border-left: 3px solid var(--accent-gold);
+  padding: 12px 18px;
+  margin: 22px 0;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-style: italic;
+}
+.intro-lead ul { margin: 12px 0 16px 22px; }
+.intro-lead li { margin-bottom: 6px; }
+
+.chapter-section { padding: 56px 0; border-top: 1px solid var(--border-subtle); }
+.chapter-section:first-of-type { border-top: none; }
+.chapter-kicker {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--accent-red);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.chapter-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: clamp(26px, 3.6vw, 36px);
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.chapter-subtitle {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(17px, 2.4vw, 20px);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.inline-image { margin: 28px 0 8px; text-align: center; }
+.inline-image img {
+  display: block; width: 100%; max-width: 880px;
+  margin: 0 auto;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+.inline-image-caption {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 12px;
+  font-style: italic;
+}
+
+.font-block {
+  margin: 36px 0;
+  padding: 24px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.font-block:first-of-type { border-top: none; padding-top: 0; }
+.font-h2 {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 24px; font-weight: 600;
+  margin-bottom: 8px;
+  display: flex; align-items: baseline; gap: 12px;
+}
+.font-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--accent-gold-dim);
+  letter-spacing: 0.05em;
+}
+.font-meta {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+.font-prompt-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 22px 0 10px;
+  font-weight: 500;
+}
+
+.prompt-card {
+  background: var(--bg-code);
+  border-radius: 10px;
+  margin: 18px 0 8px;
+  overflow: hidden;
+  border: 1px solid #2a2a2d;
+  transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.3s ease;
+}
+.prompt-card:hover {
+  transform: scale(1.006);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(201, 169, 98, 0.35);
+}
+.prompt-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid #2a2a2d;
+  background: #232325;
+}
+.prompt-card-tag { display: flex; align-items: baseline; gap: 10px; }
+.prompt-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent-gold);
+  letter-spacing: 0.05em;
+}
+.prompt-name {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 15px;
+  color: #f0f0f0;
+  font-weight: 500;
+}
+.copy-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.copy-btn:hover { background: var(--accent-gold); color: var(--bg-code); }
+.copy-btn.copied { background: var(--accent-gold); color: var(--bg-code); }
+.prompt-card-actions {
+  display: flex; align-items: center; gap: 10px;
+}
+.lang-toggle {
+  display: inline-flex;
+  border: 1px solid #3a3a3d;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.lang-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  padding: 4px 10px;
+  background: transparent;
+  color: #8a8a8e;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.lang-btn.active {
+  background: var(--accent-gold);
+  color: var(--bg-code);
+  font-weight: 500;
+}
+.lang-btn:not(.active):hover { color: var(--accent-gold); }
+.prompt-card-body {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #e5e5e8;
+  padding: 16px 18px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.references {
+  padding: 64px 0 48px;
+  border-top: 1px solid var(--border-subtle);
+}
+.references-kicker {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; letter-spacing: 0.18em;
+  color: var(--accent-red); text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.references-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 26px; font-weight: 600;
+  margin-bottom: 20px;
+}
+.references-list { list-style: none; padding: 0; border-top: 1px solid var(--border-subtle); }
+.references-list li {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+.references-list strong {
+  display: block;
+  font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-gold-dim);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.references-list em { font-style: italic; color: var(--text-primary); }
+.references-note {
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: var(--bg-secondary);
+  border-left: 3px solid var(--accent-gold);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  border-radius: 0 6px 6px 0;
+}
+
+.closing { padding: 64px 0; text-align: center; }
+.closing-text {
+  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 3.6vw, 28px);
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: 0;
+  max-width: 680px;
+  margin-left: auto; margin-right: auto;
+}
+.closing-text strong { font-weight: 600; color: var(--accent-red); }
+.closing-caption {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 20px;
+}
+.article-footer {
+  padding: 32px 0 64px;
+  text-align: center;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.article-footer .credit {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+.floating-nav-toggle {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--bg-card, var(--bg-primary));
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.3s;
+  z-index: 1000;
+}
+.floating-nav-toggle:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+  color: var(--accent-gold-dim);
+}
+.floating-nav-toggle svg { width: 20px; height: 20px; }
+.floating-nav-panel {
+  position: fixed; bottom: 90px; right: 28px;
+  width: 280px;
+  max-height: 78vh;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-hover);
+  padding: 18px 20px;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+}
+.floating-nav-panel.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-panel-header {
+  padding: 14px 20px 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-gold-dim);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0;
+  background: var(--bg-card, var(--bg-primary));
+  z-index: 1;
+}
+.nav-panel-content { padding: 4px 0 12px; }
+.nav-panel-content ol { list-style: none; padding: 0; margin: 0; }
+.nav-panel-content li {
+  padding: 10px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.nav-panel-content li:last-child { border-bottom: none; }
+.nav-panel-content a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  display: block;
+  transition: color 0.2s;
+}
+.nav-panel-content a:hover { color: var(--accent-gold-dim); }
+.nav-panel-content li .nav-article-date {
+  font-size: 11px; color: var(--text-muted);
+  letter-spacing: 0.05em; margin-bottom: 2px;
+}
+.nav-panel-content li .nav-article-title {
+  font-weight: 500; color: var(--text-primary);
+}
+@media (max-width: 768px) {
+  .floating-nav-toggle { bottom: 20px; right: 20px; }
+  .floating-nav-panel { right: 20px; width: 280px; }
+}
+@media (max-width: 640px) {
+  .floating-nav-toggle {
+    bottom: max(56px, calc(env(safe-area-inset-bottom) + 16px));
+    right: max(20px, calc(env(safe-area-inset-right) + 12px));
+  }
+  .floating-nav-panel {
+    right: 20px;
+    bottom: calc(max(56px, env(safe-area-inset-bottom)) + 76px);
+    width: calc(100vw - 40px);
+    max-width: 320px;
+  }
+}
+
+.author-bio {
+  margin: 36px 0;
+  padding: 24px;
+  background: var(--bg-secondary);
+  border-left: 3px solid var(--accent-gold);
+  border-radius: 0 6px 6px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.author-bio strong {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-gold-dim);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+.author-avatar {
+  display: block;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 2px solid var(--accent-gold);
+}
+.author-text { font-size: 14px; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+    <a href="index.html" class="back-link">← 返回文章列表</a>
+  </div>
+</header>
+
+<section class="article-header">
+  <div class="container">
+    <span class="article-category">AI PROMPT · VISUAL DESIGN · COLLECTION</span>
+    <h1 class="article-title">三篇视觉提示词合集</h1>
+    <p class="article-subtitle">字体图鉴上册 · 击凸压凹质感 · Less Is More<br>—— AdrianPunk115 三篇 X 长文一站式整理，22 张 prompt 一键复制</p>
+    <div class="article-byline">
+      <span class="byline-author">朱有以</span>
+      <span class="byline-sep">·</span>
+      <span class="byline-source">原文 @AdrianPunk115 · X 长文合集</span>
+      <span class="byline-sep">·</span>
+      <span>2026/09/04</span>
+    </div>
+    <p class="article-desc">三篇 X 长文按主题拆成三章独立阅读。章 1 字体图鉴上册 20 个字体 + 通用公式，章 2 击凸×压凹质感系统提示词，章 3 Less Is More 法式极简艺术提示词。原文作者 @AdrianPunk115。</p>
+  </div>
+</section>
+
+<section class="cover-frame">
+  <div class="container">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/cover.jpg" alt="字体图鉴封面 Didot 视觉示例">
+    <p class="cover-caption">原文配图 · 字体 01 · Didot · 高反差衬线</p>
+  </div>
+</section>
+
+<section class="article-intro">
+  <div class="container">
+    <div class="intro-lead">
+      <p>这三篇 X 长文都来自同一位作者 —— @AdrianPunk115。</p>
+      <p>它们聚焦同一个问题：<strong>怎么用文字描述视觉，让 AI 生图模型生成"有设计感"的画面。</strong></p>
+      <p>不是写一句"高级海报"就完事，而是把字体性格、纸张工艺、留白比例这些设计师本能反应，翻译成 AI 能稳定理解的提示词。</p>
+      <p>本文按主题分成三章独立呈现，每章的 prompt 都可以直接复制使用。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 章 01 -->
+<section class="chapter-section" id="chapter-1">
+  <div class="container">
+    <p class="chapter-kicker">CHAPTER 01 · 字体图鉴（上册）</p>
+    <h2 class="chapter-title">40 种适合杂志、海报与 AI 生图的英文字体图鉴</h2>
+    <p class="chapter-subtitle">20 个常用字体 + 一套通用提示词公式 + 完整复制提示词</p>
+    <div class="intro-lead">
+      <p>如果你经常做海报、杂志封面、长文配图、HTML 视觉或者 AI 生图，会遇到一个非常实际的问题：</p>
+<p>你知道画面要&quot;高级&quot;，但不知道字体应该怎么描述。</p>
+<p>很多人给 AI 的提示词只有一句：&quot;我要高级的字体&quot;。</p>
+<p>这几乎等于没有说。</p>
+<p>字体真正决定的是一张图的性格。同一张照片，换成 Didot，像时装杂志；换成 Helvetica Neue，像瑞士现代主义海报；换成 Permanent Marker，又会立刻变成街头音乐现场。</p>
+<p>所以我整理了 40 个常用的英文字体，不只是说出字体的名字，是把字体转成 AI 更容易理解的视觉语言。</p>
+      <blockquote class="cap-blockquote">说明：AI 生图模型通常不能像专业排版软件一样精确调用某个商业字体。下面的提示词重点是&quot;模拟字体视觉特征&quot;，比只写字体名稳定得多。</blockquote>
+      <p>本次内容会分为上下册，上册会呈现 20 种常用杂志、书刊、HTML 字体，下册会呈现另外 20 个常用字体（含手写体），并给出选择指南。</p>
+    </div>
+
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:36px 0 14px;">一条通用提示词公式</h3>
+    <p>以后控制任何字体，都可以按这个结构写：</p>
+    <div class="prompt-card" data-card id="prompt-公式-01">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">公式·01</span>
+      <span class="prompt-name">通用提示词公式</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">[Font Name]-inspired
++ [font category]
++ [stroke characteristics]
++ [letter proportion]
++ [era / mood]
++ [usage scene]</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以「字体名」为灵感
++ 字体分类
++ 笔画特征
++ 字母比例
++ 时代 / 情绪
++ 使用场景</pre>
+</div>
+<div class="prompt-card" data-card id="prompt-公式-02">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">公式·02</span>
+      <span class="prompt-name">以 Didot 为例（具体应用）</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Didot-inspired high-contrast fashion serif,
+ultra-thin hairlines,
+elegant vertical stress,
+sharp refined serifs,
+luxury editorial typography,
+large-scale magazine headline.</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Didot 为灵感的高反差时装衬线、
+超细发丝笔画、
+优雅垂直应力、
+锋利精致衬线、
+奢华编辑排版、
+大字号杂志标题。</pre>
+</div>
+<div class="prompt-card" data-card id="prompt-公式-03">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">公式·03</span>
+      <span class="prompt-name">漂移时的四类限制</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">clean readable typography,
+accurate letterforms,
+no distorted letters,
+no decorative fantasy font.</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>清晰可读的排版、
+准确的字母形态、
+不要扭曲的字母、
+不要装饰性的奇幻字体。</pre>
+</div>
+    <p style="margin-top:16px;color:var(--text-muted);font-size:13px;">↑ 把 [Font Name] 换成你想用的字体名，下面是 20 个字体的现成提示词。</p>
+
+    <section class="font-block" id="font-01">
+  <h2 class="font-h2"><span class="font-num">01.</span> Didot</h2>
+  <p class="font-meta"><strong>类型：</strong>高反差衬线　<strong>适合：</strong>时装、奢侈品、人物封面、极简杂志</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/cover.jpg" alt="字体 Didot 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Didot · 高反差衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-01">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">01</span>
+      <span class="prompt-name">Didot</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Didot-inspired high-contrast fashion serif, ultra-thin hairlines, elegant vertical stress, sharp refined serifs, luxury editorial typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Didot 为灵感的高反差时装衬线、超细发丝笔画、优雅垂直应力、锋利精致衬线、奢华编辑排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-02">
+  <h2 class="font-h2"><span class="font-num">02.</span> Bodoni</h2>
+  <p class="font-meta"><strong>类型：</strong>现代高反差衬线　<strong>适合：</strong>时尚、香水、艺术展、奢侈品牌</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-02.jpg" alt="字体 Bodoni 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Bodoni · 现代高反差衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-02">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">02</span>
+      <span class="prompt-name">Bodoni</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Bodoni-inspired modern high-contrast serif, dramatic thick-and-thin strokes, razor-sharp unbracketed serifs, luxury fashion editorial typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Bodoni 为灵感的现代高反差衬线、戏剧性粗细对比笔画、锋利无比的无连接衬线、奢华时装编辑排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-03">
+  <h2 class="font-h2"><span class="font-num">03.</span> PP Editorial New</h2>
+  <p class="font-meta"><strong>类型：</strong>窄体编辑衬线　<strong>适合：</strong>独立杂志、艺术书、生活方式封面</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-03.jpg" alt="字体 PP Editorial New 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · PP Editorial New · 窄体编辑衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-03">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">03</span>
+      <span class="prompt-name">PP Editorial New</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">PP Editorial New-inspired narrow editorial serif, delicate thin hairlines, elongated letterforms, elegant high contrast, 1990s fashion magazine aesthetic</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 PP Editorial New 为灵感的窄体编辑衬线、细腻纤细发丝笔画、瘦长字母形态、优雅高反差、1990 年代时装杂志气质</pre>
+</div>
+</section>
+<section class="font-block" id="font-04">
+  <h2 class="font-h2"><span class="font-num">04.</span> Tiempos</h2>
+  <p class="font-meta"><strong>类型：</strong>编辑衬线　<strong>适合：</strong>文化、人物专访、商业长文、报刊视觉</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-04.jpg" alt="字体 Tiempos 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Tiempos · 编辑衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-04">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">04</span>
+      <span class="prompt-name">Tiempos</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Tiempos-inspired sophisticated editorial serif, strong readable proportions, subtle classical curves, premium newspaper and magazine typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Tiempos 为灵感的精致编辑衬线、稳健可读比例、微妙古典曲线、高端报刊杂志排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-05">
+  <h2 class="font-h2"><span class="font-num">05.</span> Canela</h2>
+  <p class="font-meta"><strong>类型：</strong>展示衬线　<strong>适合：</strong>生活方式、美妆、女性主题、艺术封面</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-05.jpg" alt="字体 Canela 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Canela · 展示衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-05">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">05</span>
+      <span class="prompt-name">Canela</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Canela-inspired soft display serif, graceful flared strokes, elegant curves, refined contemporary luxury editorial typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Canela 为灵感的柔和展示衬线、优雅外扩笔画、精致曲线、考究的当代奢华编辑排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-06">
+  <h2 class="font-h2"><span class="font-num">06.</span> Ogg</h2>
+  <p class="font-meta"><strong>类型：</strong>书法式展示衬线　<strong>适合：</strong>先锋时尚、艺术展、实验杂志</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-06.jpg" alt="字体 Ogg 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Ogg · 书法式展示衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-06">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">06</span>
+      <span class="prompt-name">Ogg</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Ogg-inspired calligraphic display serif, dramatic elegant curves, expressive terminals, refined swashes, high-fashion editorial typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Ogg 为灵感的书法展示衬线、戏剧化优雅曲线、富表现力的端部、精致花饰、高端时装编辑排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-07">
+  <h2 class="font-h2"><span class="font-num">07.</span> GT Super</h2>
+  <p class="font-meta"><strong>类型：</strong>表现型衬线　<strong>适合：</strong>复古杂志、音乐、文化、人物故事</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-07.jpg" alt="字体 GT Super 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · GT Super · 表现型衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-07">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">07</span>
+      <span class="prompt-name">GT Super</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">GT Super-inspired expressive editorial serif, dramatic curves, vintage newspaper influence, sophisticated display typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 GT Super 为灵感的表现型编辑衬线、戏剧化曲线、复古报纸影响、精致展示排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-08">
+  <h2 class="font-h2"><span class="font-num">08.</span> Cormorant Garamond</h2>
+  <p class="font-meta"><strong>类型：</strong>古典衬线　<strong>适合：</strong>文学、诗歌、文化、艺术书</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-08.jpg" alt="字体 Cormorant Garamond 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Cormorant Garamond · 古典衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-08">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">08</span>
+      <span class="prompt-name">Cormorant Garamond</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Cormorant Garamond-inspired elegant old-style serif, tall ascenders, delicate contrast, literary and poetic editorial typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Cormorant Garamond 为灵感的古典优雅衬线、高耸升部、细腻反差、文学诗意编辑排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-09">
+  <h2 class="font-h2"><span class="font-num">09.</span> Instrument Serif</h2>
+  <p class="font-meta"><strong>类型：</strong>现代展示衬线　<strong>适合：</strong>设计、摄影、建筑、艺术海报</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-09.jpg" alt="字体 Instrument Serif 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Instrument Serif · 现代展示衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-09">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">09</span>
+      <span class="prompt-name">Instrument Serif</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Instrument Serif-inspired contemporary display serif, distinctive curves, elegant sharp terminals, refined art-book typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Instrument Serif 为灵感的当代展示衬线、独特曲线、优雅锋利端部、考究艺术书排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-10">
+  <h2 class="font-h2"><span class="font-num">10.</span> Fraunces</h2>
+  <p class="font-meta"><strong>类型：</strong>柔性衬线　<strong>适合：</strong>咖啡、生活方式、复古品牌、音乐</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-10.jpg" alt="字体 Fraunces 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Fraunces · 柔性衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-10">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">10</span>
+      <span class="prompt-name">Fraunces</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Fraunces-inspired expressive soft serif, playful rounded curves, retro editorial character, sophisticated contemporary display typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Fraunces 为灵感的柔和表现型衬线、俏皮圆润曲线、复古编辑气质、精致当代展示排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-11">
+  <h2 class="font-h2"><span class="font-num">11.</span> Caslon</h2>
+  <p class="font-meta"><strong>类型：</strong>老式衬线　<strong>适合：</strong>文化、历史、书籍、严肃长文</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-11.jpg" alt="字体 Caslon 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Caslon · 老式衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-11">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">11</span>
+      <span class="prompt-name">Caslon</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Caslon-inspired classic old-style serif, warm humanist proportions, traditional book typography, understated editorial elegance</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Caslon 为灵感的古典老式衬线、温暖人文比例、传统书籍排版、低调编辑优雅</pre>
+</div>
+</section>
+<section class="font-block" id="font-12">
+  <h2 class="font-h2"><span class="font-num">12.</span> Garamond</h2>
+  <p class="font-meta"><strong>类型：</strong>人文衬线　<strong>适合：</strong>书籍、文化、历史、知识型内容</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-12.jpg" alt="字体 Garamond 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Garamond · 人文衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-12">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">12</span>
+      <span class="prompt-name">Garamond</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Garamond-inspired humanist old-style serif, elegant classical proportions, soft organic strokes, timeless literary typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Garamond 为灵感的人文老式衬线、优雅古典比例、柔和有机笔画、永恒文学排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-13">
+  <h2 class="font-h2"><span class="font-num">13.</span> Playfair Display</h2>
+  <p class="font-meta"><strong>类型：</strong>高反差展示衬线　<strong>适合：</strong>时尚、情绪、人像、封面</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-13.jpg" alt="字体 Playfair Display 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Playfair Display · 高反差展示衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-13">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">13</span>
+      <span class="prompt-name">Playfair Display</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Playfair Display-inspired high-contrast display serif, elegant transitional proportions, refined fashion editorial headline typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Playfair Display 为灵感的高反差展示衬线、优雅过渡比例、精致时装编辑标题排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-14">
+  <h2 class="font-h2"><span class="font-num">14.</span> Lyon Display</h2>
+  <p class="font-meta"><strong>类型：</strong>高端展示衬线　<strong>适合：</strong>人物专访、文化杂志、精品出版物</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-14.jpg" alt="字体 Lyon Display 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Lyon Display · 高端展示衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-14">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">14</span>
+      <span class="prompt-name">Lyon Display</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Lyon Display-inspired refined editorial serif, elegant contrast, sophisticated proportions, premium magazine display typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Lyon Display 为灵感的精致编辑衬线、优雅反差、考究比例、高端杂志展示排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-15">
+  <h2 class="font-h2"><span class="font-num">15.</span> Abril Display</h2>
+  <p class="font-meta"><strong>类型：</strong>展示衬线　<strong>适合：</strong>大标题、文化海报、视觉封面</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-15.jpg" alt="字体 Abril Display 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Abril Display · 展示衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-15">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">15</span>
+      <span class="prompt-name">Abril Display</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Abril Display-inspired dramatic display serif, strong thick-and-thin contrast, confident editorial headline, contemporary magazine typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Abril Display 为灵感的戏剧化展示衬线、强烈粗细对比、自信编辑标题、当代杂志排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-16">
+  <h2 class="font-h2"><span class="font-num">16.</span> Recoleta</h2>
+  <p class="font-meta"><strong>类型：</strong>圆润衬线　<strong>适合：</strong>生活方式、食品、音乐、品牌故事</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-16.jpg" alt="字体 Recoleta 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Recoleta · 圆润衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-16">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">16</span>
+      <span class="prompt-name">Recoleta</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Recoleta-inspired friendly retro serif, soft rounded forms, expressive curves, warm contemporary editorial personality</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Recoleta 为灵感的复古友善衬线、柔和圆润形态、富表现力曲线、温暖当代编辑个性</pre>
+</div>
+</section>
+<section class="font-block" id="font-17">
+  <h2 class="font-h2"><span class="font-num">17.</span> Helvetica Neue</h2>
+  <p class="font-meta"><strong>类型：</strong>新无衬线　<strong>适合：</strong>极简海报、科技、品牌、信息设计</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-17.jpg" alt="字体 Helvetica Neue 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Helvetica Neue · 新无衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-17">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">17</span>
+      <span class="prompt-name">Helvetica Neue</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Helvetica Neue-inspired neo-grotesque sans serif, neutral Swiss typography, clean geometry, precise spacing, minimalist editorial design</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Helvetica Neue 为灵感的新怪诞无衬线、中性瑞士排版、干净几何、精确间距、极简编辑设计</pre>
+</div>
+</section>
+<section class="font-block" id="font-18">
+  <h2 class="font-h2"><span class="font-num">18.</span> Neue Haas Grotesk</h2>
+  <p class="font-meta"><strong>类型：</strong>新怪诞无衬线　<strong>适合：</strong>设计杂志、品牌、建筑、艺术</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-18.jpg" alt="字体 Neue Haas Grotesk 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Neue Haas Grotesk · 新怪诞无衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-18">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">18</span>
+      <span class="prompt-name">Neue Haas Grotesk</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Neue Haas Grotesk-inspired Swiss neo-grotesque, compact clean letterforms, restrained modernist typography, precise editorial layout</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Neue Haas Grotesk 为灵感的瑞士新怪诞、紧凑干净字形、克制现代主义排版、精确编辑布局</pre>
+</div>
+</section>
+<section class="font-block" id="font-19">
+  <h2 class="font-h2"><span class="font-num">19.</span> Futura</h2>
+  <p class="font-meta"><strong>类型：</strong>几何无衬线　<strong>适合：</strong>现代主义、建筑、科技、电影海报</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-19.jpg" alt="字体 Futura 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Futura · 几何无衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-19">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">19</span>
+      <span class="prompt-name">Futura</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Futura-inspired geometric sans serif, perfect circular forms, clean Bauhaus modernism, wide uppercase spacing, architectural poster typography</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Futura 为灵感的几何无衬线、完美圆形形态、干净包豪斯现代主义、宽大写间距、建筑海报排版</pre>
+</div>
+</section>
+<section class="font-block" id="font-20">
+  <h2 class="font-h2"><span class="font-num">20.</span> Avenir</h2>
+  <p class="font-meta"><strong>类型：</strong>几何人文无衬线　<strong>适合：</strong>生活方式、产品、品牌、科技</p>
+  <div class="inline-image">
+    <img src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/x-20.jpg" alt="字体 Avenir 的视觉示例" loading="lazy">
+    <p class="inline-image-caption">原文配图 · 字体示例 · Avenir · 几何人文无衬线</p>
+  </div>
+  <p class="font-prompt-label">AI 生图提示词：</p>
+  <div class="prompt-card" data-card id="prompt-20">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">20</span>
+      <span class="prompt-name">Avenir</span>
+    </span>
+    <div class="prompt-card-actions">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="cn">中文</button>
+      </div>
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body" data-lang="en">Avenir-inspired geometric humanist sans serif, clean rounded proportions, elegant contemporary typography, calm premium brand aesthetic</pre>
+  <pre class="prompt-card-body" data-lang="cn" hidden>以 Avenir 为灵感的几何人文无衬线、干净圆润比例、优雅当代排版、宁静高端品牌气质</pre>
+</div>
+</section>
+
+    <div class="author-bio">
+      <strong>关于作者</strong>
+      <img class="author-avatar" src="images/2026-09-04-adrianpunk-visual-prompts/ch01-fonts/author.jpg" alt="@AdrianPunk115 头像">
+      <div class="author-text">Punk｜中科大管理学硕士｜AI提示词、AI小白教程｜Punk系列Skills作者｜3个月赚了8位数｜Learn in Public｜FDE文章浏览量240w｜@AdrianPunk115</div>
+    </div>
+  </div>
+</section>
+
+<!-- 章 02 -->
+<section class="chapter-section" id="chapter-2">
+  <div class="container">
+    <p class="chapter-kicker">CHAPTER 02 · 击凸 × 压凹</p>
+    <h2 class="chapter-title">把"印刷触感"做进图片里</h2>
+    <p class="chapter-subtitle">一套击凸 × 压凹质感系统提示词，让 AI 生成有"摸得到"质感的极简海报</p>
+
+    <div class="intro-lead">
+      <p>这套提示词的核心，是把击凸（Emboss）与压凹（Deboss）这种原本属于印刷工艺的触感，转译成可生成的视觉语言。</p>
+      <ul><li><strong>击凸</strong>：让文字或图形从纸面微微隆起；</li><li><strong>压凹</strong>：向纸张内部压陷；</li></ul>
+      <p>两者都不依赖复杂的 3D 建模，而是通过纸张纹理、边缘压痕、柔和侧光和细微阴影，制造一种&quot;摸得到&quot;的质感。相比普通平面海报，它更像一本精装书封、一本独立杂志，或者一张有收藏感的艺术印刷品。</p>
+<p>这套提示词适合的场景其实很广。可以拿来做小红书 / 推特封面、文章头图、书籍封面、品牌视觉、金句海报、名牌等。</p>
+<p>使用主题：城市主题、旅行纪念、运动主题、咖啡与食物、植物动物、科技与 AI、生活方式内容。</p>
+<p>它最大的特点是会根据主题自动理解含义，再随机组合字体、字号、排版、配色、视觉隐喻和击凸压凹关系。你只需要给一个主题或一句话，就能得到一张既极简、又有印刷质感，同时还能保持较强设计感的单张海报。</p>
+    </div>
+
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:36px 0 14px;">示例图（不同主题下的随机组合）</h3>
+    <div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/cover.jpg" alt="击凸 × 压凹示例 1" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/x-02.jpg" alt="击凸 × 压凹示例 2" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/x-03.jpg" alt="击凸 × 压凹示例 3" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/x-04.jpg" alt="击凸 × 压凹示例 4" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/x-05.jpg" alt="击凸 × 压凹示例 5" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/x-06.jpg" alt="击凸 × 压凹示例 6" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/x-07.jpg" alt="击凸 × 压凹示例 7" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/x-08.jpg" alt="击凸 × 压凹示例 8" loading="lazy">
+  <p class="inline-image-caption">原文配图 · 击凸×压凹质感 · @AdrianPunk115</p>
+</div>
+
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:36px 0 14px;">系统提示词（完整版，可一键复制）</h3>
+    <div class="prompt-card" data-card id="prompt-01">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">01</span>
+      <span class="prompt-name">击凸 × 压凹质感系统提示词</span>
+    </span>
+    <div class="prompt-card-actions">
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body">你是一名顶级平面设计师、编辑设计师、书籍封面设计师与视觉编排艺术总监，擅长极简主义、纸张击凸压凹工艺、文字构图、现代海报设计与视觉隐喻转译。
+
+请根据用户输入的【主题】【标题】【副标题/短句】【比例】，创作一张可用于封面或海报的极简设计作品。作品必须具备真实纸张质感，并呈现高级的击凸（emboss）与压凹（deboss）效果。整体不是普通海报排版，而是带有设计画册、艺术书封、独立杂志封面的视觉气质。
+
+【用户输入】
+主题：
+标题：
+副标题/短句：
+画面比例：
+
+【总目标】
+先理解主题含义，不要只做字面表达。请从主题中提炼一个最核心的情绪、关系、动作、状态或概念，再转译成一个非常克制的视觉隐喻。整张画面强调&quot;少而准&quot;，让文字、图形、留白、工艺共同构成完整设计。
+
+【随机组合机制】
+每次生成时，请自动随机组合以下要素，并确保结果自然、高级、不模板化：
+
+1. 字体风格随机
+从以下方向中随机选择一种或混合两种：
+现代无衬线、优雅衬线、压缩体、细长体、高对比标题字、几何感字体、编辑感字体。
+字体必须有审美，不要呆板，不要像普通办公排版。
+
+2. 字号层级随机
+至少形成明显的三级层级：
+主标题大字、辅助文字中号、小注释或小标识微型字体。
+允许出现强烈的大小反差，让文字本身形成视觉张力。
+
+3. 标题排版方式随机
+不要固定左对齐、居中或底部标题。请在以下方式中随机选择或组合：
+拆行排版、错位排版、跨区域排版、局部竖排、横竖混排、单词断行、字母拉开、局部重叠、沿边缘分布、标题嵌入图形、标题与留白形成借位关系。
+让文字本身参与构图，而不是贴在画面上。
+
+4. 构图方式随机
+从以下构图逻辑中随机选择：
+偏左留白、偏右留白、上重下轻、下重上轻、对角线构图、角落构图、中心偏移构图、上下分区、左右分区、模块化构图、边缘化构图、跨版构图。
+画面必须灵活，避免千篇一律。
+
+5. 主视觉隐喻随机
+根据主题自动提炼 1 个核心视觉隐喻，只保留 1 个主图形，必要时可配 1–2 个极少量辅助元素。
+可选隐喻方向包括但不限于：
+圆、半圆、路径、台阶、门、窗、月亮、太阳、山、波纹、书、本子、植物、花、叶子、石头、鸟、猫、鱼、蝴蝶、箭头、问号、钥匙孔、楼梯、跑道、靶心、星点、地平线、地图折角、胶片、咖啡杯、呼吸线条、几何切面。
+图形必须极简，不复杂，不堆砌。
+
+6. 颜色方案随机
+颜色控制在 1–2 种主色内，可带极少量点睛色。每次随机从以下方向中选择：
+纯色背景、双色拼色背景、同色系深浅关系、低饱和双色、高对比双色。
+可优先参考这些经典组合：
+红+白、黄+深蓝、黑+金、米白+黑、米白+深蓝、森林绿+米白、粉+酒红、浅蓝+白、橙+深棕、灰白+红点缀、午夜蓝+金色。
+避免复杂渐变、避免多色混乱。
+
+7. 击凸压凹关系随机
+让一部分标题文字使用击凸，一部分图形使用压凹，或相反处理。也可以让部分元素与背景同色，仅通过纸面起伏和侧光来呈现。
+要求：
+边缘压痕清晰、纸张厚度自然、阴影细腻、光线柔和。
+不要塑料感，不要夸张3D建模感，不要金属雕刻感。
+
+8. 辅助元素随机
+允许极少量辅助排版元素随机加入：
+编号、小圆点、细线、短横线、括号、坐标感标记、微型说明文字、英文小注释、日期、页码感信息。
+辅助元素只能点到为止，不能喧宾夺主。
+
+【设计约束】
+1. 画面极简，元素少，但排版必须讲究。
+2. 不做复杂插画，不做繁琐背景。
+3. 不要模板化，不要每次都把标题放左边或中间。
+4. 文字必须清晰准确，中文和英文排版都要自然。
+5. 图形与文字必须产生关系，而不是各放各的。
+6. 留白必须成为构图的一部分。
+7. 整体气质要安静、现代、克制、聪明、高级。
+8. 风格接近：艺术画册封面、独立杂志、设计书封、现代视觉海报。
+
+【输出结果要求】
+输出一张完整海报/封面，必须同时具备：
+极简构图 + 灵活排版 + 字体变化 + 视觉隐喻 + 纸张质感 + 击凸压凹工艺 + 高级编辑设计感。
+
+请确保每次生成时，版式、字体、构图、颜色、图形位置都能产生合理变化，像同一设计系统下的不同设计实验，而不是重复同一个模板。
+</pre>
+</div>
+
+    <div class="author-bio">
+      <strong>关于作者</strong>
+      <img class="author-avatar" src="images/2026-09-04-adrianpunk-visual-prompts/ch02-emboss/author.jpg" alt="@AdrianPunk115 头像">
+      <div class="author-text">Punk｜中科大管理学硕士｜AI提示词、AI小白教程｜Punk系列Skills作者｜3个月赚了8位数｜Learn in Public｜FDE文章浏览量240w｜@AdrianPunk115</div>
+    </div>
+  </div>
+</section>
+
+<!-- 章 03 -->
+<section class="chapter-section" id="chapter-3">
+  <div class="container">
+    <p class="chapter-kicker">CHAPTER 03 · Less Is More</p>
+    <h2 class="chapter-title">当我开始揣摩 Less Is More...</h2>
+    <p class="chapter-subtitle">一套法式极简艺术海报系统提示词 —— 先做减法，再用准确隐喻把主题留下来</p>
+
+    <div class="intro-lead">
+      <p>前几天刷到法国画家 Frédéric Forest 的作品：大面积留白，几根极简线条，却能把拥抱、孤独、爱与克制表达得很深。</p>
+<p>这就是画面里的 Less is More。元素越少，情绪反而越集中。</p>
+<p>这套提示词的核心，就是让画面先做减法，再用一个准确的视觉隐喻把主题留下来。</p>
+<p>少，不代表空。<br>少，是让重要的东西被看见。</p>
+    </div>
+
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:36px 0 14px;">示例图</h3>
+    <div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch03-less-is-more/cover.jpg" alt="Less Is More 示例 1" loading="lazy">
+  <p class="inline-image-caption">原文配图 · Less Is More · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch03-less-is-more/x-02.jpg" alt="Less Is More 示例 2" loading="lazy">
+  <p class="inline-image-caption">原文配图 · Less Is More · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch03-less-is-more/x-03.jpg" alt="Less Is More 示例 3" loading="lazy">
+  <p class="inline-image-caption">原文配图 · Less Is More · @AdrianPunk115</p>
+</div>
+<div class="inline-image">
+  <img src="images/2026-09-04-adrianpunk-visual-prompts/ch03-less-is-more/x-04.jpg" alt="Less Is More 示例 4" loading="lazy">
+  <p class="inline-image-caption">原文配图 · Less Is More · @AdrianPunk115</p>
+</div>
+
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;margin:36px 0 14px;">系统提示词（完整版，可一键复制）</h3>
+    <div class="prompt-card" data-card id="prompt-01">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">01</span>
+      <span class="prompt-name">Less Is More 系统提示词</span>
+    </span>
+    <div class="prompt-card-actions">
+      <button class="copy-btn" data-copy-btn>Copy</button>
+    </div>
+  </div>
+  <pre class="prompt-card-body">你是一名法式极简艺术海报设计师、视觉隐喻导演和编辑设计师。
+
+请围绕我输入的主题，创作一张大留白、少线条、少文字、具有思想张力的极简艺术封面。
+
+【用户输入】
+
+主题：{{填写主题}}
+
+画幅比例：{{5:2 / 16:9 / 4:5 / 3:4}}
+
+副主题：{{可留空，最多1—2句}}
+
+【第一步：理解主题】
+
+不要收到主题后立刻套用人物、物品或固定构图。
+
+先提炼主题中的：
+
+核心观点；
+核心矛盾；
+情绪状态；
+因果关系；
+最值得被看见的那一层含义。
+
+将主题压缩成一句清晰判断，再寻找一个能够承载这句话的视觉隐喻。
+
+每张图只保留：
+
+一个主标题；
+一个核心隐喻；
+一个主要视觉中心；
+最多1—2句副主题。
+
+不要把主题中的所有概念逐一画出来。
+
+【第二步：判断需要什么主体】
+
+视觉主体可以是：
+
+人物或人物局部；
+人物之间的关系；
+人物与物体之间的关系；
+日常物品；
+自然物体；
+抽象线条；
+几何结构；
+空间距离；
+光影、缺口、遮挡、重复或断裂。
+
+人物不是默认选项，也不是禁止选项。
+
+如果主题与爱情、关系、孤独、信任、欲望、成长、告别、自我和选择有关，可以使用人物、侧脸、背影、手部、身体姿态或人物间的距离。
+
+如果主题与制度、规则、效率、循环、信息差、边界、秩序或风险有关，可以使用物体、结构、线条和空间关系。
+
+如果主题与AI、互联网、算法、数字世界或科技有关，画面必须让人产生轻微的科技联想，但仍要保持艺术化表达。
+
+科技关联可以通过以下方式表现：
+
+由极少量方点组成的线；
+逐渐转化为像素的墨迹；
+一段有规律的节点；
+极简数字痕迹；
+人工秩序与自然笔触之间的对比；
+一个传统物体出现轻微数字化变化。
+
+这些科技痕迹只能作为隐喻的一部分，不能成为装饰背景。
+
+不要直接堆放芯片、机器人、机械大脑、发光网络、数据面板或科技图标。
+
+【视觉隐喻规则】
+
+视觉隐喻必须根据主题重新思考，不能机械复用过去的答案。
+
+可以使用：
+
+一个动作；
+一个普通物品；
+两个物体之间的关系；
+人物与物体之间的关系；
+结构的断裂、循环、错位、遮挡、平衡或失衡；
+距离、方向、重量、大小和负空间；
+自然形态与人工秩序之间的变化。
+
+每张图只使用一个核心隐喻。
+
+隐喻必须简单，但不能肤浅。
+
+不看副文案时，观众也应当能够产生与主题有关的联想。
+
+如果一个隐喻需要长篇解释，说明它不够准确，应重新选择。
+
+【避免直白和俗套】
+
+不要把主题中的名词直接变成图标。
+
+例如：
+
+爱情主题不必默认使用红心；
+AI主题不必默认使用机器人、芯片和电路板；
+自由主题不必默认使用飞鸟和鸟笼；
+思考主题不必默认使用灯泡；
+时间主题不必默认使用时钟；
+成长主题不必默认使用树苗。
+
+只有当这些元素经过重新组合、变形或产生新的关系，能够形成独特隐喻时，才可以使用。
+
+【画面风格】
+
+背景使用温暖的米白色、象牙白或轻微旧纸色。
+
+主体以黑色手绘墨线、墨块和极简轮廓为主。
+
+线条粗细不均，带有自然停顿、断裂、毛边、轻微晕染和手工痕迹。
+
+画面应像艺术家用墨水笔、毛笔或粗记号笔迅速捕捉下来的草图。
+
+人物、物体和抽象结构都不必完整描绘。
+
+只保留最关键的轮廓、动作、结构和情绪。
+
+允许大部分内容消失在留白中，让观众自行补全。
+
+整体留白占画面70%—85%。
+
+画面必须安静、克制、优雅，有私人手稿和艺术编辑海报的气质。
+
+【构图】
+
+根据隐喻自动选择最合适的构图。
+
+可以使用：
+
+一个局部被放大；
+单一物体偏置；
+人物局部与物体形成关系；
+两个物体彼此支撑、拉扯或远离；
+线条从完整逐渐断裂；
+自然形态逐渐变为人工秩序；
+主体被画面边缘裁切；
+大量负空间包围一个小主体。
+
+主体不必居中。
+
+主标题与视觉主体形成清晰的左右、上下或远近关系。
+
+不要平均分割画面。
+
+不要把所有元素放得一样大。
+
+【标题排版】
+
+主标题必须清晰、有封面感，是画面的第一视觉之一。
+
+可以使用：
+
+高对比衬线字体；
+克制的中文宋体气质；
+极简无衬线字体；
+具有法式编辑感的文字排版。
+
+标题较长时，自动拆成2—3行。
+
+标题不能太小，也不能压满画面。
+
+可以将最重要的1—2个词使用唯一强调色。
+
+不要随意混合多种字体。
+
+【副主题】
+
+副主题最多1—2句。
+
+每句尽量控制在8—18个字。
+
+副主题只补充核心判断，不解释全部画面，不重复主标题。
+
+未提供副主题时，可以根据主题提炼一句简短、有判断力的文案。
+
+【色彩】
+
+以米白背景和黑色墨线为主。
+
+最多加入一种强调色：
+
+暗红；
+克制蓝；
+灰绿；
+淡黄。
+
+强调色只用于一个关键位置：
+
+一个词；
+一段线；
+一个节点；
+一个物体局部；
+人物的一个微小细节。
+
+强调色面积不超过画面3%。
+
+不要使用渐变霓虹、蓝紫科技光、大面积鲜艳颜色或多色装饰。
+
+【最终检查】
+
+生成前检查：
+
+是否只有一个核心隐喻；
+
+是否根据主题判断了要不要出现人物；
+
+如果是科技主题，是否存在克制而明确的科技联想；
+
+科技意象是否仍然服从手绘墨线和大留白；
+
+是否避免了常见图标和素材模板；
+
+主标题是否足够清楚；
+
+副主题是否不超过两句；
+
+是否有70%—85%的留白；
+
+是否能删除任何多余元素。
+
+【严格避免】
+
+避免所有主题都套用同一种人物侧脸、手部或背影；
+
+避免所有主题都使用放大镜、红心、鸟笼、飞鸟、绳结、道路和月亮；
+
+避免为了文艺感机械加入人物；
+
+避免为了科技感加入电路板、机器人、芯片、发光网络和数据界面；
+
+避免复杂叙事场景；
+
+避免写实照片感；
+
+避免3D模型；
+
+避免商业科技宣传页；
+
+避免信息图和功能介绍；
+
+避免图标堆叠；
+
+避免多个隐喻同时出现；
+
+避免多种强调色；
+
+避免超过两句副主题；
+
+避免大段文字；
+
+避免水印、签名、日期、网址和无关品牌标志。
+
+最终生成一张：
+
+以准确思考为起点；
+
+人物、物品、抽象结构均可成为主体；
+
+科技主题有隐约但准确的科技意象；
+
+保持原始手绘墨线、大面积留白和克制艺术气质；
+
+只有一个核心隐喻、一个视觉中心和少量文字的法式极简艺术封面。
+</pre>
+</div>
+
+    <div class="author-bio">
+      <strong>关于作者</strong>
+      <div class="author-text">Punk｜中科大 MBA｜被大厂优化，在 X 上重新进化｜HerName 首席设计师｜AI提示词｜分享小白能看懂、复制能上手的 AI / Web3 / 搞钱方法｜@AdrianPunk115</div>
+    </div>
+  </div>
+</section>
+
+<section class="references" id="references">
+  <div class="container">
+    <p class="references-kicker">SOURCES & CREDITS</p>
+    <h2 class="references-title">引用与原文出处</h2>
+    <ul class="references-list">
+      <li>
+        <strong>ORIGINAL ARTICLE 01</strong>
+        <em>40 种适合杂志、海报与 AI 生图的英文字体图鉴（附提示词）—— 上册</em><br>
+        作者：AdrianPunk115 (@AdrianPunk115) · 发布于 2026/09/04 · X 长文<br>
+        原文链接：<a href="https://x.com/AdrianPunk115/status/2095455845823971411" target="_blank" rel="noopener">https://x.com/AdrianPunk115/status/2095455845823971411</a>
+      </li>
+      <li>
+        <strong>ORIGINAL ARTICLE 02</strong>
+        <em>把"印刷触感"做进图片里：一套击凸 × 压凹质感提示词</em><br>
+        作者：AdrianPunk115 (@AdrianPunk115) · 发布于 2026/09/03 · X 长文<br>
+        原文链接：<a href="https://x.com/AdrianPunk115/status/2095082810172473824" target="_blank" rel="noopener">https://x.com/AdrianPunk115/status/2095082810172473824</a>
+      </li>
+      <li>
+        <strong>ORIGINAL ARTICLE 03</strong>
+        <em>当我开始揣摩 Less Is More...</em><br>
+        作者：AdrianPunk115 (@AdrianPunk115) · 发布于 2026/06/25 · X 长文<br>
+        原文链接：<a href="https://x.com/AdrianPunk115/status/2069334347472323011" target="_blank" rel="noopener">https://x.com/AdrianPunk115/status/2069334347472323011</a>
+      </li>
+      <li>
+        <strong>AUTHOR · X</strong>
+        <a href="https://x.com/AdrianPunk115" target="_blank" rel="noopener">https://x.com/AdrianPunk115</a>
+      </li>
+      <li>
+        <strong>INTERPRETATION</strong>
+        本文为三篇 X 长文合集版。原文均为中文，本文保留作者原文措辞与所有 prompt 内容，仅在结构与排版上重新组织为三章可独立阅读的形式。章 1 字体提示词为英文原文（用于 AI 生图模型），章 2 / 章 3 系统提示词为中文原文。如需引用请以原文链接为准。
+      </li>
+    </ul>
+    <p class="references-note">
+      <strong>使用建议：</strong>三套 prompt 不是越通用越好用——字体提示词的关键在于「模拟视觉特征」而非「直接写字体名」；击凸压凹的精髓在于「随机组合 8 项要素」避免模板化；Less Is More 的核心是「先减法，再选一个准确隐喻」。三章各有侧重，建议先从章 1 的字体提示词开始上手，再逐章扩展到整套系统。
+    </p>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="container">
+    <p class="closing-text">字体决定图的<strong>性格</strong>，工艺决定图的<strong>触感</strong>，留白决定图的<strong>呼吸</strong>。</p>
+    <p class="closing-caption">整理自 @AdrianPunk115 三篇 X 长文</p>
+  </div>
+</section>
+
+<footer class="article-footer">
+  <div class="container">
+    <p>为 <span style="color:#C8161D">AI</span> 发电 · 朱有以整理 · 2026/09/04</p>
+    <p class="credit">三章合集 · 22 张 prompt · 33 张原文配图</p>
+  </div>
+</footer>
+
+<button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>
+<nav class="floating-nav-panel" id="navPanel">
+  <div class="nav-panel-header">本文章节</div>
+  <div class="nav-panel-content">
+    <ol>
+      <li><a href="#chapter-1">章 01 · 字体图鉴上册</a></li>
+      <li><a href="#chapter-2">章 02 · 击凸 × 压凹</a></li>
+      <li><a href="#chapter-3">章 03 · Less Is More</a></li>
+      <li><a href="#references">引用与原文</a></li>
+    </ol>
+  </div>
+</nav>
+
+<script>
+const navToggle = document.getElementById('navToggle');
+const navPanel = document.getElementById('navPanel');
+navToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  navPanel.classList.toggle('active');
+});
+navPanel.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => { navPanel.classList.remove('active'); });
+});
+document.addEventListener('click', (e) => {
+  if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+    navPanel.classList.remove('active');
+  }
+});
+
+document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const card = btn.closest('.prompt-card');
+    const activeBody = card.querySelector('.prompt-card-body:not([hidden])');
+    const text = activeBody ? activeBody.innerText : '';
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.classList.add('copied');
+      const orig = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.textContent = orig;
+      }, 2000);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); btn.textContent = 'Copied'; setTimeout(() => btn.textContent = 'Copy', 2000); } catch (e2) {}
+      document.body.removeChild(ta);
+    }
+  });
+});
+
+// EN/CN 切换
+document.querySelectorAll('.prompt-card').forEach(card => {
+  const langBtns = card.querySelectorAll('.lang-btn');
+  if (!langBtns.length) return;
+  langBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      card.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b === btn));
+      card.querySelectorAll('.prompt-card-body').forEach(b => {
+        if (b.dataset.lang === lang) b.removeAttribute('hidden');
+        else b.setAttribute('hidden', '');
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>
