@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>10 步让 AI 替你干活 · Grok Bot Agents 完整解读 · Codez 491 万浏览长文 · 朱有以</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+    }
+    .article-title { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(28px, 4.2vw, 40px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; }
+    .article-title .highlight { color: var(--accent-red); font-weight: 600; }
+    .article-subtitle { font-family: 'Noto Serif SC', serif; font-size: clamp(17px, 2.4vw, 21px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; line-height: 1.55; max-width: 620px; margin: 0 auto 28px; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+    .cover-frame { padding: 64px 0; }
+    .cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-size: 16px; color: var(--text-secondary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(20px, 3.4vw, 26px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+    .capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; min-width: 0; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .cap-body ul { margin: 14px 0 18px; padding-left: 22px; }
+    .cap-body ul li { margin-bottom: 6px; }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .inline-image:hover img { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+    .inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+    .gif-placeholder { background: var(--bg-secondary); border: 1px dashed var(--border-subtle); border-radius: 6px; padding: 24px 22px; margin: 24px 0; text-align: center; }
+    .gif-placeholder-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 8px; }
+    .gif-placeholder-text { font-size: 14px; color: var(--text-muted); line-height: 1.7; font-style: italic; }
+    /* code block (中英切换 + 一键复制) */
+    .code-block { background: var(--bg-code); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; margin: 18px 0 28px; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .code-block:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .code-block-head { padding: 10px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .code-block-lang { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent-gold); letter-spacing: 0.1em; text-transform: uppercase; }
+    .code-block-label { font-family: 'Cormorant Garamond', serif; font-size: 11px; color: #8a8a8e; font-style: italic; }
+    .code-block-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+    .code-block-body { padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; line-height: 1.65; color: #e8e8ea; white-space: pre-wrap; word-wrap: break-word; margin: 0; max-height: 480px; overflow-y: auto; }
+    .code-block-body[hidden] { display: none; }
+    /* lang-toggle */
+    .lang-toggle { display: inline-flex; background: #050507; border: 1px solid #2a2a2e; border-radius: 4px; padding: 2px; }
+    .lang-btn { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; padding: 5px 10px; border-radius: 3px; background: transparent; color: #6e6e73; border: none; cursor: pointer; transition: all 0.2s; }
+    .lang-btn:hover:not(.active) { color: #c8c8cc; }
+    .lang-btn.active { background: var(--accent-red); color: #fff; }
+    /* copy-btn */
+    .copy-btn { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 12px; border-radius: 4px; background: transparent; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.12); cursor: pointer; transition: all 0.2s; }
+    .copy-btn:hover { color: #e8e8ea; border-color: rgba(201,169,98,0.5); }
+    .copy-btn.copied { color: var(--accent-gold); border-color: var(--accent-gold); }
+    /* cap-callout (大字号 takeaway) */
+    .cap-callout { background: var(--bg-secondary); border-left: 3px solid var(--accent-red); border-radius: 0 4px 4px 0; margin: 22px 0 28px; padding: 18px 22px; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .cap-callout:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .cap-callout-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; display: block; }
+    .cap-callout-text { font-family: 'Noto Serif SC', serif; font-size: 16px; line-height: 1.7; color: var(--text-primary); font-weight: 500; }
+    /* closing */
+    .closing { padding: 80px 0 56px; text-align: center; border-bottom: 1px solid var(--border-subtle); }
+    .closing-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(20px, 3.2vw, 26px); font-weight: 400; line-height: 1.55; color: var(--text-primary); max-width: 680px; margin: 0 auto 28px; }
+    .closing-text strong { color: var(--accent-red); font-weight: 600; }
+    .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 0.2em; color: var(--accent-gold-dim); text-transform: uppercase; }
+    /* references */
+    .references { padding: 64px 0 48px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 12px; text-align: center; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3.2vw, 28px); font-weight: 500; color: var(--text-primary); margin-bottom: 28px; text-align: center; }
+    .references-list { font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; list-style: none; padding: 0; max-width: 680px; margin: 0 auto; }
+    .references-list li { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 16px 22px; margin-bottom: 12px; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .references-list li:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--accent-red); display: block; margin-bottom: 8px; }
+    .references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); font-size: 15px; }
+    .references-list a { color: var(--accent-gold-dim); text-decoration: none; border-bottom: 1px solid rgba(201, 169, 98, 0.3); transition: border-color 0.2s; word-break: break-all; overflow-wrap: anywhere; }
+    .references-list a:hover { border-color: var(--accent-gold-dim); }
+    .references-note { font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; text-align: center; max-width: 640px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid var(--border-subtle); font-style: italic; }
+    .article-footer { text-align: center; padding: 40px 0 60px; }
+    .article-footer p { font-size: 14px; color: var(--text-muted); margin-bottom: 10px; }
+    .article-footer .credit { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+    /* floating-nav (悬浮导航) */
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); cursor: pointer; z-index: 1000; box-shadow: var(--shadow-card); display: flex; align-items: center; justify-content: center; transition: box-shadow 0.3s, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s; }
+    .floating-nav-toggle:hover { transform: scale(1.012); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .floating-nav-toggle svg { width: 22px; height: 22px; stroke: var(--text-secondary); }
+    .floating-nav-panel { position: fixed; bottom: 96px; right: 28px; width: 280px; max-height: 70vh; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px 20px; z-index: 999; box-shadow: var(--shadow-hover); opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.25s, transform 0.25s, visibility 0.25s; }
+    .floating-nav-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+    .floating-nav-panel-title { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); }
+    .floating-nav-panel a { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; text-decoration: none; color: var(--text-secondary); transition: color 0.2s; font-size: 13px; line-height: 1.4; }
+    .floating-nav-panel a:hover { color: var(--accent-gold-dim); }
+    .floating-nav-panel .nav-num { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; color: var(--accent-gold-dim); flex-shrink: 0; min-width: 22px; }
+    .floating-nav-panel .nav-text { flex: 1; min-width: 0; }
+    .floating-nav-panel .nav-en { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .floating-nav-panel .nav-cn { font-family: 'Noto Serif SC', serif; font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 768px) { .article-title { line-height: 1.35; } }
+    @media (max-width: 640px) {
+      .article-hero { padding: 64px 0 40px; }
+      .article-intro, .pull-quote, .capability { padding: 48px 0; }
+      .cap-num { font-size: 48px; }
+      .cap-title-en { font-size: 24px; }
+      .article-category::before, .article-category::after { width: 40px; }
+      .floating-nav-toggle { bottom: 20px; right: 20px; width: 48px; height: 48px; }
+      .floating-nav-panel { right: 20px; bottom: 76px; width: calc(100vw - 40px); max-width: 320px; }
+      .code-block-head { gap: 8px; }
+      .code-block-actions { margin-left: 0; width: 100%; justify-content: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+  <main class="container">
+
+    <section class="article-hero">
+      <div class="article-category">Agent 实战 · Grok Bot</div>
+      <h1 class="article-title"><span class="highlight">10 步</span>让 AI 替你干活</h1>
+      <p class="article-subtitle">Grok Bot Agents 完整教程解读 · 491 万浏览长文</p>
+      <div class="article-byline">
+        <span class="byline-author">朱有以</span>
+        <span class="byline-sep">·</span>
+        <span class="byline-source">原文 Codez (@0xCodez) · 491.7 万浏览 · 8,550 收藏</span>
+        <span class="byline-sep">·</span>
+        <span>2026/09/04</span>
+      </div>
+      <p class="article-desc">Codez 把"AI 工具 = 等你问"的旧范式彻底翻过去，用 10 步告诉你 Grok Bot 怎么从一台云端电脑起步，搭出一支 Specialist 协作小组，每周五分钟复盘一次。本文逐节拆解 + 5 个最值得复制的中英对照示例块 + 15 张原文图按位置完整保留。</p>
+    </section>
+
+    <section class="cover-frame">
+      <img src="images/2026-09-04-codez-grok-bot-10-steps/cover.jpg" alt="Grok Bot Agents 10 Steps 封面">
+      <p class="cover-caption">原文封面 · Grok Bot Agents: how to automate your life in 10 Steps · Codez (@0xCodez) · 2026/08/18</p>
+    </section>
+
+    <section class="article-intro">
+      <p class="intro-lead">到目前为止，你用过的每一个 AI 工具都在等你——你打开它、发问、它回答、你关掉它。工作始终发生在你的手里，模型只是把过程口述给你听。</p>
+      <p class="intro-lead"><strong>Grok Bot 反过来。每个 bot 在云端都有一台自己的电脑</strong>，它登录你已经在用的工具，像你那样点来点去，关上笔记本之后它还能继续干。这意味着你不再「prompt」，而是「delegate」；不再搭 workflow，而是用一句话描述一个工作。</p>
+      <p class="intro-lead">这就是 Codez 那篇 491 万浏览 X 长文要教的事：从下载安装开始，到带出一支 Specialist 协作小组，互相派活，只在需要你判断时拉你进来——一共 10 步。</p>
+      <div class="inline-image">
+        <img src="images/2026-09-04-codez-grok-bot-10-steps/x-01.png" alt="Grok Bot 范式转变示意">
+        <p class="inline-image-caption">原文配图 · 范式转变示意 · Codez (@0xCodez) · 2026/08/18</p>
+      </div>
+    </section>
+
+    <section class="pull-quote">
+      <p class="pull-quote-text">prompt 是一句请求，<br>workflow 是一串步骤，<br><strong>bot 是一个持久化的角色</strong>。</p>
+      <p class="pull-quote-caption">— Codez · Grok Bot Agents · 2026/08/18</p>
+    </section>
+
+    <!-- ============== CAP 01 ============== -->
+    <section class="capability" id="cap-01">
+      <div class="cap-head">
+        <div class="cap-num">01</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 01</div>
+          <h2 class="cap-title-en">Install it, then meet the Chief</h2>
+          <div class="cap-title-cn">先装上，然后认识你的 Chief</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        你的起点是一个叫 Chief 的通用 bot——它的活不是包揽一切，而是「你不确定该找谁时，发消息给它的那个角色」。
+      </div>
+      <div class="cap-body">
+        <p>Grok Bot 是一个<strong>桌面应用</strong>，不是浏览器标签页——光是这一点就告诉你它到底是什么。</p>
+        <p>你从 macOS 安装、用 Grok 或 Cursor 账号登录之后，落地的不像一个聊天机器人，更像一个 IM 客户端：左边一栏是已命名的 bot，右边是对话。</p>
+        <p><strong>你的起点通常是一个通用 bot——叫它 Chief</strong>。它的活不是包揽一切。它的活是当你还不知道哪个 specialist 该负责某件事时，你能找它问；之后，是它去协调其他 bot。把它当成你不确定该找谁时发消息的那个人。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-02.jpg" alt="Chief bot 主界面">
+          <p class="inline-image-caption">原文配图 · Chief 主界面 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <p>先打个招呼，给它一件又小又真实的事。不是测试题——是一桩能验证结果的小差事。</p>
+        <p><strong>第一件事应该是你 30 秒内就能验证结果的那种</strong>。因为接下来 9 步的全部意义，就是学着把越来越大的活交给它。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-03.png" alt="第一件任务的示范">
+          <p class="inline-image-caption">原文配图 · 第一件任务 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CAP 02 ============== -->
+    <section class="capability" id="cap-02">
+      <div class="cap-head">
+        <div class="cap-num">02</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 02</div>
+          <h2 class="cap-title-en">Give it a job title, not a prompt</h2>
+          <div class="cap-title-cn">给它一个职位名，别只给它一句话 prompt</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        prompt 是一句请求；<strong>bot 是一个角色</strong>——它持久化、积累记忆、拥有一个 domain，正因你反复回到同一条 thread，它在这个 domain 上会越来越强。
+      </div>
+      <div class="cap-body">
+        <p>这一步把"用 Grok Bot 真正拿到价值的人"和"撞了一下就放弃的人"彻底分开。prompt 是一句请求。</p>
+        <p><strong>bot 是一个角色——它持久化、积累记忆、拥有一个 domain</strong>，正因你反复回到同一条 thread，它在这个 domain 上会越来越强。</p>
+        <p>所以按"一个真实人能 hold 的职位"来命名它。</p>
+        <p>然后像 Day 1 给新员工做入职简介那样写它的 charter：它负责什么、什么是"做得好"、以及——人人都跳过的部分——<strong>什么情况下必须先问你再做</strong>。</p>
+        <p>这最后一条边界不是官僚流程。它就是你敢把 bot 留在那里无人值守的根据——因为你已经提前定义好了它的权限在哪里止步。</p>
+        <div class="gif-placeholder">
+          <div class="gif-placeholder-label">原文此处为 GIF 演示</div>
+          <div class="gif-placeholder-text">作者演示：把 prompt 改成 charter——同一段请求，一个当成临时任务发出去，一个写在 bot 的 charter 里反复用。差别是「用一次」还是「把它做成一个角色」。</div>
+        </div>
+        <div class="cap-callout">
+          <span class="cap-callout-label">KEY TAKEAWAY</span>
+          <span class="cap-callout-text">一台有云端电脑 + 你的登录的 bot，是一个能趁你睡觉时替你干活的 bot。提前画好边界，不是谨慎本身有用，而是让"永远在线"这件事变得可用。</span>
+        </div>
+        <p>凡事都得问的 bot 等于没用；从来不问的 bot 等于危险。charter 是一次性把这条线画好的地方，省得每次都纠结。</p>
+        <div class="code-block" data-code-block id="cb-charter">
+          <div class="code-block-head">
+            <span class="code-block-lang">CHARTER · bot 命名 + 边界</span>
+            <span class="code-block-label">Step 02 · 可复制</span>
+            <div class="code-block-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="code-block-body" data-lang="en">Bot name examples (pick one per bot, like a real job):
+  - Inbox Manager
+  - Expense Manager
+  - Talent Scout
+  - Sales Outbound
+
+Charter template (write once, in plain sentences):
+  1. Owns: &lt;the domain this bot is responsible for&gt;
+  2. Looks like success: &lt;what a good output is, in 1 sentence&gt;
+  3. Must never do without asking: &lt;the irreversible actions, named explicitly&gt;</pre>
+          <pre class="code-block-body" data-lang="cn" hidden>bot 命名示例（按真实职位来选，一个 bot 一个）：
+  - Inbox Manager（收件箱管理）
+  - Expense Manager（报销管理）
+  - Talent Scout（人才挖掘）
+  - Sales Outbound（销售外联）
+
+charter 模板（写一次，说人话即可）：
+  1. 负责：&lt;这个 bot 管的 domain&gt;
+  2. 什么叫做好：&lt;一句话讲清楚「交付合格」长什么样&gt;
+  3. 哪些事必须先问我：&lt;把所有不可逆动作列出来，明文写&gt;</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CAP 03 ============== -->
+    <section class="capability" id="cap-03">
+      <div class="cap-head">
+        <div class="cap-num">03</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 03</div>
+          <h2 class="cap-title-en">Connect the tools once</h2>
+          <div class="cap-title-cn">工具一次性接好</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        连接是账号级别的，不是每个 bot 各接一遍；接一次 Gmail/GitHub，所有 bot 复用。
+      </div>
+      <div class="cap-body">
+        <p>Grok Bot 自带一个插件面板，列出它希望你重点接的几个：</p>
+        <p><strong>Notion、Slack、Google Drive、AWS Agents、AWS SageMaker、Browserbase、Composio、Context7</strong>，外加一个"自定义插件"选项。这些都是一键接入。</p>
+        <p>值得注意的细节是：<strong>账号下的连接是共享的</strong>。给一个 bot 接好 Gmail 或 GitHub，之后建的每一个 bot 都能复用同一个连接。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-04.jpg" alt="插件面板">
+          <p class="inline-image-caption">原文配图 · 插件面板 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <p>所以这件事要趁早、刻意去做——这是<strong>账号层面的管道</strong>，不是每个 bot 各接一遍。也就是说第五个你招来的 bot，是几秒钟就能 productive，而不是几分钟。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-05.jpg" alt="账号共享连接示意">
+          <p class="inline-image-caption">原文配图 · 共享连接 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <p>反过来也成立：一条连接的"爆炸半径"是你今后会建的每一个 bot，所以 beta 期间，建议只接入你真正需要的那几个账号，其余先放着。</p>
+      </div>
+    </section>
+
+    <!-- ============== CAP 04 ============== -->
+    <section class="capability" id="cap-04">
+      <div class="cap-head">
+        <div class="cap-num">04</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 04</div>
+          <h2 class="cap-title-en">Hand off the login, don't paste the password</h2>
+          <div class="cap-title-cn">移交登录，别把密码贴进对话</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        bot 在自己的云端浏览器里一直跑，撞到登录墙就把屏幕交给你，你认证完它在同一台实例上接着跑。bot 拿到的是 session，不是 secret。
+      </div>
+      <div class="cap-body">
+        <p>这才是让整个产品在"没有 API、没有 MCP server"的工具上跑得起来的关键机制——而真实公司里大多数内部工具就是这种。</p>
+        <p>bot 在它自己的云端浏览器里一直导航，直到撞到登录墙，然后把屏幕交给你。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-06.png" alt="登录墙移交">
+          <p class="inline-image-caption">原文配图 · 撞到登录墙 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <p><strong>你认证、点完成，bot 就在同一台浏览器实例上从刚才停下的地方继续。</strong></p>
+        <p>同样的移交模式，不管你接的是 Notion、Gmail，还是某内部谁都没集成的工具。</p>
+        <p>看看这对信任模型做了什么：你从不在聊天消息里输入凭据。bot 拿到的是一个 session，不是一个 secret——而整个敏感环节你都亲眼在 loop 里。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-07.png" alt="bot 拿到 session">
+          <p class="inline-image-caption">原文配图 · session 而非 secret · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <p><strong>如果哪个工具要你把密码贴进对话里，那就是错的路径。</strong></p>
+      </div>
+    </section>
+
+    <!-- ============== CAP 05 ============== -->
+    <section class="capability" id="cap-05">
+      <div class="cap-head">
+        <div class="cap-num">05</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 05</div>
+          <h2 class="cap-title-en">Show it once, don't explain it twice</h2>
+          <div class="cap-title-cn">教它一次，不要解释两遍</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        亲手做一遍，bot 在旁边看着就能学会。重复、跨工具、稳定——三件事都符合的任务，最值得先录。
+      </div>
+      <div class="cap-body">
+        <p>这是会改变你看这个产品方式的一个功能。</p>
+        <p><strong>亲自做一遍、让 bot 在旁边看着，就能把 workflow 教给它。</strong>它把 routine 存下来，下次就能自己跑同样的步骤。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-08.jpg" alt="录一次 bot 看一次">
+          <p class="inline-image-caption">原文配图 · 录制 routine · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <p>为什么这件事比听起来更重要：真正吃掉你一周时间的，通常是"描述起来很啰嗦、演示起来一眼就会"那种任务。</p>
+        <div class="cap-callout">
+          <span class="cap-callout-label">PICK YOUR FIRST RECORDING</span>
+          <span class="cap-callout-text">至少每周做一次、跨两个以上工具、步骤几乎不变。</span>
+        </div>
+        <p><strong>重复、跨工具、稳定</strong>。三件事都符合的任务，就是等着被你从桌上搬走的那种。</p>
+        <p>另外据报道，bot 在被你用得越多之后会越来越利——它们记住对话、学会你喜欢的处理方式。SpaceXAI 自己说，bot 最终会在你开口之前就开始干活——这话先当成方向，beta 期间别把它当承诺来排期。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-09.png" alt="bot 学会处理方式">
+          <p class="inline-image-caption">原文配图 · bot 越来越利 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CAP 06 ============== -->
+    <section class="capability" id="cap-06">
+      <div class="cap-head">
+        <div class="cap-num">06</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 06</div>
+          <h2 class="cap-title-en">Turn it into a routine that runs without you</h2>
+          <div class="cap-title-cn">把它变成一个不再需要你的 routine</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        存下来的 routine 还差一个触发理由——Schedule 是显然的，Trigger 才是让它"显得在场"的那一种。
+      </div>
+      <div class="cap-body">
+        <p>存下来的 routine 还差一个触发理由。Grok Bot 给你两种，都是对话式配置——不画 workflow，不拉节点画布。上手实测里，搭一个 trigger-based routine 大概<strong>两分钟、一句 prompt</strong>。</p>
+        <p><strong>Schedule</strong> 是显然的：早上 7 点的日报、周五的 pipeline 总结、月底的报销归档。</p>
+        <p><strong>Trigger</strong> 才是更有意思的那种：一条新的 Slack 消息、一封匹配模式的入站邮件、文档里的一次变更。trigger 才是让 bot 显得"在场"而不只是"准时"的东西。</p>
+        <p><strong>你不是去搭自动化，而是刚才发生的那次你认可，再要一次。</strong>整个产品的设计哲学就在这一个手势里。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-10.png" alt="schedule 与 trigger 对比">
+          <p class="inline-image-caption">原文配图 · Schedule vs Trigger · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <div class="code-block" data-code-block id="cb-trigger">
+          <div class="code-block-head">
+            <span class="code-block-lang">TRIGGER · 触发条件示例</span>
+            <span class="code-block-label">Step 06 · 可复制</span>
+            <div class="code-block-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="code-block-body" data-lang="en">SCHEDULE — run at a fixed time
+  - 7:00 daily:  pull yesterday's sales numbers, post summary to #sales-daily
+  - Friday 17:00:  pipeline review for the week
+  - Month-end:    file all receipts into Q4/expenses
+
+TRIGGER — run on an event
+  - new Slack message in #customer-support containing "refund" → draft reply
+  - inbound email matching "invoice overdue" → open a task in Notion
+  - any change in /shared/roadmap → ping the spec bot
+
+Pattern: just add one sentence at the end of a task you already like.
+  "And do this every Monday at 9am." / "Run this whenever X happens."</pre>
+          <pre class="code-block-body" data-lang="cn" hidden>SCHEDULE —— 固定时间跑
+  - 每天 7:00：拉昨天的销售数据，发摘要到 #sales-daily
+  - 每周五 17:00：本周 pipeline 复盘
+  - 月底：把所有报销归档到 Q4/expenses
+
+TRIGGER —— 事件触发
+  - #customer-support 里有含「refund」的 Slack 新消息 → 起一份回复草稿
+  - 收到主题匹配「invoice overdue」的邮件 → 在 Notion 开一个任务
+  - /shared/roadmap 里任何变更 → 通知 spec bot
+
+套路：在你已经满意的一次任务末尾，加一句话。
+  「每周一 9 点再跑一次。」「X 发生时就触发。」</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CAP 07 ============== -->
+    <section class="capability" id="cap-07">
+      <div class="cap-head">
+        <div class="cap-num">07</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 07</div>
+          <h2 class="cap-title-en">Hire specialists, not one generalist</h2>
+          <div class="cap-title-cn">招 specialist，别只用一个通才</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        独立的 bot = 独立的 memory、独立的 context、独立的问责。按 domain 拆，不是按任务大小拆。
+      </div>
+      <div class="cap-body">
+        <p>你可以让多个 bot 并行跑，每个管一块——而到这一步，产品才开始不像你以前用过的任何东西。</p>
+        <p><strong>独立的 bot = 独立的 memory、独立的 context、独立的问责。</strong></p>
+        <ul>
+          <li>一个 Expense Manager 只想着报销的事——它对你的报销会真的越来越懂。</li>
+          <li>一个通才同时管报销、招聘、外联，三件事都做得更糟，出问题的时候也找不到一条干净的线索回头查。</li>
+        </ul>
+        <p>SpaceXAI 自己说，他们内部跑的 bot 覆盖销售外联、市场、办公运营、bug 修复。一个人的起步名单像下面这样——注意<strong>按 domain 拆，不是按任务大小拆</strong>。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-11.png" alt="specialist 起步名单">
+          <p class="inline-image-caption">原文配图 · Specialist 名单 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CAP 08 ============== -->
+    <section class="capability" id="cap-08">
+      <div class="cap-head">
+        <div class="cap-num">08</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 08</div>
+          <h2 class="cap-title-en">Put them in a group chat</h2>
+          <div class="cap-title-cn">把它们扔进一个群聊</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        给群组一个目标，别给任务清单。目标让它们自己拆，任务清单意味着你早就拆完了。
+      </div>
+      <div class="cap-body">
+        <p>bot 之间可以互相发消息、在 thread 里共享 context。把几个扔进一个群聊，它们会自己协调——<strong>传活、分配归属、只在需要判断的时候拉你</strong>。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-12.png" alt="bot 群聊">
+          <p class="inline-image-caption">原文配图 · Bot 群聊 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <p>项目有重叠时，它们会就同一个账号保持一致，不用你把笔记在对话之间复制粘贴。</p>
+        <p>SpaceXAI 给的例子是：工程 bot 复现一个 bug → 开一张 ticket → 交给第二个 bot 来 debug。</p>
+        <p>那个"交接"——一个 bot 判断另一个 bot 更合适，并把 ownership 交出去——是你以前用过的所有工具里都不存在的东西。</p>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-13.png" alt="bot 之间交接">
+          <p class="inline-image-caption">原文配图 · Bot 之间交接 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+        <div class="cap-callout">
+          <span class="cap-callout-label">THE OBJECTIVE RULE</span>
+          <span class="cap-callout-text">给群组一个目标，别给任务清单。任务清单 = 你已经做完了拆分，bot 只是执行你的方案；目标 = 让它们自己拆。</span>
+        </div>
+        <p>后者才是"超过一个 bot"的全部意义。</p>
+      </div>
+    </section>
+
+    <!-- ============== CAP 09 ============== -->
+    <section class="capability" id="cap-09">
+      <div class="cap-head">
+        <div class="cap-num">09</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 09</div>
+          <h2 class="cap-title-en">Draw the approval line</h2>
+          <div class="cap-title-cn">把审批那条线画清楚</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        不是按"任务大小"画线，而是按<strong>可逆性</strong>画。能撤销的事 bot 自己做完；外部会看见、动钱、撤不回的事，全部交回给你。
+      </div>
+      <div class="cap-body">
+        <p>Grok Bot 的整套假设就是：bot 把活从头到尾做完，只在需要你审批的时候回来找你。</p>
+        <p>这把"什么是需要审批"的判断标准压在了你身上——因为 bot 自己挑的默认答案，未必就是你的。</p>
+        <p>真正能用的那条线不按任务大小分，而按<strong>可逆性</strong>分。</p>
+        <div class="cap-callout">
+          <span class="cap-callout-label">THE REVERSIBILITY RULE</span>
+          <span class="cap-callout-text">凡 bot 能撤销的——起草、归档、打标签、做总结、做调研、准备资料——它应该独自做完。凡外部世界会看见的、动钱的、撤不回来的——全部交回给你。</span>
+        </div>
+        <p>把这个规则套回 Sales Outbound 的例子：36 封草稿排队、<strong>0 封发出</strong>。bot 把所有可逆的事做完了，正好在不可逆的那一步停下。每个 bot 跑起来，都应该奔着这个形状去。</p>
+        <div class="code-block" data-code-block id="cb-approval">
+          <div class="code-block-head">
+            <span class="code-block-lang">APPROVAL · 可逆/不可逆 分类表</span>
+            <span class="code-block-label">Step 09 · 可复制</span>
+            <div class="code-block-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="code-block-body" data-lang="en">Do end-to-end, no human in the loop (bot can undo):
+  - drafting (email, doc, message)
+  - filing (sort, archive, label)
+  - tagging (categorize, route)
+  - summarizing (meeting notes, weekly report)
+  - researching (read sources, gather facts)
+  - preparing (deck, agenda, checklist)
+
+Stop and ask me first (the outside world sees it, money moves, or it can't be taken back):
+  - sending outbound email to a real person
+  - posting public-facing copy
+  - any payment / refund / wire
+  - deleting records
+  - changing a contract or commitment
+  - anything where a wrong move is irreversible</pre>
+          <pre class="code-block-body" data-lang="cn" hidden>可以独自做完、不用你过目（bot 自己能撤销）：
+  - 起草（邮件、文档、消息）
+  - 归档（分类、入库、加 label）
+  - 打标签（归类、路由）
+  - 做总结（会议纪要、周报）
+  - 做调研（读资料、汇拢事实）
+  - 做准备（deck、议程、清单）
+
+必须先问你再做（外部世界会看见 / 动钱 / 撤不回）：
+  - 给真实联系人发外联邮件
+  - 发对外公开文案
+  - 任何付款 / 退款 / 走账
+  - 删除记录
+  - 改合同或承诺
+  - 任何「做错了就撤不回」的事</pre>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-14.png" alt="36 drafts queued 0 sent">
+          <p class="inline-image-caption">原文配图 · Sales Outbound 例子 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CAP 10 ============== -->
+    <section class="capability" id="cap-10">
+      <div class="cap-head">
+        <div class="cap-num">10</div>
+        <div class="cap-title-group">
+          <div class="cap-kicker">STEP 10</div>
+          <h2 class="cap-title-en">Review weekly, prune ruthlessly</h2>
+          <div class="cap-title-cn">每周复盘，果断修剪</div>
+        </div>
+      </div>
+      <div class="principle-box">
+        <span class="principle-box-label">CORE PRINCIPLE</span>
+        自动化会悄悄腐烂。每条 routine 问三句话——跑没跑、对不对、删了会不会想它。
+      </div>
+      <div class="cap-body">
+        <p>自动化会悄悄腐烂。一个站点改了布局、一个 routine 静悄悄开始产出垃圾，而 bot 是你睡觉时还在跑的——<strong>三周都没人发现</strong>。</p>
+        <p>这是所有永远在线系统的失败模式，它也会在这里找你。</p>
+        <p>所以在日历上钉十五分钟。每条 routine 问三句话：</p>
+        <div class="cap-callout">
+          <span class="cap-callout-label">THE THREE QUESTIONS</span>
+          <span class="cap-callout-text">跑没跑？结果真的对吗？删了它我会想它吗？</span>
+        </div>
+        <p>第三句比看起来重要——这种工具的自然漂移，就是堆出一摞"半有用、谁也舍不得删"的自动化。</p>
+        <p>做复盘最好的办法是<strong>让 bot 自己汇报</strong>。它们保管着 thread，能自我 review；然后你每个 routine 抽一份结果亲手抽查——因为 bot review 自己的工作，跟你有同样的盲区。</p>
+        <div class="code-block" data-code-block id="cb-review">
+          <div class="code-block-head">
+            <span class="code-block-lang">REVIEW · 每周复盘三问</span>
+            <span class="code-block-label">Step 10 · 可复制</span>
+            <div class="code-block-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <pre class="code-block-body" data-lang="en">For each routine, three questions (15 min total on Friday):
+
+  1. Did it run?
+     - if not: why not? fix the trigger, or delete the routine.
+  2. Was the output actually right?
+     - spot-check one output by hand. if it's been wrong twice, kill it.
+  3. Would I miss it if I killed it?
+     - if you have to think about this, you wouldn't miss it. delete it.
+
+Ask the bots for the report — they keep the threads, they can review themselves.
+Then spot-check one output per routine by hand.</pre>
+          <pre class="code-block-body" data-lang="cn" hidden>每条 routine 三个问题（每周五共 15 分钟）：
+
+  1. 跑没跑？
+     - 没跑：什么原因？修 trigger，或者直接删。
+  2. 结果真的对吗？
+     - 亲手抽查一份输出。已经错两次的，干掉。
+  3. 我删了它会不会想它？
+     - 如果还要想一想才能答，那就不想。删。
+
+复盘报告直接让 bot 自己出——它们保管 thread，能自我 review。
+然后每条 routine 亲手抽查一份输出。</pre>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-codez-grok-bot-10-steps/x-15.jpg" alt="每周复盘">
+          <p class="inline-image-caption">原文配图 · 每周复盘 · Codez (@0xCodez) · 2026/08/18</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== CLOSING ============== -->
+    <section class="closing">
+      <p class="closing-text">你不再是那个动手点击的人。</p>
+      <p class="closing-text">此前的 AI 产品，都是把模型放进一个窗口、把工作留在你手上。<strong>Grok Bot 把工作搬到了别处</strong>——电脑、登录、记忆、时间都在 bot 手里，决策还在你手里。</p>
+      <p class="closing-text">这是技术上看起来更小的改变，习惯上更大的改变。</p>
+      <p class="closing-text">核心能力不再是「我该怎么措辞」，而是「<strong>我到底在 delegate 什么，它的权限在哪里止步</strong>」。这是一道管理题，不是 prompt 题。</p>
+      <p class="closing-caption">— Codez · Grok Bot Agents · 2026/08/18</p>
+    </section>
+
+    <!-- ============== REFERENCES ============== -->
+    <section class="references">
+      <p class="references-kicker">SOURCES & CREDITS</p>
+      <h2 class="references-title">引用与原文出处</h2>
+      <ul class="references-list">
+        <li>
+          <strong>ORIGINAL ARTICLE</strong>
+          <em>Grok Bot Agents: how to automate your life in 10 Steps (Full-tutorial)</em><br>
+          作者：Codez (@0xCodez) · 发布于 2026/08/18 · 491.7 万浏览 · 2,528 赞 · 8,550 收藏<br>
+          原文链接：<a href="https://x.com/0xCodez/status/2089676836619878567" target="_blank" rel="noopener">https://x.com/0xCodez/status/2089676836619878567</a>
+        </li>
+        <li>
+          <strong>AUTHOR · X</strong>
+          <a href="https://x.com/0xCodez" target="_blank" rel="noopener">https://x.com/0xCodez</a>
+        </li>
+        <li>
+          <strong>AUTHOR · SUBSTACK</strong>
+          <a href="https://movez.substack.com" target="_blank" rel="noopener">https://movez.substack.com</a> — Codez 在 Substack 持续输出 "AI insights from 2030"，主线是 AI Agent / AI Researcher 视角。
+        </li>
+        <li>
+          <strong>INTERPRETATION</strong>
+          本文为解读版本，按中文阅读习惯重排。原文 10 个 step 完整保留，4 段最值得复制的"示例文本"（charter / trigger / approval / review）做成中英对照代码块，支持一键 Copy。中文版为意译，便于理解。如需引用请以原文为准。
+        </li>
+      </ul>
+      <p class="references-note">动手建议：先按 Step 01 装好 Grok Bot，按 Step 02 给 Chief 写一段 charter，然后挑一条你每周都做的小 routine（Step 05），用 Step 06 的 trigger 触发一次——跑完两周，再决定要不要按 Step 07/08 扩成 specialist 小组。bot 的真正价值，是把你"懒得描述但会做"的那批事，从桌上搬走。</p>
+    </section>
+
+    <footer class="article-footer">
+      <p>— 完 —</p>
+      <p class="credit">© 朱有以 · 为 AI 发电 · 解读</p>
+    </footer>
+  </main>
+
+  <!-- ============== FLOATING NAV ============== -->
+  <button class="floating-nav-toggle" onclick="document.querySelector('.floating-nav-panel').classList.toggle('active')" aria-label="文章导航">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <nav class="floating-nav-panel">
+    <div class="floating-nav-panel-title">10 STEPS</div>
+    <a href="#cap-01"><span class="nav-num">01</span><span class="nav-text"><span class="nav-en">Install & meet the Chief</span><span class="nav-cn">安装并认识 Chief</span></span></a>
+    <a href="#cap-02"><span class="nav-num">02</span><span class="nav-text"><span class="nav-en">Job title, not a prompt</span><span class="nav-cn">职位名，不是 prompt</span></span></a>
+    <a href="#cap-03"><span class="nav-num">03</span><span class="nav-text"><span class="nav-en">Connect the tools once</span><span class="nav-cn">工具一次性接好</span></span></a>
+    <a href="#cap-04"><span class="nav-num">04</span><span class="nav-text"><span class="nav-en">Hand off the login</span><span class="nav-cn">移交登录，不传密码</span></span></a>
+    <a href="#cap-05"><span class="nav-num">05</span><span class="nav-text"><span class="nav-en">Show it once</span><span class="nav-cn">教一次，不要重复</span></span></a>
+    <a href="#cap-06"><span class="nav-num">06</span><span class="nav-text"><span class="nav-en">Routine runs without you</span><span class="nav-cn">routine 不再需要你</span></span></a>
+    <a href="#cap-07"><span class="nav-num">07</span><span class="nav-text"><span class="nav-en">Hire specialists</span><span class="nav-cn">招 specialist</span></span></a>
+    <a href="#cap-08"><span class="nav-num">08</span><span class="nav-text"><span class="nav-en">Group chat</span><span class="nav-cn">扔进群聊协作</span></span></a>
+    <a href="#cap-09"><span class="nav-num">09</span><span class="nav-text"><span class="nav-en">Draw the approval line</span><span class="nav-cn">划审批边界</span></span></a>
+    <a href="#cap-10"><span class="nav-num">10</span><span class="nav-text"><span class="nav-en">Review & prune</span><span class="nav-cn">每周复盘，果断修剪</span></span></a>
+  </nav>
+
+  <script>
+    // ===== Lang toggle (EN/CN) =====
+    document.querySelectorAll('.lang-toggle').forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        var btn = e.target.closest('.lang-btn');
+        if (!btn) return;
+        var lang = btn.getAttribute('data-lang');
+        var block = btn.closest('.code-block');
+        if (!block) return;
+        toggle.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.toggle('active', b === btn); });
+        block.querySelectorAll('.code-block-body').forEach(function(body) {
+          var bodyLang = body.getAttribute('data-lang');
+          if (bodyLang === lang) { body.hidden = false; } else { body.hidden = true; }
+        });
+      });
+    });
+
+    // ===== Copy button (复制当前显示的 body) =====
+    document.querySelectorAll('[data-copy-btn]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var block = btn.closest('.code-block');
+        if (!block) return;
+        var visibleBody = block.querySelector('.code-block-body:not([hidden])');
+        if (!visibleBody) return;
+        var text = visibleBody.innerText;
+        var done = function() {
+          var orig = btn.textContent;
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+        };
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(done).catch(function() {
+            // fallback
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); done(); } catch (_) {}
+            document.body.removeChild(ta);
+          });
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (_) {}
+          document.body.removeChild(ta);
+        }
+      });
+    });
+
+    // ===== Floating nav: close panel when clicking outside =====
+    document.addEventListener('click', function(e) {
+      var panel = document.querySelector('.floating-nav-panel');
+      var toggle = document.querySelector('.floating-nav-toggle');
+      if (!panel || !toggle) return;
+      if (panel.classList.contains('active') && !panel.contains(e.target) && !toggle.contains(e.target)) {
+        panel.classList.remove('active');
+      }
+    });
+    // ===== Smooth scroll with hash offset for sticky header =====
+    document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        var href = link.getAttribute('href');
+        if (!href || href === '#') return;
+        var target = document.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+        var top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>
