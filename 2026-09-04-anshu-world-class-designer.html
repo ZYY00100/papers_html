@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>把 AI 调教成世界级设计师 · Anshu Chimala · 为 AI 发电</title>
+<meta name="description" content="Anshu Chimala 的 7 个 prompt 技巧 + 完整 prompt 模板,把 AI 调教成有审美的合作伙伴。Lenny's Newsletter 客座长文解读,免费部分技巧 1-6。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;family=Noto+Serif+SC:wght@300;400;500;600;family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    .article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; white-space: nowrap; }
+    .article-title .highlight { color: var(--accent-red); }
+    .article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 620px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+
+    .cover-frame { padding: 64px 0; }
+    .cover-frame img, .cover-frame video { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-size: 16px; color: var(--text-secondary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--text-primary); font-weight: 600; }
+    .intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); margin: 0 auto 20px; max-width: 680px; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+
+    /* 阶段分隔(Discover / Define / Deliver) */
+    .stage-divider { padding: 72px 0 8px; }
+    .stage-divider .container { text-align: center; }
+    .stage-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 10px; }
+    .stage-title { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(28px, 4vw, 38px); font-weight: 500; color: var(--text-primary); line-height: 1.25; }
+    .stage-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); margin-top: 8px; letter-spacing: 0.02em; }
+
+    .capability { padding: 56px 0; border-bottom: 1px solid var(--border-subtle); transition: border-color 0.3s ease; }
+    .capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body em { font-style: italic; color: var(--text-primary); }
+    .cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+    .cap-body ul { margin: 0 0 18px 0; padding-left: 22px; }
+    .cap-body ul li { margin-bottom: 10px; line-height: 1.8; }
+    .cap-body ul ul { margin: 10px 0 0 0; }
+    .cap-body h4 { font-family: 'Noto Serif SC', serif; font-size: 17px; font-weight: 600; color: var(--text-primary); margin: 28px 0 14px; }
+
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img, .inline-image video { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); background: var(--bg-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .inline-image:hover img, .inline-image:hover video { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+    .inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.05em; color: var(--text-muted); margin-top: 12px; font-style: italic; line-height: 1.6; }
+
+    /* prompt 卡片(站内统一:EN/CN 双语 + 一键复制) */
+    .prompt-card { background: var(--bg-code); border-radius: 10px; margin: 22px 0 8px; overflow: hidden; border: 1px solid #2a2a2d; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .prompt-card:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.35); }
+    .prompt-card-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 18px; border-bottom: 1px solid #2a2a2d; background: #232325; }
+    .prompt-card-tag { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
+    .prompt-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent-gold); letter-spacing: 0.05em; flex-shrink: 0; }
+    .prompt-name-stack { display: flex; flex-direction: column; min-width: 0; }
+    .prompt-name-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: 15px; color: #f0f0f0; font-weight: 500; line-height: 1.3; }
+    .prompt-name-cn { font-family: 'Noto Serif SC', serif; font-size: 11.5px; color: #8a8a8e; font-weight: 300; line-height: 1.4; margin-top: 1px; }
+    .prompt-card-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .lang-toggle { display: inline-flex; border: 1px solid #3a3a3d; border-radius: 4px; overflow: hidden; }
+    .lang-btn { font-family: 'Inter', sans-serif; font-size: 11px; padding: 4px 10px; background: transparent; color: #8a8a8e; border: none; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; }
+    .lang-btn.active { background: var(--accent-gold); color: var(--bg-code); font-weight: 500; }
+    .lang-btn:not(.active):hover { color: var(--accent-gold); }
+    .copy-btn { font-family: 'Inter', sans-serif; font-size: 12px; padding: 5px 12px; background: transparent; color: var(--accent-gold); border: 1px solid var(--accent-gold); border-radius: 4px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; }
+    .copy-btn:hover, .copy-btn.copied { background: var(--accent-gold); color: var(--bg-code); }
+    .prompt-card-body { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.75; color: #e5e5e8; padding: 16px 18px; margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: anywhere; }
+
+    /* 全局中英文一键切换条 */
+    .global-lang-bar { position: sticky; top: 73px; z-index: 90; background: rgba(250,250,250,0.94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border-subtle); padding: 10px 0; }
+    .global-lang-bar .container { display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .global-lang-label { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-muted); }
+    .global-lang-bar .lang-toggle { border-color: var(--border-subtle); }
+    .global-lang-bar .lang-btn { color: var(--text-muted); padding: 5px 14px; font-size: 12px; }
+    .global-lang-bar .lang-btn.active { background: var(--accent-gold-dim); color: #fff; }
+
+    /* 付费墙说明 */
+    .paywall-note { padding: 56px 0; border-bottom: 1px solid var(--border-subtle); }
+    .paywall-box { background: var(--bg-card); border: 1px dashed var(--accent-gold-dim); border-radius: 8px; padding: 28px 30px; }
+    .paywall-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); display: block; margin-bottom: 12px; }
+    .paywall-title { font-family: 'Noto Serif SC', serif; font-size: 19px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
+    .paywall-text { font-size: 15px; color: var(--text-secondary); line-height: 1.85; }
+    .paywall-text a { color: var(--text-primary); }
+    .paywall-text a:hover { color: var(--accent-red); }
+
+    .references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+    .references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+    .references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+    .references-list li:last-child { border-bottom: none; }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+    .references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+    .references-list a { color: var(--text-primary); word-break: break-all; }
+    .references-list a:hover { color: var(--accent-red); }
+    .references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+
+    .closing { padding: 64px 0; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); margin-bottom: 12px; }
+    .closing-text strong { font-weight: 600; color: var(--accent-red); }
+    .closing-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); margin-top: 20px; }
+
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 1000; }
+    .floating-nav-toggle:hover { box-shadow: var(--shadow-hover); color: var(--accent-gold-dim); }
+    .floating-nav-toggle svg { width: 20px; height: 20px; }
+    .floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 78vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 999; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+    .floating-nav-panel.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-panel-header { padding: 14px 20px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
+    .nav-panel-content { padding: 4px 0 12px; }
+    .nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+    .nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+    .nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+    .nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+
+    footer { text-align: center; padding: 40px 0 60px; border-top: 1px solid var(--border-subtle); }
+    footer p { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+    footer .credit { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
+
+    @media (max-width: 768px) {
+      .article-title { white-space: normal; font-size: 28px; }
+      .article-subtitle { font-size: 17px; }
+      .cap-head { gap: 16px; }
+      .cap-num { font-size: 40px; }
+      .global-lang-bar { top: 65px; }
+      .prompt-card-head { flex-wrap: wrap; }
+    }
+    @media (max-width: 640px) {
+      .article-category::before, .article-category::after { width: 40px; }
+      .floating-nav-toggle {
+        bottom: max(56px, calc(env(safe-area-inset-bottom) + 16px));
+        right: max(20px, calc(env(safe-area-inset-right) + 12px));
+      }
+      .floating-nav-panel { right: 20px; bottom: calc(max(56px, env(safe-area-inset-bottom)) + 76px); width: calc(100vw - 40px); max-width: 320px; }
+      .prompt-card-body { font-size: 12px; }
+    }
+
+    /* 防溢出:长 URL 自动换行,表格强制列等宽收缩 */
+    a { overflow-wrap: anywhere; word-break: break-word; }
+    table { table-layout: fixed; width: 100%; }
+    table th, table td { word-break: break-word; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+
+  <!-- 顶部 Header -->
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero 标题区 -->
+    <section class="article-hero">
+      <div class="container">
+        <div class="article-category">AI · DESIGN</div>
+        <h1 class="article-title">把 <span class="highlight">AI</span> 调教成<span class="highlight">世界级设计师</span></h1>
+        <p class="article-subtitle">Anshu Chimala 的 7 个 prompt 技巧,让 Claude 做出真有人味的视觉</p>
+        <div class="article-byline">
+          <span class="byline-author">朱有以</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">Anshu Chimala (@anshuc) · Lenny's Newsletter</span>
+          <span class="byline-sep">·</span>
+          <span>2026/09/01</span>
+        </div>
+        <p class="article-desc">给 AI 设计师的实战手册:从「给我一个独一无二的 landing page」到把 Claude 调教成有审美的合作伙伴。原文 13 段 prompt,逐字保留 + 中文意译。</p>
+      </div>
+    </section>
+
+    <!-- 封面 demo:Calorie Tracker -->
+    <div class="container">
+      <div class="cover-frame">
+        <video src="images/2026-09-04-anshu-turn-ai-into-world/cover.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Anshu 用 3 段 prompt 让 Claude Fable 5 做出对话式卡路里追踪器"></video>
+        <p class="cover-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Calorie Tracker · Claude Fable 5 · 3 prompts</p>
+      </div>
+    </div>
+
+    <!-- 文章导读:谁 / 讲什么 / 为什么值得读 / 怎么读 -->
+    <section class="article-intro">
+      <div class="container">
+        <p class="intro-lead"><strong>关于作者。</strong>Anshu Chimala(@anshuc)是 Lenny's Newsletter 的客座作者,也是 YC 校友创办人,在 Apple 干了 12 年先后带软件工程和设计两支团队。他最近半年密集拿 AI 工具做产品设计,把这套方法论系统化成本文。</p>
+        <p class="intro-lead"><strong>这篇讲什么。</strong>如果你只用「给我做一个 landing page」这种 prompt 调教 AI,出来的设计一定是千篇一律的渐变 + 大字 + 圆角。Anshu 提出一个简单框架:把设计当成「发现 → 定义 → 交付」的 Double Diamond 流程跑一遍,每阶段配一个特定的 prompt 技巧,AI 的产出就能从「像 AI 做的」变成「像有人味的」。</p>
+        <p class="intro-lead"><strong>为什么值得读。</strong>全文 13 段 prompt,全部逐字收录在文中,你可以直接复制到自己 Claude / Cursor / 任意 coding agent 上试。Anshu 在 Apple 的设计团队把这些 prompt 反复验证过,不靠 vibe,靠流程。</p>
+        <p class="intro-lead"><strong>怎么读。</strong>建议先看三大 hero demo 感受目标质量,再读「为什么 AI 设计总是平庸」找到根因,然后按 Discover → Define → Deliver 三阶段对照自己的产品跑一遍。文末 Technique 7 起为原文付费内容,本篇未收录。</p>
+      </div>
+    </section>
+
+    <!-- 三大 hero demo -->
+    <section class="capability" style="padding-top:32px;">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">·</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">HERO DEMOS · 三个目标质量样本</div>
+            <h2 class="cap-title-en">Three things a world-class AI designer can do today</h2>
+            <p class="cap-title-cn">这三件,是你读完这套 prompt 后 AI 就能做出来的</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>Anshu 没用假 demo 凑数,这三个成品都是真的「用 1-3 段 prompt 让 AI agent 一把做出来」的产物,运行时长不到一小时。它们不是「AI 设计的极限」,而是「读完本文你能达到的下限」。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-01.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Space exploration game demo"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Space Exploration Game · Claude Opus 5 · 2 prompts</p>
+        </div>
+    </div>
+
+    <div class="container">
+      <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-02.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Dynamic landing page demo"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Dynamic Landing Page · Claude Opus 5 + GPT-5.6 Sol · 3 prompts</p>
+        </div>
+    </div>
+
+    <section class="capability" style="padding-top:8px;">
+      <div class="container">
+        <div class="cap-body">
+          <p><strong>calorie tracker</strong> 那个最让我意外——它是 Anshu 在 Apple 内部做的一个真实 demo,AI 做了完整的对话式交互 + 动画转场 + 数据可视化,质量直接逼近 Linear / Notion 那种级别的产品 demo。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 为什么 AI 设计总是平庸 + 概念图 -->
+    <section class="capability">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">·</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">THE BLAND-AI PROBLEM</div>
+            <h2 class="cap-title-en">Why AI designs always look... bland</h2>
+            <p class="cap-title-cn">为什么 AI 做的设计总是一眼能看出来是 AI 做的</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>如果你让 10 个不同人用同一句「给我做一个 productivity app 的 landing page」去问 AI,你会得到 10 个几乎一样的设计:居中大字 + 柔和渐变 + 圆角卡片 + 模糊背景 + emoji 装饰。这是「AI 风格」(AI aesthetic)——一种没有个性的、统计学意义上最常见的、训练数据平均值的视觉。</p>
+          <p>Anshu 给了一个很有穿透力的解释:<strong>LLM 不「想」做设计,它「拟合」做设计</strong>。当你只给它一个模糊的目标,它就从训练数据里找「最不冒犯、最多人见过」的方案——那就是平庸。</p>
+          <p>根因不是模型不够聪明,是<strong>prompt 太宽</strong>。你需要把设计过程拆成几个阶段,每个阶段给一个窄任务 + 强约束,才能让 AI 跳出「平均值陷阱」。</p>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-03.webp" alt="Human designers explore the design space before committing to a direction. AI tends to commit immediately to the most common answer." loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 人类设计师会先探索设计空间,AI 默认直接选最常见的答案 · 概念示意</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pull quote -->
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text">「<strong>LLM 不「想」做设计,它「拟合」做设计</strong>。给它一个模糊目标,它就从训练数据里挑「最不冒犯、最多人见过」的那个——那就是平庸。」</p>
+        <p class="pull-quote-caption">— Anshu Chimala,本文核心论点</p>
+      </div>
+    </section>
+
+    <!-- Double Diamond 框架介绍 -->
+    <section class="capability">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">·</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">THE FRAMEWORK · DOUBLE DIAMOND</div>
+            <h2 class="cap-title-en">The design loop, reframed for AI agents</h2>
+            <p class="cap-title-cn">把设计师的 Double Diamond 流程,改造成 AI agent 能跑的工作流</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>设计行业有个经典框架叫 <strong>Double Diamond</strong>:先发散(Discover)→再发散(Define)→再聚合(Develop)→再交付(Deliver)。Anshu 把它精简成三阶段,每个阶段配一组 prompt 技巧,刚好对应 AI agent 的工作方式。</p>
+          <p><strong>Discover · 发现</strong>:让 AI 大范围探索风格可能性,而不是直接锁定一个平庸解。技巧 1-2。<br>
+          <strong>Define · 定义</strong>:把探索出来的好方向,收敛成一个有自己品味的具体方向。技巧 3-5。<br>
+          <strong>Deliver · 交付</strong>:把定义好的方向,做到工作室级别的质量。技巧 6。</p>
+          <p>每阶段都有特定 prompt 技巧。Anshu 的 7 个技巧里,前 6 个覆盖了完整三阶段——本文也只讲这 6 个,Technique 7 起为付费内容,本篇不收录。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 全局中英文一键切换 -->
+    <div class="global-lang-bar">
+      <div class="container">
+        <span class="global-lang-label">本文 prompt · 一键切换</span>
+        <div class="lang-toggle" id="globalLang">
+          <button class="lang-btn active" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="cn">中文</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== DISCOVER · 发现 ====== -->
+    <section class="stage-divider">
+      <div class="container">
+        <div class="stage-kicker">STAGE 01 · DISCOVER</div>
+        <h2 class="stage-title">Discover · 先广后深</h2>
+        <p class="stage-title-cn">让 AI 大范围探索风格可能性,而不是直接锁定一个平庸解</p>
+      </div>
+    </section>
+
+    <!-- 技巧 01 -->
+    <section class="capability" id="t1">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">01</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">TECHNIQUE 01 · DISCOVER</div>
+            <h2 class="cap-title-en">Vary the style radically</h2>
+            <p class="cap-title-cn">让风格剧烈变化</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>「直接要随机」是个常见的误区。Anshu 试过,效果很差——AI 解「随机」的方式是从训练数据的分布里再抽样一次,得到的还是中位数。</p>
+          <p>真正有效的办法是<strong>给 AI 一个具体的随机锚点</strong>。Anshu 用的是 Sakana AI 的一个叫 <strong>String Seed of Thought</strong> 的技巧:先让 AI 用 shell 生成一串随机字符,然后让 AI 从这串字符里「看出」模式、子结构、特殊数字——再基于这些具体信号去定义方向。</p>
+          <p>这一步的目的是把 AI 从「我能想到的所有 design language 选一个最安全的」,推到「我必须基于这个具体的随机种子,推导出非标准的方向」。</p>
+
+          <h4>对比样本:同一个 productivity app landing page</h4>
+          <p>下面的三张图,用同一个目标「productivity app 的 landing page」,分别跑三种 prompt。baseline(几乎所有 AI 都长这样)、「直接要随机」(依然平庸)、String Seed of Thought(走出了不一样的方向)。</p>
+        </div>
+
+        <div class="prompt-card" data-card id="prompt-01">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">01</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Baseline prompt</span>
+                <span class="prompt-name-cn">基线 prompt · 对照组</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Build me a landing page for my productivity app.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>给我做一个 landing page,产品是我的效率类 app。</div>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-04.webp" alt="Baseline productivity app landing page · generic AI look" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 基线 prompt 产出 · 标准的「AI 风」design</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-02">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">02</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Just be random</span>
+                <span class="prompt-name-cn">直接要「随机」· 失败对照</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Build me a landing page for my productivity app. Give me something totally unique. Make every design decision completely at random.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>给我做一个 landing page,产品是我的效率类 app。要完全独一无二的东西。每一个设计决策都完全随机来定。</div>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-05.webp" alt="Just be random · still bland" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 「直接要随机」 prompt 产出 · 依然平庸</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-03">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">03</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">String Seed of Thought</span>
+                <span class="prompt-name-cn">随机种子串注入变化</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want you to build me a landing page for my productivity app.
+
+Follow this procedure:
+
+1. Generate a long, random alphanumeric string using a shell script.
+2. Define the creative direction (color scheme, layout, typography, etc.) based on the string. Look beyond the surface for subpatterns, special numbers, anything that inspires you.
+3. Use your judgment to bring this direction to life and make it look great.
+
+Don't reveal the string in the design. It's only for your inspiration.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我要你给我做一个 landing page,产品是我的效率类 app。
+
+按下面这个流程来:
+
+1. 用一段 shell script 生成一串很长的随机字母数字串。
+2. 基于这串字符定义创意方向(配色、布局、字体等等)。不要只看表面——去找里面的子模式、特殊数字,任何能激发你灵感的东西。
+3. 用你自己的判断把这个方向落地,做得好看。
+
+不要把这串字符本身显示在设计里。它只是给你找灵感用的。</div>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-06.webp" alt="String Seed of Thought · distinctive direction emerged" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · String Seed of Thought prompt 产出 · 出现了截然不同的方向</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 技巧 02 -->
+    <section class="capability" id="t2">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">02</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">TECHNIQUE 02 · DISCOVER</div>
+            <h2 class="cap-title-en">Pick a unique direction (and own it)</h2>
+            <p class="cap-title-cn">挑一个独特方向,然后把它做透</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>Discover 阶段的下一步:在生成一批完全不同的方向后,<strong>挑一个最不像「AI 风格」的方向,然后把所有精力压上去</strong>。</p>
+          <p>这一阶段 Anshu 给的三组 prompt 都遵循同一个结构:一个具体到位的视觉比喻 + 明确的功能要求。这不是「给我一个酷的设计」,而是「给我一个<strong>具体的、别人没做过的</strong>设计」。</p>
+          <p>下面三个例子都是同一个 productivity app,但视觉比喻完全不同——像素游戏风 / 等距 3D 城市 / 极端不对称风。Anshu 用 Claude Opus 5 跑出来的实际效果:</p>
+        </div>
+
+        <div class="prompt-card" data-card id="prompt-04">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">04</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Pixel art theme</span>
+                <span class="prompt-name-cn">像素艺术风</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Build me a landing page for my productivity app, with a bold pixel art theme and stunning graphics. Each section should feel like a still from a video game, yet somehow it should all function as a landing page.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>给我做一个 landing page,产品是我的效率类 app,要大胆的像素艺术主题 + 惊艳的图形。每一屏都要像是从一款电子游戏里截下来的静帧,但整体又确实能当 landing page 用。</div>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-07.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Pixel art theme productivity app"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 像素艺术风 · 每一屏像电子游戏静帧</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-05">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">05</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Isometric living 3D city</span>
+                <span class="prompt-name-cn">等距 3D 活城市</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Build me a landing page for my productivity app, set in an isometric living 3D city, where different features are somehow represented by neighborhoods or buildings.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>给我做一个 landing page,产品是我的效率类 app,场景设定在一座等距视角(isometric)的 3D 活城市里,不同的功能用不同的街区或建筑来表现。</div>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-08.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Isometric living 3D city productivity app"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 等距视角 3D 活城市 · 不同功能用街区/建筑表达</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-06">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">06</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Radically asymmetric</span>
+                <span class="prompt-name-cn">极端不对称 · 打破全部规则</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Build me a landing page for my productivity app, with a radically asymmetric layout, dissonant colors and typography, and uncomfortable negative space. Break all the rules but still make it look good.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>给我做一个 landing page,产品是我的效率类 app,要极端不对称的布局、不和谐的配色和字体、让人不舒服的留白。把所有规则都打破,但还是要好看。</div>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-09.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Radically asymmetric productivity app"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 极端不对称 · 打破所有规则但依然好看</p>
+        </div>
+
+        <div class="cap-body">
+          <h4>把方向变成可执行 prompt:三步 idea system</h4>
+          <p>挑完方向后,Anshu 用三段 prompt 把它收敛成一个具体可执行的 brief。第一段:让 AI 自己 brainstorm 一堆可能性(发散)。第二段:把 brainstorm 结果对照你自己的品味,挑一个具体方向。第三段:把这个方向写成一个 AI agent 能直接拿去 build 的 prompt。</p>
+          <p>这三段 prompt 是连续对话链,不是单独扔出去。</p>
+        </div>
+
+        <div class="prompt-card" data-card id="prompt-07">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">07</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Idea brainstorm · go broad</span>
+                <span class="prompt-name-cn">创意发散 · 先广后深</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want to come up with a bold, unique design language for my product. Can you list as many ideas as you can, with short, high-level descriptions? Go broad, not deep.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我想给我的产品找一套大胆、独特的 design language。你能不能尽可能多地列一堆点子,每个只写一句高层级的短描述?要广度,不要深度。</div>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-10.webp" alt="Idea brainstorm · many distinct directions listed" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Step 1 · 让 AI 大范围列方向 · 发散</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-08">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">08</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Sharpen with your taste</span>
+                <span class="prompt-name-cn">用你自己的品味收敛方向</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Industrial Control Panel:
+
+- I'm imagining something tactile. Clicky, satisfying buttons, nice sounds.
+- Initially I pictured something cartoony or skeuomorphic, but this feels tacky to me. Avoid that.
+- Instead, want consistent components and little touches that land this look without going overboard.
+- Gray gradients would look boring. Need more texture. Maybe we can incorporate some color, while retaining the control panel feel?
+
+Can you sharpen this one based on my tastes?</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>工业控制面板(Industrial Control Panel):
+
+- 我想要的是有触感的东西。按下去咔哒一声、很解压的按钮,声音也要好听。
+- 一开始我脑子里是卡通感或者拟物风(skeuomorphic),但我觉得那样很俗气。避开。
+- 我要的是一致的组件 + 一些小细节,把这个调性做出来,但不要用力过猛。
+- 灰色渐变会很无聊。需要更多质感。要不要在保留控制面板感觉的前提下,加一点颜色进去?
+
+你能不能按我这个口味把这个方向再收紧一点?</div>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-11.webp" alt="Sharpen with taste · specific direction selected" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Step 2 · 用自己的品味收敛到「工业控制面板」</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-09">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">09</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Turn the idea into a build prompt</span>
+                <span class="prompt-name-cn">把想法写成可执行 prompt</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Can you write a concise prompt that an AI agent could use to build an initial POC page with this?</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>你能不能写一段精炼的 prompt,让一个 AI agent 拿着它就能把这个方向的第一版 POC 页面做出来?</div>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-12.webp" alt="Turn the idea into a build prompt · concrete spec" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Step 3 · 把方向写成可执行的 build prompt</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== DEFINE · 定义 ====== -->
+    <section class="stage-divider">
+      <div class="container">
+        <div class="stage-kicker">STAGE 02 · DEFINE</div>
+        <h2 class="stage-title">Define · 收成有品味的具体方案</h2>
+        <p class="stage-title-cn">把挑出来的方向,做出工作室级别的质量</p>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-13.webp" alt="String Seed of Thought · the design directions recap before Define stage" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 回顾:Discover 阶段输出的多个方向</p>
+        </div>
+    </div>
+
+    <!-- 技巧 03 -->
+    <section class="capability" id="t3">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">03</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">TECHNIQUE 03 · DEFINE</div>
+            <h2 class="cap-title-en">Make it tall</h2>
+            <p class="cap-title-cn">做长一点,做高一点</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>「AI 风」设计最致命的特征是<strong>短</strong>——一屏、几张卡片、一个 CTA 就完了。真实世界的好产品从来不是一屏就说清楚的。</p>
+          <p>Anshu 的做法:让 AI 设计一个<strong>至少 5-8 屏的长滚动页面</strong>,每一屏有明确的叙事功能(hook → problem → solution → proof → CTA)。这一招逼着 AI 跳出「单屏元素组合」的套路,被迫讲一个完整故事。</p>
+          <p>从下图的 before / after 可以看到,「做长」不只是物理上加内容,而是强迫 AI 在每一屏做出有节奏感的设计。</p>
+        </div>
+
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-14.webp" alt="Tall page before/after · comparison strip" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 「做长」前 vs 「做长」后 · 同主题</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-10">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">10</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Design critic subagent loop</span>
+                <span class="prompt-name-cn">设计评审 subagent 反馈闭环</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">I want you to improve this design. To figure out what to focus on, use a Fable 5 subagent as a design critic.
+
+Follow this procedure at each iteration:
+
+- Capture a screenshot of the current design
+- Invoke the critic in a fresh context, with just the screenshot, not the code, implementation details, or earlier iterations/critiques
+- Ask it to evaluate the aesthetic that the design is going for, imagine how a top design studio would execute this aesthetic, then outline the biggest gaps
+- Lastly, it should provide a score out of 10 indicating how close the current design is to that studio-level quality bar
+
+Provide this guidance to the critic in its prompt:
+
+- It should think high-level about the overall structure and composition as well as look at the fine details
+- It should watch out for patterns that feel overdone, excessive, or otherwise obviously AI-generated, and penalize them
+- It should provide tight, specific feedback, not vague prose
+- It should be bold and opinionated, not rely on what's safe or easy
+
+Your work is only complete when the critic independently deems it 9/10 or higher. Do not put that criterion in the critic prompt; keep it objective in its scoring. Use the same critic prompt each time.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>我要你改进这个设计。为了搞清楚该往哪儿使劲,用一个 Fable 5 subagent 当 design critic(设计评审)。
+
+每一轮迭代都按这个流程走:
+
+- 对当前设计截一张 screenshot
+- 在一个全新的 context 里调用 critic,只给它这张截图——不给代码、不给实现细节、不给之前的迭代记录或评审意见
+- 让它评估这个设计想要的美学方向是什么,想象一家顶级设计工作室会怎么执行这套美学,然后列出差距最大的地方
+- 最后,让它给一个 10 分制的分数,表示当前设计离那个工作室级别的质量线还有多远
+
+在 critic 的 prompt 里给它这些指引:
+
+- 既要从高层级看整体结构和构图,也要抠细节
+- 要盯住那些做过头的、过量的、或者一眼就是 AI 生成的套路,并且扣分
+- 反馈要紧凑、具体,不要空泛的套话
+- 要大胆、有主见,不要挑安全和省事的说
+
+只有当 critic 独立判定达到 9/10 或更高时,你的工作才算完成。不要把这条标准写进 critic 的 prompt 里;让它的打分保持客观。每一轮都用同一份 critic prompt。</div>
+        </div>
+        <div class="cap-body">
+          <p>上面这段 prompt 是整个 Define 阶段最关键的一段——它引入了<strong>一个 subagent 当 design critic</strong>。做法是:对当前设计截图 → 在全新 context 里调一个 Fable 5 subagent,只给它截图(不给实现细节、不给之前的迭代记录)→ 让它从「顶级设计工作室会怎么执行这套美学」的角度给反馈 + 打分 → 分数 ≥ 9/10 才算完成。</p>
+          <p>Anshu 在 Apple 的设计团队就是这么迭代的——多一双陌生的眼睛,而且这双眼睛被刻意训练成「最挑的那个」。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 技巧 04 -->
+    <section class="capability" id="t4">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">04</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">TECHNIQUE 04 · DEFINE</div>
+            <h2 class="cap-title-en">Make it animate</h2>
+            <p class="cap-title-cn">让它动起来</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>「静态好看」和「动态好看」是两个完全不同的设计问题。AI 默认只会做静态——因为它的训练数据绝大多数是截图。</p>
+          <p>Define 阶段的下一步是<strong>给静态设计注入个性</strong>。Anshu 的做法是用图像生成给关键元素加 shader / 3D 效果 / 异常的光影,让画面从「平面设计」变成「有质感的视觉」。</p>
+          <p>下面是四组 before / after 对比——同主题,左静态、右加图像生成:每组都能看到「平」变「立体」的关键转折。</p>
+        </div>
+
+        <div class="prompt-card" data-card id="prompt-11">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">11</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Enrich with image generation</span>
+                <span class="prompt-name-cn">用图像生成加厚设计</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">The design is pretty plain. Add more personality using image generation. Consider shaders or 3D effects in combination with images to create more interesting visuals.
+
+For image generation, use this OpenAI API key (only use it locally, do not store it in the code or product): sk-a1b2c3d4…
+
+Verify that your work looks right frame-by-frame in the browser.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>这个设计有点平。用图像生成给它加点个性。可以考虑把 shader 或 3D 效果和图片结合起来,做出更有意思的视觉。
+
+图像生成用这个 OpenAI API key(只在本地用,不要存进代码或产品里):sk-a1b2c3d4…
+
+在浏览器里逐帧确认你做出来的效果是对的。</div>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-15.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Animate sample A before/after"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Before / After · 静态 vs 加图像生成 A</p>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-16.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Animate sample B before/after"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Before / After · 静态 vs 加图像生成 B</p>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-17.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Animate sample C before/after"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Before / After · 静态 vs 加图像生成 C</p>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-18.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Animate sample D before/after"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Before / After · 静态 vs 加图像生成 D</p>
+        </div>
+        <div class="cap-body">
+          <p>注意上面 prompt 里 Anshu 特别强调了「<strong>在浏览器里逐帧确认</strong>」——shader 和 3D 效果很容易做出截图好看但运行掉帧的东西,必须真的在浏览器里跑起来看。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 技巧 05 -->
+    <section class="capability" id="t5">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">05</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">TECHNIQUE 05 · DEFINE</div>
+            <h2 class="cap-title-en">Make it interactive</h2>
+            <p class="cap-title-cn">让它能交互</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>Define 阶段的最后一步:用<strong>视频生成</strong>把静态 / 动效元素升级成「能响应滚动、悬停、状态切换」的真实交互。</p>
+          <p>Anshu 给的两个示例分别是:1) 把一张静态水晶图换成一段循环播放的「玻璃折射 + 旋转」视频; 2) 做一个行李箱 demo,让滚动驱动视频过渡——空中悬浮 → 落地弹开 → 内容落入箱中。</p>
+        </div>
+
+        <div class="prompt-card" data-card id="prompt-12">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">12</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Video generation · glass crystal</span>
+                <span class="prompt-name-cn">视频生成 · 玻璃水晶折射</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Can you replace the image on this page with a looping video clip that does something more interesting? Have the crystal splinter apart and slowly spin around. It should have awesome glassy effects that refract the page background and cast shadows and light around it.
+
+To get convincing glass refraction effects, render the video of the glass over the page background colors first (so it bakes in the refraction effects), then remove the background with a video matting model.
+
+Use this fal.ai API key: sk-a1b2c3d4…
+
+Find appropriate recent models for video generation and background removal.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>你能不能把这个页面上的图片换成一段循环播放的视频,做点更有意思的事?让那块水晶碎裂开、然后缓慢旋转。要有很棒的玻璃质感,能折射页面背景,并且在周围投出阴影和光。
+
+要拿到有说服力的玻璃折射效果,先把玻璃的视频渲染在页面背景色之上(这样折射效果就被烘焙进去了),然后再用一个 video matting model 把背景去掉。
+
+用这个 fal.ai API key:sk-a1b2c3d4…
+
+自己去找当下合适的视频生成模型和背景去除模型。</div>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-19.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Glass crystal video before/after"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 玻璃水晶折射 · 静态图换成循环视频</p>
+        </div>
+        <div class="prompt-card" data-card id="prompt-13">
+          <div class="prompt-card-head">
+            <span class="prompt-card-tag">
+              <span class="prompt-num">13</span>
+              <span class="prompt-name-stack">
+                <span class="prompt-name-en">Video generation · scroll transitions</span>
+                <span class="prompt-name-cn">视频生成 · 滚动过渡</span>
+              </span>
+            </span>
+            <div class="prompt-card-actions">
+              <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="cn">中文</button>
+              </div>
+              <button class="copy-btn" data-copy-btn>Copy</button>
+            </div>
+          </div>
+          <div class="prompt-card-body" data-lang="en">Build a demo page for a suitcase that uses a video model to create interactive transitions between a couple of screens. Each screen should show the suitcase in a different state, with vertical motion that feels appropriate for scrolling:
+
+- Initially, have the suitcase floating high up in the air
+- Then have it land on the floor and pop open
+- Finally, have its contents neatly land into it from the top
+
+Generate the initial frame using your image generation skill. Then, generate a video clip that starts from that frame and animates to the next state. Use the final frame of that video to seed the next transition so that it continues seamlessly. Scrub through the transitions one by one as the user scrolls.
+
+Use this fal.ai API key: sk-a1b2c3d4…
+
+Use a video model with strong physics and consistency, like Seedance 2.5.</div>
+          <div class="prompt-card-body" data-lang="cn" hidden>做一个行李箱的 demo 页面,用一个 video model 在几屏之间生成可交互的过渡。每一屏展示行李箱的一个不同状态,纵向运动要符合滚动的手感:
+
+- 最开始,让行李箱悬浮在高空中
+- 然后让它落到地面上、弹开
+- 最后,让箱子里的东西从上方整整齐齐地落进去
+
+用你的 image generation skill 生成第一帧。然后生成一段视频,从这一帧开始、动画到下一个状态。用这段视频的最后一帧作为下一段过渡的种子帧,这样才能无缝衔接。用户滚动时,逐段 scrub 播放这些过渡。
+
+用这个 fal.ai API key:sk-a1b2c3d4…
+
+用一个物理表现和一致性都强的视频模型,比如 Seedance 2.5。</div>
+        </div>
+        <div class="inline-image">
+          <video src="images/2026-09-04-anshu-turn-ai-into-world/x-20.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Suitcase scroll-driven transitions"></video>
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 行李箱 · 滚动驱动的视频过渡</p>
+        </div>
+        <div class="cap-body">
+          <p>这两个例子的共同特点是:视频不是装饰,而是<strong>替代了原本的静态元素</strong>。Anshu 强调要选一个物理表现强、帧间一致性好的模型(他用的是 Seedance 2.5),并且要做「种子帧衔接」——上一段视频的最后一帧,作为下一段的起始帧,才能形成无缝滚动体验。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== DELIVER · 交付 ====== -->
+    <section class="stage-divider">
+      <div class="container">
+        <div class="stage-kicker">STAGE 03 · DELIVER</div>
+        <h2 class="stage-title">Deliver · 交付前最后一刀</h2>
+        <p class="stage-title-cn">把 AI 风的设计,收敛成真有人味的成品</p>
+      </div>
+    </section>
+
+    <!-- 技巧 06 -->
+    <section class="capability" id="t6">
+      <div class="container">
+        <div class="cap-head">
+          <span class="cap-num">06</span>
+          <div class="cap-title-group">
+            <div class="cap-kicker">TECHNIQUE 06 · DELIVER</div>
+            <h2 class="cap-title-en">Ship it, but dial back the AI tells</h2>
+            <p class="cap-title-cn">发布,但把 AI 风的小动作收一收</p>
+          </div>
+        </div>
+        <div class="cap-body">
+          <p>Define 阶段做出来的版本,通常会有明显的「用力过猛」感——配色太饱和、3D 效果太炫、动画太多。这是 AI 设计师的「过度补偿」,因为它知道自己在做设计、想要显得「有设计感」。</p>
+          <p>Deliver 阶段的关键:<strong>做减法</strong>。把那些「一眼就是 AI 加的」装饰元素逐个拿掉,只留下真正服务于内容的设计。</p>
+          <p>下面两张是 Anshu 那个 calorie tracker 例子:左是定义阶段的全功能版,右是交付前砍了一刀的「收」版——看起来更克制、更接近真人设计师会做出来的成品。</p>
+        </div>
+
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-21.webp" alt="Initial calorie tracker design · full features" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · Deliver 阶段初版 · 全功能、用力过猛</p>
+        </div>
+        <div class="inline-image">
+          <img src="images/2026-09-04-anshu-turn-ai-into-world/x-22.webp" alt="After dialing back the AI tells" loading="lazy">
+          <p class="inline-image-caption">原文配图 · Anshu Chimala · Lenny's Newsletter · 2026/09/01 · 砍掉 AI 风小动作后的版本 · 更克制、更有人味</p>
+        </div>
+        <div class="cap-body">
+          <p>Anshu 提了一个有用的判断标准:<strong>「如果一个真人设计师做这个,他会加这个元素吗?」</strong>如果答案是「不会」,那就拿掉。这条规矩在交付阶段筛掉了 60-80% 的「AI 加的」元素。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 付费墙说明 -->
+    <section class="paywall-note">
+      <div class="container">
+        <div class="paywall-box">
+          <span class="paywall-label">PAYWALL · 付费墙</span>
+          <p class="paywall-title">Technique 7 起为原文付费内容,本篇未收录</p>
+          <p class="paywall-text">本文覆盖的 6 个技巧 + 13 段 prompt,已经是一套完整的「从 Discover 到 Deliver」工作流。原文自 Technique 7 起进入付费区,主题是「<em>Remove AI tells</em>」——系统性地识别并拿掉 AI 设计的常见痕迹。如果你需要这部分内容,请前往 <a href="https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world" target="_blank" rel="noopener">原文链接</a> 订阅支持 Anshu。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 引用区 -->
+    <section class="references">
+      <div class="container">
+        <p class="references-kicker">SOURCES & CREDITS</p>
+        <h2 class="references-title">引用与原文出处</h2>
+        <ul class="references-list">
+          <li>
+            <strong>ORIGINAL ARTICLE</strong>
+            <em>How to turn your AI into a world-class designer</em><br>
+            作者:Anshu Chimala ([@anshuc](https://x.com/anshuc)) · 发布于 2026/09/01 · 客座发布于 Lenny's Newsletter (Lenny Rachitsky)<br>
+            原文链接:<a href="https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world" target="_blank" rel="noopener">https://www.lennysnewsletter.com/p/how-to-turn-your-ai-into-a-world</a>
+          </li>
+          <li>
+            <strong>AUTHOR · X</strong>
+            <a href="https://x.com/anshuc" target="_blank" rel="noopener">https://x.com/anshuc</a>
+          </li>
+          <li>
+            <strong>METHOD · STRING SEED OF THOUGHT</strong>
+            <a href="https://sakana.ai/" target="_blank" rel="noopener">Sakana AI</a> — 让 LLM 从一段随机字符串里「看到」结构、再用作创意的种子,本文 Technique 1 的核心方法。
+          </li>
+          <li>
+            <strong>INTERPRETATION</strong>
+            本文为解读版本,按中文阅读习惯重排。原文中所有 prompt 模板均保留英文原貌;中文版为意译,便于理解「为什么这么写」,而非直接翻译字面。如需引用或实际使用,请以原文英文为准。
+          </li>
+        </ul>
+        <p class="references-note">使用建议:这 13 段 prompt 不是越通用越好用——Anshu 的方法论核心是「把 prompt 写成具体的设计约束 + 明确的工作流」,而不是「给我一个最好的 prompt」。复制后建议先在自己的产品上跑一遍 Discover 阶段(技巧 1-2),感受一下 baseline 和 String Seed of Thought 的差距,再决定要不要走到 Define。</p>
+      </div>
+    </section>
+
+    <!-- Closing -->
+    <section class="closing">
+      <div class="container">
+        <p class="closing-text">「<strong>LLM 不会自己变成设计师</strong>。<br>但给它一段好的 prompt,它可以变成一个 9/10 设计师的实习生。」</p>
+        <p class="closing-caption">— Anshu Chimala,2026/09/01</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- 悬浮导航 -->
+  <button class="floating-nav-toggle" id="navToggle" aria-label="文章目录">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">目录导航</div>
+    <div class="nav-panel-content">
+      <a class="nav-section" href="#t1">
+        <div class="nav-section-kicker">DISCOVER · 01</div>
+        <div class="nav-section-title">Vary the style radically</div>
+      </a>
+      <a class="nav-section" href="#t2">
+        <div class="nav-section-kicker">DISCOVER · 02</div>
+        <div class="nav-section-title">Pick a unique direction</div>
+      </a>
+      <a class="nav-section" href="#t3">
+        <div class="nav-section-kicker">DEFINE · 03</div>
+        <div class="nav-section-title">Make it tall</div>
+      </a>
+      <a class="nav-section" href="#t4">
+        <div class="nav-section-kicker">DEFINE · 04</div>
+        <div class="nav-section-title">Make it animate</div>
+      </a>
+      <a class="nav-section" href="#t5">
+        <div class="nav-section-kicker">DEFINE · 05</div>
+        <div class="nav-section-title">Make it interactive</div>
+      </a>
+      <a class="nav-section" href="#t6">
+        <div class="nav-section-kicker">DELIVER · 06</div>
+        <div class="nav-section-title">Ship it, dial back AI tells</div>
+      </a>
+    </div>
+  </nav>
+
+  <footer>
+    <div class="container">
+      <p>为 AI 发电 · ZHUYOUYI · 2026</p>
+      <p class="credit">原文 © Anshu Chimala / Lenny's Newsletter · 本站为解读版本</p>
+    </div>
+  </footer>
+
+<script>
+    // 单卡中英文切换
+    document.querySelectorAll('.prompt-card').forEach(function(card) {
+      card.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var lang = btn.getAttribute('data-lang');
+          card.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.toggle('active', b === btn); });
+          card.querySelectorAll('.prompt-card-body').forEach(function(body) {
+            body.hidden = body.getAttribute('data-lang') !== lang;
+          });
+        });
+      });
+      // 复制
+      var copyBtn = card.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+          var active = card.querySelector('.lang-btn.active');
+          var lang = active ? active.getAttribute('data-lang') : 'en';
+          var body = card.querySelector('.prompt-card-body[data-lang="' + lang + '"]');
+          var text = body ? body.innerText : '';
+          var done = function() {
+            var orig = copyBtn.textContent;
+            copyBtn.textContent = 'Copied';
+            copyBtn.classList.add('copied');
+            setTimeout(function() { copyBtn.textContent = orig; copyBtn.classList.remove('copied'); }, 2000);
+          };
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done).catch(function() {
+              fallbackCopy(text); done();
+            });
+          } else {
+            fallbackCopy(text); done();
+          }
+        });
+      }
+    });
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0'; ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    // 全局中英文一键切换
+    var globalBar = document.getElementById('globalLang');
+    if (globalBar) {
+      globalBar.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var lang = btn.getAttribute('data-lang');
+          globalBar.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.toggle('active', b === btn); });
+          document.querySelectorAll('.prompt-card').forEach(function(card) {
+            card.querySelectorAll('.lang-btn').forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-lang') === lang); });
+            card.querySelectorAll('.prompt-card-body').forEach(function(body) {
+              body.hidden = body.getAttribute('data-lang') !== lang;
+            });
+          });
+        });
+      });
+    }
+
+    // 悬浮导航
+    var navToggle = document.getElementById('navToggle');
+    var navPanel = document.getElementById('navPanel');
+    if (navToggle && navPanel) {
+      navToggle.addEventListener('click', function(e) { e.stopPropagation(); navPanel.classList.toggle('active'); });
+      navPanel.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { navPanel.classList.remove('active'); }); });
+      document.addEventListener('click', function(e) {
+        if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) navPanel.classList.remove('active');
+      });
+    }
+</script>
+</body>
+</html>
