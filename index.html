@@ -137,16 +137,26 @@
       transition: box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                   transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                   border-color 0.3s;
-      opacity: 0;
-      transform: translateY(20px);
+      opacity: 1;
+      transform: translateY(0);
+      animation: cardFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
     }
+    @keyframes cardFadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .article-card:nth-child(1) { animation-delay: 0s; }
+    .article-card:nth-child(2) { animation-delay: 0.06s; }
+    .article-card:nth-child(3) { animation-delay: 0.12s; }
+    .article-card:nth-child(4) { animation-delay: 0.18s; }
+    .article-card:nth-child(5) { animation-delay: 0.24s; }
+    .article-card:nth-child(6) { animation-delay: 0.30s; }
+    .article-card:nth-child(7) { animation-delay: 0.36s; }
+    .article-card:nth-child(8) { animation-delay: 0.42s; }
+    .article-card:nth-child(n+9) { animation-delay: 0.48s; }
     .article-card.visible {
       opacity: 1;
       transform: translateY(0);
-      transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  border-color 0.3s;
     }
     .article-card:hover {
       box-shadow: var(--shadow-hover);
@@ -340,6 +350,26 @@
     </header>
 
     <div class="article-list">
+      <a href="2026-09-08-gpt6-astra-masterclass.html" class="article-card">
+        <p class="article-date">2026/09/08</p>
+        <h2 class="article-title">GPT-6 Astra 提示词大师课 · 8 块框架 + 12 避坑 + 一键复制 Prompt · Rahul 51.6 万浏览长文解读</h2>
+        <p class="article-desc">Rahul (@sairahul1) 516,000 浏览 X 长文解读。你 6 个月前精心写的 AGENTS.md,现在可能正让 Astra 越用越糟——Astra 自己会跑测试、自己读相关文件、自己做长任务,旧模型时代的"提醒类"指令现在反过来让它过度测试、撑爆 context、放慢速度。13 capability 章节 + 21 个可一键复制的 prompt(EN/CN 切换 + Copy)+ 6 段代码块(python API 改动 + bash 一行迁移)+ 12 避坑网格 + 1 个 audit prompt + 12 项 checklist,所有 prompt 卡片 EN/CN 全部独立中文意译。专业术语 AGENTS.md / skill / subagent / RAG / Responses API / prompt caching 全部保留英文。</p>
+        <div class="article-tags">
+          <span class="tag">GPT-6 Astra</span>
+          <span class="tag">8 块框架</span>
+          <span class="tag">12 避坑</span>
+          <span class="tag">Rahul</span>
+          <span class="tag">51.6 万浏览</span>
+          <span class="tag">X 长文</span>
+          <span class="tag">解读</span>
+          <span class="tag">21 prompt</span>
+          <span class="tag">含代码</span>
+          <span class="tag">含配图</span>
+          <span class="tag">EN/CN 切换</span>
+          <span class="tag">一键复制</span>
+        </div>
+      </a>
+
       <a href="2026-09-04-anshu-world-class-designer.html" class="article-card">
         <p class="article-date">2026/09/04</p>
         <h2 class="article-title">把 AI 调教成世界级设计师 · Anshu Chimala 的 7 个 prompt 技巧(免费版技巧 1-6)</h2>
@@ -1090,6 +1120,12 @@
   <nav class="floating-nav-panel" id="floatingNavPanel">
     <div class="nav-panel-header">文章列表</div>
     <div class="nav-panel-content">
+      <a href="2026-09-08-gpt6-astra-masterclass.html" class="nav-article">
+        <div class="nav-article-date">2026/09/08</div>
+        <div class="nav-article-title">GPT-6 Astra 提示词大师课</div>
+        <div class="nav-article-desc">Rahul 51.6 万浏览 X 长文。13 章节 + 21 prompt + 6 code + 12 避坑 + audit + checklist,EN/CN 切换 + Copy。</div>
+      </a>
+
       <a href="2026-09-04-anshu-world-class-designer.html" class="nav-article">
         <div class="nav-article-date">2026/09/04</div>
         <div class="nav-article-title">把 AI 调教成世界级设计师</div>
@@ -1393,21 +1429,14 @@
   </script>
 
   <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, index) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, index * 100);
-          observer.unobserve(entry.target);
-        }
+    // 兜底:如果 CSS animation 因任何原因失败(浏览器不支持 / 扩展拦截等),
+    // 1.5s 后强制把所有 article-card 显示出来
+    setTimeout(() => {
+      document.querySelectorAll('.article-card').forEach(c => {
+        c.style.opacity = '1';
+        c.style.transform = 'translateY(0)';
       });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.article-card').forEach((card, i) => {
-      card.dataset.index = i;
-      observer.observe(card);
-    });
+    }, 1500);
   </script>
 
   <script>
