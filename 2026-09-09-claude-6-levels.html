@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Claude AI 6 Levels 阶梯图 · 朱有以解读 · Metics Media 36 万浏览长文</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+  --bg-code: #0e0e10;
+  --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+  --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+  --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+}
+html { scroll-behavior: smooth; }
+body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+.ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+.site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+.site-header .container { display: flex; justify-content: space-between; align-items: center; }
+.site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+.back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+.back-link:hover { color: var(--accent-gold-dim); }
+.container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+.article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+.article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+.article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+.article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+.article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+.article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; white-space: nowrap; }
+.article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 620px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+.article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+.article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+.article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+.article-byline .byline-sep { color: var(--border-subtle); }
+.article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+.cover-frame { padding: 64px 0; }
+.cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+.cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+.article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+.intro-lead { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-secondary); line-height: 1.85; margin-bottom: 18px; }
+.intro-lead:last-child { margin-bottom: 0; }
+.intro-lead strong { color: var(--accent-red); font-weight: 600; }
+.intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+.pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+.pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+.pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+.capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+.capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+.cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+.cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+.cap-title-group { flex: 1; }
+.cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+.cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+.cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+.cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+.cap-body p { margin-bottom: 18px; }
+.cap-body p:last-child { margin-bottom: 0; }
+.cap-body strong { color: var(--text-primary); font-weight: 600; }
+.cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+.cap-body h3 { font-family: 'Noto Serif SC', serif; font-size: 20px; font-weight: 500; color: var(--text-primary); margin: 24px 0 12px; }
+.principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+.principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+.principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+.principle-box-text strong { color: var(--accent-red); font-weight: 600; }
+.inline-image { margin: 28px 0 8px; text-align: center; }
+.inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.inline-image:hover img { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+.inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+.floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 1000; }
+.floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
+.floating-nav-toggle svg { width: 20px; height: 20px; }
+.floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 78vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+.floating-nav-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.nav-panel-header { padding: 14px 20px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
+.nav-panel-content { padding: 4px 0 12px; }
+.nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+.nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+.nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+.nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+.references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+.references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+.references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+.references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+.references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+.references-list li:last-child { border-bottom: none; }
+.references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+.references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+.references-list a { color: var(--text-primary); word-break: break-all; }
+.references-list a:hover { color: var(--accent-red); }
+.references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+@media (max-width: 768px) {
+  .cap-head { gap: 16px; }
+  .cap-num { font-size: 40px; }
+}
+@media (max-width: 640px) {
+  .article-category::before, .article-category::after { width: 40px; }
+  .article-title { white-space: normal; font-size: 26px; }
+  .floating-nav-toggle {
+    bottom: max(56px, calc(env(safe-area-inset-bottom) + 16px));
+    right: max(20px, calc(env(safe-area-inset-right) + 12px));
+  }
+  .floating-nav-panel { right: 20px; bottom: calc(max(56px, env(safe-area-inset-bottom)) + 76px); width: calc(100vw - 40px); max-width: 320px; }
+}
+footer { text-align: center; padding: 40px 0 60px; border-top: 1px solid var(--border-subtle); }
+footer p { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+footer .credit { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
+a { overflow-wrap: anywhere; word-break: break-word; }
+table { table-layout: fixed; width: 100%; }
+table th, table td { word-break: break-word; overflow-wrap: anywhere; }
+</style>
+
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+  <main>
+    
+<section class="article-hero">
+  <div class="container">
+    <div class="article-category">CLAUDE TUTORIAL · 6 LEVELS LADDER</div>
+    <h1 class="article-title">Claude AI 6 Levels 阶梯图</h1>
+    <p class="article-subtitle">从「对话」到「替你干活」· 1 小时讲完 Claude 完整能力地图</p>
+    <div class="article-byline">
+      <span class="byline-author">朱有以</span>
+      <span class="byline-sep">·</span>
+      <span class="byline-source">Metics Media (@MeticsMedia) · 36 万浏览 · 1.0 万赞</span>
+      <span class="byline-sep">·</span>
+      <span>2026/09/09</span>
+    </div>
+    <p class="article-desc">如果你用过 ChatGPT 或 Claude 但只停留在「跟它聊天」，这 6 Levels 就是你的下一站。Matt 用 1 小时把 Claude 的完整能力地图拆成 6 级阶梯——从最基础的「跟它说话」一路爬到「它替你干活」。每一级都讲清为什么上、怎么上、卡在哪。本文按原视频章节顺序逐级展开，附 17 张原文截图和一张自检表，读完你就能定位自己当前在哪一级、下一级该试什么。</p>
+  </div>
+</section>
+
+    
+<section class="cover-frame">
+  <div class="container">
+    <img src="images/2026-09-09-claude-6-levels/cover.jpg" alt="The 6 Levels of Claude · Metics Media">
+    <p class="cover-caption">METICS MEDIA · @METICSMEDIA · 2026/08/10</p>
+  </div>
+</section>
+
+    
+<section class="article-intro">
+  <div class="container">
+    <p class="intro-lead">很多人用过 Claude，但只停留在 Level 1——把它当聊天框，问一个问题收一个答案。这就像你买了一辆跑车却只用它在小区里代步。Matt 把这种"用得太浅"叫做 <code>Many people stop here and they're missing everything that's coming</code>。</p>
+    <p class="intro-lead">这 6 Levels 不是一个产品功能列表，而是一张<strong>能力地图</strong>。每一级都是一次认知跃迁：从"我得跟它说话"到"它能读我的文件"、从"它能造东西"到"它认识我"、从"它能接我的应用"到最后"它能替我干活"。读完你至少知道自己在哪一级、下一级长什么样。</p>
+  </div>
+</section>
+<section class="pull-quote">
+  <div class="container">
+    <p class="pull-quote-text">"Many people stop here and they're missing everything that's coming."<br><span style="font-size:0.65em;color:var(--text-muted);">—— 多数人停在这里，错过了接下来的一切</span></p>
+    <p class="pull-quote-caption">— MATT / METICS MEDIA</p>
+  </div>
+</section>
+
+    
+<section class="capability" id="level-1">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">01</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">LEVEL 1 · 入门</div>
+        <h2 class="cap-title-en">Talk to Claude</h2>
+        <div class="cap-title-cn">跟 Claude 说话</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Claude 是 Anthropic 出的 AI 助手。如果你用过 ChatGPT，基本套路一样：输入自然语言，它回答、写东西、造东西。但 Claude 的口碑建立在三件事上：写得像人、文件处理强、为真实工作设计而不仅是快问快答。</p>
+      <p>Level 1 是入门门槛——但 Matt 说得很直接："<strong>很多人停在这里，错过了接下来的一切</strong>"。这一级的核心是学会写好 prompt、选对模型，剩下的能力都被浪费了。</p>
+
+      <div class="principle-box">
+        <span class="principle-box-label">三段式 Prompt · 唯一需要记住的公式</span>
+        <div class="principle-box-text"><strong>Context</strong>（你是谁、在做什么） + <strong>Task</strong>（你要它干什么） + <strong>Format</strong>（长度、语气、结构）= 一份 Claude 能立刻交付的 prompt。</div>
+      </div>
+
+      <p>Matt 用蜡烛店的例子做对比——同样问"写一个产品描述"，弱 prompt 给出一段泛泛的文字，强 prompt（包含店铺定位、蜡烛卖点、目标客户、文文要求）则写出"Autumn cabin. Picture this: Wool socks, a crackling fire..."这样有画面感的文案。Claude 没变，变的只是你给它的输入。</p>
+      <p>另一个关键习惯：<strong>别重开会话去改</strong>。Claude 记得整个对话，直接回"great, but make it half as long and keep the mention that it's hand poured"，它就在原答案上改。把每次回复当成"再改一稿"。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-01.jpg" alt="弱 prompt vs 强 prompt 对比">
+        <p class="inline-image-caption">原文配图 · 强弱 prompt 对比 · 同一 Claude 不同答案 · 04:30</p>
+      </div>
+
+      <h3>模型选择 · 你不需要懂技术，只要懂一件事</h3>
+      <p>原视频录制时，<strong>Sonnet</strong> 是默认日常模型，<strong>Haiku</strong> 是轻量快速版，<strong>Opus</strong> 是进阶，<strong>Fable</strong> 是顶级。规则很简单：日常用默认；任务大或结果重要时升档；批量小问答时降档省用量。模型旁边的 <strong>effort 档位</strong> 控制 Claude 思考多久——多步骤且要求细节对的任务调高，其他保持默认。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-02.jpg" alt="模型选择下拉界面">
+        <p class="inline-image-caption">原文配图 · 模型选择下拉 · 默认 + 进阶 + 轻量 三档 · 07:30</p>
+      </div>
+
+      <p>关于用量限制：每个套餐（免费和付费）都有按周期补充的额度，用完了不会丢数据，只是等重置或升级。Matt 的建议很实在——"开始用免费版，等到额度开始烦你的那天再升级"。</p>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="level-2">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">02</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">LEVEL 2 · 输入扩展</div>
+        <h2 class="cap-title-en">Give Claude Your World</h2>
+        <div class="cap-title-cn">把你的世界交给 Claude</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Level 1 时 Claude 只能看你输入框里的字。Level 2 开始，你能把手里的文件、看到的图片、当下的实时信息全喂给它——它从"聊天框"升级成"真助手"。</p>
+
+      <h3>文件 &amp; 图片上传</h3>
+      <p>PDF、Word、Excel、图片，Claude 全能读。Matt 上传了一份蜡烛原料供应商的价格表 PDF，问"哪一档最便宜"，几秒后 Claude 找出 Golden Soy 464 bulk 是单价最低的选项。同样它能看产品照片——给一张蜡烛图，问"怎么改能让它在网上更好卖"，它会说"背景太抢镜、像是随手拍而不是产品图"。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-03.jpg" alt="PDF 文件上传 + 分析">
+        <p class="inline-image-caption">原文配图 · PDF 文件上传 + Claude 分析结果 · 10:30</p>
+      </div>
+
+      <h3>Web Search · 带来源的实时搜索</h3>
+      <p>Claude 默认<strong>不看实时信息</strong>。需要当前新闻、价格、趋势时，开 Web Search。它会搜网页然后回答，关键是会附上 <strong>来源链接</strong>。Matt 的忠告："事实要紧的时候，永远看来源。"</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-04.jpg" alt="Web Search 结果带 sources">
+        <p class="inline-image-caption">原文配图 · Web Search 结果 · 带 sources 引用 · 14:00</p>
+      </div>
+
+      <h3>Deep Research · 几分钟读完上百个来源</h3>
+      <p><strong>付费功能</strong>，但 Matt 说是"让他觉得升级值回票价的两个功能之一"。点开 Research，Claude 会自主阅读几十甚至上百个来源，然后返回一份带完整引用的研究报告。Matt 让它研究"小型手工蜡烛品牌市场"——几分钟后就得到一份包括目标客户画像、价格区间、营销方式、新手三大坑的完整报告，所有数据点都带来源链接。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-05.jpg" alt="Deep Research 报告">
+        <p class="inline-image-caption">原文配图 · Deep Research 报告 · 带完整 sources · 15:30</p>
+      </div>
+
+      <p>这个功能特别适合人生大决策——搬家、跳槽、大额采购——AI 替你做完信息搜集，你只需要判断结论。</p>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="level-3">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">03</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">LEVEL 3 · 输出升级</div>
+        <h2 class="cap-title-en">Make Real Things</h2>
+        <div class="cap-title-cn">让 Claude 造真东西</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Level 3 是认知跃迁——Claude 不再只是"在对话框里写文字"，它开始<strong>交付可用的实物</strong>。Matt 把这些产物分成两类：</p>
+
+      <h3>A. 可下载文件 · Word / Excel / PPT / PDF</h3>
+      <p>让 Claude "create an Excel spreadsheet to track inventory"——它会生成一份带真实公式的电子表格，可以下载、用 Excel 打开、编辑。同样的能力适用 Word 简历、PPT 演示、PDF 报告。Matt 的蜡烛店 demo 里，它建了一张 8 个蜡烛的库存表，包含品名、香型、成本、售价、利润率（自动算）、库存数。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-06.jpg" alt="Excel 文件生成">
+        <p class="inline-image-caption">原文配图 · Claude 生成的 Excel 库存表 · 带公式 · 18:30</p>
+      </div>
+
+      <h3>B. 互动构建 · HTML 页面 / 小工具</h3>
+      <p>如果让 Claude "build something visual"，它会在聊天旁边开一个窗口<strong>实时构建</strong>。Matt 让它做一个蜡烛店落地页——几分钟后它做出一份配色温暖、有蜡烛闪烁动画的 HTML 页面。再让它改成米色背景、再加一个 scent quiz——它直接在原页面上迭代，每次打开预览都是最新版。</p>
+
+      <p>scent quiz 是个亮点：让用户选蜡烛燃烧的场景（厨房/卧室）、最先吸引的香味（木烟/柑橘）、氛围（夜归/下午茶），最后推荐一款蜡烛。这种"小而完整的互动产品"在 Claude 里几分钟就能做出来。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-07.jpg" alt="HTML artifact scent quiz">
+        <p class="inline-image-caption">原文配图 · Claude 实时构建的 scent quiz 互动页面 · 19:30</p>
+      </div>
+
+      <p>对你来说，这可能是预算计算器、健身计划生成器、给朋友做的测试题。Claude 在这里像"坐在你旁边的设计师"——你说话，它做，你不满意它改。</p>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="level-4">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">04</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">LEVEL 4 · 持续性</div>
+        <h2 class="cap-title-en">Make Claude Know You</h2>
+        <div class="cap-title-cn">让 Claude 认识你</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Level 3 暴露了一个问题：你的描述、研究、文件全散在不同的对话里，每个新对话 Claude 都从零开始。Level 4 解决这件事——<strong>Claude 开始越用越懂你</strong>。</p>
+
+      <h3>Projects · 工作区 + 共享知识</h3>
+      <p>Project 是一个把相关对话组织起来的工作区。<strong>两个超能力</strong>：一是 knowledge——你上传到 Project 的文件对所有对话可用，不用每次重新上传；二是 instructions——你描述一次"我做什么"，所有对话自动知道。Matt 给蜡烛店建了个 Project，上传价格表 + 研究报告 + 写下品牌调性，然后在新对话里只输入"写三封 newsletter 主题"——Claude 直接基于 Project 上下文开始工作，prompt 里几乎什么都没说。</p>
+      <p>Matt 称这是"<strong>从随手用 Claude 升级到真正和 Claude 协作的最大一步</strong>"。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-08.jpg" alt="Projects knowledge + instructions 界面">
+        <p class="inline-image-caption">原文配图 · Projects knowledge + instructions 界面 · 21:30</p>
+      </div>
+
+      <h3>Personal Instructions &amp; Memory</h3>
+      <p>Settings 里可以设个人 instructions（你的名字、称呼、工作类型、对 Claude 的特别要求）——对所有对话生效。Memory 则反过来：<strong>Claude 自动从对话里发现和记住关于你的事</strong>，用得越多越懂你。你随时可以查看、编辑、删除这些记忆。</p>
+      <p>不想被记住的对话？开 <strong>Incognito Chat</strong>（聊天框右上角幽灵图标）——这个对话不被保存、不进 Memory、不用于训练。问"who am I"，Claude 答不知道。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-09.jpg" alt="Memory 设置界面">
+        <p class="inline-image-caption">原文配图 · Memory 设置 · 自动记忆 + 手动编辑 · 24:30</p>
+      </div>
+
+      <h3>从 ChatGPT 平迁 · Memory Import</h3>
+      <p>从 ChatGPT 转过来的？Claude 提供导入路径——Settings → Memory → Import memory from other AI providers，按提示在 ChatGPT 里复制粘贴你的记忆，Claude 会整合进来。这是 experimental 功能，可能有少量偏差，事后可以手动编辑。</p>
+
+      <h3>Mobile + Desktop App</h3>
+      <p>iPhone / Android 移动端和 Mac / Windows 桌面端同步所有内容——账号、对话、Projects、Memory。移动端的最佳用法是"<strong>捕获 + 继续</strong>"：拍眼前的物体、走路时冒出的想法，回到电脑前整段对话已在那等。Level 5 和 Level 6 的能力在桌面端最完整。</p>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="level-5">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">05</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">LEVEL 5 · 工具连接</div>
+        <h2 class="cap-title-en">Connect Your Apps</h2>
+        <div class="cap-title-cn">接上你已有的工具</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Level 5 是分水岭。之前 Claude 只能"谈你的世界"，从这一级开始它能<strong>伸进你的世界动手</strong>。你的真实数据存在日历、邮件、笔记、业务系统里，Connectors 让 Claude 安全地接入这些工具——你选连接哪些，随时能断开。</p>
+
+      <h3>Connectors · 开箱即用</h3>
+      <p>Gmail、Google Drive、Slack、Calendar 等常用工具 Claude 都内置了连接器。Matt 连接 Google Calendar 后，让 Claude "看下周哪天哪个下午最空，最适合深度工作"——几秒后它直接给出周三下午的建议，<strong>不用复制粘贴，不用截图</strong>。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-10.jpg" alt="Connectors + Google Calendar 查询">
+        <p class="inline-image-caption">原文配图 · Connectors 列表 + Calendar 实际查询结果 · 29:30</p>
+      </div>
+
+      <h3>自定义 MCP · 接你的业务系统</h3>
+      <p>内置连接器不够用？可以用 <strong>MCP（Model Context Protocol）</strong> 接任何支持它的服务。Matt 用 Omnisend（邮件营销平台）演示：</p>
+      <p>新建蜡烛店，需要第一封欢迎邮件。Matt 在 Claude 里加 Omnisend 连接器，告诉 Claude 业务信息和邮件要求——"创建欢迎邮件草稿，介绍店铺和 Autumn Cabin 蜡烛，给 10% 首单折扣，包含品牌故事"。Claude <strong>直接在你的 Omnisend 账户里建好草稿</strong>：主题行、预览文字、正文、按钮、首单优惠码全有。Matt 没写过一行文案，没碰过 campaign builder。</p>
+      <p>最妙的是——Claude 写到一半发现自己输出有字符问题，立刻诊断、重写、给出干净版本。它会<strong>检查自己的工作再交付</strong>。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-11.jpg" alt="Omnisend MCP 连接 + welcome email">
+        <p class="inline-image-caption">原文配图 · Omnisend MCP 连接 + 生成的欢迎邮件草稿 · 34:00</p>
+      </div>
+
+      <h3>Skills · 安装一次永久生效</h3>
+      <p>Skill 像给 Claude 装的一个"食谱"——安装一次后，Claude 知道怎么按特定标准完成这类任务。Matt 装了 <strong>Theme Factory</strong> skill 做演示：这个 skill 给 Claude 10 套主题风格，以后做 PPT 时输入 <code>/theme factory</code> 调用，Claude 自动按选定主题风格排版幻灯片。Skills 库里还有文档类、品牌类、规划类等可以慢慢探索。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-12.jpg" alt="Skills Theme Factory">
+        <p class="inline-image-caption">原文配图 · Theme Factory skill 主题选项 · 37:30</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="level-6">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">06</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">LEVEL 6 · 自主性</div>
+        <h2 class="cap-title-en">Claude Works Without You</h2>
+        <div class="cap-title-cn">Claude 替你干活</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>之前所有级别都是对话——你问，Claude 答，你全程在场。Level 6 不一样：你交给 Claude 一个真实任务，它<strong>自己去跑</strong>。这是 Matt 说的"升级值回票价的第二个功能"。</p>
+
+      <h3>Cowork · 桌面端自主 Agent</h3>
+      <p>把消息框从 Chat 切到 <strong>Cowork</strong>，Claude 获得自主操作你指定文件夹的能力（其他位置它碰不到）。Matt 给它一个收据文件夹，让它"<strong>读取每张收据的日期、供应商、金额，做成一份干净的支出表</strong>"——它自己开文件、自己读、自己建表，整个过程 Matt 没在电脑前。</p>
+      <p>权限分三档：<strong>Manual</strong>（每步问一次）→ <strong>Auto approve</strong>（自动通过安全检查）→ <strong>Skip all</strong>（不问直接做）。第一次用建议从 Manual 开始，建立信任后再松绑。模型选 Opus，effort 调高——既然让它干活，就别省脑子。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-13.jpg" alt="Cowork 进度">
+        <p class="inline-image-caption">原文配图 · Cowork 自主处理 receipts 进度 · 42:00</p>
+      </div>
+
+      <h3>Scheduled Tasks · 定时任务</h3>
+      <p>Cowork 里还有个 Scheduled 区。你<strong>描述一次任务 + 设频率</strong>，Claude 按计划自动跑。Matt 建了个任务："搜索蜡烛和家居香氛的最新趋势，写一份短报告"，<strong>每周一早上 6:30 自动跑</strong>。他还没起床，报告已经在那里等他。</p>
+      <p>任务可以在云端跑，<strong>电脑关着也工作</strong>。常见场景：每周行业新闻摘要、基于日历的提醒清单、每月预算检查。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-14.jpg" alt="Scheduled tasks 配置">
+        <p class="inline-image-caption">原文配图 · Scheduled tasks 配置界面 · 46:00</p>
+      </div>
+
+      <h3>Claude Design → Claude Code · 真正造东西</h3>
+      <p>Matt 说有 6 Levels，但这不是终点——<strong>阶梯顶端是 Claude Code</strong>。它不只是编程工具（虽然听起来像），它和 Cowork 用同一引擎，但<strong>产出物是真实工作的代码、命令、可运行的软件</strong>。你还是用日常语言跟它对话。</p>
+      <p>Matt 用两件工具做完整 demo：先在 <strong>Claude Design</strong> 里输入描述，自动生成蜡烛店的完整网站设计稿（首页、商店页、关于页、含 scent quiz）；再"发送到 Claude Code"，后者把设计稿<strong>真正建成可运行的网站</strong>——20 分钟，照片也自动换了，Omnisend 也连上了，加邮箱就自动进邮件列表。</p>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-15.jpg" alt="Claude Design 网站设计图">
+        <p class="inline-image-caption">原文配图 · Claude Design 生成的蜡烛店网站设计 · 48:30</p>
+      </div>
+
+      <div class="inline-image">
+        <img src="images/2026-09-09-claude-6-levels/x-16.jpg" alt="Claude Code 建站成品">
+        <p class="inline-image-caption">原文配图 · Claude Code 实际建站成果 · 56:30</p>
+      </div>
+
+      <p>最后的杀手锏：Matt 让 Claude Code <strong>写了个桌面工具</strong>——读 inventory.xlsx，按品牌风格生成可打印的 PDF 蜡烛标签。这个工具生成后<strong>不再依赖 Claude</strong>——双击就运行，新加产品、重命名都自动反映。Matt 说：<strong>"Claude stops being the worker and starts building the machines."</strong></p>
+      <p>Level 6 不是终点。同一能力还可以指向电脑本身——查为什么电脑慢、每晚备份照片。还能并行跑多个 Claude session 同时做项目的不同部分。Matt 最后一句：<strong>"If you can do level one, you can grow into level six. The only difference is how big the results get."</strong></p>
+    </div>
+  </div>
+</section>
+
+    
+<section id="self-check" class="capability" style="background:var(--bg-secondary);">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num" style="font-size:48px;">★</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">SELF-CHECK · 自检</div>
+        <h2 class="cap-title-en">Where Are You on the Ladder?</h2>
+        <div class="cap-title-cn">你在哪一级？</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>读完前面 6 Levels，花两分钟自检——把每一行对应的"关键标志"对照你当前的实际使用，<strong>打勾的是你已经稳的，空着的是你还没到位的</strong>。</p>
+      <table style="border-collapse:collapse;margin:24px 0;font-size:14px;line-height:1.7;">
+        <thead>
+          <tr style="background:var(--bg-card);">
+            <th style="padding:12px 14px;text-align:left;border-bottom:2px solid var(--border-strong);width:60px;">级别</th>
+            <th style="padding:12px 14px;text-align:left;border-bottom:2px solid var(--border-strong);width:38%;">这一级在做什么</th>
+            <th style="padding:12px 14px;text-align:left;border-bottom:2px solid var(--border-strong);width:48%;">关键标志（你能做这个？）</th>
+            <th style="padding:12px 14px;text-align:center;border-bottom:2px solid var(--border-strong);width:60px;">✓</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);"><strong style="color:var(--accent-gold-dim);">L1</strong></td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">跟 Claude 说话 + 三段式 prompt</td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">我能写出 context + task + format 的 prompt；知道什么时候切模型</td><td style="padding:12px 14px;text-align:center;border-bottom:1px solid var(--border-subtle);">☐</td></tr>
+          <tr><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);"><strong style="color:var(--accent-gold-dim);">L2</strong></td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">把文件 / 图片 / 实时信息交给 Claude</td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">我能上传 PDF / 图片分析；会用 Web Search 和 Deep Research</td><td style="padding:12px 14px;text-align:center;border-bottom:1px solid var(--border-subtle);">☐</td></tr>
+          <tr><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);"><strong style="color:var(--accent-gold-dim);">L3</strong></td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">让 Claude 造真东西</td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">我能用 Claude 生成 Excel / Word / PPT；能迭代互动 artifact</td><td style="padding:12px 14px;text-align:center;border-bottom:1px solid var(--border-subtle);">☐</td></tr>
+          <tr><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);"><strong style="color:var(--accent-gold-dim);">L4</strong></td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">让 Claude 认识你</td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">我用过 Project + Instructions；Memory 在工作；手机电脑同步</td><td style="padding:12px 14px;text-align:center;border-bottom:1px solid var(--border-subtle);">☐</td></tr>
+          <tr><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);"><strong style="color:var(--accent-gold-dim);">L5</strong></td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">接上你已有的工具</td><td style="padding:12px 14px;border-bottom:1px solid var(--border-subtle);">我连过至少一个 Connector 或自定义 MCP；用过至少一个 Skill</td><td style="padding:12px 14px;text-align:center;border-bottom:1px solid var(--border-subtle);">☐</td></tr>
+          <tr><td style="padding:12px 14px;"><strong style="color:var(--accent-gold-dim);">L6</strong></td><td style="padding:12px 14px;">Claude 替你干活</td><td style="padding:12px 14px;">我用过 Cowork 处理过文件夹；建过至少一个 Scheduled task</td><td style="padding:12px 14px;text-align:center;">☐</td></tr>
+        </tbody>
+      </table>
+      <p>找到第一个空着的格了吗？那就是你的<strong>下一站</strong>。别想一次性爬完——Matt 的建议是：<strong>这周专注把下一级的核心功能用上一次</strong>，用顺了再上下一级。L1 到 L6 不该是台阶，是电梯。</p>
+    </div>
+  </div>
+</section>
+
+    
+<section class="references">
+  <div class="container">
+    <p class="references-kicker">SOURCES &amp; CREDITS</p>
+    <h2 class="references-title">引用与原文出处</h2>
+    <ul class="references-list">
+      <li>
+        <strong>ORIGINAL VIDEO</strong>
+        <em>The Ultimate Beginner's Guide to Claude AI</em><br>
+        作者：Matt / Metics Media (@MeticsMedia) · 682K 订阅 · 发布于 2026/08/10 · 36 万浏览 · 1.0 万赞<br>
+        视频链接：<a href="https://youtu.be/9oJySubZRSA" target="_blank" rel="noopener">https://youtu.be/9oJySubZRSA</a>
+      </li>
+      <li>
+        <strong>CHANNEL · YOUTUBE</strong>
+        <a href="https://www.youtube.com/@MeticsMedia" target="_blank" rel="noopener">https://www.youtube.com/@MeticsMedia</a> — 英文 AI 教程频道，覆盖 ChatGPT / Claude / Gemini / Cursor / Vibe Coding
+      </li>
+      <li>
+        <strong>TIMESTAMPS · 章节时间戳</strong>
+        00:00 Intro · 00:57 L1 Talk · 09:38 L2 Files · 16:39 L3 Make · 20:16 L4 Know · 28:54 L5 Connect · 39:47 L6 Without You<br>
+        <a href="https://youtu.be/9oJySubZRSA" target="_blank" rel="noopener">点击跳转原视频</a>，可按时间戳跳读
+      </li>
+      <li>
+        <strong>SPONSOR · OMNISEND</strong>
+        视频赞助商是 Omnisend（邮件营销平台）。本文解读未涉及商业合作，Omnisend 在 L5 的演示中作为 MCP 连接 demo 使用<br>
+        <a href="https://www.omnisend.com" target="_blank" rel="noopener">https://www.omnisend.com</a>
+      </li>
+      <li>
+        <strong>INTERPRETATION</strong>
+        本文为中文解读版，按中文阅读习惯重排。原视频所有章节顺序、关键能力定义、原话金句均保留原貌；中文为意译，便于理解。如需引用请以原视频为准。
+      </li>
+    </ul>
+    <p class="references-note">6 Levels 不是"功能菜单"——它是一张"你已经走到哪、还能走到哪"的能力地图。读完后建议按自检表选你的下一级，专注一周把它的核心功能用上一次。用顺了再上下一级——L1 到 L6 不该是台阶，是电梯。</p>
+  </div>
+</section>
+
+    
+<section class="pull-quote" style="border-bottom:none;">
+  <div class="container">
+    <p class="pull-quote-text">"If you can do level one, you can grow into level six.<br>The only difference is how big the results get."<br><span style="font-size:0.65em;color:var(--text-muted);">—— 只要你会 L1，就能长到 L6。区别只是结果有多大。</span></p>
+    <p class="pull-quote-caption">— MATT / METICS MEDIA</p>
+  </div>
+</section>
+
+  </main>
+  
+<button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>
+<nav class="floating-nav-panel" id="navPanel">
+  <div class="nav-panel-header">目录导航</div>
+  <div class="nav-panel-content">
+    <a class="nav-section" href="#level-1">
+      <div class="nav-section-kicker">LEVEL 1</div>
+      <div class="nav-section-title">Talk to Claude · 跟 Claude 说话</div>
+    </a>
+    <a class="nav-section" href="#level-2">
+      <div class="nav-section-kicker">LEVEL 2</div>
+      <div class="nav-section-title">Give Claude Your World · 把世界交给 Claude</div>
+    </a>
+    <a class="nav-section" href="#level-3">
+      <div class="nav-section-kicker">LEVEL 3</div>
+      <div class="nav-section-title">Make Real Things · 让 Claude 造真东西</div>
+    </a>
+    <a class="nav-section" href="#level-4">
+      <div class="nav-section-kicker">LEVEL 4</div>
+      <div class="nav-section-title">Make Claude Know You · 让 Claude 认识你</div>
+    </a>
+    <a class="nav-section" href="#level-5">
+      <div class="nav-section-kicker">LEVEL 5</div>
+      <div class="nav-section-title">Connect Your Apps · 接上你的工具</div>
+    </a>
+    <a class="nav-section" href="#level-6">
+      <div class="nav-section-kicker">LEVEL 6</div>
+      <div class="nav-section-title">Claude Works Without You · Claude 替你干活</div>
+    </a>
+    <a class="nav-section" href="#self-check">
+      <div class="nav-section-kicker">SELF-CHECK</div>
+      <div class="nav-section-title">你在哪一级？</div>
+    </a>
+  </div>
+</nav>
+<script>
+(function() {
+  const toggle = document.getElementById('navToggle');
+  const panel = document.getElementById('navPanel');
+  if (!toggle || !panel) return;
+  toggle.addEventListener('click', () => panel.classList.toggle('open'));
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && !toggle.contains(e.target)) panel.classList.remove('open');
+  });
+  panel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => panel.classList.remove('open')));
+})();
+</script>
+
+  <footer>
+    <p>INTERPRETATION BY ZHUYOUYI · 2026/09/09</p>
+    <p class="credit">原视频：Matt / Metics Media · The Ultimate Beginner's Guide to Claude AI</p>
+  </footer>
+</body>
+</html>
