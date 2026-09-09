@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Attention 机制的演化谱系 · 从 Self-attention 到 FlashAttention · 10 万浏览长文解读 · 朱有以解读</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,6 +118,11 @@
       .floating-nav-toggle { width: 48px; height: 48px; bottom: 20px; right: 20px; }
       .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
     }
+
+    /* 防溢出:长 URL 自动换行,表格强制列等宽收缩 */
+    a { overflow-wrap: anywhere; word-break: break-word; }
+    table { table-layout: fixed; width: 100%; }
+    table th, table td { word-break: break-word; overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
