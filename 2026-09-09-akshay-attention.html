@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attention 机制的演化谱系 · 从 Self-attention 到 FlashAttention · 10 万浏览长文解读 · 朱有以解读</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+      --bg-code: #0e0e10;
+      --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+      --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+      --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+      --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+    }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+    body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+    .ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+    .site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+    .site-header .container { display: flex; justify-content: space-between; align-items: center; }
+    .site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+    .back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+    .back-link:hover { color: var(--accent-gold-dim); }
+    .container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+    .article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+    .article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+    .article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+    .article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+    @media (max-width: 640px) { .article-category::before, .article-category::after { width: 40px; } }
+    .article-title { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(28px, 4.5vw, 42px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; }
+    .article-subtitle { font-family: 'Noto Serif SC', serif; font-size: clamp(16px, 2.4vw, 20px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.04em; line-height: 1.5; max-width: 620px; margin: 0 auto 28px; }
+    .article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+    .article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+    .article-byline .byline-sep { color: var(--border-subtle); }
+    .article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+    .cover-frame { padding: 64px 0; }
+    .cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+    .cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+    .article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .intro-lead { font-size: 16px; color: var(--text-secondary); line-height: 1.85; margin-bottom: 18px; }
+    .intro-lead:last-child { margin-bottom: 0; }
+    .intro-lead strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+    .pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(20px, 3.4vw, 26px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+    .pull-quote-text strong { color: var(--accent-red); font-weight: 600; }
+    .pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+    .capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+    .cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+    .cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+    .cap-title-group { flex: 1; }
+    .cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+    .cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 28px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+    .cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(14px, 1.9vw, 16px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+    .cap-body p { margin-bottom: 18px; }
+    .cap-body p:last-child { margin-bottom: 0; }
+    .cap-body strong { color: var(--text-primary); font-weight: 600; }
+    .cap-body ul { margin: 14px 0 18px; padding-left: 22px; }
+    .cap-body ul li { margin-bottom: 6px; }
+    .principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+    .principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+    .principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+    .inline-image { margin: 28px 0 8px; text-align: center; }
+    .inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .inline-image:hover img { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+    .inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+    .intro-overview { padding: 32px 0 64px; border-bottom: 1px solid var(--border-subtle); }
+    .roadmap-text { margin-top: 32px; font-size: 15.5px; color: var(--text-secondary); line-height: 1.9; }
+    .roadmap-text p { margin-bottom: 14px; }
+    .roadmap-text strong { color: var(--text-primary); font-weight: 600; }
+
+    .closing { padding: 64px 0 48px; text-align: center; }
+    .closing-text { font-family: 'Noto Serif SC', serif; font-size: clamp(16px, 2.4vw, 19px); font-weight: 300; line-height: 1.7; color: var(--text-primary); max-width: 640px; margin: 0 auto 32px; }
+    .closing-byline { font-family: 'Cormorant Garamond', serif; font-size: 13px; letter-spacing: 0.15em; color: var(--text-muted); font-style: italic; }
+    .references { padding: 64px 0; border-top: 1px solid var(--border-subtle); background: var(--bg-secondary); }
+    .references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 12px; text-align: center; }
+    .references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3.2vw, 28px); font-weight: 500; color: var(--text-primary); margin-bottom: 24px; text-align: center; }
+    .references-list { font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; list-style: none; padding: 0; max-width: 680px; margin: 0 auto; }
+    .references-list li { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 16px 22px; margin-bottom: 12px; transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+    .references-list li:hover { transform: scale(1.006); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: var(--accent-red); display: block; margin-bottom: 8px; }
+    .references-list em { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--text-primary); font-size: 15px; }
+    .references-list a { color: var(--accent-gold-dim); text-decoration: none; border-bottom: 1px solid rgba(201, 169, 98, 0.3); transition: border-color 0.2s; }
+    .references-list a:hover { border-color: var(--accent-gold-dim); }
+    .references-note { font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; text-align: center; max-width: 640px; margin: 32px auto 0; padding-top: 24px; border-top: 1px solid var(--border-subtle); font-style: italic; }
+
+    footer { text-align: center; padding: 40px 0 60px; border-top: 1px solid var(--border-subtle); }
+    footer p { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+    footer .credit { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
+
+    /* floating nav */
+    .floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 56px; height: 56px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); cursor: pointer; z-index: 200; box-shadow: var(--shadow-card); display: flex; align-items: center; justify-content: center; transition: box-shadow 0.3s, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s; }
+    .floating-nav-toggle:hover { transform: scale(1.012); box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.4); }
+    .floating-nav-toggle svg { width: 22px; height: 22px; stroke: var(--text-secondary); }
+    .floating-nav-panel { position: fixed; bottom: 96px; right: 28px; width: 300px; max-height: 75vh; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 18px 20px; z-index: 199; box-shadow: var(--shadow-hover); opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.25s, transform 0.25s, visibility 0.25s; }
+    .floating-nav-panel.active { opacity: 1; visibility: visible; transform: translateY(0); }
+    .nav-panel-header { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle); }
+    .nav-panel-content { display: flex; flex-direction: column; gap: 8px; }
+    .nav-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; border-radius: 4px; text-decoration: none; color: var(--text-secondary); transition: background-color 0.2s, color 0.2s; }
+    .nav-item:hover { background-color: var(--bg-secondary); color: var(--accent-gold-dim); }
+    .nav-num { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; color: var(--accent-gold-dim); flex-shrink: 0; padding-top: 2px; letter-spacing: 0.05em; min-width: 22px; }
+    .nav-texts { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .nav-en { font-size: 12.5px; font-weight: 500; color: var(--text-primary); line-height: 1.4; font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; letter-spacing: 0.01em; }
+    .nav-cn { font-size: 11.5px; color: var(--text-muted); line-height: 1.45; }
+
+    @media (max-width: 768px) {
+      .cap-head { gap: 16px; }
+      .cap-num { font-size: 42px; }
+      .inline-image img { max-width: 100%; }
+      .floating-nav-toggle { width: 48px; height: 48px; bottom: 20px; right: 20px; }
+      .floating-nav-panel { right: 20px; bottom: 80px; width: calc(100vw - 40px); max-width: 320px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+
+    <section class="article-hero">
+      <div class="container">
+        <div class="article-category">LLM ARCHITECTURE · ATTENTION</div>
+        <h1 class="article-title">Attention 机制的演化谱系</h1>
+        <p class="article-subtitle">从 Self-attention 到 FlashAttention · 11 招全部画给你看 · 10 万浏览长文解读</p>
+        <div class="article-byline">
+          <span class="byline-author">朱有以</span>
+          <span class="byline-sep">·</span>
+          <span class="byline-source">Akshay (@akshay_pachaar) · 10.1 万浏览</span>
+          <span class="byline-sep">·</span>
+          <span>2026/09/05</span>
+        </div>
+        <p class="article-desc">每张 LLM 模型卡都在宣传自己的 attention 机制: Self-attention、Multi-Head、MQA、GQA、FlashAttention、Sparse、PagedAttention、RadixAttention …… 名词堆了一屏,但背后只有一根主线。Akshay 这篇 10 万浏览长文用 16 张原创插图,按“出现顺序 + 各自修复的瓶颈”把这个谱系一次性捋清楚。</p>
+      </div>
+    </section>
+    <section class="cover-frame">
+      <div class="container">
+        <img src="images/2026-09-09-akshay-attention/cover.png" alt="Attention Mechanisms in LLMs, clearly explained · Cover">
+        <p class="cover-caption">AKSHAY · @AKSHAY_PACHAAR · 2026/09/05 · ATTENTION MECHANISMS IN LLMS, CLEARLY EXPLAINED</p>
+      </div>
+    </section>
+    <section class="article-intro">
+      <div class="container">
+        <p class="intro-lead"><strong>作者是谁。</strong>Akshay (@akshay_pachaar) · 286K 粉丝 · Daily Dose of DS 联合创始人 · BITS Pilani · 前 LightningAI AI 工程师。X 上长期用插图讲清 LLM / RAG / Agent 内部机制。</p>
+        <p class="intro-lead"><strong>这篇文章在讲什么。</strong>一句话: 11 种 attention 机制不是 11 个独立概念,是同一个 KV cache memory 瓶颈下的 11 次迭代。文章按“出现顺序 + 修过的具体缺陷”逐个拆解 —— 从最基础的 Self-attention 一直讲到 PagedAttention / RadixAttention 的 serving 层优化。</p>
+        <p class="intro-lead"><strong>为什么这篇值得读。</strong>市面上的 attention 教程 90% 停在“Scaled Dot-Product Attention”这一步。讲到 MHA 就开始照论文公式抄,讲到 GQA / MLA / FlashAttention 就让你自己看 paper。这篇的好处是:每一种都画一张原创图、用一句人话讲清“修了什么瓶颈 + 牺牲了什么”,让你看完能在白板上给别人复述这条线。</p>
+        <p class="intro-lead"><strong>怎么读这篇文章。</strong>11 个 capability 章节一一对应原文 H1,每章顶部金句框 + 口语化中文翻译(英文原文保留)。16 张原文插图(封面 + intro 总览图 + 14 张 cap 图)按 `inline-image` 渲染,带 caption 注明原文出处。文末引用区列出原文链接 + 作者其他渠道。</p>
+      </div>
+    </section>
+    <section class="intro-overview">
+      <div class="container">
+<div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-01.png" alt="9 attention mechanisms listed on the cover infographic: Self / Cross / Multi-Head / MQA / GQA / FlashAttention / Sparse / PagedAttention / RadixAttention">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · 9 种 attention 机制一览 —— 本文按出现顺序 + 修过的瓶颈逐一拆解。</p>
+        </div>
+        <div class="roadmap-text">
+          <p>这张图是全文路线图。Akshay 用一屏把 9 种 attention 全部摆出来:</p><p><strong>1. Self-attention</strong> —— 每个 token 看自己序列里所有 token。最基础的操作。</p><p><strong>2. Cross-attention</strong> —— query 来自一个序列,key/value 来自另一个。encoder-decoder 模型用。</p><p><strong>3. Multi-Head Attention (MHA)</strong> —— 多个 head 并行,每个 head 独立 KV。表达力最强,显存最贵。</p><p><strong>4. Multi-Query Attention (MQA)</strong> —— 所有 query head 共享同一份 KV。显存砍 N 倍,质量掉一档。</p><p><strong>5. Grouped-Query Attention (GQA)</strong> —— 分组共享 KV。MHA 和 MQA 的折中,当前主流开源模型的默认。</p><p><strong>6. FlashAttention</strong> —— 不改数学,只改“怎么读写显存”。kernel 级优化,所有 serving 引擎标配。</p><p><strong>7. Sparse attention</strong> —— 不再每两个 token 都算,只算选中的子集。唯一能 scale 到百万 token 的答案。</p><p><strong>8. PagedAttention</strong> —— vLLM 引擎的机制。把 KV cache 像 OS 虚拟内存一样分页管理。</p><p><strong>9. RadixAttention</strong> —— SGLang 引擎的机制。用 radix tree 复用多请求共享的前缀 KV。</p><p>下面 11 个章节按这张图的顺序,每个讲清楚“修了什么瓶颈 + 牺牲了什么”。</p>
+        </div>
+      </div>
+    </section>
+
+<section class="capability" id="cap-01">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">01</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">PROBLEM</div>
+            <h2 class="cap-title-en">Why attention exists</h2>
+            <div class="cap-title-cn">为什么需要 attention —— RNN 的痛点</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">RNN 用固定大小 hidden state 跨 token 传递信息,距离一长就衰减。Attention 让每个 token 直接看所有其他 token,代价“必须存住每个 token 看到的所有东西”。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-02.png" alt="RNN passes fixed-size hidden state token-to-token (left). Attention lets every token look at every other token directly (right).">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · RNN 固定大小 hidden state vs Attention 每 token 直连所有 token。</p>
+        </div>
+<p>早期的序列模型 RNN 把一个固定大小的 hidden state 从一个 token 传到下一个 token。</p><p>两个 token 隔得越远,联系越弱。跨长距离的依赖会<strong>自然衰减</strong>。</p><p>Attention 直接解决这个:不再通过瓶颈传状态,每个 token 都能看其他所有 token,自己决定哪些相关。</p><p>没有“先压缩再传”的中间步骤。</p><p>这种直接性是 transformer 强大的原因 —— 也是它昂贵的<strong>同一件事</strong>。成本不在数学,在存住“每个 token 看过什么”的内存。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-02">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">02</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">ROOT CAUSE</div>
+            <h2 class="cap-title-en">The constraint that drives everything</h2>
+            <div class="cap-title-cn">贯穿一切的瓶颈 —— KV cache 内存</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">KV cache 内存才是 attention 设计真正要解决的事。70B BF16 + 128K context ≈ 40 GB cache。MHA / MQA / GQA / MLA / FlashAttention / Sparse / PagedAttention / RadixAttention —— 每一种都是对这道题的某种回答。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-03.png" alt="KV cache grows linearly with tokens generated. For a 70B model at BF16, 128K context ≈ 40 GB KV cache.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · KV cache 随生成 token 数线性增长;70B BF16 模型 128K context ≈ 40 GB。</p>
+        </div>
+<p>模型每次 attend,都要记住之前所有 token 长什么样。</p><p>Prefill 阶段,模型一次性处理整个 prompt,为每个 token 在每一层算一个 key 向量和一个 value 向量。</p><p>这些东西存在叫 <strong>KV cache</strong> 的地方,让 decode 阶段能直接 attend,不用从头重算。</p><p>Cache 随生成 token 数线性增长。一个 70B BF16 模型,128K context 下 KV cache 大约 <strong>40 GB</strong> —— 跟 4-bit 量化的模型权重本身一个量级。</p><p>瓶颈不是算力,不是 attention 公式里的数学。<strong>瓶颈是存住“attention 已经看过什么”的内存。</strong></p><p>下面每一种设计都在跟这个瓶颈作战。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-03">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">03</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">FOUNDATIONS</div>
+            <h2 class="cap-title-en">Self-attention and causal attention</h2>
+            <div class="cap-title-cn">基础 —— Self / Causal / Cross 三种基础形式</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Self-attention 让 token 看序列里所有 token(全连接);Causal 加 mask 只能看过去(decoder 生成用);Cross-attention 跨两个序列接 key/value(encoder-decoder 用)。这是后面所有优化的地基。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-04.png" alt="Self-attention: every token attends to every other token in the same sequence (left). Causal attention: triangular mask blocks future tokens (right).">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · Self-attention 全连接 vs Causal attention 下三角 mask。</p>
+        </div>
+<p>Self-attention 让每个 token attend 序列里<strong>所有其他 token</strong>。</p><p>模型为每个 token 算一个 query、key、value,用 query-key 点积决定这个 token 该给其他每个 token 多少注意力权重。</p><p>这是每个 transformer 层里的基本操作。</p><div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-05.png" alt="Causal mask makes each token only see past tokens. Cross-attention takes queries from one sequence and keys/values from another.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · Causal mask 限制只能看过去;Cross-attention 跨序列取 key/value。</p>
+        </div>
+<p>Causal attention = self-attention 套一层下三角 mask。每个 token 只能看<strong>之前</strong>的 token,不能看未来。</p><p>这是 decoder-only 生成可能的原因 —— 没 mask,模型生成答案前就先看到答案了。</p><p>Cross-attention 不一样。query 来自一个序列,key 和 value 来自另一个序列。</p><p>这是 encoder-decoder 模型(像 T5、Whisper)把 encoder 输出接到 decoder 的方式。Decoder-only 模型(Llama、GPT)里<strong>根本没有 cross-attention</strong>。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-04">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">04</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">MHA · ORIGINAL</div>
+            <h2 class="cap-title-en">Multi-Head Attention</h2>
+            <div class="cap-title-cn">MHA —— 表达力最强,显存最贵</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">MHA = 每个 head 独立 KV 投影。32 层 × 32 heads = 1024 个独立 KV tensor/token/请求。GPT-3 一层 96 heads,128K context 下 KV cache 直接撑满 GPU。后续所有设计都在回答『怎么压这份内存』。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-06.png" alt="Multi-Head Attention: each head has its own Q, K, V weight matrices. With 32 heads, that is 32 independent KV projections per layer.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · MHA 每个 head 独立的 Q/K/V 投影;32 heads = 32 套 KV。</p>
+        </div>
+<p>Multi-Head Attention (MHA) 是 2017 Transformer 论文里的原始设计。</p><p>每个 attention head 拥有自己独立的 query、key、value 权重矩阵。32 个 head 就是 32 套独立的 KV 投影。</p><p>好处是<strong>表达力</strong>。不同 head 同时学不同类型的关系 —— 一个学句法结构,一个学语义接近度,一个学远距离指代。</p><p>代价是<strong>内存</strong>。每个 head 维护自己的 KV cache。32 层 × 32 heads = 每个 token 每请求 1024 个独立 KV tensor。</p><p>GPT-3 一层 96 个 heads。128K context 下,光 KV cache 就把 GPU 撑满了,batch 还没起来就结束。</p><p>这道内存题就是 MHA 之后所有设计要解决的事。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-05">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">05</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">MQA</div>
+            <h2 class="cap-title-en">Multi-Query Attention</h2>
+            <div class="cap-title-cn">MQA —— 共享 KV 头,显存砍 N 倍</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">MQA:所有 query head 共享一个 key head 和一个 value head。KV cache 缩小 = head 数倍。Decode 受 HBM 带宽约束,所以显存小 = 速度快。代价是质量掉一档(Falcon / PaLM / 早期 Gemini 都接了这个 trade-off)。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-07.png" alt="Multi-Query Attention: query heads keep their own weights, but every query head shares a single key head and value head.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · MQA 所有 query head 共享同一个 key head 和 value head。</p>
+        </div>
+<p>Multi-Query Attention (MQA) 走最直接的路线。</p><p>所有 query head 仍然有自己独立的权重矩阵 —— 但<strong>所有 query head 共享同一个 key head 和同一个 value head</strong>。</p><p>KV cache 缩小 = head 数倍。MHA 存 32 份 KV 投影,MQA 存<strong>1 份</strong>。</p><p>Decode 更快,因为每步从 HBM 加载的字节数大幅减少 —— 这点很关键,因为 decode 是 memory-bandwidth-bound。</p><p>质量代价真实。强制所有 query head 共享一个 key/value,会丢掉 MHA 的一部分表达力。</p><p>Falcon、PaLM、早期 Gemini variant 都用过 MQA,接受这个 trade-off 换吞吐量。</p><p>MQA 牺牲掉的,下一招基本找回来。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-06">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">06</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">GQA · DEFAULT</div>
+            <h2 class="cap-title-en">Grouped-Query Attention</h2>
+            <div class="cap-title-cn">GQA —— 分组共享 KV,当前主流默认</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">GQA:query heads 分组,每组共享一对 KV head。MHA 和 MQA 的折中,KV cache 缩 4 倍的同时保留绝大部分质量。Llama 2/3、Mistral、Mixtral、Gemma、Qwen —— 近几年几乎所有主流开源模型都用 GQA。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-08.png" alt="Grouped-Query Attention: query heads are divided into groups; each group shares one key head and one value head.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · GQA query heads 分组,每组共享一对 KV head。</p>
+        </div>
+<p>Grouped-Query Attention (GQA) 站在 MHA 和 MQA 中间。</p><p>Query head 分成若干<strong>组</strong>,每组共享一个 key head 和一个 value head。组与组之间独立。</p><p>32 个 query head + 8 个 KV 组,KV 投影从 32 份变 8 份 —— 比 MHA 节省 <strong>4 倍</strong> KV cache,同时拿回 MQA 牺牲掉的大部分质量。</p><p>这种平衡让 GQA 成了近几年几乎所有主流开源模型的<strong>默认选择</strong>。Llama 2 70B 用 8 个 KV 组, Llama 3、Mistral、Mixtral、Gemma、Qwen 全是 GQA。</p><p>原始 GQA 论文证明它能在小得多的内存下追平 MHA 质量 —— 这个结论跨模型家族都成立。</p><p>GQA 减少了 KV head 数。<strong>下一招:压缩 head 本身。</strong></p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-07">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">07</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">MLA · LOW-RANK</div>
+            <h2 class="cap-title-en">Multi-Head Latent Attention</h2>
+            <div class="cap-title-cn">MLA —— 低秩压缩 KV,DeepSeek 的招</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">MLA:把全维 K/V 压到低秩 latent 空间再缓存,attention 时再解压。Cache 比 GQA 还小,质量逼近 MHA。代价是每次 attend 都多算点 FLOPs,但推理时内存带宽才是瓶颈。DeepSeek V2/V3/R1 全用 MLA,KV cache 砍到 MHA 的 5-13%。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-09.png" alt="Multi-Head Latent Attention: full-dimensional K and V are compressed into a low-rank latent space before caching.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · MLA 把 K/V 先压到低秩 latent 空间再缓存,attention 时再解压。</p>
+        </div>
+<p>Multi-Head Latent Attention (MLA) 是 DeepSeek 的贡献,2024 年 5 月 DeepSeek-V2 首发。</p><p>MQA/GQA 是减少 KV head 数,MLA 是把<strong>全维的 key/value 向量</strong>压到低秩 latent 空间再缓存。Attention 时再把这些 latent 向量解压回全维。</p><p>缓存的是<strong>latent 向量</strong>,不是完整 KV tensor。Cache footprint 比 GQA 还小,同时保住 MQA 丢掉的那部分表达力。</p><p>Trade-off 在算力。每次 attend 都解压会增加 FLOPs。但推理时内存带宽比算力更常成为瓶颈,所以在大多数真实 serving 配置里,小 cache 战胜额外算力。</p><p>DeepSeek-V2、V3、R1 全部用 MLA。DeepSeek-V2 benchmark 上,MLA 在匹配或超过 MHA 质量的同时,KV cache 砍到同等模型大小 MHA 方案的<strong>5-13%</strong>。</p><p>MHA / MQA / GQA / MLA 都是关于“存什么”。</p><p><strong>下一招:关于“怎么算得贵”。</strong></p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-08">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">08</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">FLASHATTENTION</div>
+            <h2 class="cap-title-en">FlashAttention</h2>
+            <div class="cap-title-cn">FlashAttention —— 数学没动,访存动了</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">FlashAttention 不改 attention 数学,只改访存模式。把 N×N attention 矩阵切成能放进 SRAM 的块,增量算 softmax,不物化完整矩阵。它不是新 attention 类型,是执行任何 attention 类型的标准 kernel。所有主流 serving 引擎默认用它。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-10.png" alt="FlashAttention tiles the attention matrix into blocks that fit in on-chip SRAM, computes softmax incrementally, and writes the output once.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · FlashAttention 把 attention 矩阵切成能放进 SRAM 的块,增量算 softmax。</p>
+        </div>
+<p>FlashAttention <strong>不改变 attention 算什么</strong>,只改变<strong>怎么读写内存</strong>。</p><p>标准 attention 算出完整的 N×N attention 矩阵,写到 HBM,读回来做 softmax,再写,再读,再做加权求和。</p><p>4K token 序列下,这个矩阵是 4096 × 4096 个值。反复在 HBM 来回搬就是 attention 成为长 context 瓶颈的原因。</p><p>FlashAttention <strong>分块计算</strong>。把 attention 矩阵切成能放进 on-chip SRAM 的小块,在 SRAM 里增量算 softmax,不物化完整矩阵,最后只把输出写一次到 HBM。</p><p>数学完全一样。访存模式不一样。</p><p>今天每个主要 serving 引擎都默认用 FlashAttention kernel。它不是新 attention —— 它是执行“你模型用的那种 attention”的标准 kernel。</p><p>MHA / GQA / MLA 答的是“存什么 + 怎么压缩”,FlashAttention 答的是“怎么算得高效”。</p><p>Sparse attention 走另一个角度:<strong>不是缓存哪些 token,而是到底 attend 多少 token。</strong></p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-09">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">09</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">SPARSE ATTENTION</div>
+            <h2 class="cap-title-en">Sparse attention</h2>
+            <div class="cap-title-cn">Sparse attention —— 不全算,挑着算</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">Sparse attention 跳过 attention 矩阵的大部分,只算选中的子集。Sliding Window(Mistral)是最简单的形式;NSA(DeepSeek 2025)在训练时就学稀疏,三路并行(压缩粗粒 + 选择细粒 + sliding window),长序列上能匹配 full attention 质量。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-11.png" alt="Sliding Window Attention: each token attends only to the most recent W tokens.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · Sliding Window Attention 每个 token 只看最近 W 个 token。</p>
+        </div>
+<p>Full attention 在序列长度上是 <strong>O(N²)</strong>。1M token context 下 attention 矩阵有 1 万亿个 entry。即使 FlashAttention 减少了访存,这种规模算 attention 也不可承受。</p><p>Sparse attention <strong>跳过</strong> attention 矩阵的大部分。不再每两个 token 都算,只算<strong>选中的子集</strong>。</p><p>Sliding Window Attention (SWA) 是最简单的变种。每个 token 只 attend 最近 W 个 token。Local context 保留,远距离 context 丢弃。</p><p>Mistral 在某些层用 SWA,跟 full attention 层交错,兼顾 local 精度和部分 global reach。</p><div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-12.png" alt="Native Sparse Attention: three parallel branches — compressed coarse-grained, selective fine-grained, and sliding window.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · NSA 三路并行:压缩粗粒度 + 选择细粒度 + sliding window。</p>
+        </div>
+<p>Native Sparse Attention (NSA) 是 DeepSeek 2025 年的贡献,跟 MLA 不同。它不是推理时临时套 sparsity,而是<strong>训练时就用 sparse attention</strong>。</p><p>每一层组合三条并行分支:</p><ul><li><strong>压缩粗粒度 attention</strong> —— 抓全局 context</li><li><strong>选择细粒度 attention</strong> —— 抓重要 token 块</li><li><strong>Sliding window attention</strong> —— 抓 local context</li></ul><p>模型在预训练时<strong>学到</strong>哪些 token 重要。</p><p>NSA 在大多数 benchmark 上匹配 full-attention 质量,同时长序列上跑得明显更快。</p><p>Qwen2.5-1M 用 sparse attention 撑百万 token context —— 那个长度 full attention 要吃掉 forward pass 90% 以上的时间。</p><p>训练时就引入的 sparsity 正在被证明是长 context scaling <strong>最有原则的答案</strong>。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-10">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">10</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">SERVING LAYER</div>
+            <h2 class="cap-title-en">PagedAttention &amp; RadixAttention</h2>
+            <div class="cap-title-cn">Serving 层 —— PagedAttention + RadixAttention</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">PagedAttention(vLLM)把 KV cache 当 OS 虚拟内存那样分页管理,内存浪费从 60-80% 降到 4% 以下。RadixAttention(SGLang)用 radix tree 复用多请求共享前缀,多轮 workload 命中率 75-95%。两者都不改模型本身用的 attention 类型,只在 serving 层运作。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-13.png" alt="PagedAttention: fixed-size blocks allocated on demand, block table maps logical to physical blocks. vLLM's approach.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · PagedAttention 按需分配固定大小 block,block table 映射逻辑块到物理块(vLLM)。</p>
+        </div>
+<p>上面所有东西都在<strong>模型权重</strong>里。PagedAttention 和 RadixAttention 在 serving 引擎里,它们在同一份 KV cache 压力下从另一个层面回答。</p><p>请求进来时,serving 引擎要给它分配 GPU 内存放 KV cache。天真的做法是按最大序列长度<strong>预留连续</strong>内存。</p><p>允许生成 4096 token 的请求,一上来就预留 4096 个 slot —— 不管实际用 40 还是 4000 个。</p><p>这种方式浪费 60-80% GPU 内存。请求之间的碎片化更糟。</p><p>PagedAttention(vLLM 的机制)像 OS 管理虚拟内存那样管理 KV cache。<strong>按需分配固定大小的块</strong>。</p><p>一张 block table 把每个请求的逻辑块映射到当时空闲的物理块。没有预分配,没有碎片化,内存浪费降到 <strong>4% 以下</strong>。</p><div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-14.png" alt="RadixAttention: KV blocks stored in a radix tree indexed by token sequence. SGLang's approach.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · RadixAttention 用 radix tree 按 token 序列索引 KV blocks(SGLang)。</p>
+        </div>
+<p>RadixAttention(SGLang 的机制)走下一步。当多个请求共享一个公共前缀(像发给每个用户的长 system prompt),那份前缀的 KV blocks <strong>只需要算一次</strong>。</p><p>RadixAttention 把 KV blocks 存在一棵 radix tree 里,按 token 序列做索引。新请求走 tree 找最长匹配前缀,复用那些 blocks,只算真正新增的后缀。</p><p>多轮 workload 上,RadixAttention 命中率达 <strong>75-95%</strong>。一个发给上千用户的 system prompt 只算一次,直到 LRU 淘汰为止。</p><p>PagedAttention 和 RadixAttention <strong>不改变你模型用哪种 attention</strong>。Llama 3 + GQA 在哪个引擎下都跑得好。两层相互独立。</p>
+        </div>
+      </div>
+    </section>
+<section class="capability" id="cap-11">
+      <div class="container">
+        <div class="cap-head">
+          <div class="cap-num">11</div>
+          <div class="cap-title-group">
+            <div class="cap-kicker">DECISION</div>
+            <h2 class="cap-title-en">Putting it together</h2>
+            <div class="cap-title-cn">串联 —— 哪一招对你真的有用</div>
+          </div>
+        </div>
+        <div class="principle-box">
+          <span class="principle-box-label">CORE PRINCIPLE</span>
+          <span class="principle-box-text">MQA/GQA/MLA 减存储,FlashAttention 减访存,Sparse 减 token 数,PagedAttention/RadixAttention 在 serving 层减浪费。你这套部署里哪个是绑定约束,决定哪一招真的会让数字动。</span>
+        </div>
+        <div class="cap-body">
+          <div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-15.png" alt="Four moves against the same KV cache pressure: reduce storage (MQA/GQA/MLA), reduce memory traffic (FlashAttention), reduce token count (Sparse), reduce waste at serving (PagedAttention/RadixAttention).">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · 同一份 KV cache 压力下的四招:减存储、减访存、减 token、减浪费。</p>
+        </div>
+<p>贯穿它们的同一条线是同一份压力。<strong>KV cache 内存是瓶颈</strong>,每一个设计都是从不同方向进攻这道题。</p><ul><li><strong>MQA / GQA / MLA</strong> —— 减少每个 token 存多少。各自用不同方式 trade 质量换内存。</li><li><strong>FlashAttention</strong> —— 减少计算的访存成本。完全不动数学。</li><li><strong>Sparse attention</strong> —— 减少 attend 的 token 数。这是唯一能 scale 到百万 token context 的答案。</li><li><strong>PagedAttention / RadixAttention</strong> —— 在 serving 层减少分配和复用的浪费,跟模型本身无关。</li></ul><div class="inline-image">
+          <img src="images/2026-09-09-akshay-attention/x-16.png" alt="Decision tree: pick the right optimization based on which constraint is binding in your setup.">
+          <p class="inline-image-caption">原文配图 · Akshay (@akshay_pachaar) · 2026/09/05 · 决策树:哪个约束是绑定约束,就选哪个优化。</p>
+        </div>
+<p>知道你这套部署里哪个是<strong>绑定约束</strong>,才能判断哪一招真的会让数字动起来。</p><p>cache 已经放得下?FlashAttention 的 kernel 优化可能就够了。</p><p>质量受限于 KV 头数不够?GQA 加 groups,或换 MLA。</p><p>context 长度撑不到你要的?Sparse attention 是唯一解。</p><p>多用户共享长 system prompt?换 SGLang,RadixAttention 自动帮你省。</p><p>11 种 attention 不是 11 个并列选项,是同一道 KV cache 题的<strong>11 个层级回答</strong>。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pull-quote">
+      <div class="container">
+        <p class="pull-quote-text">「11 种 attention 不是 11 个并列选项,<strong>是同一道 KV cache 题的 11 个层级回答</strong>。」</p>
+        <p class="pull-quote-caption">AKSHAY · @AKSHAY_PACHAAR · 2026/09/05</p>
+      </div>
+    </section>
+    <section class="closing">
+      <div class="container">
+        <p class="closing-text">下次再看到模型卡写"GQA-8 heads"、<br>"MLA compression 5.2"、<br>"RadixAttention 命中率 87%",<br>你能直接说出它在跟哪条瓶颈作战。</p>
+        <p class="closing-byline">— Akshay 🚀 (@akshay_pachaar) · 2026/09/05</p>
+      </div>
+    </section>
+    <section class="references">
+      <div class="container">
+        <p class="references-kicker">SOURCES & CREDITS</p>
+        <h2 class="references-title">引用与原文出处</h2>
+        <ul class="references-list">
+<li><strong>ORIGINAL ARTICLE</strong><em>Attention Mechanisms in LLMs, clearly explained</em><br>作者:Akshay 🚀 (@akshay_pachaar) · 发布于 2026/09/05 · 10.1 万浏览 · 540 赞 · 862 书签<br>原文链接:<a href="https://x.com/akshay_pachaar/status/2096215921568498042" target="_blank" rel="noopener">https://x.com/akshay_pachaar/status/2096215921568498042</a></li><li><strong>AUTHOR · X</strong><a href="https://x.com/akshay_pachaar" target="_blank" rel="noopener">https://x.com/akshay_pachaar</a></li><li><strong>AUTHOR · WEBSITE</strong><a href="http://join.dailydoseofds.com" target="_blank" rel="noopener">join.dailydoseofds.com</a> — Daily Dose of DS 联合创始人,AI 工程入门课程</li><li><strong>INTERPRETATION</strong>本文为解读版本,按中文阅读习惯重排。原文中所有图都按原文位置插回,英中术语并列。如需引用请以原文为准。</li>
+</ul>
+        <p class="references-note">读这篇的最好方式不是一次性看完,是先看自己模型卡上的 attention 字段名,再到对应章节定位它在 11 招谱系里的位置。</p>
+      </div>
+    </section>
+
+
+  <footer class="article-footer">
+    <div class="container">
+      <p>更多文章持续更新中</p>
+      <p class="credit">制作人 · 朱有以 · 抖音号 92864142698</p>
+    </div>
+  </footer>
+
+  <button class="floating-nav-toggle" id="navToggle" aria-label="文章导航">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+  <nav class="floating-nav-panel" id="navPanel">
+    <div class="nav-panel-header">文章目录 · 11 章</div>
+    <div class="nav-panel-content">
+      <a href="#cap-01" class="nav-item">
+        <span class="nav-num">01</span>
+        <span class="nav-texts">
+          <span class="nav-en">Why attention exists</span>
+          <span class="nav-cn">为什么需要 attention</span>
+        </span>
+      </a>
+      <a href="#cap-02" class="nav-item">
+        <span class="nav-num">02</span>
+        <span class="nav-texts">
+          <span class="nav-en">The constraint</span>
+          <span class="nav-cn">贯穿一切的瓶颈·KV cache</span>
+        </span>
+      </a>
+      <a href="#cap-03" class="nav-item">
+        <span class="nav-num">03</span>
+        <span class="nav-texts">
+          <span class="nav-en">Self / Causal / Cross</span>
+          <span class="nav-cn">三种基础 attention 形式</span>
+        </span>
+      </a>
+      <a href="#cap-04" class="nav-item">
+        <span class="nav-num">04</span>
+        <span class="nav-texts">
+          <span class="nav-en">Multi-Head Attention</span>
+          <span class="nav-cn">MHA·表达力最强显存最贵</span>
+        </span>
+      </a>
+      <a href="#cap-05" class="nav-item">
+        <span class="nav-num">05</span>
+        <span class="nav-texts">
+          <span class="nav-en">Multi-Query Attention</span>
+          <span class="nav-cn">MQA·共享 KV 砍 N 倍</span>
+        </span>
+      </a>
+      <a href="#cap-06" class="nav-item">
+        <span class="nav-num">06</span>
+        <span class="nav-texts">
+          <span class="nav-en">Grouped-Query Attention</span>
+          <span class="nav-cn">GQA·当前主流默认</span>
+        </span>
+      </a>
+      <a href="#cap-07" class="nav-item">
+        <span class="nav-num">07</span>
+        <span class="nav-texts">
+          <span class="nav-en">Multi-Head Latent Attention</span>
+          <span class="nav-cn">MLA·DeepSeek 低秩压缩</span>
+        </span>
+      </a>
+      <a href="#cap-08" class="nav-item">
+        <span class="nav-num">08</span>
+        <span class="nav-texts">
+          <span class="nav-en">FlashAttention</span>
+          <span class="nav-cn">不改数学·改访存</span>
+        </span>
+      </a>
+      <a href="#cap-09" class="nav-item">
+        <span class="nav-num">09</span>
+        <span class="nav-texts">
+          <span class="nav-en">Sparse attention</span>
+          <span class="nav-cn">SWA·NSA·挑着算</span>
+        </span>
+      </a>
+      <a href="#cap-10" class="nav-item">
+        <span class="nav-num">10</span>
+        <span class="nav-texts">
+          <span class="nav-en">Serving layer</span>
+          <span class="nav-cn">PagedAttention·RadixAttention</span>
+        </span>
+      </a>
+      <a href="#cap-11" class="nav-item">
+        <span class="nav-num">11</span>
+        <span class="nav-texts">
+          <span class="nav-en">Putting it together</span>
+          <span class="nav-cn">串联·哪一招对你有用</span>
+        </span>
+      </a>
+      <a href="#" class="nav-item" style="margin-top: 12px; border-top: 1px solid var(--border-subtle); padding-top: 12px;">
+        <span class="nav-num">↑</span>
+        <span class="nav-texts">
+          <span class="nav-en">Back to top</span>
+          <span class="nav-cn">回到顶部</span>
+        </span>
+      </a>
+      <a href="index.html" class="nav-item">
+        <span class="nav-num">←</span>
+        <span class="nav-texts">
+          <span class="nav-en">Article list</span>
+          <span class="nav-cn">返回文章列表</span>
+        </span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // Floating nav
+    const navToggle = document.getElementById('navToggle');
+    const navPanel = document.getElementById('navPanel');
+    navToggle.addEventListener('click', () => navPanel.classList.toggle('active'));
+    navPanel.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => navPanel.classList.remove('active'));
+    });
+    document.addEventListener('click', (e) => {
+      if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+        navPanel.classList.remove('active');
+      }
+    });
+  </script>
+
+  <script>
+  var _hmt = _hmt || [];
+  (function() {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?ec42bf9227af4330c894c9f99cc2fdbb";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+  </script>
+</body>
+</html>
