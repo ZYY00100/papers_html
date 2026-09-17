@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vibe Coding 网页动效词典（三篇合集）· 57 个动效词条 + 一键复制提示词 — AdrianPunk115</title>
+<meta name="description" content="AdrianPunk115 三篇 X 长文合集：上篇 17 词（触发/时序/入场）、中篇 20 词（文字/滚动/指针）、下篇 20 词（组件/转场/UX），共 57 个动效词条，每个都附可一键复制给 AI 的中文提示词。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #f5f5f7;
+  --bg-secondary: #fafaf9;
+  --bg-code: #1d1d1f;
+  --bg-card: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #4a4a4f;
+  --text-muted: #8a8a8e;
+  --border-subtle: #e5e5e8;
+  --border-default: #d4d4d8;
+  --accent-gold: #c9a962;
+  --accent-gold-dim: #a08850;
+  --accent-red: #C8161D;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+  --max-width: 760px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', 'Noto Serif SC', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px),
+    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px);
+  pointer-events: none;
+  z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+img { max-width: 100%; height: auto; }
+a { color: var(--accent-gold-dim); text-decoration: none; overflow-wrap: anywhere; word-break: break-word; }
+a:hover { text-decoration: underline; }
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+.site-header {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  position: sticky; top: 0; z-index: 100;
+}
+.site-header .container {
+  display: flex; justify-content: space-between; align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.site-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.ai-glow {
+  color: var(--accent-red);
+  text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2);
+}
+.back-link {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  transition: color 0.3s;
+}
+.back-link:hover { color: var(--accent-gold-dim); }
+
+.article-header {
+  padding: 64px 24px 48px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.article-header .container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+.article-category {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--accent-gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.article-category::before, .article-category::after {
+  content: ''; width: 60px; height: 1px; flex-shrink: 0;
+}
+.article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+.article-category::after { background: linear-gradient(to right, currentColor, transparent); }
+@media (max-width: 640px) {
+  .article-category::before, .article-category::after { width: 40px; }
+}
+.article-title {
+  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 4.2vw, 40px);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+.article-subtitle {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: clamp(17px, 2.4vw, 20px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.5;
+  max-width: 620px;
+  margin: 0 auto 28px;
+  letter-spacing: 0.02em;
+}
+.article-byline {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; flex-wrap: wrap;
+  margin-top: 16px;
+  font-size: 13px; font-weight: 500;
+  letter-spacing: 0.05em;
+}
+.article-byline .byline-author, .article-byline .byline-source {
+  color: var(--text-muted); font-weight: 500;
+}
+.article-byline .byline-sep { color: var(--border-subtle); }
+.article-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  max-width: 600px;
+  margin: 24px auto 0;
+}
+@media (max-width: 768px) {
+  .article-title { font-size: 26px; }
+  .article-subtitle { font-size: 17px; }
+}
+
+/* Hero 章节索引卡 */
+.hero-index {
+  padding: 56px 0 32px;
+}
+.hero-index-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: var(--shadow-card);
+}
+.hero-index-card h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-gold-dim);
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+.hero-index-list {
+  list-style: none;
+  padding: 0;
+}
+.hero-index-list li {
+  padding: 12px 0;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.hero-index-list li:first-child { border-top: none; padding-top: 4px; }
+.hero-index-list li strong {
+  color: var(--text-primary);
+  font-weight: 600;
+  display: inline-block;
+  min-width: 28px;
+}
+.hero-index-list li em {
+  font-style: normal;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-left: 6px;
+}
+
+/* Intro 引导区 */
+.article-intro { padding: 56px 0 40px; }
+.intro-lead { font-size: 16px; color: var(--text-secondary); line-height: 1.85; }
+.intro-lead p { margin-bottom: 14px; }
+.intro-lead ol, .intro-lead ul { margin: 14px 0 14px 22px; }
+.intro-lead li { margin-bottom: 6px; }
+
+/* 章节 */
+.chapter-section { padding: 64px 0; border-top: 1px solid var(--border-subtle); }
+.chapter-section:first-of-type { border-top: none; }
+.chapter-kicker {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--accent-red);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.chapter-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.chapter-subtitle {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(15px, 2.2vw, 18px);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+/* 分组块 */
+.group-block { margin: 40px 0 0; }
+.group-block:first-child { margin-top: 8px; }
+.group-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.group-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  letter-spacing: 0.02em;
+}
+.cards-stack > .term-entry + .prompt-card { margin-top: 8px; }
+.cards-stack > .prompt-card + .term-entry { margin-top: 28px; }
+
+/* 词条（纯文字，无卡片） */
+.term-entry {
+  padding: 8px 0 0;
+}
+.term-entry .term-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent-gold-dim);
+  letter-spacing: 0.05em;
+  margin: 0 0 6px;
+}
+.term-entry .term-def {
+  font-size: 15.5px;
+  color: var(--text-primary);
+  line-height: 1.85;
+  margin: 0 0 10px;
+}
+.term-entry .term-suit {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin: 0;
+  padding: 8px 0 0;
+  border-top: 1px dashed var(--border-subtle);
+}
+.term-entry .term-suit-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-gold-dim);
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+/* Prompt 卡片 */
+.prompt-card {
+  background: var(--bg-code);
+  border-radius: 10px;
+  margin: -4px 0 0;
+  overflow: hidden;
+  border: 1px solid #2a2a2d;
+  transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              border-color 0.3s ease;
+}
+.prompt-card:hover {
+  transform: scale(1.006);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(201, 169, 98, 0.35);
+}
+.prompt-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #2a2a2d;
+  background: #232325;
+}
+.prompt-card-tag { display: flex; align-items: baseline; gap: 10px; }
+.prompt-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent-gold);
+  letter-spacing: 0.05em;
+}
+.prompt-name {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 14px;
+  color: #f0f0f0;
+  font-weight: 500;
+}
+.copy-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  padding: 5px 12px;
+  background: transparent;
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
+  border-radius: 4px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.copy-btn:hover { background: var(--accent-gold); color: var(--bg-code); }
+.copy-btn.copied { background: var(--accent-gold); color: var(--bg-code); }
+.prompt-card-body {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #e5e5e8;
+  padding: 14px 16px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+
+/* References 区 */
+.references {
+  padding: 64px 0 48px;
+  border-top: 1px solid var(--border-subtle);
+}
+.references-kicker {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; letter-spacing: 0.18em;
+  color: var(--accent-red); text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.references-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 24px; font-weight: 600;
+  margin-bottom: 20px;
+}
+.references-list { list-style: none; padding: 0; border-top: 1px solid var(--border-subtle); }
+.references-list li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+.references-list strong {
+  display: inline-block;
+  font-size: 11px; letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-gold-dim);
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+/* Closing */
+.closing { padding: 56px 0; text-align: center; }
+.closing-text {
+  font-family: 'Noto Serif SC', 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 3.2vw, 24px);
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-primary);
+  max-width: 620px;
+  margin: 0 auto;
+  letter-spacing: 0;
+}
+.closing-text strong { font-weight: 600; color: var(--accent-red); }
+
+.article-footer {
+  padding: 32px 0 64px;
+  text-align: center;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* 悬浮导航 */
+.floating-nav-toggle {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.3s;
+  z-index: 1000;
+}
+.floating-nav-toggle:hover {
+  box-shadow: var(--shadow-hover);
+  color: var(--accent-gold-dim);
+}
+.floating-nav-toggle svg { width: 20px; height: 20px; }
+.floating-nav-panel {
+  position: fixed; bottom: 90px; right: 28px;
+  width: 280px;
+  max-height: 78vh;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-hover);
+  padding: 18px 20px;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+}
+.floating-nav-panel.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-panel-header {
+  padding: 4px 4px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent-gold-dim);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.nav-panel-content { padding: 12px 0; max-height: 60vh; overflow-y: auto; }
+.nav-panel-content ol { list-style: none; padding: 0; margin: 0; counter-reset: nav-item; }
+.nav-panel-content li {
+  padding: 8px 4px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.nav-panel-content li:last-child { border-bottom: none; }
+.nav-panel-content a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  display: block;
+  transition: color 0.2s;
+  counter-increment: nav-item;
+}
+.nav-panel-content a::before {
+  content: counter(nav-item, decimal-leading-zero) " ";
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent-gold-dim);
+  margin-right: 8px;
+}
+.nav-panel-content a:hover { color: var(--accent-gold-dim); }
+@media (max-width: 768px) {
+  .floating-nav-toggle { bottom: 20px; right: 20px; }
+  .floating-nav-panel { right: 20px; width: 280px; }
+}
+
+/* 复制 Toast */
+.copy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translate(-50%, 20px);
+  background: rgba(29, 29, 31, 0.92);
+  color: #f5f5f7;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: 'Inter', 'Noto Serif SC', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.12);
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.copy-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.copy-toast-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--accent-gold);
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+    <a href="index.html" class="back-link">← 返回文章列表</a>
+  </div>
+</header>
+
+<section class="article-header">
+  <div class="container">
+    <span class="article-category">AI VIBE CODING · WEB MOTION · DICTIONARY</span>
+    <h1 class="article-title">Vibe Coding 网页动效词典</h1>
+    <p class="article-subtitle">三篇 X 长文合集 · 57 个动效词条 · 一键复制提示词</p>
+    <div class="article-byline">
+      <span class="byline-author">朱有以</span>
+      <span class="byline-sep">·</span>
+      <span class="byline-source">原文 @AdrianPunk115 · 三篇系列</span>
+      <span class="byline-sep">·</span>
+      <span>2026/09/17</span>
+    </div>
+    <p class="article-desc">三篇 X 长文按主题合并为一本 57 词条的网页动效词典。每个词条包含定义、适合场景、以及一句可一键复制给 AI 的中文提示词。</p>
+  </div>
+</section>
+
+<section class="hero-index">
+  <div class="container">
+    <div class="hero-index-card">
+      <h3>三章速览</h3>
+      <ul class="hero-index-list">
+        <li><strong>上篇</strong> 17 个词 <em>触发方式 / 时间与顺序 / 内容入场</em></li>
+        <li><strong>中篇</strong> 20 个词 <em>四种文字动效 / 滚动与空间 / 鼠标与指针</em></li>
+        <li><strong>下篇</strong> 20 个词 <em>组件反馈 / 加载与状态 / 空间转场 / UX 使用边界</em></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="article-intro">
+  <div class="container">
+    <div class="intro-lead">
+
+<p>三篇 X 长文都来自同一位作者 —— <strong>@AdrianPunk115</strong>。</p>
+<p>这一套《Vibe Coding 网页动效词典》把所有动效按 <strong>四层结构</strong> 拆开：</p>
+<ol style="margin: 14px 0 14px 22px; line-height: 1.85;">
+  <li><strong>Motion 工具</strong>：GSAP、Framer Motion、纯 CSS、Lottie、Three.js、ScrollTrigger</li>
+  <li><strong>触发方式</strong>：Hover、Focus、Click、Pointer、Scroll、Gesture、Page-load、状态变化、定时</li>
+  <li><strong>动效类型</strong>：缓动、时长、延迟、Stagger、Spring、淡入、滑入、文字动效、滚动、指针、组件、加载、转场</li>
+  <li><strong>UX 使用边界</strong>：反馈、Affordance、Focus、减少动态、Input modality</li>
+</ol>
+<p>下面 <strong>57 个词条</strong>，每个词条都包含：<em>定义 · 适合场景 · 可一键复制的提示词</em>。复制后直接发给 AI，就能让它做出你想要的具体效果。</p>
+
+    </div>
+  </div>
+</section>
+
+
+<section class="chapter-section" id="chapter-1">
+  <div class="container">
+    <p class="chapter-kicker">CHAPTER 01 · Vibe Coding 网页动效词典（上篇）</p>
+    <h2 class="chapter-title">教你准确描述页面怎么动</h2>
+    <p class="chapter-subtitle">触发方式 + 时间与顺序 + 内容入场，共 17 个词条</p>
+    <div class="intro-lead">
+
+<p>上篇覆盖 <strong>第 1-16 个词</strong>，先把工具、触发方式和最基础的入场动效讲清楚。</p>
+<p>读完这一篇，你能把"动效怎么开始"和"动效长什么样"分开描述——这是 Vibe coding 把模糊感受变成可执行描述的第一步。</p>
+<p>三组共 17 个词条，每个都附有一句可以直接复制给 AI 的中文提示词。</p>
+
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">触发方式</h3>
+      <p class="group-desc">9 个常见触发：决定动效何时开始</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch1-01">
+  <p class="term-num">ch1-01</p>
+  <p class="term-def">Hover 指光标停在一个元素上方。它只说明什么时候触发，悬停之后是变色、抬升、显示图片还是产生磁吸，需要继续写明。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>按钮、卡片、链接、菜单项和大多数可交互元素。Hover 是网页里最常见的触发方式，但移动端没有持续悬停，需要为点击和键盘焦点准备替代。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-01">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-01</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">按钮在 Hover 时，背景从默认色平滑过渡到强调色，过渡时长 200ms，使用 Ease-out 缓动；同时图标轻微抬升 2px。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-02">
+  <p class="term-num">ch1-02</p>
+  <p class="term-def">Focus 指用户用键盘 Tab 键移动到按钮、链接或输入框。它和 Hover 都能表示&quot;当前正在关注这个元素&quot;，但 Focus 服务于键盘操作，也可能在点击输入框后出现。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>按钮、链接、表单输入框和所有键盘可以到达的元素。Focus 必须可见，否则键盘用户根本不知道自己移到了哪里。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-02">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-02</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">按钮在键盘 Focus 时，背景变为主色并描出一圈金色焦点环，焦点环透明度从 0 变到 1，时长 150ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-03">
+  <p class="term-num">ch1-03</p>
+  <p class="term-def">Click 是鼠标点击，Tap 是触屏轻触，Press 或 Active 是按钮正在被按住的瞬间。它们经常被混写，结果是 AI 只做了点击后的动作，漏掉按下反馈和再次点击后的状态。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>按钮、开关、菜单项和任何需要按下反馈的元素。点击应该有&quot;按下 → 松开 → 状态切换&quot;三个瞬间，少一个都会显得不真实。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-03">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-03</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">按钮被按下时，整体缩小到 scale(0.96)，松开后回到 scale(1.0)，按压动画时长 100ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-04">
+  <p class="term-num">ch1-04</p>
+  <p class="term-def">Pointer 是鼠标、触控笔等指针设备的统一叫法。它可以读取光标的位置、移动方向、速度和与元素之间的距离，因此比普通 Hover 更适合鼠标跟随、视线跟随和互动背景。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>鼠标跟随类效果、3D 倾斜卡片、光标聚光灯、指针响应背景。Pointer 触发说明需要读取坐标信息。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-04">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-04</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">卡片根据光标在自身的位置，X 轴和 Y 轴旋转角度各控制在 ±8°，倾斜的同时阴影和反光同步偏移。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-05">
+  <p class="term-num">ch1-05</p>
+  <p class="term-def">进入视口指页面滚动到某个位置后，元素出现在屏幕可见区域，此时播放一次动画。它适合标题、卡片、数据和章节内容入场。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>首屏标题、章节标题、卡片列表、数据图表和长文章里的关键信息。配合 IntersectionObserver 使用最稳定。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-05">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-05</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">章节标题在进入视口 30% 时开始淡入并向上移动 24px，单个元素时长 600ms，使用 Ease-out 缓动。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-06">
+  <p class="term-num">ch1-06</p>
+  <p class="term-def">跟随滚动进度指动画和页面滚动直接绑定。用户滚动一部分，动画也只完成相应部分；用户往回滚，动画同步倒放。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>产品拆解图、横向时间轴、滚动叙事页面和带进度控制的视差效果。ScrollTrigger 类工具最常用。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-06">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-06</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">产品拆解图跟随滚动进度：滚动到 30% 时图旋转 90° 并显示主板，滚动到 60% 时显示芯片，滚动到 100% 时显示完整图。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-07">
+  <p class="term-num">ch1-07</p>
+  <p class="term-def">Gesture 指用户直接操纵元素。它比&quot;点击后播放一段动画&quot;更接近真实物体，元素需要跟手移动，并在松开后吸附、回弹或继续滑行。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>拖拽排序、轮播切换、底部抽屉上滑关闭、地图平移缩放。Gesture 必须跟手，松开后给出物理反馈。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-07">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-07</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">卡片拖拽时跟随手指/光标实时移动，松开后若超过 50% 则吸附到下一位置，未超过则回弹原位，回弹用 Spring。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-08">
+  <p class="term-num">ch1-08</p>
+  <p class="term-def">页面首次打开、组件挂载和页面切换也能触发动画。这类触发决定首屏怎样进入，以及离开旧页面、进入新页面如何衔接。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>首屏内容入场、路由切换、弹窗挂载。Page-load 类触发决定用户第一眼看到什么。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-08">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-08</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">首屏标题在页面加载后 200ms 淡入并向上移动 32px，副标题延迟 300ms 跟随出现，按钮延迟 500ms 出现。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-09">
+  <p class="term-num">ch1-09</p>
+  <p class="term-def">组件从一种状态变成另一种状态，也会触发动效。它常用于解释&quot;刚才的操作带来了什么变化&quot;，比纯装饰动画更重要。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>开关切换、勾选状态、表单聚焦、错误提示出现。状态动效要短促清晰，不能比内容本身还显眼。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-09">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-09</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">开关切换时，圆点从左侧滑到右侧并伴随轻微回弹，背景色从灰过渡到绿，时长 250ms。</pre>
+</div>
+      </div>
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">时间与顺序</h3>
+      <p class="group-desc">4 个时序词：缓动、时长、延迟、Spring</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch1-10">
+  <p class="term-num">ch1-10</p>
+  <p class="term-def">有些动画不等待用户操作，而是在经过一段时间、页面空闲或上一段动画结束后自动开始。轮播、提示消失、演示动画和循环背景常用这种触发。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>自动轮播、提示淡出、Hero 演示动画、循环背景微动。自动播放必须可被用户操作打断。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-10">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-10</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">Hero 区域背景渐变在页面打开后自动循环移动，每 12 秒一个周期，用户滚动后立即停止。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-11">
+  <p class="term-num">ch1-11</p>
+  <p class="term-def">Easing 决定动画怎样加速和减速。完全匀速的物体看起来像被机器拖动；加入缓动后，启动和停下会更自然。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>几乎所有移动、缩放和显隐动画。刚开始可以先选减速缓动（Ease-out），页面通常会比匀速自然。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-11">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-11</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">卡片淡入使用 cubic-bezier(0.16, 1, 0.3, 1) 的 Ease-out 曲线，时长 600ms，移动距离 24px。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-12">
+  <p class="term-num">ch1-12</p>
+  <p class="term-def">Duration 是一次动画从开始到结束持续多久。按钮和图标需要迅速反馈，弹窗和卡片可以稍慢，大图揭示和页面转场还能再柔和一点。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>所有动画。页面里应该有统一的快慢关系，避免一个按钮很快，旁边另一个按钮慢吞吞。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-12">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-12</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">按钮颜色过渡 150ms，弹窗淡入 250ms，大图揭示 500ms，页面转场 400ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-13">
+  <p class="term-num">ch1-13</p>
+  <p class="term-def">Delay 指动画触发后先等待一会儿，再开始播放。它经常用来建立阅读顺序，例如标题先出现，说明文字稍后出现，按钮最后出现。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>少量元素之间的先后关系。等待太久会让用户误以为页面卡住，因此按钮点击、加载和错误反馈不要随意增加延迟。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-13">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-13</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">首屏三元素依次出现：标题延迟 0ms，副标题延迟 200ms，按钮延迟 400ms，单个元素时长 600ms。</pre>
+</div>
+      </div>
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">内容入场</h3>
+      <p class="group-desc">5 个显隐词：Fade / Crossfade / Slide / Scale / Blur / Clip-path / Mask / Wipe</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch1-14">
+  <p class="term-num">ch1-14</p>
+  <p class="term-def">Stagger 指一组相似元素依次开始动画，中文常叫&quot;交错出现&quot;或&quot;错峰动画&quot;。Delay 通常控制一个元素等待多久，Stagger 负责给列表中的每个元素自动错开一点时间。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>卡片列表、菜单、照片墙、数据面板、步骤流程和文字标题。整组要像连续动作，间隔太大会变成排队等候。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-14">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-14</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">卡片网格依次入场：每张卡片延迟比上一张多 80ms，单张时长 500ms，使用 Ease-out 缓动，整体错峰像波纹展开。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-15">
+  <p class="term-num">ch1-15</p>
+  <p class="term-def">Spring 模拟物体的惯性和回弹。它常用于拖拽回位、按钮按下、弹窗出现和卡片吸附，画面会比普通缓动更有重量。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>拖拽、吸附、弹窗、开关、按钮和带重量感的组件。长正文和大面积背景不需要到处弹。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-15">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-15</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">弹窗出现时使用 Spring 弹性曲线，scale 从 0.9 到 1.0 时有 8% 的过冲后稳定，时长约 350ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-16">
+  <p class="term-num">ch1-16</p>
+  <p class="term-def">Fade 通过透明度变化让元素出现或消失。Fade in 是从看不见变成可见，Fade out 是从可见慢慢消失。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>页面加载、弹窗、菜单、图片、提示和状态切换。它很稳妥，但整个网站只使用 Fade 会缺少层次。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-16">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-16</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">图片加载完成后，从 opacity 0 过渡到 1，时长 500ms，使用 Ease-out 缓动。</pre>
+</div>
+
+<div class="term-entry" id="term-ch1-17">
+  <p class="term-num">ch1-17</p>
+  <p class="term-def">Crossfade 指旧内容淡出的同时，新内容淡入。两个画面会短暂重叠，因此切换过程比&quot;旧内容先消失，新内容再出现&quot;更连贯。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>两个位置相同、内容不同的状态。新旧内容尺寸差异很大时，还要配合布局动画，避免容器突然跳动。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch1-17">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch1-17</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">轮播切换：旧图片 opacity 1→0 同时新图片 0→1，重叠期 200ms，容器宽度保持不变。</pre>
+</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="chapter-section" id="chapter-2">
+  <div class="container">
+    <p class="chapter-kicker">CHAPTER 02 · Vibe Coding 网页动效词典（中篇）</p>
+    <h2 class="chapter-title">视差滚动、磁吸按钮与鼠标跟随</h2>
+    <p class="chapter-subtitle">四种文字动效 + 滚动与空间 + 鼠标与指针，共 20 个词条</p>
+    <div class="intro-lead">
+
+<p>中篇覆盖 <strong>第 17-36 个词</strong>，继续第三层的视觉词汇。</p>
+<p>这一篇集中在文字、滚动和指针互动。滚动和指针是网页和"静态设计稿"最不一样的地方，也是 AI 最容易做错的部分——同样的滚动，可以是"触发一段动画"，也可以是"动画进度跟随手指"；同一个鼠标坐标，可以做磁吸、倾斜、聚光灯、跟随眼睛、3D 旋转。</p>
+<p>下面 20 个词条，把这些"画面具体怎么动"讲清楚。</p>
+
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">四种文字动效</h3>
+      <p class="group-desc">Character / Typewriter / Scramble / Morph</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch2-01">
+  <p class="term-num">ch2-01</p>
+  <p class="term-def">Character reveal 把文字拆成单个字符分别动画。它的视觉节奏最明显，也最容易让用户等待。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>很短的英文单词、Logo、数字和四到八个字的标题。中文长句、正文和按钮文字通常不需要逐字动画。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-01">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-01</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">标题&quot;Hello&quot;按字符逐个淡入并向上跳起，每字符延迟 50ms，时长 300ms，使用 Ease-out 缓动。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-02">
+  <p class="term-num">ch2-02</p>
+  <p class="term-def">Typewriter 模拟文字被逐个输入的过程，通常会带一个闪烁光标。它强调&quot;内容正在生成&quot;或&quot;有人正在输入&quot;。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>命令行、聊天、搜索示例、AI 产品和短标题。正文介绍不适合让用户等着逐字打完。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-02">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-02</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">对话输入框上方文字以打字机效果逐字出现，每个字符间隔 60ms，末尾光标持续闪烁，间隔 500ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-03">
+  <p class="term-num">ch2-03</p>
+  <p class="term-def">Scramble text 会先显示随机字符，再逐渐替换成正确文字，看起来像系统正在解密或加载数据。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>科技感标题、系统状态、数据页面、游戏界面和少量互动彩蛋。中文乱码容易难看，可以只让英文或数字部分变化。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-03">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-03</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">标题先以随机字符显示 800ms，再逐渐替换为目标文字，单字符替换间隔 40ms，整体看起来像解密过程。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-04">
+  <p class="term-num">ch2-04</p>
+  <p class="term-def">Text morphing 指一个词平滑变化成另一个词。变化过程可以使用字符替换、模糊交叉、宽度调整或形状变形。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>短词、状态、数字、轮换关键词和品牌实验页面。新旧文字长度差异很大时，要让容器宽度平滑变化，避免旁边内容跳动。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-04">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-04</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">标题&quot;AI&quot;平滑变形为&quot;Agent&quot;：字符对应替换并交叉淡化，容器宽度同步从窄变宽，过渡时长 500ms。</pre>
+</div>
+      </div>
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">滚动与空间</h3>
+      <p class="group-desc">9 个滚动词：视差、多层视差、横向、缩放、固定叙事、图片序列、吸附、进度提示</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch2-05">
+  <p class="term-num">ch2-05</p>
+  <p class="term-def">视差滚动让前景、中景和背景以不同速度移动。人的眼睛会把速度差理解成距离差，于是平面的网页看起来有了前后深度。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>品牌首页、产品介绍、作品集和带大图的故事页面。正文阅读页只需要很轻的速度差，大幅反向移动容易让人眩晕。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-05">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-05</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">页面滚动时背景图片以 0.3 倍速向上移动，文字层以 0.7 倍速移动，前景装饰以 1.0 倍速，形成三层视差。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-06">
+  <p class="term-num">ch2-06</p>
+  <p class="term-def">多层视差是视差滚动的扩展版本。页面会把画面拆成三层或更多层，每一层拥有不同方向、速度和移动范围，像在橱窗中前后摆放了多块透明玻璃。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>视觉叙事、游戏宣传、电影网站、3D 产品页和氛围型首页。层数越多，越要减少每层的移动幅度，否则画面会散掉。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-06">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-06</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">滚动时远景以 0.2 倍速左移，中景以 0.5 倍速右移，近景保持不动；每层移动距离不超过 80px。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-07">
+  <p class="term-num">ch2-07</p>
+  <p class="term-def">横向滚动让内容沿左右方向移动。网页常把用户的纵向滚轮转换成横向浏览，用来展示一排作品、时间轴或连续章节。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>作品集、品牌故事、产品功能、时间轴和图片画廊。手机上的左右滑动可能与系统返回手势冲突，移动端通常需要单独简化。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-07">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-07</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">作品集卡片横向排列，竖向滚轮映射为水平位移 1:1，整组一次性移动一个卡片宽度，吸附到下一张卡片。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-08">
+  <p class="term-num">ch2-08</p>
+  <p class="term-def">滚动缩放把滚动进度映射到画面大小。用户继续滚动时，图片、文字或 3D 物体逐渐靠近，也可以从局部慢慢退回全景。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>产品亮相、章节转场、地图故事、摄影作品和 3D 展示。文字跟着大幅缩放时容易模糊，通常让图片或主物体承担缩放。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-08">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-08</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">用户从 0% 滚到 100% 时，主体图片从 scale(0.6) 放大到 scale(1.2)，文字保持原大小并居中对齐。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-09">
+  <p class="term-num">ch2-09</p>
+  <p class="term-def">固定式滚动叙事会暂时把一个区域留在视口中，用户继续滚动时，只替换其中的图片、数据或说明。常见画面是左侧文字继续换章节，右侧产品图保持固定并同步变化。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>产品拆解、案例讲解、数据故事、教程步骤和品牌叙事。固定时间太长会让用户误以为页面卡住，需要保留清楚的章节变化。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-09">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-09</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">左侧文字每滚动一屏切换一个章节，右侧产品图固定不动，但内部细节根据章节变化：主板、芯片、电池依次高亮。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-10">
+  <p class="term-num">ch2-10</p>
+  <p class="term-def">图片序列滚动会准备一组连续画面，再根据滚动位置切换当前帧。它像一段由用户滚轮控制前进和后退的视频。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>汽车、手机、硬件、服装、产品拆解和强视觉故事。连续图片较多时要提前加载，并为加载失败准备一张静态主图。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-10">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-10</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">准备 60 张汽车旋转角度连续变化的图，滚动时按帧切换，滚动 100% 时正好播放完整一圈。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-11">
+  <p class="term-num">ch2-11</p>
+  <p class="term-def">滚动吸附会在用户停止滚动后，把页面自动对齐到最近的章节或卡片。画面不会停在两个区块中间，阅读位置更明确。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>全屏故事、横向画廊、功能轮播和短章节页面。正文很长时不适合强制整屏吸附，否则用户很难停在想读的位置。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-11">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-11</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">用户停止滚动 200ms 后，如果当前滚动位置距离下一章节小于 30%，则自动吸附到下一章节中心。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-12">
+  <p class="term-num">ch2-12</p>
+  <p class="term-def">滚动进度提示把用户当前的位置显示出来。它可以是一条线、一个数字、一组章节圆点，也可以是侧边目录中的当前章节高亮。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>长文、教程、产品故事、多步骤表单和章节式页面。它提供的是位置反馈，视觉上要比正文安静，不能抢走阅读注意力。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-12">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-12</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">右侧固定显示 5 个章节圆点，当前章节圆点填充实色，其他为空心，滚动时高亮同步移动，时长 200ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-13">
+  <p class="term-num">ch2-13</p>
+  <p class="term-def">这一组动效会读取光标的位置、方向或距离。它们很适合桌面端的产品首页和作品集，但手机没有持续悬停，也没有一直存在的鼠标坐标。提示词里要同时交代触屏设备怎样简化。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>桌面端产品首页、作品集、品牌官网。光标类效果在手机端需要改成缓慢自动循环或跟随重力感应。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-13">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-13</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">所有光标类效果都使用 framer-motion 的 useMotionValue 跟踪光标坐标；移动端用 useDeviceMotion 替换，关闭持续跟踪。</pre>
+</div>
+      </div>
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">鼠标与指针</h3>
+      <p class="group-desc">7 个指针词：磁吸按钮 / 立体倾斜 / 自定义光标 / 聚光灯 / 跟随眼睛 / 拖尾 / 指针响应背景 / 3D 跟随</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch2-14">
+  <p class="term-num">ch2-14</p>
+  <p class="term-def">磁吸按钮会在光标靠近时轻微向光标移动，看起来像按钮与鼠标之间存在吸引力。光标离开后，按钮回到原位。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>首要行动按钮、作品集入口和少量重点链接。每个按钮都磁吸会让界面显得不稳定，一页保留一两个重点即可。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-14">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-14</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">按钮根据光标与按钮中心的距离，在 X 和 Y 方向各向光标方向位移最多 6px，距离越近位移越大。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-15">
+  <p class="term-num">ch2-15</p>
+  <p class="term-def">立体倾斜卡片会根据光标在卡片中的位置，向不同方向轻微旋转。卡片的高光和阴影同步变化，就会产生一层可感知的厚度。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>作品卡片、产品卡片、游戏道具和视觉型首页。文字很多的卡片不宜大幅倾斜，阅读时页面需要保持稳定。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-15">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-15</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">卡片根据光标位置在 X 轴和 Y 轴上各旋转 ±8°，同时投影模糊度和偏移随旋转同步变化，营造 3D 厚度感。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-16">
+  <p class="term-num">ch2-16</p>
+  <p class="term-def">自定义光标跟随会用圆点、圆环、图标或短文字替代或陪伴系统光标。跟随元素通常会稍微落后于真实指针，形成柔和的追随感。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>作品集、图片画廊、品牌首页和需要强化操作提示的区域。系统光标仍要保持可定位，不能因为自定义效果变得迟钝或消失。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-16">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-16</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">圆环跟随真实光标移动，使用 lerp 函数做缓动：每帧位置 = 当前 + (目标 - 当前) × 0.15，永远落后 5-10px。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-17">
+  <p class="term-num">ch2-17</p>
+  <p class="term-def">光标聚光灯会让一块亮区跟随鼠标移动。亮区可以照亮深色背景，也可以在浅色页面中揭示隐藏纹理、网格或第二层内容。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>深色产品页、创意作品集、科技首页和局部探索区域。正文区域不适合持续追光，亮度变化会干扰阅读。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-17">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-17</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">鼠标周围 200px 范围内背景亮度提升 30%，边缘羽化模糊 80px，光标移动时亮区跟随，时长无过渡。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-18">
+  <p class="term-num">ch2-18</p>
+  <p class="term-def">鼠标跟随眼睛会让角色的瞳孔朝光标方向移动。眼白保持不动，瞳孔只在眼睛内部的小范围内移动，于是角色看起来一直在观察用户。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>吉祥物、登录页、404 页面、儿童产品和有角色 IP 的品牌页面。瞳孔必须限制在眼白内部，移动范围过大会像眼睛坏掉。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-18">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-18</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">瞳孔位置 = 眼睛中心 + (光标位置 - 眼睛中心) × 0.08；X 和 Y 方向独立计算；移动限制在 ±4px 范围内。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-19">
+  <p class="term-num">ch2-19</p>
+  <p class="term-def">光标拖尾会在鼠标经过的位置留下短暂痕迹。痕迹可能是圆点、线条、图形、文字或图片残影，并在片刻后消失。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>活动页、作品集、音乐网站、互动艺术和少量彩蛋。按钮和正文附近要保持清爽，拖尾太密会遮挡点击目标。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-19">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-19</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">光标移动路径上每 16ms 生成一个小圆点，圆点 opacity 从 1 衰减到 0 同时 scale 从 1 缩小到 0，生命周期 800ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch2-20">
+  <p class="term-num">ch2-20</p>
+  <p class="term-def">指针响应背景会让背景中的渐变、网格、粒子或图形根据鼠标位置发生变化。它的范围通常比光标聚光灯更大，整个首屏都可能产生轻微响应。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>产品首页、创意工具、AI 网站、数据可视化和互动作品集。背景响应要慢于光标，不能让整个页面像贴在鼠标上。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch2-20">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch2-20</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">背景渐变中心点根据光标在视口中的归一化坐标（0-1）偏移，最大偏移距离 200px，缓动系数 0.05。</pre>
+</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="chapter-section" id="chapter-3">
+  <div class="container">
+    <p class="chapter-kicker">CHAPTER 03 · Vibe Coding 网页动效词典（下篇）</p>
+    <h2 class="chapter-title">组件反馈、布局过渡与页面转场</h2>
+    <p class="chapter-subtitle">组件反馈 + 加载与状态 + 空间转场 + UX 使用边界，共 20 个词条</p>
+    <div class="intro-lead">
+
+<p>下篇覆盖 <strong>第 37-56 个词</strong>，收尾第三层并进入第四层 UX 规则。</p>
+<p>这一篇面对的是产品页面：弹窗、菜单、加载、布局变化、页面转场。这些动效不只是好看，它们负责让用户看懂"刚才发生了什么""现在该往哪里走"。</p>
+<p>最后 5 个 UX 词不是视觉花样，而是约束前面所有动效的边界：可读性、可操作性、键盘可达、移动端降级。</p>
+
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">组件反馈</h3>
+      <p class="group-desc">7 个组件状态词：折叠展开 / Tooltip / Modal / Drawer / 标签页 / Carousel / Toast</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch3-01">
+  <p class="term-num">ch3-01</p>
+  <p class="term-def">折叠展开用于隐藏和显示一段内容。点击标题后，内容区域沿垂直方向打开；再次点击时收起，并让下面的内容平稳让位。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>常见问题、设置项、目录和需要节省空间的长列表。收起后要保留清楚的标题，用户才能再次找到它。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-01">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-01</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">FAQ 列表点击问题后，内容区域从 height 0 展开到自然高度，时长 300ms，使用 Ease-in-out 缓动，箭头图标同时旋转 180°。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-02">
+  <p class="term-num">ch3-02</p>
+  <p class="term-def">这几个名字都指依附在某个触发点附近的浮层。Tooltip 是短提示，通常由悬停或键盘聚焦触发；Popover 可以放按钮等可操作内容；Dropdown 是一组选项；Mega menu 则是导航栏展开的大型多列菜单。它们出现和关闭时，都要让用户看出浮层属于哪个触发点。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>导航、账号操作、筛选器、图标说明和选择框。浮层要从触发点附近出现，关闭时也回到同一位置；重要操作不能只放在悬停才会出现的 Tooltip 里。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-02">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-02</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">Tooltip 从触发按钮下方 4px 处淡入并向下展开 8px，时长 150ms，悬停离开后立即反向关闭，键盘 Focus 也能触发。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-03">
+  <p class="term-num">ch3-03</p>
+  <p class="term-def">Modal 和 Dialog 都指覆盖在当前页面上方的弹窗。出现时通常先让背景变暗，再让弹窗淡入、放大或从下方进入；关闭时沿相反方向离开。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>确认操作、登录、图片预览、重要提醒和短表单。弹窗打开后，背景内容不能继续抢注意力。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-03">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-03</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">点击按钮后背景立即变暗（opacity 0.5，时长 200ms），弹窗从 scale(0.95) 放大到 scale(1.0) 同时 opacity 0→1，时长 250ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-04">
+  <p class="term-num">ch3-04</p>
+  <p class="term-def">Drawer 是从页面边缘滑出的抽屉，Bottom sheet 是从屏幕底部升起的面板。它们适合承载比弹窗更多的内容，同时保留用户对原页面的方位感。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>导航、购物车、筛选器、详情面板和移动端操作。抽屉从哪一侧进入，就从哪一侧离开，不要换方向。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-04">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-04</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">右侧抽屉从屏幕右外侧 100% 位置滑入到 0，时长 300ms，使用 Ease-out 缓动；背景同步淡入黑色遮罩；关闭时反向。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-05">
+  <p class="term-num">ch3-05</p>
+  <p class="term-def">标签页切换发生在同一块区域内部。用户点击另一个标签后，选中指示器先移动到新标签，下面的内容再切换，让操作与结果连成一次动作。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>价格周期、商品详情、设置页面和数据面板。标签很多时不要让内容大幅飞来飞去，短距离移动或交叉淡化已经足够。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-05">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-05</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">指示器使用 FLIP 技术平滑移动到新标签下方，时长 300ms；旧内容淡出同时新内容淡入，重叠 150ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-06">
+  <p class="term-num">ch3-06</p>
+  <p class="term-def">Carousel 和 Slider 都用于在固定区域里切换多张图片或卡片。常见动作是左右滑动、交叉淡化，或者让当前卡片缩小后退到旁边。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>商品图、案例、评价、作品和短步骤介绍。轮播里要有上一张、下一张和当前位置，不能只靠自动播放。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-06">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-06</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">下一张卡片从右侧 translateX(100%) 滑入到 0，当前卡片滑出到 translateX(-100%)，时长 400ms，缓动 Ease-out。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-07">
+  <p class="term-num">ch3-07</p>
+  <p class="term-def">Toast 或 Snackbar 是短暂出现的操作反馈，常见于&quot;保存成功&quot;&quot;已复制&quot;&quot;网络断开&quot;。它不会像弹窗一样中断任务，显示片刻后会自动离开。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>保存、复制、加入购物车、网络状态和不需要立刻回答的提示。关键错误不能只闪一下就消失，要给用户继续处理的入口。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-07">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-07</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">Toast 从屏幕底部 16px 处向上滑入 16px 同时 opacity 0→1，时长 250ms；3 秒后自动反向滑出消失。</pre>
+</div>
+      </div>
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">加载与状态</h3>
+      <p class="group-desc">5 个加载反馈词：数字计数 / 骨架屏 / 加载指示 / 成功错误 / 图标形变</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch3-08">
+  <p class="term-num">ch3-08</p>
+  <p class="term-def">数字计数让数值从旧结果平滑变化到新结果。Odometer 指像里程表一样逐位翻动数字，常用于关键数据和统计结果。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>数据概览、销售额、里程、完成率和关键成绩。数字必须停在准确结果上，动画不能让用户误读数值。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-08">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-08</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">数字从 0 滚动到 12800，使用 requestAnimationFrame 每帧更新，时长 1500ms，使用 Ease-out 缓动，最终停在精确值。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-09">
+  <p class="term-num">ch3-09</p>
+  <p class="term-def">骨架屏先用灰色占位块展示页面大致结构，真实内容加载完成后再替换进去。用户能提前看到标题、图片和列表会出现在哪里，页面也不容易突然跳动。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>信息流、商品列表、个人主页和结构已经确定的异步内容。等待时间很短时直接显示内容，没必要让骨架闪一下。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-09">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-09</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">页面加载时先用 #e5e5e8 灰色矩形占位，标题、图片、文本各占位块独立显示；真实内容加载完成后 opacity 渐变替换，时长 300ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-10">
+  <p class="term-num">ch3-10</p>
+  <p class="term-def">加载指示分成两类。系统不知道何时完成时，用旋转图标、跳动圆点或循环进度条，只表达&quot;还在工作&quot;；系统知道已经完成多少时，用百分比、进度条或步骤编号显示真实进度。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>提交、搜索、生成、上传、下载和导出。等待变长以后，要补充状态文字和取消入口；能够计算进度时，就不要一直让用户看着圆圈旋转。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-10">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-10</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">进度条宽度根据实际进度从 0% 增长到 100%，时长等于实际剩余时间，使用 linear 缓动保证进度真实。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-11">
+  <p class="term-num">ch3-11</p>
+  <p class="term-def">成功和错误动效负责确认结果。成功常用勾选、颜色变化和轻微放大；错误常用边框变色、提示文字或一次短促抖动。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>表单提交、付款、保存、上传和关键操作。颜色只能辅助表达，成功与错误还要有图标或文字说明。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-11">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-11</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">成功时勾选图标从 0 放大到 1 同时按钮背景从蓝过渡到绿，时长 300ms；错误时输入框边框变红并水平抖动 6px 共 2 次。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-12">
+  <p class="term-num">ch3-12</p>
+  <p class="term-def">图标形变让一个图标平滑变成另一个图标，常用来表示同一按钮的状态已经改变。汉堡菜单变成关闭叉号、播放变成暂停，都是这一类。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>同一个按钮承担两种相反状态时。图标变化以后，按钮的位置和点击范围要保持稳定。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-12">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-12</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">汉堡菜单三条线分别旋转并向中心靠拢形成叉号，时长 300ms，使用 cubic-bezier(0.65, 0, 0.35, 1) 缓动。</pre>
+</div>
+      </div>
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">空间转场</h3>
+      <p class="group-desc">3 个转场词：布局过渡 / 共享元素 / 页面转场</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch3-13">
+  <p class="term-num">ch3-13</p>
+  <p class="term-def">布局过渡用于元素增删、排序或尺寸变化。旧位置与新位置之间会出现连续移动，周围内容也会一起让位，不会瞬间跳到结果。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>列表排序、筛选过滤、网格增删、相册分类变化。布局变化时周围内容必须同步让位，否则会显得很突兀。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-13">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-13</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">使用 FLIP 技术：记录旧位置 → 应用新位置 → 反向 transform → 动画 transform 回 0，整个过程 350ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-14">
+  <p class="term-num">ch3-14</p>
+  <p class="term-def">共享元素转场会让两个界面中的同一个元素保持连续。比如点击商品卡片后，卡片里的图片一边放大、一边移动到详情页主图的位置，用户能看到自己点的东西去了哪里。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>列表到详情、图库预览、音乐播放和具有明确主物体的页面。两端没有同一个可识别元素时，普通页面转场更清楚。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-14">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-14</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">使用 View Transitions API：点击卡片时图片被标记为 view-transition-name，离开页时该图片放大并移动到详情页主图位置，时长 400ms。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-15">
+  <p class="term-num">ch3-15</p>
+  <p class="term-def">页面转场描述旧页面怎样离开、新页面怎样进入。它发生在路由切换或章节跳转时，范围比组件动效更大。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>作品集、品牌网站、应用页面和章节式故事。普通内容网站使用短促淡化就够了，复杂转场会让每次点击都变慢。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-15">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-15</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">路由切换时旧页面 opacity 1→0 同时向上移动 16px，新页面 opacity 0→1 同时从下方移入 16px，时长 300ms。</pre>
+</div>
+      </div>
+    </div>
+
+    <div class="group-block">
+      <h3 class="group-title">UX 使用边界</h3>
+      <p class="group-desc">5 条 UX 规则：反馈 / Affordance / Focus / 减少动态 / Input modality</p>
+      <div class="cards-stack">
+
+<div class="term-entry" id="term-ch3-16">
+  <p class="term-num">ch3-16</p>
+  <p class="term-def">反馈是用户做出操作后，界面立即告诉他&quot;我收到了&quot;。悬停变色、按钮按下、出现加载、保存成功和错误说明，都属于反馈。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>所有可交互元素。零反馈的操作让用户怀疑页面是不是坏了。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-16">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-16</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">点击按钮后 100ms 内必须有视觉变化：背景变色、缩放、阴影变化或加载指示之一，绝不能静默等待。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-17">
+  <p class="term-num">ch3-17</p>
+  <p class="term-def">Affordance 常翻译为&quot;可供性&quot;，对零基础读者更好记的说法是操作暗示。按钮的形状告诉用户可以点击，下划线告诉用户这是一条链接，拖拽把手告诉用户这里能移动。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>所有可点击、可拖拽、可操作的元素。形状、颜色、动效都要给用户暗示。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-17">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-17</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">按钮使用圆角矩形 + 阴影 + hover 抬升；链接使用下划线 + 主色；可拖拽元素显示 ⋮⋮ 把手图标，hover 时放大 1.05。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-18">
+  <p class="term-num">ch3-18</p>
+  <p class="term-def">Focus 在网页里有两层含义：视觉上把注意力引向当前任务，操作上让键盘焦点落在正确位置。弹窗打开后背景变暗属于前者，键盘光标进入弹窗属于后者。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>弹窗、菜单、模态框、表单输入。Focus 必须始终可见，键盘用户靠它判断当前位置。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-18">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-18</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">弹窗打开时自动 focus 第一个输入框，背景变暗 opacity 0.5，Tab 键循环在弹窗内部移动焦点，Esc 关闭弹窗。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-19">
+  <p class="term-num">ch3-19</p>
+  <p class="term-def">有些用户会在系统中开启&quot;减少动态&quot;，因为大幅缩放、视差和持续跟随可能引起眩晕。网页可以读取这项偏好，为他们换成更安静的版本。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>所有动效。视差、旋转、缩放、持续背景动画都属于需要减弱的对象。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-19">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-19</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">使用 CSS @media (prefers-reduced-motion: reduce) 查询：所有 transition 时长缩到 0.01ms，禁用视差和循环动画。</pre>
+</div>
+
+<div class="term-entry" id="term-ch3-20">
+  <p class="term-num">ch3-20</p>
+  <p class="term-def">Input modality 指用户通过鼠标、触屏还是键盘操作页面。网页不能把关键功能只交给鼠标悬停：手机没有持续悬停，键盘用户也不会移动鼠标，所以同一个功能要为不同输入方式准备入口。</p>
+  <p class="term-suit"><span class="term-suit-label">适合</span>导航、菜单、按钮、拖拽交互。所有交互都必须支持鼠标、键盘和触屏三种输入。</p>
+</div>
+
+<div class="prompt-card" data-card id="prompt-ch3-20">
+  <div class="prompt-card-head">
+    <span class="prompt-card-tag">
+      <span class="prompt-num">ch3-20</span>
+      <span class="prompt-name">交给 AI</span>
+    </span>
+    <button class="copy-btn" data-copy-btn>一键复制</button>
+  </div>
+  <pre class="prompt-card-body">鼠标悬停菜单 → 改为鼠标点击 + 键盘 Enter；拖拽排序 → 提供键盘上下箭头移动；悬停提示 → 改为点击展开。</pre>
+</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="references">
+  <div class="container">
+    <p class="references-kicker">原文链接</p>
+    <h3 class="references-title">三篇原文出处</h3>
+    <ul class="references-list">
+      <li><strong>上篇</strong> <a href="https://x.com/AdrianPunk115/status/2099485951701721585" target="_blank">x.com/AdrianPunk115/status/2099485951701721585</a></li>
+      <li><strong>中篇</strong> <a href="https://x.com/AdrianPunk115/status/2099772129478869309" target="_blank">x.com/AdrianPunk115/status/2099772129478869309</a></li>
+      <li><strong>下篇</strong> <a href="https://x.com/AdrianPunk115/status/2100209733567430964" target="_blank">x.com/AdrianPunk115/status/2100209733567430964</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="container">
+    <p class="closing-text">这 57 个词不是一次性背完的清单，<br>而是一套<strong>观察网页</strong>的坐标。</p>
+  </div>
+</section>
+
+<footer class="article-footer">
+  <div>2026/09/17 · 为 AI 发电 · 朱有以 整理</div>
+  <div style="margin-top: 6px;">原文 © @AdrianPunk115</div>
+</footer>
+
+<button class="floating-nav-toggle" id="navToggle" aria-label="打开目录">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>
+
+<nav class="floating-nav-panel" id="navPanel">
+  <div class="nav-panel-header">目录导航 · 57 词</div>
+  <div class="nav-panel-content">
+    <ol>
+      <li><a href="#chapter-1">上篇 · 触发方式</a></li>
+      <li><a href="#chapter-1">上篇 · 时间与顺序</a></li>
+      <li><a href="#chapter-1">上篇 · 内容入场</a></li>
+      <li><a href="#chapter-2">中篇 · 四种文字动效</a></li>
+      <li><a href="#chapter-2">中篇 · 滚动与空间</a></li>
+      <li><a href="#chapter-2">中篇 · 鼠标与指针</a></li>
+      <li><a href="#chapter-3">下篇 · 组件反馈</a></li>
+      <li><a href="#chapter-3">下篇 · 加载与状态</a></li>
+      <li><a href="#chapter-3">下篇 · 空间转场</a></li>
+      <li><a href="#chapter-3">下篇 · UX 使用边界</a></li>
+    </ol>
+  </div>
+</nav>
+
+<div class="copy-toast" id="copyToast" role="status" aria-live="polite">
+  <svg class="copy-toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span id="copyToastText">已复制</span>
+</div>
+
+<script>
+// 悬浮导航
+const navToggle = document.getElementById('navToggle');
+const navPanel = document.getElementById('navPanel');
+navToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  navPanel.classList.toggle('active');
+});
+navPanel.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => navPanel.classList.remove('active'));
+});
+document.addEventListener('click', (e) => {
+  if (!navToggle.contains(e.target) && !navPanel.contains(e.target)) {
+    navPanel.classList.remove('active');
+  }
+});
+
+// 一键复制 + Toast
+const toast = document.getElementById('copyToast');
+const toastText = document.getElementById('copyToastText');
+let toastTimer = null;
+
+function showToast(message) {
+  toastText.textContent = message || '已复制';
+  toast.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1500);
+}
+
+document.querySelectorAll('[data-copy-btn]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const card = btn.closest('.prompt-card');
+    const body = card.querySelector('.prompt-card-body');
+    const text = body.innerText;
+    let success = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      success = true;
+    } catch (e) {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        success = true;
+      } catch (e2) {}
+      document.body.removeChild(ta);
+    }
+    if (success) {
+      btn.classList.add('copied');
+      const orig = btn.textContent;
+      btn.textContent = '已复制';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.textContent = orig;
+      }, 1500);
+      showToast('已复制');
+    } else {
+      showToast('复制失败');
+    }
+  });
+});
+</script>
+
+</body>
+</html>
