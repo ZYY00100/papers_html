@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Jev 实测 · 卡尼曼的"快思考"，被做成了一个比 GPT 更克制的 AI 模型</title>
+  <meta name="description" content="TypeSafe 首个 System One 模型 Jev 中文上手教程：从 Waitlist 到第一次调用，从 API Key 到三种 Agent 集成模式。附 5 张实操截图 + 完整代码示例。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+  
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #f5f5f7; --bg-secondary: #fafafa; --bg-card: #ffffff;
+  --bg-code: #0e0e10;
+  --text-primary: #1d1d1f; --text-secondary: #4a4a4f; --text-muted: #8a8a8e;
+  --accent-gold: #c9a962; --accent-gold-dim: #b08d4a; --accent-red: #C8161D;
+  --border-subtle: #e5e5e8; --border-strong: #1d1d1f;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-hover: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+}
+html { scroll-behavior: smooth; }
+body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', 'Noto Serif SC', sans-serif; font-size: 16px; line-height: 1.8; min-height: 100vh; }
+body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px), repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px); pointer-events: none; z-index: 0; }
+.ai-glow { color: var(--accent-red); text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2); }
+.site-header { padding: 24px 0; border-bottom: 1px solid var(--border-subtle); background: var(--bg-secondary); position: sticky; top: 0; z-index: 100; }
+.site-header .container { display: flex; justify-content: space-between; align-items: center; }
+.site-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.15em; color: var(--text-secondary); text-decoration: none; }
+.back-link { font-size: 12px; color: var(--text-muted); text-decoration: none; letter-spacing: 0.1em; transition: color 0.3s; }
+.back-link:hover { color: var(--accent-gold-dim); }
+.container { max-width: 760px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+.article-hero { padding: 88px 0 48px; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+.article-category { display: flex; align-items: center; justify-content: center; gap: 12px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 28px; }
+.article-category::before, .article-category::after { content: ''; width: 60px; height: 1px; flex-shrink: 0; }
+.article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+.article-category::after  { background: linear-gradient(to right, currentColor, transparent); }
+.article-title { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 500; color: var(--text-primary); margin-bottom: 14px; line-height: 1.3; letter-spacing: 0.01em; }
+.article-subtitle { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(18px, 2.6vw, 22px); font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.5; max-width: 620px; margin: 0 auto 28px; letter-spacing: 0.02em; }
+.article-byline { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; flex-wrap: wrap; }
+.article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+.article-byline .byline-source { color: var(--text-muted); font-weight: 500; }
+.article-byline .byline-sep { color: var(--border-subtle); }
+.article-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.85; max-width: 600px; margin: 24px auto 0; }
+.cover-frame { padding: 64px 0; }
+.cover-frame img { display: block; width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); }
+.cover-caption { text-align: center; font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; color: var(--text-muted); margin-top: 16px; text-transform: uppercase; }
+.article-intro { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); }
+.intro-lead { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-secondary); line-height: 1.85; margin-bottom: 18px; }
+.intro-lead:last-child { margin-bottom: 0; }
+.intro-lead strong { color: var(--accent-red); font-weight: 600; }
+.intro-lead code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+.pull-quote { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); text-align: center; }
+.pull-quote-text { font-family: 'Noto Serif SC', 'Cormorant Garamond', serif; font-size: clamp(22px, 3.6vw, 28px); font-weight: 300; line-height: 1.5; color: var(--text-primary); letter-spacing: 0; margin-bottom: 20px; max-width: 680px; margin-left: auto; margin-right: auto; }
+.pull-quote-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--text-muted); }
+.capability { padding: 64px 0; border-bottom: 1px solid var(--border-subtle); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), border-color 0.3s ease; }
+.capability:hover { border-color: rgba(201, 169, 98, 0.15); }
+.cap-head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 32px; }
+.cap-num { font-family: 'Rajdhani', sans-serif; font-size: 56px; font-weight: 600; line-height: 1; color: var(--accent-gold-dim); letter-spacing: -0.02em; flex-shrink: 0; }
+.cap-title-group { flex: 1; }
+.cap-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 6px; }
+.cap-title-en { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-size: clamp(24px, 3.2vw, 30px); font-weight: 500; color: var(--text-primary); line-height: 1.3; margin-bottom: 4px; }
+.cap-title-cn { font-family: 'Noto Serif SC', serif; font-size: clamp(15px, 2vw, 17px); font-weight: 300; color: var(--text-secondary); letter-spacing: 0.02em; }
+.cap-body { font-size: 16px; color: var(--text-secondary); line-height: 1.9; }
+.cap-body p { margin-bottom: 18px; }
+.cap-body p:last-child { margin-bottom: 0; }
+.cap-body strong { color: var(--text-primary); font-weight: 600; }
+.cap-body code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--bg-secondary); padding: 2px 6px; border-radius: 3px; color: var(--text-primary); border: 1px solid var(--border-subtle); }
+.cap-body h3 { font-family: 'Noto Serif SC', serif; font-size: 20px; font-weight: 500; color: var(--text-primary); margin: 24px 0 12px; }
+.principle-box { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 18px 22px; margin: 0 0 28px 0; border-radius: 0 4px 4px 0; }
+.principle-box-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 8px; }
+.principle-box-text { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+.principle-box-text strong { color: var(--accent-red); font-weight: 600; }
+
+/* 代码块（教程专用） */
+.code-block { background: var(--bg-code); border-radius: 8px; margin: 24px 0; overflow: hidden; border: 1px solid #2a2a2d; transition: box-shadow 0.3s, border-color 0.3s; }
+.code-block:hover { box-shadow: var(--shadow-hover); border-color: rgba(201, 169, 98, 0.35); }
+.code-block-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: #232325; border-bottom: 1px solid #2a2a2d; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-gold-dim); }
+.code-block-lang { color: var(--accent-gold); }
+.code-block-copy-btn { background: transparent; color: var(--accent-gold); border: 1px solid var(--accent-gold); border-radius: 4px; padding: 3px 10px; font-family: 'Inter', sans-serif; font-size: 11px; cursor: pointer; letter-spacing: 0.05em; transition: all 0.2s; }
+.code-block-copy-btn:hover { background: var(--accent-gold); color: var(--bg-code); }
+.code-block-copy-btn.copied { background: var(--accent-gold); color: var(--bg-code); }
+.code-block-body { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.75; color: #e5e5e8; padding: 16px; margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: anywhere; tab-size: 2; }
+.code-block-body .c-comment { color: #6a737d; font-style: italic; }
+.code-block-body .c-string { color: #a5d6a7; }
+.code-block-body .c-keyword { color: #f97583; }
+.code-block-body .c-func { color: #b392f0; }
+
+/* Step 步骤条 */
+.step-list { counter-reset: step; margin: 24px 0; }
+.step { position: relative; padding: 0 0 32px 56px; counter-increment: step; }
+.step:last-child { padding-bottom: 0; }
+.step::before { content: counter(step, decimal-leading-zero); position: absolute; left: 0; top: 2px; font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 600; color: var(--accent-gold-dim); letter-spacing: 0.02em; line-height: 1; }
+.step::after { content: ''; position: absolute; left: 21px; top: 38px; bottom: 0; width: 1px; background: var(--border-subtle); }
+.step:last-child::after { display: none; }
+.step-title { font-family: 'Noto Serif SC', serif; font-size: 18px; font-weight: 500; color: var(--text-primary); margin-bottom: 10px; }
+.step-body { font-size: 16px; color: var(--text-secondary); line-height: 1.85; }
+.step-body p { margin-bottom: 12px; }
+.step-body p:last-child { margin-bottom: 0; }
+.step-tip { background: var(--bg-secondary); border-left: 3px solid var(--accent-gold-dim); padding: 12px 16px; margin: 12px 0 0; font-size: 14px; color: var(--text-secondary); border-radius: 0 4px 4px 0; }
+.step-tip-label { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+
+/* Inline 图片 */
+.inline-image { margin: 28px 0 8px; text-align: center; }
+.inline-image img { display: block; width: 100%; max-width: 880px; margin: 0 auto; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.inline-image:hover img { transform: scale(1.006); box-shadow: var(--shadow-hover); }
+.inline-image-caption { font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-top: 12px; font-style: italic; }
+
+/* 错误码表格 */
+.error-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px; line-height: 1.7; }
+.error-table thead tr { background: var(--bg-card); }
+.error-table th { padding: 12px 14px; text-align: left; border-bottom: 2px solid var(--border-strong); font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-gold-dim); }
+.error-table td { padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); vertical-align: top; }
+.error-table td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--accent-red); font-weight: 600; }
+
+/* 适合/不适合两栏 */
+.use-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 28px 0; }
+.use-col { background: var(--bg-secondary); border-radius: 8px; padding: 20px 22px; }
+.use-col-label { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-gold-dim); margin-bottom: 14px; }
+.use-col-yes .use-col-label { color: var(--accent-red); }
+.use-col-list { list-style: none; padding: 0; margin: 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.75; }
+.use-col-list li { padding: 6px 0; border-top: 1px dashed var(--border-subtle); }
+.use-col-list li:first-child { border-top: none; }
+@media (max-width: 640px) { .use-compare { grid-template-columns: 1fr; } }
+
+/* Floating nav */
+.floating-nav-toggle { position: fixed; bottom: 28px; right: 28px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border-subtle); box-shadow: var(--shadow-card); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); transition: all 0.3s; z-index: 1000; }
+.floating-nav-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06); color: var(--accent-gold-dim); }
+.floating-nav-toggle svg { width: 20px; height: 20px; }
+.floating-nav-panel { position: fixed; bottom: 90px; right: 28px; width: 280px; max-height: 78vh; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; box-shadow: var(--shadow-hover); overflow-y: auto; z-index: 199; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.25s, transform 0.25s; }
+.floating-nav-panel.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.nav-panel-header { padding: 14px 20px 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
+.nav-panel-content { padding: 4px 0 12px; }
+.nav-section { display: block; padding: 10px 20px; text-decoration: none; color: var(--text-secondary); border-left: 2px solid transparent; transition: all 0.2s; font-size: 13px; }
+.nav-section:hover { background: var(--bg-secondary); border-left-color: var(--accent-gold-dim); color: var(--text-primary); }
+.nav-section-kicker { font-family: 'Rajdhani', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--text-muted); }
+.nav-section-title { font-size: 13px; font-weight: 500; line-height: 1.4; margin-top: 2px; }
+
+.references { padding: 64px 0 32px; border-bottom: 1px solid var(--border-subtle); }
+.references-kicker { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent-red); margin-bottom: 8px; }
+.references-title { font-family: 'Noto Serif SC', serif; font-size: clamp(22px, 3vw, 26px); font-weight: 600; color: var(--text-primary); margin-bottom: 24px; }
+.references-list { list-style: none; padding: 0; margin: 0 0 24px 0; font-size: 14.5px; color: var(--text-secondary); line-height: 1.85; }
+.references-list li { padding: 14px 0; border-bottom: 1px solid var(--bg-secondary); }
+.references-list li:last-child { border-bottom: none; }
+.references-list strong { font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent-gold-dim); display: block; margin-bottom: 6px; }
+.references-list em { font-family: 'Cormorant Garamond', 'Noto Serif SC', serif; font-style: italic; color: var(--text-primary); }
+.references-list a { color: var(--text-primary); word-break: break-all; }
+.references-list a:hover { color: var(--accent-red); }
+.references-note { font-size: 14px; color: var(--text-muted); font-style: italic; border-left: 2px solid var(--accent-gold-dim); padding-left: 16px; margin-top: 16px; }
+
+@media (max-width: 768px) {
+  .cap-head { gap: 16px; }
+  .cap-num { font-size: 40px; }
+  .step { padding-left: 44px; }
+  .step::before { font-size: 22px; }
+  .step::after { left: 17px; }
+}
+@media (max-width: 640px) {
+  .article-category::before, .article-category::after { width: 40px; }
+  .article-title { white-space: normal; font-size: 26px; }
+  .floating-nav-toggle {
+    bottom: max(56px, calc(env(safe-area-inset-bottom) + 16px));
+    right: max(20px, calc(env(safe-area-inset-right) + 12px));
+  }
+  .floating-nav-panel { right: 20px; bottom: calc(max(56px, env(safe-area-inset-bottom)) + 76px); width: calc(100vw - 40px); max-width: 320px; }
+}
+footer { text-align: center; padding: 40px 0 60px; border-top: 1px solid var(--border-subtle); }
+footer p { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--text-muted); text-transform: uppercase; }
+footer .credit { margin-top: 8px; font-size: 10px; color: var(--text-muted); }
+a { overflow-wrap: anywhere; word-break: break-word; }
+
+/* 一键复制 Toast */
+.copy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translate(-50%, 20px);
+  background: rgba(29, 29, 31, 0.92);
+  color: #f5f5f7;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: 'Inter', 'Noto Serif SC', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.12);
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.copy-toast.show { opacity: 1; transform: translate(-50%, 0); }
+.copy-toast-icon { width: 14px; height: 14px; flex-shrink: 0; color: var(--accent-gold); }
+</style>
+
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+      <a href="index.html" class="back-link">← 返回文章列表</a>
+    </div>
+  </header>
+  <main>
+    
+<section class="article-hero">
+  <div class="container">
+    <div class="article-category">AI TUTORIAL · JEV MODEL · SYSTEM ONE</div>
+    <h1 class="article-title">Jev 实测</h1>
+    <p class="article-subtitle">卡尼曼的"快思考"，被做成了一个比 GPT 更克制的 AI 模型</p>
+    <div class="article-byline">
+      <span class="byline-author">朱有以</span>
+      <span class="byline-sep">·</span>
+      <span class="byline-source">TypeSafe 官方文档 + 实操截图</span>
+      <span class="byline-sep">·</span>
+      <span>2026/09/19</span>
+    </div>
+    <p class="article-desc">它不写一个字，不生成代码，也不解释自己的推理过程。你给它一段文本，它返回一个结构化判断。这听起来怪，但用起来会发现它比 GPT 克制得多 —— 本文从概念到上手 6 步，把 TypeSafe 的 System One 模型 Jev 拆给你看。</p>
+  </div>
+</section>
+
+    
+<section class="cover-frame">
+  <div class="container">
+    <img src="images/2026-09-19-jev-intro/cover.png" alt="TypeSafe Console · Learn to TypeSafe · 三个原语 NOUL / CHOICE / SCORE">
+    <p class="cover-caption">TYPESAFE AI · CONSOLE · 2026/09/19</p>
+  </div>
+</section>
+
+    
+<section class="article-intro">
+  <div class="container">
+    <p class="intro-lead">最近半年，做 Agent 的朋友有个共识：让大模型去做分类、路由、情感判断，<strong>又贵又慢，还经常一本正经胡说八道</strong>。</p>
+    <p class="intro-lead">让 GPT 判断"这条用户留言是不是要退款"，你要写 Prompt、设 JSON Schema、再用 few-shot 稳住输出格式，最后还要 try-except 兜底。一套下来延迟 1-2 秒，单次成本几美分，判断质量还要看运气。</p>
+    <p class="intro-lead">有没有更省心的做法？最近发现 TypeSafe 推了一个叫 <strong>Jev</strong> 的模型，定位挺反常识。它不写一个字，不生成代码，也不解释推理。你给它一段文本，它只返回一个结构化判断：<code>{"choice": "billing", "noul": 0.92}</code>。</p>
+  </div>
+</section>
+
+<section class="pull-quote">
+  <div class="container">
+    <p class="pull-quote-text">GPT 是写手，Jev 是裁判。<br>两者各干各的活。</p>
+    <p class="pull-quote-caption">— 本文核心观点</p>
+  </div>
+</section>
+
+    
+<section class="capability" id="cap-01">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">01</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">CHAPTER 01 · 概念</div>
+        <h2 class="cap-title-en">It Does Not Replace GPT</h2>
+        <div class="cap-title-cn">它不是来替代 GPT 的</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Jev 是 TypeSafe 第一个 <strong>System One</strong> 模型，名字来自卡尼曼《思考，快与慢》里的 System 1——快思考、直觉、本能。</p>
+      <p>LLM 像 System 2：慢、会推理、要解释。System One 像 System 1：快、专注，只回答一个窄问题。</p>
+
+      <h3>具体差别</h3>
+      <ul style="margin: 14px 0 14px 22px; line-height: 1.9;">
+        <li><strong>输入</strong>：自然语言文本（目前不支持图像、音频、视频）</li>
+        <li><strong>输出</strong>：结构化答案 + 概率 + 置信度，不是自然语言</li>
+        <li><strong>能力边界</strong>：判断、选择、打分；不写回复、不生成代码、不解释</li>
+      </ul>
+
+      <div class="principle-box">
+        <span class="principle-box-label">角色分工 · 最重要的认知</span>
+        <div class="principle-box-text">Jev <strong>不是</strong>替代 GPT 的，是替代你写在 GPT 里的那部分"分类、路由、情感判断"逻辑。<strong>GPT 是写手，Jev 是裁判。</strong>两者各干各的活。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="cap-02">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">02</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">CHAPTER 02 · 能力</div>
+        <h2 class="cap-title-en">Three Primitives</h2>
+        <div class="cap-title-cn">三个原语：克制在哪儿</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Jev 的能力被抽象成三个原语（primitives）。每个原语都带 <strong>置信度</strong>——这是 LLM 拿不到的东西。</p>
+      <p>置信度意味着你可以写规则："<code>&lt; 0.7 转人工审核，≥ 0.9 直接放行</code>"。判断边界从"猜"变成了"按阈值分流"。Jev 不会告诉你"为什么是 billing"，但它会告诉你"我是 91% 确定"。<strong>这种克制，反而更适合接进生产系统。</strong></p>
+
+      <h3>Choice · 从候选里选一个</h3>
+      <p>客服留言路由、邮件分类、订单分桶。返回值包含 <code>choice</code>、每个选项的 <code>probabilities</code>、整体的 <code>confidence</code>。</p>
+
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">PYTHON</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># Choice 原语：从三个团队里挑一个</span>
+<span class="c-func">Choice</span>(
+  instructions=<span class="c-string">"这条工单应该由哪个团队处理？"</span>,
+  criteria={
+    <span class="c-string">"billing"</span>: <span class="c-string">"支付、发票、退款"</span>,
+    <span class="c-string">"technical"</span>: <span class="c-string">"Bug、宕机、集成"</span>,
+    <span class="c-string">"sales"</span>: <span class="c-string">"报价、升级、新账号"</span>
+  }
+)</pre>
+</div>
+
+      <h3>Score · 在有序级别上打分</h3>
+      <p>情感强度、紧急程度、风险分级。返回值 <code>score</code> 是在 levels 上的概率加权位置，可落在级别之间。</p>
+
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">PYTHON</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># Score 原语：客户情绪从 calm 到 very angry</span>
+<span class="c-func">Score</span>(
+  instructions=<span class="c-string">"客户情绪有多强烈？"</span>,
+  criteria=[<span class="c-string">"Calm"</span>, <span class="c-string">"Frustrated"</span>, <span class="c-string">"Very angry"</span>]
+)</pre>
+</div>
+
+      <h3>Noul · 判断 yes/no</h3>
+      <p>风控、内容审核、退款请求、退订意图。返回 0-1 的概率值，<code>0.95</code> 表示模型 95% 确定这是 yes。</p>
+
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">PYTHON</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># Noul 原语：yes/no 判断，返回 0-1 概率</span>
+<span class="c-func">Noul</span>(
+  instructions=<span class="c-string">"这条留言是否在申请退款？"</span>,
+  criteria={
+    <span class="c-string">"true"</span>: <span class="c-string">"明确表达退款或投诉意图"</span>,
+    <span class="c-string">"false"</span>: <span class="c-string">"只是咨询或一般反馈"</span>
+  }
+)</pre>
+</div>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="cap-03">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">03</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">CHAPTER 03 · 上手</div>
+        <h2 class="cap-title-en">From Zero to First Call</h2>
+        <div class="cap-title-cn">从 0 开始用上 Jev（小白版）</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>下面这 6 步按顺序操作就能跑通第一次调用。每一步都告诉你在哪点、点啥、可能踩的坑。</p>
+
+      <div class="step-list">
+        <div class="step">
+          <div class="step-title">加入 Waitlist</div>
+          <div class="step-body">
+            <p>浏览器打开 <a href="https://typesafe.ai" target="_blank" rel="noopener">typesafe.ai</a>，找 <strong>Join Waitlist</strong> 按钮（一般在右上角或页面中部），填邮箱、姓名、用途（可写"个人开发者，做 Agent"），提交后等邀请邮件。</p>
+            <p>目前公开信息显示通常 <strong>1-2 天内</strong>会收到邀请邮件，邮件里带 Console 访问入口。</p>
+          </div>
+          <div class="inline-image">
+            <img src="images/2026-09-19-jev-intro/x-01-waitlist-email.png" alt="TypeSafe 入选邮件 · You're in!">
+            <p class="inline-image-caption">实操截图 · 入选邮件 · Create your account 入口 · 2026/09/19</p>
+          </div>
+          <div class="step-tip">
+            <span class="step-tip-label">坑提示</span>邮件里通常会有"提前体验"链接，赶时间按邮件引导操作。
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">登录 Console，创建 API Key</div>
+          <div class="step-body">
+            <p>打开 <a href="https://console.typesafe.ai" target="_blank" rel="noopener">console.typesafe.ai</a>，用邀请邮件方式登录（一般是邮箱 + 一次性验证码）。进入 Console 后找 <strong>API Keys</strong>（路径一般是 <code>Settings → API Keys</code>），点 <strong>Create New Key</strong>，起个名字（建议按用途命名，比如 <code>local-dev</code>、<code>prod-agent-1</code>）。</p>
+            <p>生成后会立刻显示一串以 <code>sk-</code> 开头的完整 Key，<strong>立刻复制保存</strong>。关掉页面就再也看不到了，只能重新生成。</p>
+          </div>
+          <div class="inline-image">
+            <img src="images/2026-09-19-jev-intro/x-02-api-keys.png" alt="TypeSafe Console · API Keys 页面 · Create API key 弹窗">
+            <p class="inline-image-caption">实操截图 · API Keys 页 + Create key 弹窗 · 2026/09/19</p>
+          </div>
+          <div class="step-tip">
+            <span class="step-tip-label">安全提示</span>API Key 等同于密码：不要 commit 到 Git、不要发群、不要贴日志。建议存到本地 <code>.env</code> 并加进 <code>.gitignore</code>。
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">本地配置环境变量</div>
+          <div class="step-body">
+            <p>macOS / Linux（zsh、bash）：</p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">SHELL</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># 加进 ~/.zshrc 或 ~/.bashrc，所有终端会话都能用</span>
+<span class="c-keyword">echo</span> <span class="c-string">'export TYPESAFE_API_KEY="sk-你刚才复制的key"'</span> &gt;&gt; ~/.zshrc
+<span class="c-keyword">source</span> ~/.zshrc
+
+<span class="c-comment"># 验证是否生效</span>
+<span class="c-keyword">echo</span> $TYPESAFE_API_KEY</pre>
+</div>
+          <div class="step-body">
+            <p>Windows PowerShell：</p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">POWERSHELL</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body">[System.Environment]::SetEnvironmentVariable(<span class="c-string">'TYPESAFE_API_KEY'</span>,<span class="c-string">'sk-你刚才复制的key'</span>,<span class="c-string">'User'</span>)</pre>
+</div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">安装 SDK</div>
+          <div class="step-body">
+            <p>官方提供 Python 和 JavaScript/TypeScript 两套 SDK。Python 要求 3.10+。</p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">PYTHON</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># 用 uv（如果项目用 uv）</span>
+uv add typesafe-sdk
+
+<span class="c-comment"># 或用 pip</span>
+pip install typesafe-sdk</pre>
+</div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">JAVASCRIPT</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body">npm install @typesafe-ai/sdk</pre>
+</div>
+          <div class="step-tip">
+            <span class="step-tip-label">自动读取</span>两个 SDK 都会自动读 <code>TYPESAFE_API_KEY</code> 环境变量，默认调用 <code>jev-latest</code> 模型，<strong>代码里不用写 Key</strong>。
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">第一次调用</div>
+          <div class="step-body">
+            <p>新建 <code>test_jev.py</code>：</p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">PYTHON</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-keyword">from</span> typesafe_sdk <span class="c-keyword">import</span> AsyncTypeSafeClient, Choice, Noul, Score
+<span class="c-keyword">import</span> asyncio
+
+<span class="c-keyword">async def</span> main():
+    <span class="c-keyword">async with</span> AsyncTypeSafeClient() <span class="c-keyword">as</span> client:
+        response = <span class="c-keyword">await</span> client.system_one(
+            state={
+                <span class="c-string">"ticket"</span>: <span class="c-string">"我已经等了 5 天，钱还没退，到底什么意思"</span>
+            },
+            questions={
+                <span class="c-string">"is_refund"</span>: <span class="c-func">Noul</span>(
+                    instructions=<span class="c-string">"这条留言是否在申请退款？"</span>
+                ),
+                <span class="c-string">"tone"</span>: <span class="c-func">Choice</span>(
+                    instructions=<span class="c-string">"留言情绪属于哪种？"</span>,
+                    criteria={
+                        <span class="c-string">"calm"</span>: <span class="c-string">"平静、就事论事"</span>,
+                        <span class="c-string">"frustrated"</span>: <span class="c-string">"不满、带催促"</span>,
+                        <span class="c-string">"angry"</span>: <span class="c-string">"愤怒、威胁、辱骂"</span>
+                    }
+                ),
+                <span class="c-string">"urgency"</span>: <span class="c-func">Score</span>(
+                    instructions=<span class="c-string">"紧急程度"</span>,
+                    criteria=[<span class="c-string">"可以等"</span>, <span class="c-string">"本周内"</span>, <span class="c-string">"今天"</span>, <span class="c-string">"立刻处理"</span>]
+                )
+            }
+        )
+
+        <span class="c-comment"># 拿到结构化结果</span>
+        <span class="c-keyword">print</span>(<span class="c-string">"是否退款:"</span>, response.nouls[<span class="c-string">"is_refund"</span>].noul)
+        <span class="c-keyword">print</span>(<span class="c-string">"情绪:"</span>, response.choices[<span class="c-string">"tone"</span>].choice)
+        <span class="c-keyword">print</span>(<span class="c-string">"紧急度:"</span>, response.scores[<span class="c-string">"urgency"</span>].score)
+
+asyncio.run(main())</pre>
+</div>
+          <div class="step-body">
+            <p>跑一下：</p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">SHELL</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body">python test_jev.py</pre>
+</div>
+          <div class="step-body">
+            <p>如果输出类似 <code>是否退款: 0.94 / 情绪: frustrated / 紧急度: 2.6</code>——<strong>恭喜，Jev 已经跑起来了</strong>。</p>
+          </div>
+          <div class="inline-image">
+            <img src="images/2026-09-19-jev-intro/x-03-billing.png" alt="TypeSafe Console · Billing 页 · Credit Balance $5 + Usage">
+            <p class="inline-image-caption">实操截图 · Billing 页面 · 月度 $5 Credit + 已消耗统计 · 2026/09/19</p>
+          </div>
+          <div class="inline-image">
+            <img src="images/2026-09-19-jev-intro/x-04-usage.png" alt="TypeSafe Console · Usage 图表 · 12 requests / 9.3K tokens / $0.0004">
+            <p class="inline-image-caption">实操截图 · Usage 图表 · 12 次调用 / 9.3K tokens / $0.0004 · 2026/09/19</p>
+          </div>
+          <div class="step-tip">
+            <span class="step-tip-label">坑提示</span>第一次跑如果报 <code>401 Unauthorized</code>，检查 <code>TYPESAFE_API_KEY</code> 是否正确导出，新开一个终端窗口再试（环境变量改了之后旧窗口不会自动刷新）。<br><br><strong>不想装 SDK？</strong>直接用 curl：
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">SHELL</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body">curl -s https://api.typesafe.ai/v1/systemone \
+  -H <span class="c-string">"Authorization: Bearer $TYPESAFE_API_KEY"</span> \
+  -H <span class="c-string">"Content-Type: application/json"</span> \
+  -d <span class="c-string">'{
+    "model": "jev-latest",
+    "state": "我已经等了 5 天，钱还没退，到底什么意思",
+    "questions": {
+      "is_refund": {
+        "type": "noul",
+        "instructions": "这条留言是否在申请退款？"
+      }
+    }
+  }'</span></pre>
+</div>
+          <div class="step-body">
+            <p>返回的 JSON 里直接拿 <code>answers.is_refund.noul</code> 这个数字。</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title">把 Jev 塞进你的 Agent</div>
+          <div class="step-body">
+            <p>到这里 Jev 已经在本地能跑了。下一步是接进 Agent 工作流。三种常用模式：</p>
+
+            <p><strong>模式 A：作为 Agent 内部的"判断模块"</strong></p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">PYTHON</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># 伪代码：典型 Agent 循环里的一个判断步骤</span>
+<span class="c-keyword">async def</span> agent_step(user_input, context):
+    <span class="c-comment"># 用 Jev 做几个并行判断</span>
+    result = <span class="c-keyword">await</span> jev_client.system_one(
+        state={<span class="c-string">"user_input"</span>: user_input, <span class="c-string">"history"</span>: context.history},
+        questions={
+            <span class="c-string">"need_tool"</span>: <span class="c-func">Noul</span>(instructions=<span class="c-string">"是否需要调用工具？"</span>),
+            <span class="c-string">"tool_choice"</span>: <span class="c-func">Choice</span>(
+                instructions=<span class="c-string">"如果需要，用哪个工具？"</span>,
+                criteria={
+                    <span class="c-string">"search"</span>: <span class="c-string">"联网搜索"</span>,
+                    <span class="c-string">"code"</span>: <span class="c-string">"执行代码"</span>,
+                    <span class="c-string">"none"</span>: <span class="c-string">"不需要"</span>
+                }
+            ),
+            <span class="c-string">"risk_level"</span>: <span class="c-func">Score</span>(
+                instructions=<span class="c-string">"风险等级"</span>,
+                criteria=[<span class="c-string">"低"</span>, <span class="c-string">"中"</span>, <span class="c-string">"高"</span>]
+            )
+        }
+    )
+
+    <span class="c-comment"># 用置信度做分流</span>
+    <span class="c-keyword">if</span> result.nouls[<span class="c-string">"need_tool"</span>].noul &lt; <span class="c-string">0.5</span>:
+        <span class="c-keyword">return await</span> llm_reply(user_input)  <span class="c-comment"># 走 LLM 正常回复</span>
+    <span class="c-keyword">elif</span> result.choices[<span class="c-string">"tool_choice"</span>].confidence &gt; <span class="c-string">0.8</span>:
+        <span class="c-keyword">return await</span> execute_tool(result.choices[<span class="c-string">"tool_choice"</span>].choice)
+    <span class="c-keyword">else</span>:
+        <span class="c-keyword">return await</span> escalate_to_human(context)  <span class="c-comment"># 置信度不够，转人工</span></pre>
+</div>
+
+          <div class="step-body">
+            <p><strong>模式 B：配合 Coding Agent（Claude Code / Cursor / Cline 等）</strong></p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">SHELL</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># 在项目目录执行，一键安装 TypeSafe skill</span>
+npx skills add typesafe-ai/skills --skill typesafe-ai
+
+<span class="c-comment"># 然后在 Coding Agent 里说：</span>
+<span class="c-comment"># "用 TypeSafe skill 把 Jev 接进这个项目，让客服分类和退款判断走 Jev。"</span></pre>
+</div>
+
+          <div class="step-body">
+            <p>Coding Agent 会自己读文档、写代码、跑测试。</p>
+            <p><strong>模式 C：作为 LLM 的预筛选</strong></p>
+          </div>
+<div class="code-block">
+  <div class="code-block-head"><span class="code-block-lang">PYTHON</span><button class="code-block-copy-btn" data-code-copy>Copy</button></div>
+  <pre class="code-block-body"><span class="c-comment"># 伪代码：先用 Jev 过滤掉显然不需要 LLM 的请求</span>
+filter_result = jev_client.system_one(
+    state={<span class="c-string">"request"</span>: user_input},
+    questions={
+        <span class="c-string">"is_complex"</span>: <span class="c-func">Noul</span>(instructions=<span class="c-string">"这条请求是否需要 LLM 推理？"</span>)
+    }
+)
+<span class="c-comment"># 显然不需要 LLM 的，直接 return 模板回复</span>
+<span class="c-comment"># 这样能省掉一大半 LLM 调用</span></pre>
+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="cap-04">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">04</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">CHAPTER 04 · 边界</div>
+        <h2 class="cap-title-en">When to Use, When Not</h2>
+        <div class="cap-title-cn">什么时候用，什么时候别用</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <div class="use-compare">
+        <div class="use-col use-col-yes">
+          <div class="use-col-label">适合用 Jev</div>
+          <ul class="use-col-list">
+            <li>用户留言分类、客服路由、退款判断</li>
+            <li>内容审核、风险打分</li>
+            <li>Agent 的子判断步骤（要不要调工具、选哪个、参数取哪个）</li>
+            <li>LLM 调用前的预筛选（减少不必要的 LLM 成本）</li>
+            <li>任何"输入文本 + 输出结构化判断"的场景</li>
+          </ul>
+        </div>
+        <div class="use-col">
+          <div class="use-col-label">不适合用 Jev</div>
+          <ul class="use-col-list">
+            <li>需要长篇对话（用 LLM）</li>
+            <li>需要生成文案、写代码、做总结（用 LLM）</li>
+            <li>需要多步推理（用 reasoning model）</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="principle-box">
+        <span class="principle-box-label">一句话决策</span>
+        <div class="principle-box-text">能写 <strong>if-else</strong> 判断的，就别用 GPT；能用 GPT 改写的，就别用 reasoning model。<strong>Jev 卡在最该卡的位置。</strong></div>
+      </div>
+
+      <h3>常见错误码（提前避坑）</h3>
+      <table class="error-table">
+        <thead>
+          <tr>
+            <th style="width:90px;">错误码</th>
+            <th style="width:30%;">意思</th>
+            <th>怎么办</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>401</td><td>Key 错或没带</td><td>检查 <code>TYPESAFE_API_KEY</code> 是否导出，Key 是否完整（<code>sk-</code> 开头）</td></tr>
+          <tr><td>422</td><td>请求体格式错</td><td>看返回的 JSON 里指的字段，检查 <code>type</code>、<code>instructions</code>、<code>criteria</code> 是否齐</td></tr>
+          <tr><td>429</td><td>触发限流</td><td>加退避重试（SDK 默认会帮你处理）</td></tr>
+          <tr><td>529</td><td>服务过载</td><td>稍等再试，或换时区低谷期调用</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+    
+<section class="capability" id="cap-05">
+  <div class="container">
+    <div class="cap-head">
+      <div class="cap-num">05</div>
+      <div class="cap-title-group">
+        <div class="cap-kicker">CHAPTER 05 · 收尾</div>
+        <h2 class="cap-title-en">An Early Signal</h2>
+        <div class="cap-title-cn">一个值得关注的早期信号</div>
+      </div>
+    </div>
+    <div class="cap-body">
+      <p>Jev 目前还小众，没有 GPT、Claude 那么大的认知锚点。但它代表了一个方向：<strong>AI 模型不再只有"生成"这一种形态，"判断"也可以是 first-class 的 API。</strong></p>
+      <p>卡尼曼 50 年前在书里把"快思考"和"慢思考"分开讲。现在一个叫 Jev 的模型，把"快思考"做成了一行 API。</p>
+      <p>如果你在 Agent 开发里被"用 LLM 做分类又贵又不稳"折磨过，建议今晚花半小时跑通上面那 6 步。它可能不会改变世界，但会让你少写很多 try-except。</p>
+    </div>
+  </div>
+</section>
+
+    
+<section class="references">
+  <div class="container">
+    <p class="references-kicker">SOURCES &amp; CREDITS</p>
+    <h2 class="references-title">引用与素材来源</h2>
+    <ul class="references-list">
+      <li>
+        <strong>OFFICIAL DOCS · TYPESAFE</strong>
+        <em>TypeSafe 官方文档 · System One 模型完整指南</em><br>
+        入口：<a href="https://docs.typesafe.ai" target="_blank" rel="noopener">https://docs.typesafe.ai</a><br>
+        关键页面：<a href="https://docs.typesafe.ai/concepts/system-one" target="_blank" rel="noopener">System One 概念</a> · <a href="https://docs.typesafe.ai/api" target="_blank" rel="noopener">HTTP API 参考</a> · <a href="https://docs.typesafe.ai/sdk/python" target="_blank" rel="noopener">Python SDK</a>
+      </li>
+      <li>
+        <strong>OFFICIAL CONSOLE</strong>
+        API Key 管理 + 用量监控：<a href="https://console.typesafe.ai" target="_blank" rel="noopener">https://console.typesafe.ai</a>
+      </li>
+      <li>
+        <strong>ENDPOINT</strong>
+        评估接口 <code>POST https://api.typesafe.ai/v1/systemone</code>，模型 <code>jev-latest</code>，环境变量 <code>TYPESAFE_API_KEY</code>。
+      </li>
+      <li>
+        <strong>ERROR CODES</strong>
+        401（认证失败）、422（请求体格式错）、429（限流）、529（服务过载）—— SDK 默认带指数退避重试。
+      </li>
+      <li>
+        <strong>SCREENSHOTS</strong>
+        文中 5 张截图均为 2026/09/19 朱有以实操 TypeSafe Console 时拍摄，存于 <code>papers_html/images/2026-09-19-jev-intro/</code>：<br>
+        ① <code>cover.png</code> Console Home · ② <code>x-01-waitlist-email.png</code> 入选邮件 · ③ <code>x-02-api-keys.png</code> API Keys 页 · ④ <code>x-03-billing.png</code> Billing 页 · ⑤ <code>x-04-usage.png</code> Usage 图表。
+      </li>
+      <li>
+        <strong>NOTE</strong>
+        本文中"通常 1-2 天通过审核"、"9.3K tokens / $0.0004"等数字均来自 2026/09/19 实操截图，TypeSafe 官方政策可能随时调整，以官网最新说明为准。
+      </li>
+    </ul>
+    <p class="references-note">Jev 不是来替代 GPT 的，是来替代你写在 GPT 里的那部分判断逻辑。读完后建议今晚花半小时跑通 6 步——从 Waitlist 到第一次跑通——用顺了再考虑接进自己的 Agent。Agent 内部的"判断模块"才是 Jev 最该出现的地方。</p>
+  </div>
+</section>
+
+    
+<section class="pull-quote" style="border-bottom:none;">
+  <div class="container">
+    <p class="pull-quote-text">"卡尼曼 50 年前把'快思考'和'慢思考'分开讲。<br>现在一个叫 Jev 的模型，把'快思考'做成了一行 API。"<br><span style="font-size:0.65em;color:var(--text-muted);">—— 本文收尾</span></p>
+    <p class="pull-quote-caption">— TYPESAFE · JEV</p>
+  </div>
+</section>
+
+  </main>
+  
+<button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>
+<nav class="floating-nav-panel" id="navPanel">
+  <div class="nav-panel-header">目录导航</div>
+  <div class="nav-panel-content">
+    <a class="nav-section" href="#cap-01">
+      <div class="nav-section-kicker">CHAPTER 01</div>
+      <div class="nav-section-title">它不是来替代 GPT 的</div>
+    </a>
+    <a class="nav-section" href="#cap-02">
+      <div class="nav-section-kicker">CHAPTER 02</div>
+      <div class="nav-section-title">三个原语：克制在哪儿</div>
+    </a>
+    <a class="nav-section" href="#cap-03">
+      <div class="nav-section-kicker">CHAPTER 03</div>
+      <div class="nav-section-title">从 0 开始用上 Jev（小白版）</div>
+    </a>
+    <a class="nav-section" href="#cap-04">
+      <div class="nav-section-kicker">CHAPTER 04</div>
+      <div class="nav-section-title">什么时候用，什么时候别用</div>
+    </a>
+    <a class="nav-section" href="#cap-05">
+      <div class="nav-section-kicker">CHAPTER 05</div>
+      <div class="nav-section-title">一个值得关注的早期信号</div>
+    </a>
+  </div>
+</nav>
+
+<div class="copy-toast" id="copyToast" role="status" aria-live="polite">
+  <svg class="copy-toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+  <span id="copyToastText">已复制</span>
+</div>
+
+<script>
+(function() {
+  // 悬浮导航
+  const toggle = document.getElementById('navToggle');
+  const panel = document.getElementById('navPanel');
+  if (toggle && panel) {
+    toggle.addEventListener('click', () => panel.classList.toggle('open'));
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && !toggle.contains(e.target)) panel.classList.remove('open');
+    });
+    panel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => panel.classList.remove('open')));
+  }
+
+  // 一键复制 + Toast
+  const toast = document.getElementById('copyToast');
+  const toastText = document.getElementById('copyToastText');
+  let toastTimer = null;
+
+  function showToast(message) {
+    if (!toast) return;
+    toastText.textContent = message || '已复制';
+    toast.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1500);
+  }
+
+  document.querySelectorAll('[data-code-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const block = btn.closest('.code-block');
+      const body = block.querySelector('.code-block-body');
+      const text = body.innerText;
+      let success = false;
+      try {
+        await navigator.clipboard.writeText(text);
+        success = true;
+      } catch (e) {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); success = true; } catch (e2) {}
+        document.body.removeChild(ta);
+      }
+      if (success) {
+        btn.classList.add('copied');
+        const orig = btn.textContent;
+        btn.textContent = '已复制';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.textContent = orig;
+        }, 1500);
+        showToast('已复制');
+      } else {
+        showToast('复制失败');
+      }
+    });
+  });
+})();
+</script>
+
+  <footer>
+    <p>INTERPRETATION + TUTORIAL BY ZHUYOUYI · 2026/09/19</p>
+    <p class="credit">基于 TypeSafe 官方文档 + 5 张实操截图 · 朱有以 整理</p>
+  </footer>
+</body>
+</html>
