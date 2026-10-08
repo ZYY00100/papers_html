@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>6 个网页滚动动画术语 · 报给 AI 就够了</title>
+<meta name="description" content="6 个网页滚动动画的英文术语：Scroll-triggered、Scroll-linked、Parallax、Sticky、Scroll Snap、Horizontal Scroll。每个术语配 GIF 动图演示与 AI 提示词。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #f5f5f7;
+  --bg-secondary: #fafaf9;
+  --bg-card: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #4a4a4f;
+  --text-muted: #8a8a8e;
+  --border-subtle: #e5e5e8;
+  --border-default: #d4d4d8;
+  --accent-gold: #c9a962;
+  --accent-gold-dim: #a08850;
+  --accent-red: #C8161D;
+  --max-width: 760px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', 'Noto Serif SC', sans-serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px),
+    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(0,0,0,0.025) 79px, rgba(0,0,0,0.025) 80px);
+  pointer-events: none;
+  z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
+img { max-width: 100%; height: auto; }
+a { color: var(--accent-gold-dim); text-decoration: none; overflow-wrap: anywhere; word-break: break-word; }
+a:hover { text-decoration: underline; }
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+
+.site-header {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  position: sticky; top: 0; z-index: 100;
+}
+.site-header .container {
+  display: flex; justify-content: space-between; align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.site-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.ai-glow {
+  color: var(--accent-red);
+  text-shadow: 0 0 8px rgba(200,22,29,0.6), 0 0 16px rgba(200,22,29,0.4), 0 0 32px rgba(200,22,29,0.2);
+}
+.back-link {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  transition: color 0.3s;
+}
+.back-link:hover { color: var(--accent-gold-dim); }
+
+/* Hero — 背景与正文一致，无 border-bottom */
+.article-header {
+  padding: 80px 24px 40px;
+  text-align: center;
+}
+.article-header .container {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.article-category {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--accent-gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.article-category::before, .article-category::after {
+  content: ''; width: 60px; height: 1px; flex-shrink: 0;
+}
+.article-category::before { background: linear-gradient(to right, transparent, currentColor); }
+.article-category::after { background: linear-gradient(to right, currentColor, transparent); }
+@media (max-width: 640px) {
+  .article-category::before, .article-category::after { width: 40px; }
+}
+.article-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: clamp(30px, 4.5vw, 44px);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.article-title .highlight { color: var(--accent-red); }
+.article-subtitle {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(18px, 2.6vw, 22px);
+  font-weight: 300;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  margin: 4px 0 28px;
+}
+.article-byline {
+  display: flex; align-items: center; justify-content: center;
+  gap: 16px; flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin-top: 8px;
+}
+.article-byline .byline-author { color: var(--text-muted); font-weight: 500; }
+.article-byline .byline-sep { color: var(--border-subtle); }
+.article-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  max-width: 600px;
+  margin: 24px auto 0;
+}
+@media (max-width: 768px) {
+  .article-title { white-space: normal; font-size: 26px; }
+  .article-subtitle { font-size: 17px; }
+}
+
+/* Hero 下方 16:9 视频预览容器 */
+.video-frame { padding: 0 0 48px; }
+.video-wrapper {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  max-width: 720px;
+  margin: 0 auto;
+}
+.video-poster {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.video-play-btn {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px; height: 76px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(29, 29, 31, 0.85);
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: background 0.2s, transform 0.2s;
+}
+.video-play-btn:hover { background: var(--accent-red); transform: translate(-50%, -50%) scale(1.06); }
+.video-element {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: none;
+  background: #000;
+}
+.video-wrapper.is-playing .video-poster { display: none; }
+.video-wrapper.is-playing .video-play-btn { display: none; }
+.video-wrapper.is-playing .video-element { display: block; }
+.video-caption {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  margin-top: 14px;
+}
+
+/* 6 个 term 段落 — 裸铺，去卡片 */
+.term-section { padding: 56px 0; }
+.term-head {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+.term-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 44px;
+  font-weight: 600;
+  color: var(--accent-gold-dim);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  min-width: 64px;
+}
+.term-head-text { flex: 1; }
+.term-en {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  margin-bottom: 6px;
+}
+.term-zh {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.term-gif-wrap {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+.term-gif {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.term-body { padding-top: 4px; }
+.term-desc {
+  font-size: 16px;
+  color: var(--text-primary);
+  line-height: 1.8;
+  margin-bottom: 14px;
+}
+.term-scene {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.scene-label {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--bg-card);
+  background: var(--accent-gold-dim);
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .term-num { font-size: 32px; min-width: 48px; }
+  .term-en { font-size: 24px; }
+}
+
+/* 速查卡 */
+.quick-ref { padding: 56px 0 24px; }
+.quick-ref-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent-red);
+  border-radius: 10px;
+  padding: 28px 32px;
+}
+.quick-ref-title {
+  font-family: 'Cormorant Garamond', 'Noto Serif SC', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  letter-spacing: 0.02em;
+}
+.quick-ref-list { list-style: none; padding: 0; margin: 0; }
+.quick-ref-list li {
+  padding: 10px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.quick-ref-list li:first-child { padding-top: 4px; }
+.quick-ref-list li strong {
+  color: var(--text-primary);
+  font-weight: 600;
+  display: inline-block;
+  min-width: 180px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+@media (max-width: 640px) {
+  .quick-ref-list li strong { min-width: auto; display: block; margin-bottom: 2px; }
+}
+
+/* 站统一 footer */
+footer {
+  text-align: center;
+  padding: 48px 0 64px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 24px;
+}
+footer p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+footer .credit {
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* 悬浮导航 */
+.floating-nav-toggle {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  width: 52px; height: 52px;
+  background: var(--text-primary);
+  color: var(--bg-card);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.2s, background 0.2s;
+}
+.floating-nav-toggle:hover {
+  transform: scale(1.06);
+  background: var(--accent-gold-dim);
+}
+.floating-nav-toggle svg { width: 22px; height: 22px; }
+.floating-nav-panel {
+  position: fixed; bottom: 88px; right: 24px; z-index: 199;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 14px 0;
+  min-width: 240px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.floating-nav-panel.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.nav-panel-header {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 0 18px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 6px;
+}
+.nav-panel-content a {
+  display: block;
+  padding: 9px 18px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-panel-content a:hover {
+  background: var(--bg-secondary);
+  color: var(--accent-gold-dim);
+  text-decoration: none;
+}
+.nav-panel-content a .nav-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="site-name">为 <span class="ai-glow">AI</span> 发电</a>
+    <a href="index.html" class="back-link">← 返回文章列表</a>
+  </div>
+</header>
+
+<header class="article-header">
+  <div class="container">
+    <div class="article-category">WEB · SCROLL · MOTION</div>
+    <h1 class="article-title">6 个网页滚动动画术语</h1>
+    <p class="article-subtitle">报给 AI 就够了</p>
+    <div class="article-byline">
+      <span class="byline-author">朱有以</span>
+      <span class="byline-sep">·</span>
+      <span class="byline-date">2026/10/08</span>
+    </div>
+    <p class="article-desc">网页上那些滚动动画，其实都有专门的名字。下次想做某种效果，直接报英文术语，比费力写一长串提示词更好使。每个词条配一张 GIF 动图，看完就懂怎么用。</p>
+  </div>
+</header>
+
+
+<section class="video-frame">
+  <div class="container">
+    <div class="video-wrapper" id="videoWrap">
+      <img class="video-poster" src="images/2026-10-08-yupi996-scroll-terms/cover.jpg" alt="6 个网页滚动动画术语同屏演示封面">
+      <button class="video-play-btn" id="videoPlayBtn" aria-label="播放视频">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <video class="video-element" id="videoEl" controls preload="none" playsinline>
+        <source src="videos/2026-10-08-yupi996-scroll-terms-source.mp4" type="video/mp4">
+      </video>
+    </div>
+    <p class="video-caption">10.5 秒 · 960×720 · 6 个滚动动效同屏演示</p>
+  </div>
+</section>
+
+
+<main>
+
+<section class="term-section" id="term-scroll-triggered">
+  <div class="container">
+    <div class="term-head">
+      <span class="term-num">01</span>
+      <div class="term-head-text">
+        <h2 class="term-en">Scroll-triggered</h2>
+        <p class="term-zh">滚动触发</p>
+      </div>
+    </div>
+    <div class="term-gif-wrap">
+      <img class="term-gif" src="images/2026-10-08-yupi996-scroll-terms/01-scroll-triggered.gif" alt="Scroll-triggered 动画演示" loading="lazy">
+    </div>
+    <div class="term-body">
+      <p class="term-desc">元素滚进屏幕的那一刻，自动开始播放一段动画，播完即停。</p>
+      <p class="term-scene"><span class="scene-label">适合</span>卡片淡入、模块逐个入场、博客文章随滚动展开。</p>
+    </div>
+  </div>
+</section>
+<section class="term-section" id="term-scroll-linked">
+  <div class="container">
+    <div class="term-head">
+      <span class="term-num">02</span>
+      <div class="term-head-text">
+        <h2 class="term-en">Scroll-linked</h2>
+        <p class="term-zh">滚动联动</p>
+      </div>
+    </div>
+    <div class="term-gif-wrap">
+      <img class="term-gif" src="images/2026-10-08-yupi996-scroll-terms/02-scroll-linked.gif" alt="Scroll-linked 动画演示" loading="lazy">
+    </div>
+    <div class="term-body">
+      <p class="term-desc">动画的进度直接绑定滚动条：滚多少，动多少；回滚，动画倒回。</p>
+      <p class="term-scene"><span class="scene-label">适合</span>顶部阅读进度条、随滚动改变的颜色 / 不透明度、数字计数。</p>
+    </div>
+  </div>
+</section>
+<section class="term-section" id="term-parallax">
+  <div class="container">
+    <div class="term-head">
+      <span class="term-num">03</span>
+      <div class="term-head-text">
+        <h2 class="term-en">Parallax</h2>
+        <p class="term-zh">视差滚动</p>
+      </div>
+    </div>
+    <div class="term-gif-wrap">
+      <img class="term-gif" src="images/2026-10-08-yupi996-scroll-terms/03-parallax.gif" alt="Parallax 动画演示" loading="lazy">
+    </div>
+    <div class="term-body">
+      <p class="term-desc">多层元素以不同速度移动，营造深度感。背景比前景慢，景深远；近景比远景快，对比强。</p>
+      <p class="term-scene"><span class="scene-label">适合</span>首屏大图背景、文章插图、3D 感的产品落地页。</p>
+    </div>
+  </div>
+</section>
+<section class="term-section" id="term-sticky">
+  <div class="container">
+    <div class="term-head">
+      <span class="term-num">04</span>
+      <div class="term-head-text">
+        <h2 class="term-en">Sticky</h2>
+        <p class="term-zh">吸顶</p>
+      </div>
+    </div>
+    <div class="term-gif-wrap">
+      <img class="term-gif" src="images/2026-10-08-yupi996-scroll-terms/04-sticky.gif" alt="Sticky 动画演示" loading="lazy">
+    </div>
+    <div class="term-body">
+      <p class="term-desc">元素滚到指定位置就钉住不动，再继续滚动后页面其他内容从它下方穿过。</p>
+      <p class="term-scene"><span class="scene-label">适合</span>通讯录字母标题、目录导航、二级标题、回到顶部按钮。</p>
+    </div>
+  </div>
+</section>
+<section class="term-section" id="term-scroll-snap">
+  <div class="container">
+    <div class="term-head">
+      <span class="term-num">05</span>
+      <div class="term-head-text">
+        <h2 class="term-en">Scroll Snap</h2>
+        <p class="term-zh">滚动吸附</p>
+      </div>
+    </div>
+    <div class="term-gif-wrap">
+      <img class="term-gif" src="images/2026-10-08-yupi996-scroll-terms/05-scroll-snap.gif" alt="Scroll Snap 动画演示" loading="lazy">
+    </div>
+    <div class="term-body">
+      <p class="term-desc">滚动一次只能停一屏 / 一卡，手指松手时被强制对齐到对齐线。</p>
+      <p class="term-scene"><span class="scene-label">适合</span>全屏翻页式落地页、产品介绍页、PPT 风格的 Web 演示。</p>
+    </div>
+  </div>
+</section>
+<section class="term-section" id="term-horizontal-scroll">
+  <div class="container">
+    <div class="term-head">
+      <span class="term-num">06</span>
+      <div class="term-head-text">
+        <h2 class="term-en">Horizontal Scroll</h2>
+        <p class="term-zh">横向滚动</p>
+      </div>
+    </div>
+    <div class="term-gif-wrap">
+      <img class="term-gif" src="images/2026-10-08-yupi996-scroll-terms/06-horizontal-scroll.gif" alt="Horizontal Scroll 动画演示" loading="lazy">
+    </div>
+    <div class="term-body">
+      <p class="term-desc">竖向滚轮触发的不是上下移动，而是一组卡片的横向位移。</p>
+      <p class="term-scene"><span class="scene-label">适合</span>作品集瀑布流、品牌故事时间线、产品对比展示。</p>
+    </div>
+  </div>
+</section>
+
+<section class="quick-ref">
+  <div class="container">
+    <div class="quick-ref-card">
+      <h3 class="quick-ref-title">一句话速查</h3>
+      <ul class="quick-ref-list">
+        <li><strong>Scroll-triggered</strong> — 滚到屏幕就播完（入场动画）</li>
+        <li><strong>Scroll-linked</strong> — 滚多少动多少（进度条 / 计数）</li>
+        <li><strong>Parallax</strong> — 背景比前景滚得慢（视差）</li>
+        <li><strong>Sticky</strong> — 滚到位置就钉住（导航 / 二级标题）</li>
+        <li><strong>Scroll Snap</strong> — 一次只停一屏（全屏翻页）</li>
+        <li><strong>Horizontal Scroll</strong> — 往下滚，卡片横着走</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>INTERPRETATION + TUTORIAL BY ZHUYOUYI · 2026/10/08</p>
+  <p class="credit">6 个网页滚动动画术语速查 · 朱有以 整理</p>
+</footer>
+
+<button class="floating-nav-toggle" id="navToggle" aria-label="目录导航">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M4 6h16M4 12h16M4 18h16"/>
+  </svg>
+</button>
+
+<nav class="floating-nav-panel" id="navPanel">
+  <div class="nav-panel-header">目录导航</div>
+  <div class="nav-panel-content">
+    <a href="#term-scroll-triggered"><span class="nav-num">01</span>Scroll-triggered</a><a href="#term-scroll-linked"><span class="nav-num">02</span>Scroll-linked</a><a href="#term-parallax"><span class="nav-num">03</span>Parallax</a><a href="#term-sticky"><span class="nav-num">04</span>Sticky</a><a href="#term-scroll-snap"><span class="nav-num">05</span>Scroll Snap</a><a href="#term-horizontal-scroll"><span class="nav-num">06</span>Horizontal Scroll</a>
+    <a href="#quick-ref"><span class="nav-num">·</span>一句话速查</a>
+  </div>
+</nav>
+
+<script>
+// 视频播放
+const videoWrap = document.getElementById('videoWrap');
+const videoEl = document.getElementById('videoEl');
+const playBtn = document.getElementById('videoPlayBtn');
+const startVideo = () => {
+  videoWrap.classList.add('is-playing');
+  videoEl.play().catch(()=>{});
+};
+playBtn.addEventListener('click', (e) => { e.stopPropagation(); startVideo(); });
+videoWrap.addEventListener('click', () => {
+  if (!videoWrap.classList.contains('is-playing')) startVideo();
+});
+videoEl.addEventListener('ended', () => {
+  videoWrap.classList.remove('is-playing');
+  videoEl.currentTime = 0;
+});
+
+// 悬浮导航
+const navToggle = document.getElementById('navToggle');
+const navPanel = document.getElementById('navPanel');
+navToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  navPanel.classList.toggle('is-open');
+});
+document.addEventListener('click', (e) => {
+  if (!navPanel.contains(e.target) && !navToggle.contains(e.target)) {
+    navPanel.classList.remove('is-open');
+  }
+});
+navPanel.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => navPanel.classList.remove('is-open'));
+});
+</script>
+
+</body>
+</html>
